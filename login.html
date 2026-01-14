@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login page for Inclusive AI Learning platform">
+    <title>Login - Inclusive AI Learning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .login-container {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .app-title {
+            text-align: center;
+            color: #333333;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .app-subtitle {
+            text-align: center;
+            color: #666666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="email"]:hover,
+        input[type="password"]:hover {
+            border-color: #999999;
+        }
+
+        input.error {
+            border-color: #dc3545;
+        }
+
+        input.error:focus {
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button:focus {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666666;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .register-link a:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 25px;
+            }
+
+            .app-title {
+                font-size: 24px;
+            }
+
+            input[type="email"],
+            input[type="password"],
+            .login-button {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .login-container {
+                padding: 25px 20px;
+            }
+
+            .app-title {
+                font-size: 22px;
+            }
+        }
+
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+            body {
+                background: #000000;
+            }
+
+            .login-container {
+                border: 3px solid #ffffff;
+            }
+
+            input[type="email"],
+            input[type="password"] {
+                border-width: 3px;
+            }
+        }
+
+        /* Focus visible for better keyboard navigation */
+        *:focus-visible {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" role="main">
+        <h1 class="app-title">Inclusive AI Learning</h1>
+        <p class="app-subtitle">Sign in to continue your learning journey</p>
+
+        <form id="loginForm" novalidate aria-label="Login form">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    autocomplete="email"
+                    aria-required="true"
+                    aria-describedby="emailError"
+                    placeholder="Enter your email"
+                    required
+                >
+                <div id="emailError" class="error-message" role="alert" aria-live="polite"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    autocomplete="current-password"
+                    aria-required="true"
+                    aria-describedby="passwordError"
+                    placeholder="Enter your password"
+                    required
+                >
+                <div id="passwordError" class="error-message" role="alert" aria-live="polite"></div>
+            </div>
+
+            <button type="submit" class="login-button" aria-label="Login to your account">
+                Login
+            </button>
+        </form>
+
+        <div class="register-link">
+            <p>Don't have an account? <a href="#" id="registerLink" aria-label="Register for a new account">Register here</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Get form elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const registerLink = document.getElementById('registerLink');
+
+        // Email validation regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // Function to show error message
+        function showError(input, errorElement, message) {
+            input.classList.add('error');
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+            input.setAttribute('aria-invalid', 'true');
+        }
+
+        // Function to clear error message
+        function clearError(input, errorElement) {
+            input.classList.remove('error');
+            errorElement.textContent = '';
+            errorElement.classList.remove('show');
+            input.setAttribute('aria-invalid', 'false');
+        }
+
+        // Validate email
+        function validateEmail() {
+            const emailValue = emailInput.value.trim();
+            
+            if (emailValue === '') {
+                showError(emailInput, emailError, 'Email address is required');
+                return false;
+            } else if (!emailRegex.test(emailValue)) {
+                showError(emailInput, emailError, 'Please enter a valid email address');
+                return false;
+            } else {
+                clearError(emailInput, emailError);
+                return true;
+            }
+        }
+
+        // Validate password
+        function validatePassword() {
+            const passwordValue = passwordInput.value;
+            
+            if (passwordValue === '') {
+                showError(passwordInput, passwordError, 'Password is required');
+                return false;
+            } else {
+                clearError(passwordInput, passwordError);
+                return true;
+            }
+        }
+
+        // Clear errors on input
+        emailInput.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                clearError(emailInput, emailError);
+            }
+        });
+
+        passwordInput.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                clearError(passwordInput, passwordError);
+            }
+        });
+
+        // Handle form submission
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Validate all fields
+            const isEmailValid = validateEmail();
+            const isPasswordValid = validatePassword();
+
+            // If all validations pass
+            if (isEmailValid && isPasswordValid) {
+                // Store email in localStorage
+                localStorage.setItem('userEmail', emailInput.value.trim());
+                
+                // Optional: Store login timestamp
+                localStorage.setItem('loginTime', new Date().toISOString());
+
+                // Redirect to main page
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Handle register link (placeholder)
+        registerLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Registration page coming soon! For demo purposes, you can login with any valid email and password.');
+        });
+
+        // Improve keyboard navigation
+        emailInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                passwordInput.focus();
+            }
+        });
+
+        // Auto-focus on email field when page loads
+        window.addEventListener('load', function() {
+            emailInput.focus();
+        });
+    </script>
+</body>
+</html>
