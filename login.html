@@ -355,10 +355,11 @@
             }
         });
 
-        // Handle register link (placeholder)
+        // Handle register link - redirect to registration page
         registerLink.addEventListener('click', function(e) {
             e.preventDefault();
-            alert('Registration page coming soon! For demo purposes, you can login with any valid email and password.');
+            // Redirect to registration page
+            window.location.href = 'register.html';
         });
 
         // Improve keyboard navigation

@@ -3,42 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inclusive AI Education</title>
+  <title>Dashboard - Inclusive AI Learning</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <!-- Top Navigation Bar -->
+  <header class="header">
+    <div class="header-content">
+      <!-- App Name and Navigation -->
+      <div class="nav-section">
+        <h1 class="app-name">Inclusive AI Learning</h1>
+        <nav class="nav-menu">
+          <a href="#" class="nav-item active" onclick="navigateTo('dashboard')">Dashboard</a>
+          <a href="#" class="nav-item" onclick="navigateTo('lessons')">Lessons</a>
+          <a href="#" class="nav-item" onclick="navigateTo('ai-tutor')">AI Tutor</a>
+          <a href="#" class="nav-item" onclick="navigateTo('accessibility')">Accessibility</a>
+        </nav>
+      </div>
 
-  <header>
-    <h1>📘 Inclusive AI Learning</h1>
-    <p>Low Internet • Accessible • Smart</p>
+      <!-- User Icon with Dropdown -->
+      <div class="user-menu">
+        <div class="user-icon" id="userIcon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
+          </svg>
+        </div>
+        <!-- User Dropdown Panel -->
+        <div class="user-panel" id="userPanel">
+          <div class="panel-item user-info">
+            <div class="info-label">Name</div>
+            <div class="info-value" id="panelUserName">User</div>
+          </div>
+          <div class="panel-item user-info" id="emailInfo">
+            <div class="info-label">Email</div>
+            <div class="info-value" id="panelUserEmail">-</div>
+          </div>
+          <div class="panel-item user-info">
+            <div class="info-label">Role</div>
+            <div class="info-value">Student</div>
+          </div>
+          <div class="panel-divider"></div>
+          <div class="panel-item panel-action" onclick="logout()">
+            Logout
+          </div>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <section class="lesson">
-      <h2>Lesson: Fractions</h2>
-      <p id="lessonText">
-      </p>
+  <!-- Main Content -->
+  <main class="main-content">
+      <!-- Welcome Section -->
+      <div class="welcome">
+        <h2>Welcome, <span id="welcomeName">Student</span></h2>
+        <p>Continue your learning journey</p>
+      </div>
 
-      <video controls width="250">
-        <source src="sign_fraction.mp4" type="video/mp4">
-        Sign Language Video
-      </video>
-    </section>
+      <!-- Current Lesson Section -->
+      <section class="section">
+        <h3>Current Lesson</h3>
+        <div class="lesson-info">
+          <h4>Understanding Fractions</h4>
+          <p>Learn about numerators, denominators, and basic fraction operations.</p>
+          <button class="button" onclick="continueLearning()">Continue Lesson</button>
+        </div>
+      </section>
 
-    <section class="chatbot">
-      <h2>🤖 AI Tutor</h2>
-      <input type="text" id="question" placeholder="Ask me a question...">
-      <button onclick="askAI()">Ask</button>
-      <p id="answer"></p>
-    </section>
-  </main>
+      <!-- Video Section -->
+      <section class="section">
+        <h3>Video / Sign Language Support</h3>
+        <div class="video-wrapper">
+          <video id="lessonVideo" controls>
+            <source src="sign_fraction.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <p class="video-caption">Sign language interpretation of the Fractions lesson</p>
+        </div>
+      </section>
 
+      <!-- AI Tutor Section -->
+      <section class="section">
+        <h3>AI Tutor</h3>
+        <div class="chat-box">
+          <div class="messages" id="chatMessages">
+            <div class="message">
+              <strong>AI Tutor:</strong> Hello! Ask me anything about your lessons.
+            </div>
+          </div>
+          <div class="input-area">
+            <input 
+              type="text" 
+              id="question" 
+              class="text-input" 
+              placeholder="Type your question here..."
+              onkeypress="handleEnterKey(event)"
+            >
+            <button class="button" onclick="askAI()">Send</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Progress Summary -->
+      <section class="section">
+        <h3>Your Progress</h3>
+        <div class="progress-summary">
+          <div class="progress-item">
+            <span class="label">Lessons Completed:</span>
+            <span class="value">12 / 20</span>
+          </div>
+          <div class="progress-item">
+            <span class="label">Total Learning Time:</span>
+            <span class="value">8 hours</span>
+          </div>
+          <div class="progress-item">
+            <span class="label">Current Progress:</span>
+            <span class="value">60%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Accessibility Settings -->
+      <section class="section" id="accessibilitySection" style="display: none;">
+        <h3>Accessibility Settings</h3>
+        <p>Choose your preferred learning mode:</p>
+        <div class="accessibility-options">
+          <label class="radio-option">
+            <input type="radio" name="mode" value="normal" checked onchange="setMode('normal')">
+            <span>Normal Mode - Standard text and audio</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="mode" value="deaf" onchange="setMode('deaf')">
+            <span>Deaf Mode - Enhanced visual + sign language</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="mode" value="speech" onchange="setMode('speech')">
+            <span>Speech-Impaired Mode - Voice recognition + text input</span>
+          </label>
+        </div>
+        <p class="current-mode">Current Mode: <strong id="currentModeText">Normal Mode</strong></p>
+      </section>
+    </main>
+
+  <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
-<div class="access-toggle">
-  <button onclick="setMode('normal')">Normal Mode</button>
-  <button onclick="setMode('deaf')">Deaf Mode</button>
-  <button onclick="setMode('speech')">Speech-Impaired Mode</button>
-</div>
