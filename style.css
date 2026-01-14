@@ -1,0 +1,42 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: #040111;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+main {
+  padding: 20px;
+}
+
+.lesson, .chatbot {
+  background: white;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+input {
+  padding: 8px;
+  width: 70%;
+}
+
+button {
+  padding: 8px 12px;
+  background: #000307;
+  color: white;
+  border: curved;
+  cursor: pointer;
+}
+.access-toggle button {
+  margin: 5px;
+  padding: 8px 12px;
+  border-radius: 5px;
+}

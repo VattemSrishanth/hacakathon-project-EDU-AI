@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inclusive AI Education</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+  <header>
+    <h1>📘 Inclusive AI Learning</h1>
+    <p>Low Internet • Accessible • Smart</p>
+  </header>
+
+  <main>
+    <section class="lesson">
+      <h2>Lesson: Fractions</h2>
+      <p id="lessonText">
+      </p>
+
+      <video controls width="250">
+        <source src="sign_fraction.mp4" type="video/mp4">
+        Sign Language Video
+      </video>
+    </section>
+
+    <section class="chatbot">
+      <h2>🤖 AI Tutor</h2>
+      <input type="text" id="question" placeholder="Ask me a question...">
+      <button onclick="askAI()">Ask</button>
+      <p id="answer"></p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
+<div class="access-toggle">
+  <button onclick="setMode('normal')">Normal Mode</button>
+  <button onclick="setMode('deaf')">Deaf Mode</button>
+  <button onclick="setMode('speech')">Speech-Impaired Mode</button>
+</div>
