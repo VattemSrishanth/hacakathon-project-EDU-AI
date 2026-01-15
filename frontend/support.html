@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support - Inclusive AI Learning</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="header">
+    <div class="header-content">
+      <div class="nav-section">
+        <h1 class="app-name">Inclusive AI Learning</h1>
+        <nav class="nav-menu">
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <a href="lessons.html" class="nav-item">Lessons</a>
+          <a href="ai-tutor.html" class="nav-item">AI Tutor</a>
+          <a href="accessibility.html" class="nav-item">Accessibility</a>
+          <a href="support.html" class="nav-item active">Support</a>
+          <a href="settings.html" class="nav-item">Settings</a>
+        </nav>
+      </div>
+      <div class="user-menu">
+        <div class="user-icon" id="userIcon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
+          </svg>
+        </div>
+        <div class="user-panel" id="userPanel">
+          <div class="panel-item user-info">
+            <div class="info-label">Name</div>
+            <div class="info-value" id="panelUserName">User</div>
+          </div>
+          <div class="panel-item user-info" id="emailInfo">
+            <div class="info-label">Email</div>
+            <div class="info-value" id="panelUserEmail">-</div>
+          </div>
+          <div class="panel-item user-info">
+            <div class="info-label">Role</div>
+            <div class="info-value">Student</div>
+          </div>
+          <div class="panel-divider"></div>
+          <div class="panel-item panel-action" onclick="logout()">
+            Logout
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <section class="section">
+      <h3>Support</h3>
+      <p>For help, contact support@edu-ai.com or use the form below.</p>
+      <form class="support-form">
+        <label for="supportMessage">Your Message:</label>
+        <textarea id="supportMessage" rows="4" style="width:100%;max-width:500px;"></textarea>
+        <button class="button" type="submit">Send</button>
+      </form>
+    </section>
+  </main>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
