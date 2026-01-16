@@ -3,6 +3,9 @@ let mode = "normal";
 
 // Initialize on page load
 window.addEventListener('load', function() {
+  // Apply dark mode if enabled
+  applyDarkModeIfEnabled();
+  
   // Load user progress first (must load before displaying lessons)
   loadUserProgress();
   
@@ -15,6 +18,14 @@ window.addEventListener('load', function() {
   // Update progress summary
   updateProgressSummary();
 });
+
+// Apply dark mode if it was previously enabled
+function applyDarkModeIfEnabled() {
+  const darkModeEnabled = localStorage.getItem('darkMode') === 'true';
+  if (darkModeEnabled) {
+    document.body.classList.add('dark-mode');
+  }
+}
 
 // Load user information from localStorage
 // The user's name and email are stored during login/registration

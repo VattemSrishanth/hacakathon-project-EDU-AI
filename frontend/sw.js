@@ -1,7 +1,7 @@
 const CACHE_NAME = "edu-ai-cache-v1";
 const urlsToCache = [
   "/",
-  "/index.html",
+  "/home.html",
   "/style.css",
   "/app.js"
 ];
