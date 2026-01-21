@@ -14,6 +14,7 @@
       <div class="nav-section">
         <h1 class="app-name">Inclusive AI Learning</h1>
         <nav class="nav-menu">
+          <a href="home.html" class="nav-item">Home</a>
           <a href="dashboard.html" class="nav-item">Dashboard</a>
           <a href="lessons.html" class="nav-item">Lessons</a>
           <a href="ai-tutor.html" class="nav-item">AI Tutor</a>
@@ -51,12 +52,649 @@
     </div>
   </header>
   <main class="main-content">
-    <section class="section">
-      <h3>Settings</h3>
-      <p>Settings page coming soon...</p>
-    </section>
+    <div class="settings-container">
+      <!-- Sidebar Navigation -->
+      <aside class="settings-sidebar">
+        <div class="sidebar-category" data-category="account">
+          <span class="sidebar-icon"></span>
+          <span>Account preferences</span>
+        </div>
+        <div class="sidebar-category" data-category="security">
+          <span class="sidebar-icon"></span>
+          <span>Sign in & security</span>
+        </div>
+        <div class="sidebar-category" data-category="visibility">
+          <span class="sidebar-icon"></span>
+          <span>Visibility</span>
+        </div>
+        <div class="sidebar-category" data-category="privacy">
+          <span class="sidebar-icon"></span>
+          <span>Data privacy</span>
+        </div>
+        <div class="sidebar-category" data-category="notifications">
+          <span class="sidebar-icon"></span>
+          <span>Notifications</span>
+        </div>
+        <div class="sidebar-category" data-category="display">
+          <span class="sidebar-icon"></span>
+          <span>Display</span>
+        </div>
+      </aside>
+
+      <!-- Settings Content -->
+      <section class="settings-content">
+        <!-- Account Preferences Section -->
+        <div class="settings-section" id="account-section" data-section="account">
+          <h2>Account preferences</h2>
+          
+          <div class="settings-form">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="fullName" placeholder="Enter your full name" value="John Doe">
+            </div>
+
+            <div class="form-group">
+              <label>Location</label>
+              <input type="text" id="location" placeholder="City, Country" value="New York, USA">
+            </div>
+
+            <div class="form-group">
+              <label>Industry</label>
+              <select id="industry">
+                <option>Technology</option>
+                <option>Education</option>
+                <option>Healthcare</option>
+                <option>Finance</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Age</label>
+              <input type="number" id="age" placeholder="Enter your age" value="28" min="13" max="120">
+            </div>
+
+            <div class="form-group">
+              <label>Gender</label>
+              <select id="gender">
+                <option>Male</option>
+                <option>Female</option>
+                <option>Non-binary</option>
+                <option>Prefer not to say</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Education Level</label>
+              <select id="education">
+                <option>High School</option>
+                <option>Bachelor's Degree</option>
+                <option>Master's Degree</option>
+                <option>PhD</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Email Verification</label>
+              <div class="verification-status verified">✓ Verified</div>
+            </div>
+
+            <div class="form-group">
+              <label>Phone Verification</label>
+              <div class="verification-status unverified">✗ Not Verified</div>
+              <button class="btn btn-secondary" onclick="verifyPhone()">Verify Phone</button>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveAccountChanges()">Save Changes</button>
+          </div>
+        </div>
+
+        <!-- Security Section -->
+        <div class="settings-section" id="security-section" data-section="security">
+          <h2>Sign in & security</h2>
+
+          <div class="settings-form">
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" id="currentPassword" placeholder="Enter current password">
+            </div>
+
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="newPassword" placeholder="Enter new password">
+            </div>
+
+            <div class="form-group">
+              <label>Confirm Password</label>
+              <input type="password" id="confirmPassword" placeholder="Confirm new password">
+            </div>
+
+            <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Two-factor authentication</h3>
+                <p>Add an extra layer of security to your account</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="twoFaToggle" onchange="toggleTwoFA()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Login alerts</h3>
+                <p>Get notified of new login attempts</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="loginAlertsToggle" checked onchange="toggleLoginAlerts()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <h3>Active Sessions</h3>
+              <div class="session-item">
+                <div><strong>Chrome on Windows</strong><br><small>Last active: 5 minutes ago</small></div>
+                <button class="btn btn-danger" onclick="endSession('chrome')">Sign out</button>
+              </div>
+              <div class="session-item">
+                <div><strong>Safari on iPhone</strong><br><small>Last active: 2 hours ago</small></div>
+                <button class="btn btn-danger" onclick="endSession('safari')">Sign out</button>
+              </div>
+              <button class="btn btn-danger" onclick="endAllSessions()">Sign out all other sessions</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visibility Section -->
+        <div class="settings-section" id="visibility-section" data-section="visibility">
+          <h2>Visibility</h2>
+
+          <div class="settings-form">
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Public profile</h3>
+                <p>Allow others to see your profile</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="publicProfileToggle" checked onchange="togglePublicProfile()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Share progress</h3>
+                <p>Show your learning progress to others</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="shareProgressToggle" onchange="toggleShareProgress()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Show achievement badges</h3>
+                <p>Display your earned badges publicly</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="badgesToggle" checked onchange="toggleBadges()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label>Profile visibility</label>
+              <select id="profileVisibility" onchange="updateProfileVisibility()">
+                <option value="public">Public - Anyone can see</option>
+                <option value="friends">Friends only</option>
+                <option value="private">Private - Only me</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Privacy Section -->
+        <div class="settings-section" id="privacy-section" data-section="privacy">
+          <h2>Data privacy</h2>
+
+          <div class="settings-form">
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Analytics and data collection</h3>
+                <p>Help us improve by sharing usage data</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="analyticsToggle" checked onchange="toggleAnalytics()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Personalized recommendations</h3>
+                <p>Get recommendations based on activity</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="recommendationsToggle" checked onchange="toggleRecommendations()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <h3>Data Management</h3>
+              <button class="btn btn-secondary" onclick="downloadData()">Download Your Data</button>
+              <p style="margin-top: 10px; color: #666; font-size: 13px;">Get a copy of all your personal data in a portable format</p>
+            </div>
+
+            <div class="form-group">
+              <h3>Dangerous Zone</h3>
+              <button class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
+              <p style="margin-top: 10px; color: #d9534f; font-size: 13px;">Permanently delete your account and all associated data</p>
+            </div>
+
+            <div class="form-group">
+              <button class="btn btn-link" onclick="viewPrivacyPolicy()">View Privacy Policy</button>
+              <button class="btn btn-link" onclick="viewTerms()">View Terms of Service</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div class="settings-section" id="notifications-section" data-section="notifications">
+          <h2>Notifications</h2>
+
+          <div class="settings-form">
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Email notifications</h3>
+                <p>Receive notifications via email</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="emailNotificationsToggle" checked onchange="toggleEmailNotifications()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Course updates</h3>
+                <p>Get notified about course changes</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="courseUpdatesToggle" checked onchange="toggleCourseUpdates()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Learning reminders</h3>
+                <p>Receive daily learning reminders</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="remindersToggle" checked onchange="toggleReminders()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Messages & feedback</h3>
+                <p>Get notified about messages and feedback</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="messagesToggle" checked onchange="toggleMessages()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label>Reminder Time</label>
+              <input type="time" id="reminderTime" value="09:00">
+            </div>
+
+            <button class="btn btn-primary" onclick="saveNotificationPreferences()">Save Preferences</button>
+          </div>
+        </div>
+
+        <!-- Display Section -->
+        <div class="settings-section" id="display-section" data-section="display">
+          <h2>Display</h2>
+
+          <div class="settings-form">
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Dark mode</h3>
+                <p>Use dark theme for reduced eye strain</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label>Language</label>
+              <select id="language" onchange="changeLanguage()">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="zh">Chinese</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Font Size</label>
+              <div class="font-size-selector">
+                <button class="btn-small" onclick="decreaseFont()">A-</button>
+                <span id="fontSizeDisplay">16px</span>
+                <button class="btn-small" onclick="increaseFont()">A+</button>
+              </div>
+            </div>
+
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>High contrast mode</h3>
+                <p>Increase contrast for better visibility</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="contrastToggle" onchange="toggleContrast()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Screen reader support</h3>
+                <p>Optimize for screen reader software</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="screenReaderToggle" onchange="toggleScreenReader()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveDisplayPreferences()">Save Preferences</button>
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script>
+    // Settings page functionality
+    let currentFontSize = 16;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebarCategories = document.querySelectorAll('.sidebar-category');
+      const settingsSections = document.querySelectorAll('.settings-section');
+
+      // Set default active category
+      const firstCategory = document.querySelector('[data-category="account"]');
+      if (firstCategory) {
+        firstCategory.classList.add('active');
+      }
+      const firstSection = document.getElementById('account-section');
+      if (firstSection) {
+        firstSection.classList.add('active');
+      }
+
+      // Handle category clicks
+      sidebarCategories.forEach(category => {
+        category.addEventListener('click', function() {
+          const selectedCategory = this.getAttribute('data-category');
+          
+          // Remove active class from all categories and sections
+          sidebarCategories.forEach(cat => cat.classList.remove('active'));
+          settingsSections.forEach(section => section.classList.remove('active'));
+          
+          // Add active class to selected category and corresponding section
+          this.classList.add('active');
+          const selectedSection = document.querySelector(`[data-section="${selectedCategory}"]`);
+          if (selectedSection) {
+            selectedSection.classList.add('active');
+          }
+        });
+      });
+    });
+
+    // Account Preferences Functions
+    function saveAccountChanges() {
+      const fullName = document.getElementById('fullName').value;
+      const location = document.getElementById('location').value;
+      const industry = document.getElementById('industry').value;
+      const age = document.getElementById('age').value;
+      const gender = document.getElementById('gender').value;
+      const education = document.getElementById('education').value;
+
+      // Save to localStorage
+      localStorage.setItem('userProfile', JSON.stringify({
+        fullName, location, industry, age, gender, education
+      }));
+      
+      alert('Account information saved successfully!');
+    }
+
+    function verifyPhone() {
+      alert('A verification code has been sent to your phone. Please check your SMS.');
+    }
+
+    // Security Functions
+    function changePassword() {
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        alert('Please fill in all password fields');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        alert('New passwords do not match');
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        alert('Password must be at least 8 characters long');
+        return;
+      }
+
+      // Clear the fields
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+
+      alert('Password changed successfully!');
+    }
+
+    function toggleTwoFA() {
+      const isEnabled = document.getElementById('twoFaToggle').checked;
+      const message = isEnabled ? 'Two-factor authentication enabled' : 'Two-factor authentication disabled';
+      console.log(message);
+    }
+
+    function toggleLoginAlerts() {
+      const isEnabled = document.getElementById('loginAlertsToggle').checked;
+      console.log('Login alerts:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function endSession(sessionName) {
+      alert(`Signed out from ${sessionName} session`);
+    }
+
+    function endAllSessions() {
+      alert('All other sessions have been signed out');
+    }
+
+    // Visibility Functions
+    function togglePublicProfile() {
+      const isPublic = document.getElementById('publicProfileToggle').checked;
+      console.log('Public profile:', isPublic ? 'enabled' : 'disabled');
+    }
+
+    function toggleShareProgress() {
+      const isEnabled = document.getElementById('shareProgressToggle').checked;
+      console.log('Share progress:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function toggleBadges() {
+      const isEnabled = document.getElementById('badgesToggle').checked;
+      console.log('Show badges:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function updateProfileVisibility() {
+      const visibility = document.getElementById('profileVisibility').value;
+      console.log('Profile visibility changed to:', visibility);
+    }
+
+    // Privacy Functions
+    function toggleAnalytics() {
+      const isEnabled = document.getElementById('analyticsToggle').checked;
+      console.log('Analytics:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function toggleRecommendations() {
+      const isEnabled = document.getElementById('recommendationsToggle').checked;
+      console.log('Recommendations:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function downloadData() {
+      alert('Your data download request has been submitted. You will receive a download link via email within 48 hours.');
+    }
+
+    function deleteAccount() {
+      const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone. All your data will be permanently deleted.');
+      if (confirmed) {
+        const confirmed2 = confirm('Please type "DELETE" to confirm account deletion.');
+        if (confirmed2) {
+          alert('Account deletion process started. You will receive a confirmation email.');
+        }
+      }
+    }
+
+    function viewPrivacyPolicy() {
+      window.open('#privacy-policy', '_blank');
+    }
+
+    function viewTerms() {
+      window.open('#terms', '_blank');
+    }
+
+    // Notification Functions
+    function toggleEmailNotifications() {
+      const isEnabled = document.getElementById('emailNotificationsToggle').checked;
+      console.log('Email notifications:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function toggleCourseUpdates() {
+      const isEnabled = document.getElementById('courseUpdatesToggle').checked;
+      console.log('Course updates:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function toggleReminders() {
+      const isEnabled = document.getElementById('remindersToggle').checked;
+      console.log('Learning reminders:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function toggleMessages() {
+      const isEnabled = document.getElementById('messagesToggle').checked;
+      console.log('Messages:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function saveNotificationPreferences() {
+      const reminderTime = document.getElementById('reminderTime').value;
+      alert('Notification preferences saved. Daily reminders set for ' + reminderTime);
+    }
+
+    // Display Functions
+    function toggleDarkMode() {
+      const isEnabled = document.getElementById('darkModeToggle').checked;
+      if (isEnabled) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('darkMode', 'true');
+      } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('darkMode', 'false');
+      }
+      console.log('Dark mode:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function changeLanguage() {
+      const language = document.getElementById('language').value;
+      console.log('Language changed to:', language);
+      alert('Language preference saved. Some changes may require a page refresh.');
+    }
+
+    function increaseFont() {
+      currentFontSize += 2;
+      if (currentFontSize > 24) currentFontSize = 24;
+      updateFontSize();
+    }
+
+    function decreaseFont() {
+      currentFontSize -= 2;
+      if (currentFontSize < 12) currentFontSize = 12;
+      updateFontSize();
+    }
+
+    function updateFontSize() {
+      document.documentElement.style.fontSize = currentFontSize + 'px';
+      document.getElementById('fontSizeDisplay').textContent = currentFontSize + 'px';
+      localStorage.setItem('fontSize', currentFontSize);
+    }
+
+    function toggleContrast() {
+      const isEnabled = document.getElementById('contrastToggle').checked;
+      if (isEnabled) {
+        document.body.classList.add('high-contrast');
+      } else {
+        document.body.classList.remove('high-contrast');
+      }
+      console.log('High contrast mode:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function toggleScreenReader() {
+      const isEnabled = document.getElementById('screenReaderToggle').checked;
+      console.log('Screen reader support:', isEnabled ? 'enabled' : 'disabled');
+    }
+
+    function saveDisplayPreferences() {
+      alert('Display preferences saved successfully!');
+    }
+
+    // Load dark mode preference on page load
+    window.addEventListener('load', function() {
+      const darkModeEnabled = localStorage.getItem('darkMode') === 'true';
+      if (darkModeEnabled) {
+        document.getElementById('darkModeToggle').checked = true;
+        document.body.classList.add('dark-mode');
+      }
+      
+      const savedFontSize = localStorage.getItem('fontSize');
+      if (savedFontSize) {
+        currentFontSize = parseInt(savedFontSize);
+        updateFontSize();
+      }
+
+      const userProfile = localStorage.getItem('userProfile');
+      if (userProfile) {
+        const profile = JSON.parse(userProfile);
+        document.getElementById('fullName').value = profile.fullName || 'John Doe';
+        document.getElementById('location').value = profile.location || 'New York, USA';
+        document.getElementById('industry').value = profile.industry || 'Technology';
+        document.getElementById('age').value = profile.age || '28';
+        document.getElementById('gender').value = profile.gender || 'Male';
+        document.getElementById('education').value = profile.education || "Bachelor's Degree";
+      }
+    });
+  </script>
 </body>
 </html>

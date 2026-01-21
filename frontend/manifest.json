@@ -1,7 +1,7 @@
 {
   "name": "Inclusive AI Education",
   "short_name": "EduAI",
-  "start_url": "index.html",
+  "start_url": "home.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2c7be5",

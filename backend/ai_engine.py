@@ -1,50 +1,81 @@
 # ai_engine.py
-# PLACEHOLDER AI LOGIC FOR DEMO/HACKATHON PURPOSES
-# This is a simple mock implementation that simulates AI responses without requiring external API keys.
-# To integrate a real AI service (like OpenAI, Google AI, etc.), replace this logic with actual API calls.
+from openai import OpenAI
+from offline_logic import offline_response, is_syllabus_question
+import os
+
+API_KEY = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=API_KEY) if API_KEY else None
+
+# SYLLABUS GUARANTEE: This system ALWAYS provides explanations for school curriculum topics
+# School Syllabus Scope: Math, Science, English (basics, grammar, comprehension)
+SYLLABUS_TOPICS = {
+    "math": ["addition", "subtraction", "multiplication", "division", "fraction", "decimal", "algebra", "geometry", "percentage"],
+    "science": ["biology", "chemistry", "physics", "photosynthesis", "atoms", "elements", "ecosystem"],
+    "english": ["grammar", "spelling", "vocabulary", "reading", "comprehension", "essay", "punctuation"]
+}
+
+SYSTEM_PROMPT = """You are a dedicated school tutor. Your role:
+1. ALWAYS explain school curriculum topics (Math, Science, English basics) clearly
+2. Use simple, step-by-step explanations
+3. Include examples whenever possible
+4. Use text-only format (no images or complex symbols)
+5. Never say 'I don't know' for syllabus topics - provide an explanation
+6. For accessible learning: use simple English and clear structure
+
+For non-syllabus questions, politely decline and suggest official resources."""
 
 def get_ai_response(question, online=True, mode="normal"):
-    """
-    Simulates AI teacher responses for educational purposes.
-    
-    Args:
-        question: The student's question
-        online: Whether the user is online (True) or offline (False)
-        mode: Accessibility mode - "normal", "deaf", or "speech"
-    
-    Returns:
-        A helpful educational response (mock AI behavior)
-    """
-    
-    # Handle offline mode
+    """Get AI response with syllabus-guaranteed explanation fallback."""
     if not online:
-        return "You're currently offline. Please continue with the lesson content available in your materials. Your questions will be answered when you're back online!"
-    
-    # Mock AI response generation based on question keywords
-    question_lower = question.lower()
-    
-    # Simple keyword-based responses for common educational topics
-    if any(word in question_lower for word in ["math", "add", "subtract", "multiply", "divide", "equation"]):
-        base_response = "Great question about mathematics! Let me help you understand this concept. Start by breaking down the problem into smaller steps. Practice is key to mastering math skills."
-    elif any(word in question_lower for word in ["science", "experiment", "biology", "chemistry", "physics"]):
-        base_response = "Excellent science question! Understanding scientific concepts requires observation and experimentation. Let's explore this topic step by step to build your knowledge."
-    elif any(word in question_lower for word in ["history", "war", "ancient", "civilization"]):
-        base_response = "That's an interesting historical question! History helps us understand how societies developed. Let me guide you through the key events and their significance."
-    elif any(word in question_lower for word in ["english", "grammar", "writing", "essay", "paragraph"]):
-        base_response = "Good question about language! Clear communication is important. Focus on organizing your thoughts and expressing them clearly. Practice will improve your skills."
-    elif any(word in question_lower for word in ["help", "how", "what", "why", "explain"]):
-        base_response = "I'm here to help you learn! Let me break this down for you in a way that's easy to understand. Feel free to ask follow-up questions as we explore this together."
-    else:
-        base_response = "That's a thoughtful question! Learning is all about curiosity. Let me provide some guidance to help you understand this better and encourage further exploration."
-    
-    # Adapt response based on accessibility mode
+        return offline_response(question)
+
+    # Check if question is within syllabus scope
+    if not is_syllabus_question(question):
+        return "I can only help with school subjects (Math, Science, English basics). For other topics, please consult official resources."
+
+    # If no API key is configured, fall back to offline explanation
+    if not API_KEY:
+        return offline_response(question)
+
+    # Build mode-specific system prompt
+    current_system_prompt = SYSTEM_PROMPT
     if mode == "deaf":
-        # Simpler language suitable for captions
-        base_response = base_response.replace("Let me help you understand", "I will explain simply")
-        base_response = base_response.replace("Let's explore", "We will learn")
-        base_response += " (Text optimized for reading)"
+        current_system_prompt += "\nUse simple words suitable for captions."
     elif mode == "speech":
-        # Clear and direct for speech-impaired users using text input
-        base_response = "Got your question! " + base_response + " Feel free to type more questions anytime."
-    
-    return base_response
+        current_system_prompt += "\nRespond clearly for text-only accessibility."
+
+    try:
+        # First attempt at online explanation
+        answer = _call_ai_model(current_system_prompt, question)
+
+        # REGENERATION LOGIC: If response is weak/empty, try once more
+        if not answer or len(answer.strip()) < 20:
+            answer = _call_ai_model(current_system_prompt, question)
+
+        # If still weak, fall back to offline explanation
+        if not answer or len(answer.strip()) < 20:
+            answer = offline_response(question)
+
+        return answer
+    except Exception:
+        # Safety fallback for any exceptions
+        return offline_response(question)
+
+def _call_ai_model(system_prompt, question):
+    """Helper to call OpenAI API safely."""
+    if not client:
+        return ""
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": question}
+            ],
+            max_tokens=200,
+            temperature=0.7
+        )
+        content = response.choices[0].message.content
+        return content if content else ""
+    except Exception:
+        return ""

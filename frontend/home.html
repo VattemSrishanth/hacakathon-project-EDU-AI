@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Tutor - Inclusive AI Learning</title>
+  <title>Dashboard - Inclusive AI Learning</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
 </head>
@@ -11,18 +11,21 @@
   <!-- Top Navigation Bar -->
   <header class="header">
     <div class="header-content">
+      <!-- App Name and Navigation -->
       <div class="nav-section">
         <h1 class="app-name">Inclusive AI Learning</h1>
         <nav class="nav-menu">
           <a href="home.html" class="nav-item">Home</a>
           <a href="dashboard.html" class="nav-item">Dashboard</a>
           <a href="lessons.html" class="nav-item">Lessons</a>
-          <a href="ai-tutor.html" class="nav-item active">AI Tutor</a>
+          <a href="ai-tutor.html" class="nav-item">AI Tutor</a>
           <a href="accessibility.html" class="nav-item">Accessibility</a>
           <a href="support.html" class="nav-item">Support</a>
           <a href="settings.html" class="nav-item">Settings</a>
         </nav>
       </div>
+
+      <!-- User Icon with Dropdown -->
       <div class="user-menu">
         <div class="user-icon" id="userIcon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -30,6 +33,7 @@
             <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
           </svg>
         </div>
+        <!-- User Dropdown Panel -->
         <div class="user-panel" id="userPanel">
           <div class="panel-item user-info">
             <div class="info-label">Name</div>
@@ -51,17 +55,15 @@
       </div>
     </div>
   </header>
+
+  <!-- Main Content -->
   <main class="main-content">
-    <section class="section" id="aiTutorSection">
-      <h3>AI Tutor</h3>
-      <div class="ai-tutor-box">
-        <label for="aiTutorQuestion">Ask a school question:</label>
-        <input type="text" id="aiTutorQuestion" class="ai-tutor-input" placeholder="Type your question here..." maxlength="500">
-        <button class="button" id="aiTutorAskBtn">Ask Tutor</button>
-      </div>
-      <div id="aiTutorResponse" class="ai-tutor-response"></div>
+    <section class="section">
+      <h2>Welcome to Inclusive AI Learning!</h2>
+      <p>Select a section from the navigation menu above.</p>
     </section>
   </main>
+
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
