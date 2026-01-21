@@ -1,9 +1,27 @@
-# app.py
-from flask import Flask, request, jsonify
+import os
+
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+
 from ai_engine import get_ai_response
-from flask_cors import CORS 
-app = Flask(__name__)
+
+
+FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+
+# Serve files from ../frontend at the site root (/, /home.html, /style.css, ...)
+app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="")
 CORS(app)
+
+
+@app.route("/", methods=["GET"])
+def root():
+    """Serve the frontend home page."""
+    return app.send_static_file("home.html")
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"})
 
 @app.route("/ask", methods=["POST"])
 def ask():
@@ -50,4 +68,4 @@ def ask():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=True)

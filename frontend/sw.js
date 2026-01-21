@@ -1,9 +1,10 @@
 const CACHE_NAME = "edu-ai-cache-v1";
 const urlsToCache = [
-  "/",
-  "/home.html",
-  "/style.css",
-  "/app.js"
+  "./",
+  "./home.html",
+  "./style.css",
+  "./app.js",
+  "./manifest.json"
 ];
 
 self.addEventListener("install", event => {
