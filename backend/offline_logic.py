@@ -155,6 +155,7 @@ def offline_generate_explanation(question, learner_mode="regular", level="basic"
         "summary": summary
     }
 
+
 def _format_explanation(text, learner_mode):
     if learner_mode == "deaf":
         return "- " + text + "\n- Step 1: Read the definition\n- Step 2: Connect to a real-life example"
@@ -166,17 +167,18 @@ def _format_explanation(text, learner_mode):
         ])
     return text + " This is a basic, clear explanation."
 
+
 def _format_example(question_lower, learner_mode):
     if "fraction" in question_lower:
         example = "Example: 1/2 is half of a pizza."
     elif "percentage" in question_lower:
-        example = "Example: 50% means 50 out of 100." 
+        example = "Example: 50% means 50 out of 100."
     elif "ram" in question_lower:
-        example = "Example: Opening many apps uses more RAM." 
+        example = "Example: Opening many apps uses more RAM."
     elif "cpu" in question_lower:
-        example = "Example: The CPU processes calculations when you solve math." 
+        example = "Example: The CPU processes calculations when you solve math."
     else:
-        example = "Example: Think of a daily-life case that fits this concept." 
+        example = "Example: Think of a daily-life case that fits this concept."
 
     if learner_mode == "deaf":
         return "- " + example
@@ -184,13 +186,15 @@ def _format_example(question_lower, learner_mode):
         return "Example: " + example.replace("Example: ", "")
     return example
 
+
 def _format_summary(text, learner_mode):
-    summary = "".join(text.split(" ")[:18])
+    summary = " ".join(text.split()[:18])
     if learner_mode == "deaf":
         return "- Summary: " + summary + "..."
     if learner_mode == "speech":
         return "Summary: " + summary + "..."
     return "Summary: " + summary + "..."
+
 
 def _is_math_question(question):
     if not question:
@@ -205,6 +209,7 @@ def _is_math_question(question):
     ]
     has_digit = any(ch.isdigit() for ch in q)
     return has_digit or any(k in q for k in keywords)
+
 
 def _format_math_steps(question_lower, learner_mode, matched_answer):
     guidance = (
