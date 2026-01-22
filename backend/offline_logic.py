@@ -21,6 +21,8 @@ offline_answers = {
     "chemistry": "Chemistry is about substances and reactions. Example: water (H2O) is made of hydrogen and oxygen atoms.",
     "physics": "Physics studies how things move and energy works. Example: gravity makes things fall down.",
     "ecosystem": "An ecosystem is where living things interact with nature. Example: forest with trees, animals, and soil.",
+    "science": "Science is the study of the natural world using observation and experiments. It helps us understand how things work.",
+    "democracy": "Democracy is a system of government where people choose their leaders. Citizens vote to make decisions.",
     
     # ENGLISH
     "grammar": "Grammar is the rules of how to write correctly. It covers subjects, verbs, and how words fit together in sentences.",

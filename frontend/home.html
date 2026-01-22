@@ -6,6 +6,240 @@
   <title>Home - RuralAccess AI</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --hero-gradient: radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.18), transparent 48%),
+        radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.16), transparent 45%),
+        radial-gradient(circle at 30% 80%, rgba(16, 185, 129, 0.18), transparent 42%);
+    }
+
+    body {
+      scroll-behavior: smooth;
+    }
+
+    .home-hero {
+      position: relative;
+      overflow: hidden;
+      background: var(--hero-gradient);
+      border: 1px solid rgba(124, 58, 237, 0.12);
+    }
+
+    .hero-content {
+      display: grid;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      color: #1f1f1f;
+      margin: 0 0 0.6rem;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: #4b5563;
+      max-width: 620px;
+    }
+
+    .hero-ctas .button {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hero-ctas .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px rgba(76, 29, 149, 0.15);
+    }
+
+    .hero-blobs {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .hero-blob {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(124, 58, 237, 0.16);
+      filter: blur(4px);
+      animation: floatBlob 10s ease-in-out infinite;
+    }
+
+    .hero-blob.blob-1 { top: -40px; left: -40px; }
+    .hero-blob.blob-2 { top: 30px; right: -60px; animation-delay: 2s; }
+    .hero-blob.blob-3 { bottom: -60px; left: 35%; animation-delay: 4s; }
+
+    @keyframes floatBlob {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(-12px) translateX(8px); }
+    }
+
+    .feature-grid.premium {
+      gap: 1.2rem;
+    }
+
+    .feature-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.2rem;
+      border: 1px solid rgba(99, 102, 241, 0.12);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    .feature-icon-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(124, 58, 237, 0.12);
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .how-steps.horizontal {
+      position: relative;
+      gap: 1.5rem;
+    }
+
+    .how-steps.horizontal li {
+      position: relative;
+      padding: 1rem 1.2rem;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid rgba(99, 102, 241, 0.12);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
+    }
+
+    .how-step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #7c3aed;
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    .how-connector {
+      height: 2px;
+      background: linear-gradient(90deg, rgba(124, 58, 237, 0.2), rgba(59, 130, 246, 0.2));
+      position: absolute;
+      top: 24px;
+      left: 10%;
+      right: 10%;
+      z-index: 0;
+    }
+
+    .accessibility-toggle {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+
+    .toggle-pill {
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      background: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-pill:hover {
+      background: rgba(124, 58, 237, 0.1);
+    }
+
+    .accessibility-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .preview-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1rem;
+      border: 1px solid rgba(59, 130, 246, 0.12);
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .preview-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 22px rgba(15, 23, 42, 0.12);
+    }
+
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .impact-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.2rem;
+      border: 1px solid rgba(16, 185, 129, 0.18);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .impact-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 24px rgba(16, 185, 129, 0.18);
+    }
+
+    .impact-number {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .cta-section {
+      background: linear-gradient(120deg, rgba(124, 58, 237, 0.92), rgba(59, 130, 246, 0.9));
+      color: #fff;
+      border-radius: 18px;
+      padding: 2.4rem;
+      text-align: center;
+    }
+
+    .cta-section .button {
+      background: #fff;
+      color: #4c1d95;
+    }
+
+    .cta-section .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 24px rgba(15, 23, 42, 0.2);
+    }
+
+    .fade-slide {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-slide.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body data-page="home">
   <!-- Top Navigation Bar -->
@@ -67,45 +301,20 @@
 
   <main class="main-content page-wrap">
     <section class="section home-hero" aria-labelledby="heroTitle">
+      <div class="hero-blobs" aria-hidden="true">
+        <span class="hero-blob blob-1"></span>
+        <span class="hero-blob blob-2"></span>
+        <span class="hero-blob blob-3"></span>
+      </div>
       <div class="hero-content">
         <div class="hero-text">
-          <p class="hero-label">Welcome</p>
+          <p class="hero-label">Inclusive AI Learning</p>
+          <h2 class="hero-title" id="heroTitle">Education for Everyone. Powered by Intelligence.</h2>
+          <p class="hero-subtitle">A premium learning platform built for rural, deaf, and speech‑impaired students. Learn with AI guidance, offline-friendly lessons, and accessibility-first design.</p>
           <div class="hero-ctas" role="group" aria-label="Primary actions">
             <a class="button hero-button" href="lessons.html">Start Learning</a>
-            <a class="button btn-secondary hero-button" href="#ai-agent">Talk to AI Agent</a>
+            <a class="button btn-secondary hero-button" href="accessibility.html">Explore Accessibility</a>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section ai-agent-section" id="ai-agent" aria-labelledby="aiAgentTitle">
-      <div class="section-heading">
-        <h3 id="aiAgentTitle">AI Assistant</h3>
-        <p class="section-lead">Designed for physically challenged students in rural areas with low or unstable internet.</p>
-      </div>
-      <div class="ai-agent-grid">
-        <div class="ai-agent-chat" aria-label="AI chat interface">
-          <label class="sr-only" for="aiTutorQuestion">Ask the AI Agent</label>
-          <textarea
-            id="aiTutorQuestion"
-            class="ai-agent-input"
-            rows="4"
-            placeholder="Ask the AI Agent to explain a topic or guide you..."
-          ></textarea>
-          <div class="ai-agent-actions">
-            <button class="button hero-button" id="aiTutorAskBtn" type="button">Chat Now</button>
-            <button class="button btn-secondary hero-button" type="button">Voice Mode</button>
-          </div>
-          <div id="aiTutorResponse" class="ai-agent-response" role="status" aria-live="polite"></div>
-        </div>
-        <div class="ai-agent-card">
-          <ul class="ai-agent-list">
-            <li>Explains concepts in simple, clear language.</li>
-            <li>Answers doubts patiently and step-by-step.</li>
-            <li>Uses short, respectful, encouraging responses.</li>
-            <li>Suggests offline study methods when connectivity is weak.</li>
-            <li>Prioritizes accessibility, inclusivity, and clarity.</li>
-          </ul>
         </div>
       </div>
     </section>
@@ -147,39 +356,84 @@
 
     <section class="section features-section" aria-labelledby="featuresTitle">
       <h3 id="featuresTitle">Key Features</h3>
-      <div class="feature-grid">
-        <div class="feature-item">
-          <span class="feature-icon" aria-hidden="true">🤖</span>
-          <p>AI Learning Assistance<br><span class="feature-sub">Simple answers &amp; explanations</span></p>
+      <div class="feature-grid premium">
+        <div class="feature-card fade-slide">
+          <div class="feature-icon-circle" aria-hidden="true">🤖</div>
+          <h4>AI-Assisted Learning</h4>
+          <p>Step‑by‑step explanations with gentle guidance and examples.</p>
         </div>
-        <div class="feature-item">
-          <span class="feature-icon" aria-hidden="true">📥</span>
-          <p>Offline Access<br><span class="feature-sub">Download lessons once, study anytime</span></p>
+        <div class="feature-card fade-slide">
+          <div class="feature-icon-circle" aria-hidden="true">♿</div>
+          <h4>Inclusive Accessibility Modes</h4>
+          <p>Deaf, speech‑impaired, and low‑vision friendly learning paths.</p>
         </div>
-        <div class="feature-item">
-          <span class="feature-icon" aria-hidden="true">📉</span>
-          <p>Low Data Usage<br><span class="feature-sub">Works on slow networks</span></p>
+        <div class="feature-card fade-slide">
+          <div class="feature-icon-circle" aria-hidden="true">📉</div>
+          <h4>Low‑Internet Support</h4>
+          <p>Offline lessons and low‑data experience for rural learners.</p>
         </div>
-        <div class="feature-item">
-          <span class="feature-icon" aria-hidden="true">♿</span>
-          <p>Accessibility Focused<br><span class="feature-sub">Large text, voice &amp; keyboard support</span></p>
+        <div class="feature-card fade-slide">
+          <div class="feature-icon-circle" aria-hidden="true">🧭</div>
+          <h4>Personalized Learning Paths</h4>
+          <p>Adaptive guidance based on your goals and learning pace.</p>
+        </div>
+        <div class="feature-card fade-slide">
+          <div class="feature-icon-circle" aria-hidden="true">🎤</div>
+          <h4>Voice &amp; Visual Learning</h4>
+          <p>Text‑first interactions with optional voice guidance.</p>
+        </div>
+        <div class="feature-card fade-slide">
+          <div class="feature-icon-circle" aria-hidden="true">🏡</div>
+          <h4>Rural‑Friendly Design</h4>
+          <p>Lightweight UI built for low‑end devices and unstable networks.</p>
         </div>
       </div>
     </section>
 
     <section class="section how-section" aria-labelledby="howTitle">
       <h3 id="howTitle">How It Works</h3>
+      <div class="how-connector" aria-hidden="true"></div>
       <ol class="how-steps horizontal">
-        <li>Open platform</li>
-        <li>Start AI chat or learning</li>
-        <li>Download content for offline study</li>
-        <li>Review anytime</li>
+        <li class="fade-slide">
+          <span class="how-step-number">1</span>
+          <h4>Learn</h4>
+          <p>Ask questions and explore lessons with AI guidance.</p>
+        </li>
+        <li class="fade-slide">
+          <span class="how-step-number">2</span>
+          <h4>Access</h4>
+          <p>Switch modes for deaf or speech‑impaired support.</p>
+        </li>
+        <li class="fade-slide">
+          <span class="how-step-number">3</span>
+          <h4>Grow</h4>
+          <p>Download content and learn anywhere, anytime.</p>
+        </li>
       </ol>
     </section>
 
     <section class="section accessibility-section" aria-labelledby="accessibilityTitle">
       <h3 id="accessibilityTitle">Accessibility &amp; Inclusivity</h3>
       <p class="section-lead">Inclusive learning for everyone with screen reader support, keyboard navigation, voice assistance, high contrast, and large fonts.</p>
+      <div class="accessibility-toggle" role="group" aria-label="Accessibility modes">
+        <button class="toggle-pill" type="button">Regular Mode</button>
+        <button class="toggle-pill" type="button">Deaf Mode</button>
+        <button class="toggle-pill" type="button">Speech‑Impaired Mode</button>
+      </div>
+      <div class="accessibility-preview-grid">
+        <article class="preview-card fade-slide">
+          <h4>Regular Mode</h4>
+          <p>Balanced guidance with text, examples, and visual clarity.</p>
+        </article>
+        <article class="preview-card fade-slide">
+          <h4>Deaf Mode</h4>
+          <p>Caption‑forward layout with structured, readable bullet points.</p>
+        </article>
+        <article class="preview-card fade-slide">
+          <h4>Speech‑Impaired Mode</h4>
+          <p>Text‑first interaction with short prompts and quick response hints.</p>
+        </article>
+      </div>
       <div class="accessibility-grid">
         <div class="accessibility-item">
           <span aria-hidden="true">🔠</span>
@@ -211,6 +465,34 @@
         </div>
       </div>
     </section>
+
+    <section class="section impact-section" aria-labelledby="impactTitle">
+      <h3 id="impactTitle">Inclusive Impact</h3>
+      <div class="impact-grid">
+        <div class="impact-card fade-slide">
+          <div class="impact-number" data-count="12000">0</div>
+          <p>Rural Students Supported</p>
+        </div>
+        <div class="impact-card fade-slide">
+          <div class="impact-number" data-count="3200">0</div>
+          <p>Hearing‑Impaired Learners</p>
+        </div>
+        <div class="impact-card fade-slide">
+          <div class="impact-number" data-count="2100">0</div>
+          <p>Speech‑Impaired Learners</p>
+        </div>
+        <div class="impact-card fade-slide">
+          <div class="impact-number" data-count="480">0</div>
+          <p>Teachers &amp; Mentors</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-section fade-slide" aria-labelledby="ctaTitle">
+      <h3 id="ctaTitle">Join the Future of Inclusive Learning</h3>
+      <p>Start learning today with AI guidance, accessibility modes, and offline‑ready lessons.</p>
+      <a class="button hero-button" href="dashboard.html">Start Learning Now</a>
+    </section>
   </main>
 
   <footer class="site-footer" aria-label="Footer">
@@ -238,6 +520,48 @@
       }
 
       window.addEventListener('mousemove', handleMove, { passive: true });
+    })();
+  </script>
+  <script>
+    (function () {
+      var revealObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      document.querySelectorAll('.fade-slide').forEach(function (el) {
+        revealObserver.observe(el);
+      });
+
+      var counters = document.querySelectorAll('.impact-number');
+      var counterObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var counter = entry.target;
+          var target = Number(counter.getAttribute('data-count') || 0);
+          var current = 0;
+          var step = Math.max(1, Math.floor(target / 60));
+
+          var update = function () {
+            current = Math.min(target, current + step);
+            counter.textContent = current.toLocaleString();
+            if (current < target) {
+              requestAnimationFrame(update);
+            }
+          };
+
+          update();
+          counterObserver.unobserve(counter);
+        });
+      }, { threshold: 0.4 });
+
+      counters.forEach(function (counter) {
+        counterObserver.observe(counter);
+      });
     })();
   </script>
 </body>

@@ -432,6 +432,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const askBtn = document.getElementById('aiTutorAskBtn');
   const questionInput = document.getElementById('aiTutorQuestion');
   const chatContainer = document.getElementById('aiTutorChat');
+  const responseCache = new Map();
+  let lastQuestion = '';
+  let requestInFlight = false;
 
   if (!askBtn || !questionInput || !chatContainer) return;
 
@@ -458,10 +461,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
   async function sendMessage() {
     const question = questionInput.value.trim();
-    if (!question) return;
+    if (!question || question.length < 2) {
+      appendMessage('ai', 'Please enter a clear question.');
+      return;
+    }
+
+    if (question.length > 500) {
+      appendMessage('ai', 'Please keep your question under 500 characters.');
+      return;
+    }
+
+    if (requestInFlight && question === lastQuestion) {
+      return;
+    }
 
     questionInput.value = '';
     appendMessage('user', question);
+
+    if (responseCache.has(question)) {
+      appendMessage('ai', responseCache.get(question));
+      return;
+    }
+
+    lastQuestion = question;
+    requestInFlight = true;
     askBtn.disabled = true;
 
     const currentMode = mode || 'normal';
@@ -479,14 +502,35 @@ document.addEventListener('DOMContentLoaded', function() {
           mode: currentMode
         })
       });
-      const data = await res.json();
-      const answer = data && data.answer ? data.answer : 'I could not generate a response right now.';
-      const prefix = online ? '' : '[Offline] ';
-      appendMessage('ai', prefix + answer);
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 429 || data.status === 'quota_exceeded') {
+        const friendly = '🤖 AI Tutor is taking a short break. Too many learners are using it right now.';
+        const offlineLabel = '\n\nOffline Learning Mode:\n';
+        const offlineAnswer = data.answer ? data.answer : '';
+        const message = friendly + (offlineAnswer ? offlineLabel + offlineAnswer : '');
+        appendMessage('ai', message);
+        if (offlineAnswer) {
+          responseCache.set(question, message);
+        }
+        return;
+      }
+
+      if (data && data.answer) {
+        const isOffline = data.mode === 'offline' || !online;
+        const prefix = isOffline ? 'Offline Learning Mode:\n' : '';
+        const message = prefix + data.answer;
+        appendMessage('ai', message);
+        responseCache.set(question, message);
+      } else {
+        appendMessage('ai', 'Unable to answer right now. Please try again later.');
+      }
     } catch (err) {
-      appendMessage('ai', 'I am having trouble connecting right now. Please try again.');
+      appendMessage('ai', 'Offline or low connectivity. Please try again later.');
     } finally {
       askBtn.disabled = false;
+      requestInFlight = false;
       questionInput.focus();
     }
   }

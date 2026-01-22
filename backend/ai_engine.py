@@ -1,12 +1,8 @@
+# ai_engine.py
 import ast
+import json
 import operator
-import os
 import re
-
-try:
-    from openai import OpenAI
-except Exception:
-    OpenAI = None
 
 from offline_logic import (
     offline_generate_explanation,
@@ -15,9 +11,7 @@ from offline_logic import (
     get_math_concept_answer,
     get_out_of_scope_message
 )
-
-API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=API_KEY) if API_KEY and OpenAI else None
+from llm_service import generate_text
 
 SYSTEM_PROMPT = """You are a dedicated school tutor for rural and disabled learners.
 Your role:
@@ -65,8 +59,7 @@ def generate_explanation(question, learner_mode="regular", level="basic"):
     mode_hint = MODE_GUIDANCE[mode_key]
 
     # Offline-first safety when API is not available
-    if not API_KEY or not client:
-        return offline_generate_explanation(question, learner_mode=mode_key, level=level)
+    # LLM will return missing_api_key or empty_prompt if unavailable
 
     prompt = (
         SYSTEM_PROMPT
@@ -74,9 +67,12 @@ def generate_explanation(question, learner_mode="regular", level="basic"):
         + "\nLevel: " + level
         + "\nStyle guidance: " + mode_hint
         + "\nQuestion: " + question.strip()
+        + "\nReturn only valid JSON."
     )
 
-    raw = _call_ai_model(prompt)
+    raw, err = _call_ai_model(prompt)
+    if err != "ok":
+        return _error_fallback_explanation(err, question, mode_key, level)
     parsed = _safe_parse_json(raw)
     if parsed:
         return _ensure_fields(parsed)
@@ -85,12 +81,14 @@ def generate_explanation(question, learner_mode="regular", level="basic"):
     return offline_generate_explanation(question, learner_mode=mode_key, level=level)
 
 def get_ai_response(question, online=True, mode="regular"):
-    """Get AI response with deterministic, offline-friendly logic."""
+    """Get AI response with structured, inclusive explanation and offline fallback."""
     normalized = str(question or "").strip()
     if not normalized:
         return get_out_of_scope_message()
 
-    # Math expressions are answered concisely (numeric-only) by design.
+    if not online:
+        return offline_response(normalized, learner_mode=mode)
+
     # 1) Math expressions → numeric answer only.
     if is_pure_math_expression(normalized):
         return solve_math_expression(normalized)
@@ -105,8 +103,11 @@ def get_ai_response(question, online=True, mode="regular"):
     if general_answer:
         return general_answer
 
-    # 4) Unknown → polite out-of-scope message.
-    return get_out_of_scope_message()
+    try:
+        result = generate_explanation(normalized, learner_mode=mode, level="basic")
+        return _format_response(result)
+    except Exception:
+        return offline_response(normalized, learner_mode=mode)
 
 def is_pure_math_expression(question):
     if not question or not str(question).strip():
@@ -147,6 +148,91 @@ def _eval_node(node):
         return node.value
     raise ValueError("Unsupported expression")
 
+
+def get_ai_response_payload(question, online=True, mode="regular"):
+    """Return structured response for API consumption with quota handling."""
+    if not question or not question.strip():
+        return {
+            "status": "error",
+            "answer": offline_response("", learner_mode=mode),
+            "mode": "offline"
+        }
+
+    mode_key = mode if mode in MODE_GUIDANCE else "regular"
+
+    if not online:
+        offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic")
+        return {
+            "status": "success",
+            "answer": _format_response(offline),
+            "mode": "offline"
+        }
+
+    prompt = (
+        SYSTEM_PROMPT
+        + "\nLearner mode: " + mode_key
+        + "\nLevel: basic"
+        + "\nStyle guidance: " + MODE_GUIDANCE.get(mode_key, "")
+        + "\nQuestion: " + question.strip()
+        + "\nReturn only valid JSON."
+    )
+
+    raw, err = _call_ai_model(prompt)
+    if err == "quota_exceeded":
+        offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic")
+        return {
+            "status": "quota_exceeded",
+            "answer": _format_response(offline),
+            "mode": "offline"
+        }
+
+    if err != "ok":
+        offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic")
+        return {
+            "status": "error",
+            "answer": _format_response(offline),
+            "mode": "offline"
+        }
+
+    parsed = _safe_parse_json(raw)
+    if parsed:
+        return {
+            "status": "success",
+            "answer": _format_response(_ensure_fields(parsed)),
+            "mode": "online"
+        }
+
+    offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic")
+    return {
+        "status": "error",
+        "answer": _format_response(offline),
+        "mode": "offline"
+    }
+
+
+def _call_ai_model(prompt):
+    """Helper to call Gemini API safely."""
+    text, error_code = generate_text(prompt, temperature=0.5, max_output_tokens=512)
+    return text, error_code
+
+
+def _safe_parse_json(text):
+    if not text:
+        return None
+    try:
+        data = json.loads(text)
+        return data if isinstance(data, dict) else None
+    except Exception:
+        return None
+
+
+def _ensure_fields(data):
+    return {
+        "explanation": str(data.get("explanation", "")).strip() or "Basic explanation is provided.",
+        "example": str(data.get("example", "")).strip() or "Example is provided.",
+        "summary": str(data.get("summary", "")).strip() or "Summary is provided."
+    }
+
 def _format_response(result):
     return (
         "Explanation:\n" + result.get("explanation", "") + "\n\n"
@@ -166,7 +252,7 @@ def generate_video_explanation(transcript_text, question="", learner_mode="regul
     mode_key = learner_mode if learner_mode in MODE_GUIDANCE else "regular"
     mode_hint = MODE_GUIDANCE[mode_key]
 
-    if not online or not API_KEY or not client:
+    if not online:
         return _offline_video_explanation(transcript_text, question, mode_key)
 
     prompt = (
@@ -176,9 +262,12 @@ def generate_video_explanation(transcript_text, question="", learner_mode="regul
         + "\nStyle guidance: " + mode_hint
         + "\nOptional learner question: " + (question.strip() if question else "(none)")
         + "\nTranscript:\n" + transcript_text.strip()
+        + "\nReturn only valid JSON."
     )
 
-    raw = _call_ai_model(prompt)
+    raw, err = _call_ai_model(prompt)
+    if err != "ok":
+        return _error_fallback_video(err, transcript_text, question, mode_key)
     parsed = _safe_parse_json(raw)
     if parsed:
         return _ensure_video_fields(parsed)
@@ -234,3 +323,34 @@ def _extract_key_points(text):
     sentences = [s.strip() for s in text.split(".") if s.strip()]
     picks = sentences[:4] if len(sentences) >= 4 else sentences
     return [s if s.endswith(".") else s + "." for s in picks] or ["Key points not available."]
+
+
+def _error_fallback_explanation(error_code, question, mode_key, level):
+    data = offline_generate_explanation(question, learner_mode=mode_key, level=level)
+    hint = _human_error_hint(error_code)
+    if hint:
+        data["summary"] = data.get("summary", "").strip() + " " + hint
+    return data
+
+
+def _error_fallback_video(error_code, transcript_text, question, mode_key):
+    data = _offline_video_explanation(transcript_text, question, mode_key)
+    hint = _human_error_hint(error_code)
+    if hint:
+        data["summary"] = data.get("summary", "").strip() + " " + hint
+    return data
+
+
+def _human_error_hint(error_code):
+    hints = {
+        "missing_api_key": "AI service not configured (missing API key).",
+        "invalid_api_key": "AI service rejected the API key.",
+        "quota_exceeded": "AI service quota reached. Please try again later.",
+        "blocked": "AI service blocked this request.",
+        "empty_prompt": "Question was empty.",
+        "prompt_too_long": "Question was too long to process.",
+        "invalid_request": "AI service rejected the request.",
+        "empty_response": "AI service returned an empty response.",
+        "unknown": "AI service is unavailable right now."
+    }
+    return hints.get(error_code, "")

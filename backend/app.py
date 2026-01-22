@@ -6,7 +6,7 @@ from xml.etree.ElementTree import ParseError
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from ai_engine import get_ai_response, generate_video_explanation
+from ai_engine import get_ai_response, generate_video_explanation, get_ai_response_payload
 from auth import auth_bp
 from models import db
 
@@ -82,18 +82,28 @@ def ask():
         if mode == "normal":
             mode = "regular"
         
-        # Get AI response (guarantees non-empty answer for syllabus topics)
-        answer = get_ai_response(question, online, mode)
-        
-        # Determine response mode
-        response_mode = "offline" if not online else "online"
-        
-        # Safety: Never return None or empty
-        if not answer or not answer.strip():
+        result = get_ai_response_payload(question, online, mode)
+
+        status = result.get("status", "error")
+        answer = (result.get("answer") or "").strip()
+        response_mode = result.get("mode", "offline")
+
+        if status == "quota_exceeded":
+            return jsonify({
+                "status": status,
+                "answer": answer,
+                "mode": response_mode
+            }), 429
+
+        if not answer:
             answer = "Unable to generate answer. Please try again or consult your teacher."
             response_mode = "offline"
-        
-        return jsonify({"answer": answer.strip(), "mode": response_mode})
+
+        return jsonify({
+            "status": status,
+            "answer": answer,
+            "mode": response_mode
+        })
     
     except Exception as e:
         # Catch all exceptions - no 500 errors
