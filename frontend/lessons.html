@@ -57,17 +57,28 @@
     </div>
   </header>
   <main class="main-content">
-    <section class="section">
-      <h3>Lessons</h3>
-      <div class="lesson-list">
-        <!-- Lessons will be dynamically loaded here -->
-        <p>Lesson content coming soon...</p>
-      </div>
-      <div class="offline-downloads" id="offlineDownloads">
-        <h4>Offline Lessons</h4>
-        <p>Download lessons for low‑internet access.</p>
-        <div class="offline-downloads-list" id="offlineDownloadsList"></div>
-        <div class="offline-status" id="offlineDownloadsStatus"></div>
+    <section class="section" id="videoExplainerSection">
+      <h3>Video Lesson Explainer</h3>
+      <p class="section-note">Paste a YouTube link, watch the video, and get a simple AI explanation.</p>
+      <div class="video-explainer-grid">
+        <div class="video-explainer-inputs">
+          <label for="youtubeUrlInput">YouTube URL</label>
+          <input type="url" id="youtubeUrlInput" class="ai-tutor-input" placeholder="https://www.youtube.com/watch?v=..." maxlength="500">
+          <button class="button btn-small" id="loadVideoBtn">Load Video</button>
+          <label for="videoQuestionInput">Ask about this video (optional)</label>
+          <input type="text" id="videoQuestionInput" class="ai-tutor-input" placeholder="What should I focus on?" maxlength="500">
+          <label for="manualTranscriptInput">Paste transcript (optional, for blocked videos)</label>
+          <textarea id="manualTranscriptInput" class="ai-tutor-input video-transcript-input" placeholder="Paste captions here if YouTube transcript is unavailable." maxlength="8000"></textarea>
+          <button class="button" id="explainVideoBtn">Explain this video</button>
+          <div id="videoExplainerStatus" class="ai-tutor-response" aria-live="polite"></div>
+        </div>
+        <div class="video-explainer-player">
+          <div class="video-embed" id="videoEmbedContainer">
+            <div class="video-embed-placeholder" id="videoEmbedPlaceholder">Video preview will appear here.</div>
+            <iframe id="videoEmbed" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="video-explainer-output" id="videoExplainerOutput"></div>
+        </div>
       </div>
     </section>
   </main>

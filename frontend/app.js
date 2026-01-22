@@ -485,6 +485,171 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+// --- Video Explainer (Lessons Page) ---
+document.addEventListener('DOMContentLoaded', function() {
+  const urlInput = document.getElementById('youtubeUrlInput');
+  const loadBtn = document.getElementById('loadVideoBtn');
+  const questionInput = document.getElementById('videoQuestionInput');
+  const manualTranscriptInput = document.getElementById('manualTranscriptInput');
+  const explainBtn = document.getElementById('explainVideoBtn');
+  const statusDiv = document.getElementById('videoExplainerStatus');
+  const outputDiv = document.getElementById('videoExplainerOutput');
+  const iframe = document.getElementById('videoEmbed');
+  const placeholder = document.getElementById('videoEmbedPlaceholder');
+
+  if (!urlInput || !loadBtn || !explainBtn || !statusDiv || !outputDiv || !iframe || !placeholder) return;
+
+  const setStatus = (message, state) => {
+    statusDiv.textContent = message || '';
+    statusDiv.classList.remove('video-status-error', 'video-status-loading');
+    if (state === 'error') statusDiv.classList.add('video-status-error');
+    if (state === 'loading') statusDiv.classList.add('video-status-loading');
+  };
+
+  const renderOutput = (data) => {
+    if (!data) return;
+    const keyPoints = Array.isArray(data.keyPoints) ? data.keyPoints : [];
+    outputDiv.innerHTML = '';
+
+    const explanation = document.createElement('div');
+    explanation.innerHTML = '<h4>Simple explanation</h4><p>' + (data.simpleExplanation || 'No explanation provided.') + '</p>';
+    outputDiv.appendChild(explanation);
+
+    if (keyPoints.length > 0) {
+      const points = document.createElement('div');
+      points.innerHTML = '<h4>Key points</h4>';
+      const list = document.createElement('ul');
+      keyPoints.forEach(point => {
+        const item = document.createElement('li');
+        item.textContent = point;
+        list.appendChild(item);
+      });
+      points.appendChild(list);
+      outputDiv.appendChild(points);
+    }
+
+    const summary = document.createElement('div');
+    summary.innerHTML = '<h4>Summary</h4><p>' + (data.summary || 'Summary not available.') + '</p>';
+    outputDiv.appendChild(summary);
+  };
+
+  const updateEmbed = (videoId) => {
+    if (!videoId) {
+      iframe.style.display = 'none';
+      placeholder.style.display = 'flex';
+      return;
+    }
+    iframe.src = 'https://www.youtube.com/embed/' + videoId;
+    iframe.style.display = 'block';
+    placeholder.style.display = 'none';
+  };
+
+  loadBtn.addEventListener('click', function() {
+    const url = urlInput.value.trim();
+    const videoId = extractYouTubeId(url);
+    outputDiv.innerHTML = '';
+
+    if (!url || !videoId) {
+      setStatus('Please paste a valid YouTube video link.', 'error');
+      updateEmbed('');
+      return;
+    }
+
+    if (!navigator.onLine || isLowDataMode()) {
+      setStatus('Video preview may be limited in offline or low data mode.', 'loading');
+    } else {
+      setStatus('Video loaded. Ready to explain.', '');
+    }
+
+    updateEmbed(videoId);
+  });
+
+  explainBtn.addEventListener('click', function() {
+    const url = urlInput.value.trim();
+    const videoId = extractYouTubeId(url);
+    const question = (questionInput && questionInput.value) ? questionInput.value.trim() : '';
+    const manualTranscript = (manualTranscriptInput && manualTranscriptInput.value) ? manualTranscriptInput.value.trim() : '';
+
+    outputDiv.innerHTML = '';
+
+    if ((!url || !videoId) && !manualTranscript) {
+      setStatus('Please paste a valid YouTube link or paste a transcript.', 'error');
+      updateEmbed('');
+      return;
+    }
+
+    explainBtn.disabled = true;
+    setStatus('Analyzing transcript... Please wait.', 'loading');
+
+    const currentMode = mode || 'normal';
+    const online = navigator.onLine && !isLowDataMode();
+
+    fetch('http://localhost:5000/explain-video', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        videoUrl: url,
+        question: question,
+        manualTranscript: manualTranscript,
+        online: online,
+        mode: currentMode
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'ok') {
+        setStatus('Explanation ready.', '');
+        renderOutput(data);
+        updateEmbed(data.videoId || videoId);
+        return;
+      }
+
+      if (data.status === 'no_transcript') {
+        setStatus(data.message || 'Transcript not available.', 'error');
+        if (data.answer) {
+          outputDiv.textContent = data.answer;
+        }
+        return;
+      }
+
+      setStatus(data.error || 'Unable to explain this video.', 'error');
+    })
+    .catch(() => {
+      setStatus('Network issue. Please try again when you are online.', 'error');
+    })
+    .finally(() => {
+      explainBtn.disabled = false;
+    });
+  });
+});
+
+function extractYouTubeId(url) {
+  if (!url) return '';
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === 'youtu.be') {
+      return parsed.pathname.replace('/', '');
+    }
+    if (parsed.hostname.includes('youtube.com')) {
+      if (parsed.pathname === '/watch') {
+        return parsed.searchParams.get('v') || '';
+      }
+      if (parsed.pathname.startsWith('/embed/')) {
+        return parsed.pathname.split('/embed/')[1] || '';
+      }
+      if (parsed.pathname.startsWith('/shorts/')) {
+        return parsed.pathname.split('/shorts/')[1] || '';
+      }
+    }
+  } catch (e) {
+    // ignore URL parsing errors
+  }
+  const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+  return match ? match[1] : '';
+}
+
 // --- Premium Motion Enhancements (non-breaking) ---
 // Uses CSS hooks added in style.css. Safe to run on every page.
 document.addEventListener('DOMContentLoaded', function() {
