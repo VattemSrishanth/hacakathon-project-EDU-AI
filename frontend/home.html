@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Inclusive AI Learning</title>
+  <title>Home - RuralAccess AI</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
 </head>
@@ -13,7 +13,7 @@
     <div class="header-content">
       <!-- App Name and Navigation -->
       <div class="nav-section">
-        <h1 class="app-name">Inclusive AI Learning</h1>
+        <h1 class="app-name">RuralAccess AI</h1>
         <nav class="nav-menu">
           <a href="home.html" class="nav-item">Home</a>
           <a href="dashboard.html" class="nav-item">Dashboard</a>
@@ -61,15 +61,184 @@
   </header>
 
   <!-- Main Content -->
-  <main class="main-content">
-    <section class="section">
-      <h2>Welcome to Inclusive AI Learning!</h2>
-      <p>Select a section from the navigation menu above.</p>
+  <div class="parallax-bg" aria-hidden="true">
+    <div class="parallax-layer"></div>
+  </div>
+
+  <main class="main-content page-wrap">
+    <section class="section home-hero" aria-labelledby="heroTitle">
+      <div class="hero-content">
+        <div class="hero-text">
+          <p class="hero-label">Welcome</p>
+          <div class="hero-ctas" role="group" aria-label="Primary actions">
+            <a class="button hero-button" href="lessons.html">Start Learning</a>
+            <a class="button btn-secondary hero-button" href="#ai-agent">Talk to AI Agent</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section ai-agent-section" id="ai-agent" aria-labelledby="aiAgentTitle">
+      <div class="section-heading">
+        <h3 id="aiAgentTitle">AI Assistant</h3>
+        <p class="section-lead">Designed for physically challenged students in rural areas with low or unstable internet.</p>
+      </div>
+      <div class="ai-agent-grid">
+        <div class="ai-agent-chat" aria-label="AI chat interface">
+          <label class="sr-only" for="aiTutorQuestion">Ask the AI Agent</label>
+          <textarea
+            id="aiTutorQuestion"
+            class="ai-agent-input"
+            rows="4"
+            placeholder="Ask the AI Agent to explain a topic or guide you..."
+          ></textarea>
+          <div class="ai-agent-actions">
+            <button class="button hero-button" id="aiTutorAskBtn" type="button">Chat Now</button>
+            <button class="button btn-secondary hero-button" type="button">Voice Mode</button>
+          </div>
+          <div id="aiTutorResponse" class="ai-agent-response" role="status" aria-live="polite"></div>
+        </div>
+        <div class="ai-agent-card">
+          <ul class="ai-agent-list">
+            <li>Explains concepts in simple, clear language.</li>
+            <li>Answers doubts patiently and step-by-step.</li>
+            <li>Uses short, respectful, encouraging responses.</li>
+            <li>Suggests offline study methods when connectivity is weak.</li>
+            <li>Prioritizes accessibility, inclusivity, and clarity.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section audience-section" aria-labelledby="audienceTitle">
+      <h3 id="audienceTitle">Who Is This For</h3>
+      <div class="card-grid">
+        <article class="info-card" aria-label="Students with physical challenges">
+          <div class="card-icon" aria-hidden="true">📚</div>
+          <h4>Students with physical challenges</h4>
+          <p>Accessible learning without barriers.</p>
+        </article>
+        <article class="info-card" aria-label="Rural and low-connectivity learners">
+          <div class="card-icon" aria-hidden="true">🏡</div>
+          <h4>Rural &amp; low-connectivity learners</h4>
+          <p>Reliable support with limited internet.</p>
+        </article>
+        <article class="info-card" aria-label="Offline learning supporters">
+          <div class="card-icon" aria-hidden="true">📥</div>
+          <h4>Offline learning supporters</h4>
+          <p>Download once, study anytime.</p>
+        </article>
+        <article class="info-card" aria-label="Quick and lightweight interface">
+          <div class="card-icon" aria-hidden="true">⚡</div>
+          <h4>Quick &amp; lightweight interface</h4>
+          <p>Built for low-end devices.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section problem-section" aria-labelledby="problemTitle">
+      <h3 id="problemTitle">The Challenge Students Face</h3>
+      <ul class="problem-list">
+        <li>Slow internet shouldn’t block learning.</li>
+        <li>Accessibility matters for all students.</li>
+        <li>AI can support personalized study.</li>
+      </ul>
+    </section>
+
+    <section class="section features-section" aria-labelledby="featuresTitle">
+      <h3 id="featuresTitle">Key Features</h3>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <span class="feature-icon" aria-hidden="true">🤖</span>
+          <p>AI Learning Assistance<br><span class="feature-sub">Simple answers &amp; explanations</span></p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon" aria-hidden="true">📥</span>
+          <p>Offline Access<br><span class="feature-sub">Download lessons once, study anytime</span></p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon" aria-hidden="true">📉</span>
+          <p>Low Data Usage<br><span class="feature-sub">Works on slow networks</span></p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon" aria-hidden="true">♿</span>
+          <p>Accessibility Focused<br><span class="feature-sub">Large text, voice &amp; keyboard support</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section how-section" aria-labelledby="howTitle">
+      <h3 id="howTitle">How It Works</h3>
+      <ol class="how-steps horizontal">
+        <li>Open platform</li>
+        <li>Start AI chat or learning</li>
+        <li>Download content for offline study</li>
+        <li>Review anytime</li>
+      </ol>
+    </section>
+
+    <section class="section accessibility-section" aria-labelledby="accessibilityTitle">
+      <h3 id="accessibilityTitle">Accessibility &amp; Inclusivity</h3>
+      <p class="section-lead">Inclusive learning for everyone with screen reader support, keyboard navigation, voice assistance, high contrast, and large fonts.</p>
+      <div class="accessibility-grid">
+        <div class="accessibility-item">
+          <span aria-hidden="true">🔠</span>
+          <div>
+            <h4>Large fonts</h4>
+            <p>Comfortable reading without strain.</p>
+          </div>
+        </div>
+        <div class="accessibility-item">
+          <span aria-hidden="true">🎨</span>
+          <div>
+            <h4>High contrast mode</h4>
+            <p>Clear visibility in all lighting.</p>
+          </div>
+        </div>
+        <div class="accessibility-item">
+          <span aria-hidden="true">⌨️</span>
+          <div>
+            <h4>Keyboard navigation</h4>
+            <p>Navigate without a mouse.</p>
+          </div>
+        </div>
+        <div class="accessibility-item">
+          <span aria-hidden="true">🔊</span>
+          <div>
+            <h4>Text-to-speech</h4>
+            <p>Listen to lessons and guidance.</p>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
+
+  <footer class="site-footer" aria-label="Footer">
+    <div class="footer-content">
+      <a href="support.html">About the Project</a>
+      <a href="support.html">Contact</a>
+      <a href="accessibility.html">Accessibility Policy</a>
+      <a href="support.html">Help &amp; Support</a>
+    </div>
+  </footer>
 
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="voice.js"></script>
+  <script>
+    (function () {
+      var layer = document.querySelector('.parallax-layer');
+      if (!layer) return;
+      var maxShift = 8;
+
+      function handleMove(event) {
+        var x = (event.clientX / window.innerWidth - 0.5) * maxShift;
+        var y = (event.clientY / window.innerHeight - 0.5) * maxShift;
+        layer.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+      }
+
+      window.addEventListener('mousemove', handleMove, { passive: true });
+    })();
+  </script>
 </body>
 </html>
