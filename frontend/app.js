@@ -431,28 +431,44 @@ if (savedMode) {
 document.addEventListener('DOMContentLoaded', function() {
   const askBtn = document.getElementById('aiTutorAskBtn');
   const questionInput = document.getElementById('aiTutorQuestion');
-  const responseDiv = document.getElementById('aiTutorResponse');
+  const chatContainer = document.getElementById('aiTutorChat');
 
-  if (askBtn && questionInput && responseDiv) {
-    askBtn.addEventListener('click', function() {
-      const question = questionInput.value.trim();
-      responseDiv.textContent = '';
-      if (!question || question.length < 2) {
-        responseDiv.textContent = 'Please enter a clear question.';
-        responseDiv.style.color = 'red';
-        return;
-      }
-      askBtn.disabled = true;
-      responseDiv.textContent = 'Thinking...';
-      responseDiv.style.color = '#333';
+  if (!askBtn || !questionInput || !chatContainer) return;
 
-      // Use accessibility mode from global variable
-      const currentMode = mode || 'normal';
+  const messages = [];
 
-      // Low internet support: use offline mode when needed
-      const online = navigator.onLine && !isLowDataMode();
+  function scrollChatToBottom() {
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
 
-      fetch('http://localhost:5000/ask', {
+  function appendMessage(role, content) {
+    const message = {
+      role,
+      content,
+      timestamp: new Date().toISOString()
+    };
+    messages.push(message);
+
+    const bubble = document.createElement('div');
+    bubble.className = role === 'user' ? 'user-message' : 'ai-message';
+    bubble.textContent = content;
+    chatContainer.appendChild(bubble);
+    scrollChatToBottom();
+  }
+
+  async function sendMessage() {
+    const question = questionInput.value.trim();
+    if (!question) return;
+
+    questionInput.value = '';
+    appendMessage('user', question);
+    askBtn.disabled = true;
+
+    const currentMode = mode || 'normal';
+    const online = navigator.onLine && !isLowDataMode();
+
+    try {
+      const res = await fetch('http://localhost:5000/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -462,27 +478,26 @@ document.addEventListener('DOMContentLoaded', function() {
           online: online,
           mode: currentMode
         })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.answer) {
-          const prefix = online ? '' : '[Offline] ';
-          responseDiv.textContent = prefix + data.answer;
-          responseDiv.style.color = '#333';
-        } else {
-          responseDiv.textContent = 'No answer received.';
-          responseDiv.style.color = 'red';
-        }
-      })
-      .catch(err => {
-        responseDiv.textContent = 'Offline or low connectivity. Please try again later.';
-        responseDiv.style.color = 'red';
-      })
-      .finally(() => {
-        askBtn.disabled = false;
       });
-    });
+      const data = await res.json();
+      const answer = data && data.answer ? data.answer : 'I could not generate a response right now.';
+      const prefix = online ? '' : '[Offline] ';
+      appendMessage('ai', prefix + answer);
+    } catch (err) {
+      appendMessage('ai', 'I am having trouble connecting right now. Please try again.');
+    } finally {
+      askBtn.disabled = false;
+      questionInput.focus();
+    }
   }
+
+  askBtn.addEventListener('click', sendMessage);
+  questionInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage();
+    }
+  });
 });
 
 // --- Video Explainer (Lessons Page) ---

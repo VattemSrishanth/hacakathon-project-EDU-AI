@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
 </head>
-<body>
+<body class="ai-tutor-page">
   <!-- Top Navigation Bar -->
   <header class="header">
     <div class="header-content">
@@ -57,16 +57,20 @@
     </div>
   </header>
   <main class="main-content">
-    <section class="section" id="aiTutorSection">
+    <section class="section ai-tutor-section" id="aiTutorSection">
       <h3>AI Tutor</h3>
-      <div class="ai-tutor-box">
-        <label for="aiTutorQuestion">Ask a school question:</label>
-        <input type="text" id="aiTutorQuestion" class="ai-tutor-input" placeholder="Type your question here..." maxlength="500">
-        <button class="button" id="aiTutorAskBtn">Ask Tutor</button>
-      </div>
-      <div id="aiTutorResponse" class="ai-tutor-response"></div>
+      <div id="aiTutorChat" class="ai-tutor-chat" role="log" aria-live="polite" aria-relevant="additions"></div>
     </section>
   </main>
+  <div class="ai-tutor-input-bar" role="region" aria-label="Send a message to AI Tutor">
+    <div class="ai-tutor-input-inner">
+      <label for="aiTutorQuestion" class="ai-tutor-label">Ask a school question</label>
+      <div class="ai-tutor-input-row">
+        <input type="text" id="aiTutorQuestion" class="ai-tutor-input" placeholder="Type your question here..." maxlength="500" autocomplete="off">
+        <button class="button" id="aiTutorAskBtn" type="button">Send</button>
+      </div>
+    </div>
+  </div>
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="voice.js"></script>

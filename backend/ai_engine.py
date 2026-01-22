@@ -1,12 +1,20 @@
-# ai_engine.py
-import json
+import ast
+import operator
 import os
+import re
 
 try:
     from openai import OpenAI
 except Exception:
     OpenAI = None
-from offline_logic import offline_generate_explanation, offline_response
+
+from offline_logic import (
+    offline_generate_explanation,
+    offline_response,
+    get_general_knowledge_answer,
+    get_math_concept_answer,
+    get_out_of_scope_message
+)
 
 API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=API_KEY) if API_KEY and OpenAI else None
@@ -77,49 +85,67 @@ def generate_explanation(question, learner_mode="regular", level="basic"):
     return offline_generate_explanation(question, learner_mode=mode_key, level=level)
 
 def get_ai_response(question, online=True, mode="regular"):
-    """Get AI response with structured, inclusive explanation and offline fallback."""
-    if not online:
-        return offline_response(question, learner_mode=mode)
+    """Get AI response with deterministic, offline-friendly logic."""
+    normalized = str(question or "").strip()
+    if not normalized:
+        return get_out_of_scope_message()
 
+    # Math expressions are answered concisely (numeric-only) by design.
+    # 1) Math expressions → numeric answer only.
+    if is_pure_math_expression(normalized):
+        return solve_math_expression(normalized)
+
+    # 2) Math concepts → short academic explanation.
+    concept_answer = get_math_concept_answer(normalized)
+    if concept_answer:
+        return concept_answer
+
+    # 3) General knowledge → direct factual answer.
+    general_answer = get_general_knowledge_answer(normalized)
+    if general_answer:
+        return general_answer
+
+    # 4) Unknown → polite out-of-scope message.
+    return get_out_of_scope_message()
+
+def is_pure_math_expression(question):
+    if not question or not str(question).strip():
+        return False
+    q = str(question).strip()
+    if not re.fullmatch(r"[\d\s\+\-\*/\^\(\)\.]+", q):
+        return False
+    return any(ch.isdigit() for ch in q)
+
+def solve_math_expression(expression):
+    """Solve pure math expressions with safe evaluation and return only the numeric result."""
+    raw = str(expression).strip()
+    normalized = raw.replace("^", "**")
     try:
-        result = generate_explanation(question, learner_mode=mode, level="basic")
-        return _format_response(result)
+        tree = ast.parse(normalized, mode="eval")
+        result = _eval_node(tree.body)
+        return str(result)
     except Exception:
-        return offline_response(question, learner_mode=mode)
+        return get_out_of_scope_message()
 
-def _call_ai_model(prompt):
-    """Helper to call OpenAI API safely."""
-    if not client:
-        return ""
-    try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": prompt}
-            ],
-            max_tokens=200,
-            temperature=0.7
-        )
-        content = response.choices[0].message.content
-        return content if content else ""
-    except Exception:
-        return ""
-
-def _safe_parse_json(text):
-    if not text:
-        return None
-    try:
-        data = json.loads(text)
-        return data if isinstance(data, dict) else None
-    except Exception:
-        return None
-
-def _ensure_fields(data):
-    return {
-        "explanation": str(data.get("explanation", "")).strip() or "Basic explanation is provided.",
-        "example": str(data.get("example", "")).strip() or "Example is provided.",
-        "summary": str(data.get("summary", "")).strip() or "Summary is provided."
+def _eval_node(node):
+    operators = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.Pow: operator.pow
     }
+    if isinstance(node, ast.BinOp) and type(node.op) in operators:
+        left = _eval_node(node.left)
+        right = _eval_node(node.right)
+        op_func = operators[type(node.op)]
+        return op_func(left, right)
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.UAdd, ast.USub)):
+        value = _eval_node(node.operand)
+        return value if isinstance(node.op, ast.UAdd) else -value
+    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+        return node.value
+    raise ValueError("Unsupported expression")
 
 def _format_response(result):
     return (

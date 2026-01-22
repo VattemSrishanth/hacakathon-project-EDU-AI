@@ -1,45 +1,109 @@
-/* AI Tutor Section Styles */
-#aiTutorSection {
+/* AI Tutor Chat Styles */
+.ai-tutor-section {
   margin-top: 2em;
   padding: 1.5em;
   background: #f8f9fa;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
-.ai-tutor-box {
   display: flex;
   flex-direction: column;
-  gap: 0.7em;
-  margin-bottom: 1em;
+  gap: 1em;
 }
+
+.ai-tutor-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+  padding: 1em;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  min-height: 320px;
+  max-height: calc(100vh - 260px);
+  overflow-y: auto;
+}
+
+.ai-message,
+.user-message {
+  align-self: flex-start;
+  max-width: 820px;
+  padding: 0.7em 0.9em;
+  border-radius: 10px;
+  font-size: 0.98em;
+  line-height: 1.5;
+  word-break: break-word;
+  border: 1px solid transparent;
+}
+
+.user-message {
+  background: #eef2ff;
+  border-color: #e0e7ff;
+  color: #1f2937;
+}
+
+.ai-message {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+  color: #111827;
+}
+
+.ai-tutor-input-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 20px 18px;
+  background: rgba(245, 245, 245, 0.98);
+  border-top: 1px solid #e5e7eb;
+  z-index: 120;
+}
+
+.ai-tutor-input-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-tutor-label {
+  font-size: 0.85em;
+  color: #6b7280;
+}
+
+.ai-tutor-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .ai-tutor-input {
-  padding: 0.5em;
+  flex: 1;
+  padding: 0.65em 0.8em;
   font-size: 1em;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
   width: 100%;
-  max-width: 400px;
 }
+
 #aiTutorAskBtn {
-  align-self: flex-start;
-  padding: 0.5em 1.2em;
-  font-size: 1em;
+  padding: 0.6em 1.2em;
+  font-size: 0.95em;
   background: #000000;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
 }
+
 #aiTutorAskBtn:disabled {
   background: #aaa;
   cursor: not-allowed;
 }
-.ai-tutor-response {
-  margin-top: 0.5em;
-  font-size: 1.08em;
-  min-height: 2em;
-  color: #333;
+
+body.ai-tutor-page .main-content {
+  padding-bottom: 120px;
 }
 .section-note {
   margin: 0.4em 0 1em;
@@ -193,7 +257,7 @@ body {
   text-decoration: none;
   color: #cbd5f5;
   font-size: 14px;
-  border-bottom: 3px solid transparent;
+  border-bottom: none;
   transition: all 0.2s;
   cursor: pointer;
   display: block;
@@ -205,7 +269,7 @@ body {
 
 .nav-item.active {
   color: #7C3AED;
-  border-bottom-color: #7C3AED;
+  border-bottom: none;
 }
 
 .nav-item.logout {
