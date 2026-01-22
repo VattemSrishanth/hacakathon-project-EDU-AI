@@ -270,3 +270,67 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// --- Premium Motion Enhancements (non-breaking) ---
+// Uses CSS hooks added in style.css. Safe to run on every page.
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    enableMotionEnhancements();
+  } catch (e) {
+    // Silently ignore motion errors to avoid breaking core flows.
+  }
+});
+
+function enableMotionEnhancements() {
+  const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReducedMotion) return;
+
+  if (document.body) {
+    document.body.classList.add('js-motion');
+  }
+
+  const revealSelectors = [
+    '.section',
+    '.dashboard-card',
+    '.lesson-card',
+    '.course-module',
+    '.settings-container',
+    '.chat-box',
+    '#aiTutorSection',
+    '.progress-item',
+    '.radio-option'
+  ];
+
+  const elements = Array.from(document.querySelectorAll(revealSelectors.join(',')));
+  if (elements.length === 0) return;
+
+  // Add reveal class + gentle stagger without touching markup.
+  const revealTargets = [];
+  elements.forEach((el, idx) => {
+    if (!(el instanceof HTMLElement)) return;
+    if (el.classList.contains('reveal')) return;
+    el.classList.add('reveal');
+    el.style.transitionDelay = Math.min(idx * 45, 240) + 'ms';
+    revealTargets.push(el);
+  });
+
+  if (revealTargets.length === 0) return;
+
+  if (!('IntersectionObserver' in window)) {
+    revealTargets.forEach(el => el.classList.add('is-visible'));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const target = entry.target;
+      if (target && target.classList) {
+        target.classList.add('is-visible');
+      }
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
+
+  revealTargets.forEach(el => observer.observe(el));
+}

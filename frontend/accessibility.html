@@ -70,9 +70,60 @@
         </label>
       </div>
       <p class="current-mode">Current Mode: <strong id="currentModeText">Normal Mode</strong></p>
+
+      <div class="voice-panel" id="voicePanel" aria-label="Voice Control Panel">
+        <div class="voice-panel-header">
+          <h4>Voice Control Panel</h4>
+          <span class="voice-badge" id="voiceStatus" aria-live="polite">Idle</span>
+        </div>
+
+        <div class="voice-actions">
+          <button class="button" id="voiceStartBtn" type="button">Start Listening</button>
+          <button class="button btn-secondary" id="voiceStopBtn" type="button" disabled>Stop Listening</button>
+        </div>
+
+        <div class="voice-meta">
+          <div class="voice-meta-item">
+            <span class="voice-label">Detected Language:</span>
+            <strong id="voiceDetectedLang">Auto</strong>
+          </div>
+        </div>
+
+        <div class="voice-transcript" id="voiceTranscript" aria-live="polite">
+          Live transcript will appear here.
+        </div>
+
+        <div class="voice-translation">
+          <label for="voiceLangSelect" class="voice-label">Translate to:</label>
+          <select id="voiceLangSelect" class="text-input" aria-label="Translation language">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+            <option value="te">Telugu</option>
+            <option value="ta">Tamil</option>
+          </select>
+          <button class="button btn-secondary" id="voiceTranslateBtn" type="button">Translate</button>
+        </div>
+
+        <div class="voice-output" id="voiceTranslateOutput" aria-live="polite">
+          Translated text will appear here.
+        </div>
+
+        <label class="voice-toggle">
+          <input type="checkbox" id="voiceTtsToggle">
+          Read translated text aloud
+        </label>
+
+        <label class="voice-toggle">
+          <input type="checkbox" id="voiceGlobalToggle">
+          Enable voice commands across the site
+        </label>
+
+        <div class="voice-error" id="voiceError" role="alert"></div>
+      </div>
     </section>
   </main>
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script src="voice.js"></script>
 </body>
 </html>
