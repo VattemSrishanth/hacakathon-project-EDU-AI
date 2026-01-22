@@ -74,6 +74,8 @@ body {
   justify-content: space-between;
   align-items: center;
   height: 60px;
+  gap: 16px;
+  position: relative;
 }
 
 /* Navigation Section */
@@ -81,6 +83,7 @@ body {
   display: flex;
   align-items: center;
   gap: 40px;
+  flex: 1;
 }
 
 .app-name {
@@ -128,10 +131,62 @@ body {
   gap: 20px;
 }
 
+/* Network status banner */
+.network-status {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  background: #eef2ff;
+  color: #3730a3;
+  border: 1px solid #e0e7ff;
+}
+
+.network-status.is-offline {
+  background: #fff4e5;
+  color: #9a3412;
+  border-color: #fed7aa;
+}
+
+.network-status.is-lowdata {
+  background: #ecfeff;
+  color: #155e75;
+  border-color: #cffafe;
+}
+
 /* User Menu Container */
 .user-menu {
-  position: relative;
-  display: inline-block;
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-actions .auth-link {
+  padding: 6px 12px;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.auth-actions .btn-secondary {
+  background: transparent;
+  color: #4f46e5;
+  border: 1px solid rgba(79, 70, 229, 0.35);
+}
+
+body.dark-mode .auth-actions .btn-secondary {
+  color: #c4b5fd;
+  border-color: rgba(196, 181, 253, 0.35);
 }
 
 /* User Icon */
@@ -358,6 +413,59 @@ body {
 .progress-item .value {
   font-weight: 600;
   color: #333;
+}
+
+/* Offline lesson downloads */
+.offline-downloads {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.offline-downloads h4 {
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.offline-downloads-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.offline-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.offline-item .offline-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.offline-item .offline-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.offline-item .offline-duration {
+  font-size: 12px;
+  color: #666;
+}
+
+.offline-status {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #374151;
 }
 
 /* Accessibility Options */
@@ -1741,6 +1849,13 @@ body[data-page="home"] .section p {
 
 .voice-actions,
 .voice-translation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.voice-permission {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;

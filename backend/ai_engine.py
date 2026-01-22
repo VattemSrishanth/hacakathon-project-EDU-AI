@@ -1,67 +1,80 @@
 # ai_engine.py
-from openai import OpenAI
-from offline_logic import offline_response, is_syllabus_question
+import json
 import os
 
-API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=API_KEY) if API_KEY else None
+try:
+    from openai import OpenAI
+except Exception:
+    OpenAI = None
+from offline_logic import offline_generate_explanation, offline_response
 
-# SYLLABUS GUARANTEE: This system ALWAYS provides explanations for school curriculum topics
-# School Syllabus Scope: Math, Science, English (basics, grammar, comprehension)
-SYLLABUS_TOPICS = {
-    "math": ["addition", "subtraction", "multiplication", "division", "fraction", "decimal", "algebra", "geometry", "percentage"],
-    "science": ["biology", "chemistry", "physics", "photosynthesis", "atoms", "elements", "ecosystem"],
-    "english": ["grammar", "spelling", "vocabulary", "reading", "comprehension", "essay", "punctuation"]
+API_KEY = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=API_KEY) if API_KEY and OpenAI else None
+
+SYSTEM_PROMPT = """You are a dedicated school tutor for rural and disabled learners.
+Your role:
+1. Explain syllabus questions clearly and step-by-step
+2. Use simple language suitable for rural students
+3. Include at least one example
+4. Provide a short, simple summary
+5. If unsure, give a basic explanation first, then expand
+6. Avoid hallucinating facts or pretending to access external sources
+7. NEVER say "I don't know". Offer a safe, basic explanation instead.
+
+Return a JSON object with keys:
+explanation, example, summary.
+"""
+
+MODE_GUIDANCE = {
+    "regular": "Use normal explanation style with clear steps.",
+    "deaf": "Use text-heavy, structured bullet points and short headings.",
+    "speech": "Use short sentences and step-by-step format."
 }
 
-SYSTEM_PROMPT = """You are a dedicated school tutor. Your role:
-1. ALWAYS explain school curriculum topics (Math, Science, English basics) clearly
-2. Use simple, step-by-step explanations
-3. Include examples whenever possible
-4. Use text-only format (no images or complex symbols)
-5. Never say 'I don't know' for syllabus topics - provide an explanation
-6. For accessible learning: use simple English and clear structure
+def generate_explanation(question, learner_mode="regular", level="basic"):
+    """Generate a structured explanation (explanation, example, summary)."""
+    if not question or not question.strip():
+        return {
+            "explanation": "Please ask a clear question about a school topic.",
+            "example": "Example: What is photosynthesis?",
+            "summary": "Ask a clear question to get a full explanation."
+        }
 
-For non-syllabus questions, politely decline and suggest official resources."""
+    mode_key = learner_mode if learner_mode in MODE_GUIDANCE else "regular"
+    mode_hint = MODE_GUIDANCE[mode_key]
 
-def get_ai_response(question, online=True, mode="normal"):
-    """Get AI response with syllabus-guaranteed explanation fallback."""
+    # Offline-first safety when API is not available
+    if not API_KEY or not client:
+        return offline_generate_explanation(question, learner_mode=mode_key, level=level)
+
+    prompt = (
+        SYSTEM_PROMPT
+        + "\nLearner mode: " + mode_key
+        + "\nLevel: " + level
+        + "\nStyle guidance: " + mode_hint
+        + "\nQuestion: " + question.strip()
+    )
+
+    raw = _call_ai_model(prompt)
+    parsed = _safe_parse_json(raw)
+    if parsed:
+        return _ensure_fields(parsed)
+
+    # Fallback to offline structured response if JSON parsing fails
+    return offline_generate_explanation(question, learner_mode=mode_key, level=level)
+
+def get_ai_response(question, online=True, mode="regular"):
+    """Get AI response with structured, inclusive explanation and offline fallback."""
     if not online:
-        return offline_response(question)
-
-    # Check if question is within syllabus scope
-    if not is_syllabus_question(question):
-        return "I can only help with school subjects (Math, Science, English basics). For other topics, please consult official resources."
-
-    # If no API key is configured, fall back to offline explanation
-    if not API_KEY:
-        return offline_response(question)
-
-    # Build mode-specific system prompt
-    current_system_prompt = SYSTEM_PROMPT
-    if mode == "deaf":
-        current_system_prompt += "\nUse simple words suitable for captions."
-    elif mode == "speech":
-        current_system_prompt += "\nRespond clearly for text-only accessibility."
+        return offline_response(question, learner_mode=mode)
 
     try:
-        # First attempt at online explanation
-        answer = _call_ai_model(current_system_prompt, question)
-
-        # REGENERATION LOGIC: If response is weak/empty, try once more
-        if not answer or len(answer.strip()) < 20:
-            answer = _call_ai_model(current_system_prompt, question)
-
-        # If still weak, fall back to offline explanation
-        if not answer or len(answer.strip()) < 20:
-            answer = offline_response(question)
-
-        return answer
+        result = generate_explanation(question, learner_mode=mode, level="basic")
+        return _format_response(result)
     except Exception:
-        # Safety fallback for any exceptions
-        return offline_response(question)
+        return offline_response(question, learner_mode=mode)
 
-def _call_ai_model(system_prompt, question):
+def _call_ai_model(prompt):
     """Helper to call OpenAI API safely."""
     if not client:
         return ""
@@ -69,8 +82,7 @@ def _call_ai_model(system_prompt, question):
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": question}
+                {"role": "system", "content": prompt}
             ],
             max_tokens=200,
             temperature=0.7
@@ -79,3 +91,26 @@ def _call_ai_model(system_prompt, question):
         return content if content else ""
     except Exception:
         return ""
+
+def _safe_parse_json(text):
+    if not text:
+        return None
+    try:
+        data = json.loads(text)
+        return data if isinstance(data, dict) else None
+    except Exception:
+        return None
+
+def _ensure_fields(data):
+    return {
+        "explanation": str(data.get("explanation", "")).strip() or "Basic explanation is provided.",
+        "example": str(data.get("example", "")).strip() or "Example is provided.",
+        "summary": str(data.get("summary", "")).strip() or "Summary is provided."
+    }
+
+def _format_response(result):
+    return (
+        "Explanation:\n" + result.get("explanation", "") + "\n\n"
+        "Example:\n" + result.get("example", "") + "\n\n"
+        "Summary:\n" + result.get("summary", "")
+    )
