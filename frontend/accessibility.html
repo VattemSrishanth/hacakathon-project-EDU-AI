@@ -22,6 +22,11 @@
           <a href="support.html" class="nav-item">Support</a>
           <a href="settings.html" class="nav-item">Settings</a>
         </nav>
+        </div>
+          <div class="auth-actions" aria-label="Authentication">
+            <a href="login.html" class="button btn-small auth-link">Login</a>
+            <a href="register.html" class="button btn-secondary btn-small auth-link">Sign Up</a>
+          </div>
       </div>
       <div class="user-menu">
         <div class="user-icon" id="userIcon">
@@ -75,6 +80,11 @@
         <div class="voice-panel-header">
           <h4>Voice Control Panel</h4>
           <span class="voice-badge" id="voiceStatus" aria-live="polite">Idle</span>
+        </div>
+
+        <div class="voice-permission">
+          <button class="button btn-secondary" id="voicePermissionBtn" type="button">Tap to Allow Microphone</button>
+          <span class="voice-label">Grant mic access to enable speech features.</span>
         </div>
 
         <div class="voice-actions">

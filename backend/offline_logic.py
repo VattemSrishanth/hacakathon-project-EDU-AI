@@ -29,6 +29,22 @@ offline_answers = {
     "comprehension": "Comprehension means understanding what you read. Steps: 1) Read carefully 2) Ask yourself questions 3) Summarize what you learned.",
     "punctuation": "Punctuation marks help organize writing. Period (.) ends sentences. Comma (,) separates ideas. Question mark (?) for questions.",
     "essay": "An essay is organized writing with: 1) Introduction (main idea) 2) Body (supporting details) 3) Conclusion (summary).",
+
+    # COMPUTER BASICS
+    "computer": "A computer is an electronic device that takes input, processes it, and gives output.",
+    "hardware": "Hardware means physical parts of a computer like keyboard, mouse, monitor, and CPU.",
+    "software": "Software means programs that run on a computer, like a browser or word processor.",
+    "cpu": "CPU is the brain of the computer that processes instructions.",
+    "ram": "RAM is short-term memory used to run programs quickly.",
+    "storage": "Storage saves data permanently, like a hard drive or SSD.",
+    "input": "Input devices are used to enter data, such as keyboard, mouse, or microphone.",
+    "output": "Output devices show results, like monitor, speakers, or printer.",
+    "internet": "The internet is a global network that lets computers share information.",
+    "browser": "A browser is software to open websites, like Chrome or Edge.",
+    "operating system": "An operating system manages the computer, like Windows or Linux.",
+    "file": "A file stores information, like a document or image.",
+    "folder": "A folder organizes files into groups.",
+    "programming": "Programming is writing instructions for computers using languages like Python."
 }
 
 def is_syllabus_question(question):
@@ -38,17 +54,78 @@ def is_syllabus_question(question):
     question_lower = question.lower()
     return any(topic in question_lower for topic in offline_answers.keys())
 
-def offline_response(question):
+def offline_response(question, learner_mode="regular"):
     """Return offline explanation for syllabus topics. NEVER returns empty."""
+    result = offline_generate_explanation(question, learner_mode=learner_mode, level="basic")
+    return (
+        "Explanation:\n" + result["explanation"] + "\n\n"
+        "Example:\n" + result["example"] + "\n\n"
+        "Summary:\n" + result["summary"]
+    )
+
+def offline_generate_explanation(question, learner_mode="regular", level="basic"):
+    """Generate structured offline explanation for Math, Science, and Computer basics."""
     if not question:
-        return "Please ask a specific question about Math, Science, or English."
-    
+        return {
+            "explanation": "Please ask a clear question about Math, Science, English, or Computer basics.",
+            "example": "Example: What is RAM?",
+            "summary": "Ask a clear question to get a full explanation."
+        }
+
     question_lower = question.lower()
-    
-    # Exact match first
+    matched_answer = None
+
     for key, answer in offline_answers.items():
         if key in question_lower:
-            return answer
-    
-    # Default fallback for valid syllabus questions
-    return "This is a school topic. Please review your lesson notes or ask your teacher for more details. For specific topics like Math, Science, or English fundamentals, I can help explain them."
+            matched_answer = answer
+            break
+
+    if not matched_answer:
+        matched_answer = "This is a school topic. Here is a simple explanation based on common syllabus knowledge."
+
+    explanation = _format_explanation(matched_answer, learner_mode)
+    example = _format_example(question_lower, learner_mode)
+    summary = _format_summary(matched_answer, learner_mode)
+
+    return {
+        "explanation": explanation,
+        "example": example,
+        "summary": summary
+    }
+
+def _format_explanation(text, learner_mode):
+    if learner_mode == "deaf":
+        return "- " + text + "\n- Step 1: Read the definition\n- Step 2: Connect to a real-life example"
+    if learner_mode == "speech":
+        return "".join([
+            "Simple explanation: ", text, " ",
+            "Step 1: Understand the meaning. ",
+            "Step 2: Practice with an example."
+        ])
+    return text + " This is a basic, clear explanation."
+
+def _format_example(question_lower, learner_mode):
+    if "fraction" in question_lower:
+        example = "Example: 1/2 is half of a pizza."
+    elif "percentage" in question_lower:
+        example = "Example: 50% means 50 out of 100." 
+    elif "ram" in question_lower:
+        example = "Example: Opening many apps uses more RAM." 
+    elif "cpu" in question_lower:
+        example = "Example: The CPU processes calculations when you solve math." 
+    else:
+        example = "Example: Think of a daily-life case that fits this concept." 
+
+    if learner_mode == "deaf":
+        return "- " + example
+    if learner_mode == "speech":
+        return "Example: " + example.replace("Example: ", "")
+    return example
+
+def _format_summary(text, learner_mode):
+    summary = "".join(text.split(" ")[:18])
+    if learner_mode == "deaf":
+        return "- Summary: " + summary + "..."
+    if learner_mode == "speech":
+        return "Summary: " + summary + "..."
+    return "Summary: " + summary + "..."

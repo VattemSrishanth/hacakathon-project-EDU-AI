@@ -22,6 +22,11 @@
           <a href="support.html" class="nav-item">Support</a>
           <a href="settings.html" class="nav-item active">Settings</a>
         </nav>
+        </div>
+          <div class="auth-actions" aria-label="Authentication">
+            <a href="login.html" class="button btn-small auth-link">Login</a>
+            <a href="register.html" class="button btn-secondary btn-small auth-link">Sign Up</a>
+          </div>
       </div>
       <div class="user-menu">
         <div class="user-icon" id="userIcon">
@@ -378,6 +383,17 @@
               </label>
             </div>
 
+            <div class="settings-item-toggle">
+              <div class="item-info">
+                <h3>Low data mode</h3>
+                <p>Reduce bandwidth for low‑internet areas</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="lowDataToggle" onchange="toggleLowDataMode()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
             <div class="form-group">
               <label>Language</label>
               <select id="language" onchange="changeLanguage()">
@@ -437,14 +453,21 @@
       const sidebarCategories = document.querySelectorAll('.sidebar-category');
       const settingsSections = document.querySelectorAll('.settings-section');
 
-      // Set default active category
-      const firstCategory = document.querySelector('[data-category="account"]');
-      if (firstCategory) {
-        firstCategory.classList.add('active');
+      const lowDataToggle = document.getElementById('lowDataToggle');
+      if (lowDataToggle) {
+        lowDataToggle.checked = localStorage.getItem('lowDataMode') === 'true';
       }
-      const firstSection = document.getElementById('account-section');
-      if (firstSection) {
-        firstSection.classList.add('active');
+
+      // Set default active category (show Display so low data mode is visible)
+      const defaultCategory = document.querySelector('[data-category="display"]')
+        || document.querySelector('[data-category="account"]');
+      if (defaultCategory) {
+        defaultCategory.classList.add('active');
+      }
+      const defaultSection = document.getElementById('display-section')
+        || document.getElementById('account-section');
+      if (defaultSection) {
+        defaultSection.classList.add('active');
       }
 
       // Handle category clicks

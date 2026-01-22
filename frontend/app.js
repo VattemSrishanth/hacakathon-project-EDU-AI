@@ -5,12 +5,30 @@ let mode = "normal";
 window.addEventListener('load', function() {
   // Apply dark mode if enabled
   applyDarkModeIfEnabled();
+
+  // Apply low data mode if enabled
+  applyLowDataModeIfEnabled();
   
   // Load user progress first (must load before displaying lessons)
   loadUserProgress();
   
   // Load and display user information
   loadUserInfo();
+
+  // Toggle auth UI visibility based on login state
+  updateAuthUI();
+
+  // Register service worker for offline support
+  registerServiceWorker();
+
+  // Network status helper
+  setupNetworkStatusUI();
+
+  // Offline lessons download UI
+  setupOfflineDownloads();
+
+  // Video fallback for low internet/offline
+  setupVideoFallback();
   
   // Load and display current lesson
   displayCurrentLesson();
@@ -18,6 +36,198 @@ window.addEventListener('load', function() {
   // Update progress summary
   updateProgressSummary();
 });
+
+const OFFLINE_CACHE_NAME = 'edu-ai-cache-v1';
+
+// Low data mode (reduced network usage)
+function isLowDataMode() {
+  return localStorage.getItem('lowDataMode') === 'true';
+}
+
+function applyLowDataModeIfEnabled() {
+  const lowDataEnabled = isLowDataMode();
+  if (lowDataEnabled) {
+    document.body.classList.add('low-data-mode');
+  } else {
+    document.body.classList.remove('low-data-mode');
+  }
+}
+
+function toggleLowDataMode() {
+  const enabled = document.getElementById('lowDataToggle')?.checked === true;
+  localStorage.setItem('lowDataMode', enabled ? 'true' : 'false');
+  applyLowDataModeIfEnabled();
+  updateNetworkStatusUI();
+}
+
+// Offline/online status banner
+function setupNetworkStatusUI() {
+  const container = document.querySelector('.main-content');
+  if (!container) return;
+
+  let status = document.getElementById('networkStatus');
+  if (!status) {
+    status = document.createElement('div');
+    status.id = 'networkStatus';
+    status.className = 'network-status';
+    container.prepend(status);
+  }
+
+  updateNetworkStatusUI();
+  window.addEventListener('online', updateNetworkStatusUI);
+  window.addEventListener('offline', updateNetworkStatusUI);
+}
+
+function updateNetworkStatusUI() {
+  const status = document.getElementById('networkStatus');
+  if (!status) return;
+
+  const online = navigator.onLine;
+  const lowData = isLowDataMode();
+
+  if (!online) {
+    status.textContent = 'Offline mode: using cached lessons and offline AI support.';
+    status.classList.add('is-offline');
+    status.classList.remove('is-lowdata');
+    return;
+  }
+
+  if (lowData) {
+    status.textContent = 'Low data mode enabled: reduced network usage.';
+    status.classList.remove('is-offline');
+    status.classList.add('is-lowdata');
+    return;
+  }
+
+  status.textContent = 'Online: full learning experience available.';
+  status.classList.remove('is-offline');
+  status.classList.remove('is-lowdata');
+}
+
+// Register service worker for offline-first support
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('sw.js').catch(() => {
+    // Ignore registration errors for local/dev use
+  });
+}
+
+// Offline downloads for lessons
+function setupOfflineDownloads() {
+  const list = document.getElementById('offlineDownloadsList');
+  const status = document.getElementById('offlineDownloadsStatus');
+  if (!list || typeof getLessons !== 'function') return;
+
+  const lessonsList = getLessons();
+  if (!Array.isArray(lessonsList) || lessonsList.length === 0) return;
+
+  const downloadAll = document.createElement('button');
+  downloadAll.className = 'button btn-small';
+  downloadAll.type = 'button';
+  downloadAll.textContent = 'Download All Lessons';
+  downloadAll.addEventListener('click', async function () {
+    if (status) status.textContent = 'Downloading lessons for offline use...';
+    for (const lesson of lessonsList) {
+      if (!lesson.videoFile) continue;
+      await cacheAsset(lesson.videoFile);
+    }
+    if (status) status.textContent = 'Offline downloads completed.';
+  });
+  list.appendChild(downloadAll);
+
+  lessonsList.forEach(lesson => {
+    const item = document.createElement('div');
+    item.className = 'offline-item';
+
+    const meta = document.createElement('div');
+    meta.className = 'offline-meta';
+    const title = document.createElement('div');
+    title.className = 'offline-title';
+    title.textContent = lesson.title || 'Lesson';
+    const duration = document.createElement('div');
+    duration.className = 'offline-duration';
+    duration.textContent = (lesson.duration ? lesson.duration + ' min' : 'Duration N/A');
+    meta.appendChild(title);
+    meta.appendChild(duration);
+
+    const btn = document.createElement('button');
+    btn.className = 'button btn-small';
+    btn.type = 'button';
+    btn.textContent = 'Download';
+    btn.addEventListener('click', async function () {
+      if (!lesson.videoFile) {
+        if (status) status.textContent = 'Offline video not available for this lesson.';
+        return;
+      }
+      if (status) status.textContent = 'Downloading ' + (lesson.title || 'lesson') + '...';
+      const ok = await cacheAsset(lesson.videoFile);
+      if (status) {
+        status.textContent = ok ? 'Saved for offline use.' : 'Download failed. Check connection.';
+      }
+    });
+
+    item.appendChild(meta);
+    item.appendChild(btn);
+    list.appendChild(item);
+  });
+}
+
+async function cacheAsset(url) {
+  if (!('caches' in window)) return false;
+  try {
+    const cache = await caches.open(OFFLINE_CACHE_NAME);
+    const absoluteUrl = new URL(url, window.location.href).toString();
+    await cache.add(absoluteUrl);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Video fallback for low internet and offline
+function setupVideoFallback() {
+  const video = document.getElementById('lessonVideo');
+  const caption = document.querySelector('.video-caption');
+  if (!video || !caption) return;
+
+  const applyState = () => {
+    const offline = !navigator.onLine;
+    const lowData = isLowDataMode();
+    if (offline || lowData) {
+      video.style.display = 'none';
+      caption.textContent = offline
+        ? 'Offline: sign language video unavailable. Please view text lessons.'
+        : 'Low data mode: video disabled to save bandwidth.';
+    } else {
+      video.style.display = '';
+      caption.textContent = 'Sign language interpretation of the Fractions lesson';
+    }
+  };
+
+  applyState();
+  window.addEventListener('online', applyState);
+  window.addEventListener('offline', applyState);
+}
+
+// Check whether the user is logged in
+function isLoggedIn() {
+  return !!localStorage.getItem('loginTime');
+}
+
+// Toggle auth UI (login/signup vs user icon)
+function updateAuthUI() {
+  const loggedIn = isLoggedIn();
+  const userMenus = document.querySelectorAll('.user-menu');
+  const authActions = document.querySelectorAll('.auth-actions');
+
+  userMenus.forEach(menu => {
+    menu.style.display = loggedIn ? 'inline-block' : 'none';
+  });
+
+  authActions.forEach(actions => {
+    actions.style.display = loggedIn ? 'none' : 'flex';
+  });
+}
 
 // Apply dark mode if it was previously enabled
 function applyDarkModeIfEnabled() {
@@ -239,6 +449,9 @@ document.addEventListener('DOMContentLoaded', function() {
       // Use accessibility mode from global variable
       const currentMode = mode || 'normal';
 
+      // Low internet support: use offline mode when needed
+      const online = navigator.onLine && !isLowDataMode();
+
       fetch('http://localhost:5000/ask', {
         method: 'POST',
         headers: {
@@ -246,14 +459,15 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         body: JSON.stringify({
           question: question,
-          online: true,
+          online: online,
           mode: currentMode
         })
       })
       .then(res => res.json())
       .then(data => {
         if (data && data.answer) {
-          responseDiv.textContent = data.answer;
+          const prefix = online ? '' : '[Offline] ';
+          responseDiv.textContent = prefix + data.answer;
           responseDiv.style.color = '#333';
         } else {
           responseDiv.textContent = 'No answer received.';
@@ -261,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       })
       .catch(err => {
-        responseDiv.textContent = 'Error contacting AI Tutor.';
+        responseDiv.textContent = 'Offline or low connectivity. Please try again later.';
         responseDiv.style.color = 'red';
       })
       .finally(() => {

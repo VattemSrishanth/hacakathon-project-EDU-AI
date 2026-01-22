@@ -20,6 +20,11 @@
     ttsEnabled: localStorage.getItem('voiceTtsEnabled') === 'true'
   };
 
+  function isAuthPage() {
+    return !!document.querySelector('.login-container, .register-container') ||
+      /login\.html|register\.html/i.test(window.location.pathname);
+  }
+
   // DOM helpers
   function byId(id) {
     return document.getElementById(id);
@@ -246,6 +251,22 @@
     }
   }
 
+  async function requestMicPermission() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setError('Microphone permissions are not supported in this browser.');
+      return false;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach((track) => track.stop());
+      setStatus('Microphone access granted.', 'ok');
+      return true;
+    } catch (err) {
+      setError('Microphone access denied. Please allow mic permissions and try again.');
+      return false;
+    }
+  }
+
   function stopListening() {
     if (!state.recognition) return;
     try {
@@ -391,6 +412,7 @@
 
     const startBtn = byId('voiceStartBtn');
     const stopBtn = byId('voiceStopBtn');
+    const permissionBtn = byId('voicePermissionBtn');
     const translateBtn = byId('voiceTranslateBtn');
     const langSelect = byId('voiceLangSelect');
     const ttsToggle = byId('voiceTtsToggle');
@@ -443,6 +465,15 @@
       });
     }
 
+    if (permissionBtn) {
+      permissionBtn.addEventListener('click', async function () {
+        const granted = await requestMicPermission();
+        if (granted) {
+          startListening();
+        }
+      });
+    }
+
     if (stopBtn) {
       stopBtn.addEventListener('click', function () {
         stopListening();
@@ -466,6 +497,7 @@
 
   // Global voice helper (lightweight)
   function createGlobalVoiceButton() {
+    if (isAuthPage()) return;
     if (!state.globalEnabled) return;
     if (byId('voiceGlobalToggleButton')) return;
 
@@ -525,6 +557,7 @@
 
   // Keyboard toggle (global listener): Ctrl+Shift+V
   document.addEventListener('keydown', function (event) {
+    if (isAuthPage()) return;
     if (!event.ctrlKey || !event.shiftKey || event.key.toLowerCase() !== 'v') return;
     if (!state.globalEnabled) return;
     if (state.listening) {
@@ -538,6 +571,7 @@
 
   // Init
   document.addEventListener('DOMContentLoaded', function () {
+    if (isAuthPage()) return;
     setupAccessibilityPanel();
     setupAiTutorVoiceButton();
 

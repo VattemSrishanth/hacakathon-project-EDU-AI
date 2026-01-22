@@ -40,11 +40,13 @@ def ask():
         question = question[:500]
         
         online = bool(data.get("online", True))
-        mode = str(data.get("mode", "normal")).lower()
+        mode = str(data.get("mode", "regular")).lower()
         
         # Validate mode
-        if mode not in ["normal", "deaf", "speech"]:
-            mode = "normal"
+        if mode not in ["regular", "deaf", "speech", "normal"]:
+            mode = "regular"
+        if mode == "normal":
+            mode = "regular"
         
         # Get AI response (guarantees non-empty answer for syllabus topics)
         answer = get_ai_response(question, online, mode)
