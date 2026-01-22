@@ -458,16 +458,14 @@
         lowDataToggle.checked = localStorage.getItem('lowDataMode') === 'true';
       }
 
-      // Set default active category (show Display so low data mode is visible)
-      const defaultCategory = document.querySelector('[data-category="display"]')
-        || document.querySelector('[data-category="account"]');
-      if (defaultCategory) {
-        defaultCategory.classList.add('active');
+      // Set default active category
+      const firstCategory = document.querySelector('[data-category="account"]');
+      if (firstCategory) {
+        firstCategory.classList.add('active');
       }
-      const defaultSection = document.getElementById('display-section')
-        || document.getElementById('account-section');
-      if (defaultSection) {
-        defaultSection.classList.add('active');
+      const firstSection = document.getElementById('account-section');
+      if (firstSection) {
+        firstSection.classList.add('active');
       }
 
       // Handle category clicks
