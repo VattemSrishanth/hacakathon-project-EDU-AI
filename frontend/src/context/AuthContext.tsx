@@ -20,6 +20,7 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   login: (state: AuthState) => void;
   logout: () => void;
+  updateUser: (user: Partial<AuthUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -63,6 +64,21 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
         setAuth(normalized);
       },
       logout: () => setAuth(null),
+      updateUser: (userUpdates) => {
+        if (!auth) return;
+        const updated = {
+          ...auth,
+          user: {
+            ...auth.user,
+            ...userUpdates,
+          }
+        };
+        // Re-calculate initials if name or email changed
+        if (userUpdates.name || userUpdates.email) {
+          updated.user.initials = getInitials(updated.user);
+        }
+        setAuth(updated);
+      }
     };
   }, [auth, setAuth]);
 

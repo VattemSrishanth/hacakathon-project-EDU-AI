@@ -8,8 +8,32 @@ import { useSettings } from '../context/SettingsContext';
 const Lessons = () => {
   const { settings, t } = useSettings();
   const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterLevel, setFilterLevel] = useState<string>('');
+
+  // Load completed lessons from independent localStorage key
+  useEffect(() => {
+    const stored = localStorage.getItem('lesson_completion_tracker');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setCompletedIds(Array.isArray(parsed) ? parsed : []);
+      } catch (e) {
+        console.error('Failed to parse completed lessons', e);
+        setCompletedIds([]);
+      }
+    }
+  }, []);
+
+  const toggleLessonCompletion = (id: string) => {
+    const newCompleted = completedIds.includes(id)
+      ? completedIds.filter(cid => cid !== id)
+      : [...completedIds, id];
+    
+    setCompletedIds(newCompleted);
+    localStorage.setItem('lesson_completion_tracker', JSON.stringify(newCompleted));
+  };
 
   // Get user's preferred level
   const preferredLevel = settings.learning.level;
@@ -19,7 +43,9 @@ const Lessons = () => {
       setLoading(true);
       try {
         const data = await lessonsAPI.getAll();
-        setLessons(data || []);
+        // The API returns { success: true, lessons: [], total: 0 }
+        const lessonData = data?.lessons || [];
+        setLessons(Array.isArray(lessonData) ? lessonData : []);
       } catch (error) {
         console.error('Failed to fetch lessons:', error);
         setLessons([]);
@@ -32,9 +58,11 @@ const Lessons = () => {
   }, []);
 
   // Filter lessons by selected level or show all
-  const filteredLessons = filterLevel
-    ? lessons.filter((lesson) => lesson.level === filterLevel)
-    : lessons;
+  const filteredLessons = Array.isArray(lessons) 
+    ? (filterLevel
+        ? lessons.filter((lesson) => lesson.level === filterLevel)
+        : lessons)
+    : [];
 
   // Translate level names
   const getLevelLabel = (level: string) => {
@@ -144,7 +172,19 @@ const Lessons = () => {
                       </span>
                     </div>
                   </div>
-                  <Button variant="primary" className="w-full">{t.lessons.startLesson}</Button>
+                  <div className="space-y-2 mt-4">
+                    <Button variant="primary" className="w-full">{t.lessons.startLesson}</Button>
+                    <button
+                      onClick={() => toggleLessonCompletion(lesson.id)}
+                      className={`w-full py-2 text-sm font-medium rounded-lg border transition-all ${
+                        completedIds.includes(lesson.id)
+                          ? 'bg-green-50 border-green-200 text-green-700'
+                          : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {completedIds.includes(lesson.id) ? '✓ Completed' : 'Mark as Completed'}
+                    </button>
+                  </div>
                 </div>
               </Card>
             ))}
