@@ -178,6 +178,14 @@ const AITutor = () => {
       }]);
       setFileContext({ type: 'image', data: base64, name: file.name });
     };
+    reader.onerror = () => {
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: "Sorry, I couldn't read the image file. Please try again.",
+        timestamp: new Date(),
+      }]);
+    };
     reader.readAsDataURL(file);
     if (e.target) e.target.value = '';
   };
@@ -216,6 +224,14 @@ const AITutor = () => {
         timestamp: new Date(),
       }]);
       setFileContext({ type: 'pdf', data: text, name: file.name });
+    };
+    reader.onerror = () => {
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: "Sorry, I couldn't read the PDF file. Please try again with a different document.",
+        timestamp: new Date(),
+      }]);
     };
     reader.readAsText(file);
     if (e.target) e.target.value = '';
