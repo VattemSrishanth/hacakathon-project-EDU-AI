@@ -1,0 +1,49 @@
+.auth-container {
+  width: 900px;
+  height: 480px;
+  display: flex;
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,.15);
+}
+
+.form-container {
+  width: 50%;
+  position: relative;
+}
+
+.form-box {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.form-box.register {
+  transform: translateX(120%);
+  opacity: 0;
+  filter: blur(10px);
+  transition: .7s ease;
+}
+
+.auth-container.active .register {
+  transform: translateX(0);
+  opacity: 1;
+  filter: blur(0);
+}
+
+.auth-container.active .login {
+  transform: translateX(-120%);
+  opacity: 0;
+  filter: blur(10px);
+}
+
+.info-panel {
+  width: 50%;
+  background: linear-gradient(135deg, #ff6a3d, #ff3d68);
+  color: white;
+  padding: 80px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
