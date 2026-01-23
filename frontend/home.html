@@ -231,13 +231,26 @@
 
     .fade-slide {
       opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transform: translateX(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .fade-slide.from-left {
+      transform: translateX(-40px);
+    }
+
+    .fade-slide.from-right {
+      transform: translateX(40px);
     }
 
     .fade-slide.is-visible {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateX(0);
+    }
+
+    .fade-slide.is-visible:hover {
+      transform: translateX(0) translateY(-6px);
+      box-shadow: 0 18px 28px rgba(15, 23, 42, 0.18);
     }
   </style>
 </head>
@@ -524,6 +537,12 @@
   </script>
   <script>
     (function () {
+      var sections = document.querySelectorAll('.section:not(.home-hero)');
+      sections.forEach(function (section, index) {
+        section.classList.add('fade-slide');
+        section.classList.add(index % 2 === 0 ? 'from-left' : 'from-right');
+      });
+
       var revealObserver = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
@@ -533,7 +552,10 @@
         });
       }, { threshold: 0.15 });
 
-      document.querySelectorAll('.fade-slide').forEach(function (el) {
+      document.querySelectorAll('.fade-slide').forEach(function (el, index) {
+        if (!el.classList.contains('from-left') && !el.classList.contains('from-right')) {
+          el.classList.add(index % 2 === 0 ? 'from-left' : 'from-right');
+        }
         revealObserver.observe(el);
       });
 

@@ -2501,8 +2501,9 @@ body.dark-mode .voice-badge {
 
 .how-steps.horizontal {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  padding-left: 20px;
+  padding-left: 0;
   gap: 14px;
+  list-style: none;
 }
 
 body.dark-mode .parallax-bg {
