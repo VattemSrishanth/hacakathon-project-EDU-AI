@@ -142,6 +142,7 @@ export interface TranslationKeys {
       reduceMotion: string;
       lowPowerMode: string;
       lowPowerModeDesc: string;
+      voiceLanguage: string;
     };
     navigation: {
       title: string;
@@ -331,6 +332,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         reduceMotion: 'Reduce motion',
         lowPowerMode: 'Low Power Mode',
         lowPowerModeDesc: 'Disable animations and reduce resource usage for older devices or low battery.',
+        voiceLanguage: 'Voice Navigation Language',
       },
       navigation: {
         title: 'Navigation',
@@ -514,6 +516,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         reduceMotion: 'మోషన్ తగ్గించు',
         lowPowerMode: 'తక్కువ పవర్ మోడ్',
         lowPowerModeDesc: 'పాత పరికరాలు లేదా తక్కువ బ్యాటరీ కోసం యానిమేషన్లను నిలిపివేస్తుంది.',
+        voiceLanguage: 'వాయిస్ నావిగేషన్ భాష',
       },
       navigation: {
         title: 'నావిగేషన్',
@@ -697,6 +700,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         reduceMotion: 'गति कम करें',
         lowPowerMode: 'लो पावर मोड',
         lowPowerModeDesc: 'पुरानी मशीनों या कम बैटरी के लिए एनिमेशन बंद करें।',
+        voiceLanguage: 'वॉयस नेविगेशन भाषा',
       },
       navigation: {
         title: 'नेविगेशन',
@@ -880,6 +884,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         reduceMotion: 'Reducir movimiento',
         lowPowerMode: 'Modo de bajo consumo',
         lowPowerModeDesc: 'Desactive las animaciones y reduzca el uso de recursos para dispositivos antiguos o batería baja.',
+        voiceLanguage: 'Idioma de navegación por voz',
       },
       navigation: {
         title: 'Navegación',
@@ -1063,6 +1068,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         reduceMotion: 'Réduire les animations',
         lowPowerMode: 'Mode économie d\'énergie',
         lowPowerModeDesc: 'Désactivez les animations et réduisez l\'utilisation des ressources pour les anciens appareils ou la batterie faible.',
+        voiceLanguage: 'Langue de navigation vocale',
       },
       navigation: {
         title: 'Navigation',

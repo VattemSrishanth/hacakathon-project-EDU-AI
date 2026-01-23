@@ -59,6 +59,22 @@ export const aiAPI = {
     });
     return response.data;
   },
+
+  analyzeImage: async (base64Image: string, mode: string = 'regular') => {
+    const response = await api.post('/analyze-image', { 
+      image: base64Image,
+      mode
+    });
+    return response.data;
+  },
+
+  analyzePdf: async (pdfText: string, mode: string = 'regular') => {
+    const response = await api.post('/analyze-pdf', { 
+      text: pdfText,
+      mode
+    });
+    return response.data;
+  },
 };
 
 // Lessons API

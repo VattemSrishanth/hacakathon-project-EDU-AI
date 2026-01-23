@@ -387,6 +387,24 @@ const Settings = () => {
                   <option value="Large">{t.settings.themeAccessibility.large}</option>
                 </select>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t.settings.themeAccessibility.voiceLanguage}</label>
+                <select
+                  value={settings.themeAccessibility.voiceLanguage}
+                  onChange={(e) => {
+                    updateThemeAccessibility({ voiceLanguage: e.target.value as SupportedLanguage });
+                    showSaveMessage(t.settings.changesSaved);
+                  }}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                >
+                  <option value="English">English</option>
+                  <option value="Telugu">తెలుగు (Telugu)</option>
+                  <option value="Hindi">हिंदी (Hindi)</option>
+                  <option value="Spanish">Español (Spanish)</option>
+                  <option value="French">Français (French)</option>
+                </select>
+              </div>
               
               <div className="space-y-4">
                 <label className="flex items-center gap-3 text-sm font-medium text-gray-700 cursor-pointer">

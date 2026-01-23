@@ -37,7 +37,7 @@ const VoiceControl: React.FC = () => {
       'French': 'fr-FR'
     };
     
-    reco.lang = langMap[settings.learning.language] || 'en-US';
+    reco.lang = langMap[settings.themeAccessibility.voiceLanguage] || 'en-US';
 
     reco.onstart = () => {
       setIsListening(true);
@@ -62,25 +62,26 @@ const VoiceControl: React.FC = () => {
     };
 
     setRecognition(reco);
-  }, [settings.learning.language]);
+  }, [settings.themeAccessibility.voiceLanguage]);
 
   const handleCommand = useCallback((command: string) => {
     console.log('Voice Command Received:', command);
     
-    // Navigation logic (Supports English and Basic Localized keywords)
+    // Navigation logic (Supports English, Telugu, Hindi and more)
+    // Uses broad matching to handle minor pronunciation variations and accent differences
     const matches = (keywords: string[]) => keywords.some(k => command.includes(k.toLowerCase()));
 
-    if (matches(['home', 'mukhyyaprshthm', 'mukhy', 'inicio', 'accueil'])) {
+    if (matches(['home', 'mukhy', 'mukhya', 'inicio', 'accueil', 'hoam', 'ముఖ్య', 'హోమ్', 'ముఖపుట'])) {
       navigate('/');
-    } else if (matches(['dashboard', 'dashbord', 'desbord', 'tablero', 'tableau'])) {
+    } else if (matches(['dashboard', 'dashbord', 'desbord', 'tablero', 'tableau', 'డాష్బోర్డ్', 'डैशबोर्ड'])) {
       navigate('/dashboard');
-    } else if (matches(['lessons', 'paath', 'lesson', 'lecciones', 'leçons'])) {
+    } else if (matches(['lesson', 'paath', 'lecciones', 'leçons', 'lesan', 'పాఠాలు', 'లెసన్స్', 'सबक', 'पाठ'])) {
       navigate('/lessons');
-    } else if (matches(['ai tutor', 'tutor', 'sikshak', 'shikshak', 'ayudante', 'tuteur'])) {
+    } else if (matches(['tutor', 'sikshak', 'shikshak', 'ayudante', 'tuteur', 'శిక్షకుడు', 'शिक्षक'])) {
       navigate('/ai-tutor');
-    } else if (matches(['settings', 'seting', 'vshisht', 'ajuste', 'paramètre'])) {
+    } else if (matches(['settings', 'seting', 'vshisht', 'ajuste', 'paramètre', 'సెట్టింగులు', 'सेटिंग', 'అమరికలు', 'विकल्प'])) {
       navigate('/settings');
-    } else if (matches(['back', 'pichhe', 'venukku', 'atrás', 'retour'])) {
+    } else if (matches(['back', 'pichhe', 'peeche', 'venukku', 'atrás', 'retour', 'వెనుకకు', 'पीछे'])) {
       navigate(-1);
     } else {
       setStatusMessage(t.voiceControl.unrecognized);

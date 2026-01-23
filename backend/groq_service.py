@@ -31,7 +31,7 @@ except ImportError:
     pass
 
 # Configuration
-MAX_PROMPT_CHARS = 12000
+MAX_PROMPT_CHARS = 300000 # Increased for vision support (base64 images)
 
 # Groq model selection - using llama-3.3-70b-versatile for strong reasoning
 # Alternative models:
@@ -39,6 +39,7 @@ MAX_PROMPT_CHARS = 12000
 # - "mixtral-8x7b-32768" (faster responses)
 # - "gemma2-9b-it" (lightweight, fast)
 DEFAULT_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+VISION_MODEL = "llama-3.2-11b-vision-preview"
 
 
 def _get_api_key():
@@ -176,3 +177,48 @@ def generate_text(prompt, model_name=DEFAULT_MODEL, temperature=0.5, max_output_
         print(f"[groq_service] Classified error: {error_code}")
         
         return "", error_code
+
+
+def generate_vision_text(prompt, base64_image, model_name=VISION_MODEL, temperature=0.5, max_output_tokens=512):
+    """
+    Generate text analysis from an image using Groq Vision API.
+    """
+    api_key = _get_api_key()
+    if not api_key:
+        return "", "missing_api_key"
+    
+    try:
+        # Check if the base64 string has the header and remove it if so
+        if "," in base64_image:
+            image_data = base64_image.split(",")[1]
+        else:
+            image_data = base64_image
+
+        client = Groq(api_key=api_key)
+        response = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{image_data}",
+                            },
+                        },
+                    ],
+                }
+            ],
+            temperature=temperature,
+            max_tokens=max_output_tokens,
+            timeout=30.0
+        )
+        
+        if response.choices:
+            return response.choices[0].message.content.strip(), "ok"
+        return "", "empty_response"
+    except Exception as exc:
+        print(f"[groq_service] Vision error: {exc}")
+        return "", _classify_error_message(str(exc))

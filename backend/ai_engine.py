@@ -17,7 +17,7 @@ from offline_logic import (
 # ============================================
 # OLD: from llm_service import generate_text
 # NEW: Using Groq API via groq_service.py
-from groq_service import generate_text
+from groq_service import generate_text, generate_vision_text
 # ============================================
 
 SYSTEM_PROMPT = """You are a dedicated school tutor for rural and disabled learners.
@@ -86,6 +86,21 @@ def generate_explanation(question, learner_mode="regular", level="basic"):
 
     # Fallback to offline structured response if JSON parsing fails
     return offline_generate_explanation(question, learner_mode=mode_key, level=level)
+
+def analyze_image(base64_image, learner_mode="regular"):
+    """Analyze image using computer vision and return an academic educational explanation."""
+    prompt = (
+        "You are an academic AI tutor. Analyze this image for a student. "
+        "Provide a formal, structured description of the visual content and explain its educational relevance. "
+        "Maintain a professional tone without emojis or informal language. "
+        "Learner mode: " + learner_mode
+    )
+    
+    raw, err = generate_vision_text(prompt, base64_image)
+    if err == "ok":
+        return {"explanation": raw}
+    
+    return {"explanation": "I am sorry, but I couldn't analyze the image. Please describe what it shows and I will help you."}
 
 def get_ai_response(question, online=True, mode="regular"):
     """Get AI response with structured, inclusive explanation and offline fallback."""

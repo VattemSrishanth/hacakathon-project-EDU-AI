@@ -21,4 +21,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  imageUrl?: string;
+  attachmentType?: 'image' | 'pdf' | 'youtube';
+  attachmentTitle?: string;
 }
