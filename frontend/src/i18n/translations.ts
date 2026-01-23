@@ -133,6 +133,8 @@ export interface TranslationKeys {
       large: string;
       highContrast: string;
       reduceMotion: string;
+      lowPowerMode: string;
+      lowPowerModeDesc: string;
     };
     navigation: {
       title: string;
@@ -314,6 +316,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         large: 'Large',
         highContrast: 'High contrast',
         reduceMotion: 'Reduce motion',
+        lowPowerMode: 'Low Power Mode',
+        lowPowerModeDesc: 'Disable animations and reduce resource usage for older devices or low battery.',
       },
       navigation: {
         title: 'Navigation',
@@ -489,6 +493,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         large: 'పెద్దది',
         highContrast: 'హై కాంట్రాస్ట్',
         reduceMotion: 'మోషన్ తగ్గించు',
+        lowPowerMode: 'తక్కువ పవర్ మోడ్',
+        lowPowerModeDesc: 'పాత పరికరాలు లేదా తక్కువ బ్యాటరీ కోసం యానిమేషన్లను నిలిపివేస్తుంది.',
       },
       navigation: {
         title: 'నావిగేషన్',
@@ -664,6 +670,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         large: 'बड़ा',
         highContrast: 'उच्च कंट्रास्ट',
         reduceMotion: 'गति कम करें',
+        lowPowerMode: 'लो पावर मोड',
+        lowPowerModeDesc: 'पुरानी मशीनों या कम बैटरी के लिए एनिमेशन बंद करें।',
       },
       navigation: {
         title: 'नेविगेशन',
@@ -839,6 +847,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         large: 'Grande',
         highContrast: 'Alto contraste',
         reduceMotion: 'Reducir movimiento',
+        lowPowerMode: 'Modo de bajo consumo',
+        lowPowerModeDesc: 'Desactive las animaciones y reduzca el uso de recursos para dispositivos antiguos o batería baja.',
       },
       navigation: {
         title: 'Navegación',
@@ -1014,6 +1024,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         large: 'Grand',
         highContrast: 'Contraste élevé',
         reduceMotion: 'Réduire les animations',
+        lowPowerMode: 'Mode économie d\'énergie',
+        lowPowerModeDesc: 'Désactivez les animations et réduisez l\'utilisation des ressources pour les anciens appareils ou la batterie faible.',
       },
       navigation: {
         title: 'Navigation',

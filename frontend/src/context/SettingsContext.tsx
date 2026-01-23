@@ -39,6 +39,7 @@ export interface ThemeAccessibilitySettings {
   fontSize: FontSize;
   highContrast: boolean;
   reduceMotion: boolean;
+  lowPowerMode: boolean;
 }
 
 export interface SettingsState {
@@ -81,6 +82,7 @@ export const defaultSettings: SettingsState = {
     fontSize: 'Medium',
     highContrast: false,
     reduceMotion: false,
+    lowPowerMode: false,
   },
 };
 
@@ -200,11 +202,21 @@ const applyReduceMotion = (enabled: boolean): void => {
   }
 };
 
+const applyLowPowerMode = (enabled: boolean): void => {
+  const root = document.documentElement;
+  if (enabled) {
+    root.classList.add('low-power');
+  } else {
+    root.classList.remove('low-power');
+  }
+};
+
 const applyAllEffects = (settings: SettingsState): void => {
   applyTheme(settings.themeAccessibility.theme);
   applyFontSize(settings.themeAccessibility.fontSize);
   applyHighContrast(settings.themeAccessibility.highContrast);
   applyReduceMotion(settings.themeAccessibility.reduceMotion);
+  applyLowPowerMode(settings.themeAccessibility.lowPowerMode);
 };
 
 // ==================== Provider Component ====================

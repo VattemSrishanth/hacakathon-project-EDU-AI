@@ -357,7 +357,7 @@ const Settings = () => {
           {/* Theme & Accessibility */}
           <section className="bg-white rounded-2xl shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">{t.settings.themeAccessibility.title}</h2>
-            <div className="grid md:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t.settings.themeAccessibility.theme}</label>
                 <select
@@ -387,28 +387,61 @@ const Settings = () => {
                   <option value="Large">{t.settings.themeAccessibility.large}</option>
                 </select>
               </div>
-              <label className="flex items-center gap-2 text-sm text-gray-700">
-                <input
-                  type="checkbox"
-                  checked={settings.themeAccessibility.highContrast}
-                  onChange={(e) => {
-                    updateThemeAccessibility({ highContrast: e.target.checked });
-                    showSaveMessage(t.settings.changesSaved);
-                  }}
-                />
-                {t.settings.themeAccessibility.highContrast}
-              </label>
-              <label className="flex items-center gap-2 text-sm text-gray-700">
-                <input
-                  type="checkbox"
-                  checked={settings.themeAccessibility.reduceMotion}
-                  onChange={(e) => {
-                    updateThemeAccessibility({ reduceMotion: e.target.checked });
-                    showSaveMessage(t.settings.changesSaved);
-                  }}
-                />
-                {t.settings.themeAccessibility.reduceMotion}
-              </label>
+              
+              <div className="space-y-4">
+                <label className="flex items-center gap-3 text-sm font-medium text-gray-700 cursor-pointer">
+                  <div className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={settings.themeAccessibility.highContrast}
+                      onChange={(e) => {
+                        updateThemeAccessibility({ highContrast: e.target.checked });
+                        showSaveMessage(t.settings.changesSaved);
+                      }}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  </div>
+                  {t.settings.themeAccessibility.highContrast}
+                </label>
+
+                <label className="flex items-center gap-3 text-sm font-medium text-gray-700 cursor-pointer">
+                  <div className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={settings.themeAccessibility.reduceMotion}
+                      onChange={(e) => {
+                        updateThemeAccessibility({ reduceMotion: e.target.checked });
+                        showSaveMessage(t.settings.changesSaved);
+                      }}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  </div>
+                  {t.settings.themeAccessibility.reduceMotion}
+                </label>
+              </div>
+
+              <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 flex flex-col justify-center">
+                <label className="flex items-center gap-3 text-sm font-bold text-indigo-900 cursor-pointer mb-1">
+                  <div className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={settings.themeAccessibility.lowPowerMode}
+                      onChange={(e) => {
+                        updateThemeAccessibility({ lowPowerMode: e.target.checked });
+                        showSaveMessage(t.settings.changesSaved);
+                      }}
+                    />
+                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                  </div>
+                  {t.settings.themeAccessibility.lowPowerMode}
+                </label>
+                <p className="text-[11px] text-indigo-700 font-medium leading-tight">
+                  {t.settings.themeAccessibility.lowPowerModeDesc}
+                </p>
+              </div>
             </div>
           </section>
 

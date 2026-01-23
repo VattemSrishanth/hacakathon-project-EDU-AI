@@ -68,8 +68,19 @@ export const lessonsAPI = {
     if (category) params.append('category', category);
     if (level) params.append('level', level);
     
-    const response = await api.get(`/lessons${params.toString() ? '?' + params.toString() : ''}`);
-    return response.data;
+    try {
+      const response = await api.get(`/lessons${params.toString() ? '?' + params.toString() : ''}`);
+      if (response.data) {
+        localStorage.setItem(`cached_lessons_${level || 'all'}_${category || 'all'}`, JSON.stringify(response.data));
+      }
+      return response.data;
+    } catch (error) {
+      if (!navigator.onLine) {
+        const cached = localStorage.getItem(`cached_lessons_${level || 'all'}_${category || 'all'}`);
+        if (cached) return JSON.parse(cached);
+      }
+      throw error;
+    }
   },
   
   getById: async (id: string) => {

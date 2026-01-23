@@ -15,6 +15,7 @@ const Accessibility = () => {
             <ul className="space-y-2 text-gray-900">
               <li>• High contrast color schemes</li>
               <li>• Adjustable text sizes</li>
+              <li>• Low Power Mode for resource conservation</li>
               <li>• Screen reader compatibility</li>
               <li>• Clear navigation structure</li>
             </ul>

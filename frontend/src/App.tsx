@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import OfflineBanner from './components/OfflineBanner';
 import Home from './pages/Home.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import Lessons from './pages/Lessons.tsx';
@@ -20,6 +21,7 @@ function App() {
     <SettingsProvider>
       <AuthProvider>
       <div className="min-h-screen flex flex-col bg-gray-50">
+        <OfflineBanner />
         <Navbar />
         <main className="flex-1">
           <Routes>

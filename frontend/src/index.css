@@ -93,6 +93,24 @@
   --tw-gradient-to: var(--bg-secondary) !important;
 }
 
+/* ==================== Low Power Mode ==================== */
+.low-power *,
+.reduce-motion * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.low-power .bg-linear-to-br,
+.low-power .bg-linear-to-r {
+  background-image: none !important;
+  background-color: var(--bg-secondary) !important;
+}
+
+.low-power .text-transparent {
+  color: var(--color-primary) !important;
+  background-clip: unset !important;
+}
+
 /* ==================== High Contrast Mode ==================== */
 .high-contrast {
   --color-primary: #0000ff;
@@ -133,7 +151,27 @@
   color: #ffffff !important;
   border: 2px solid #ffffff !important;
 }
+/* ==================== Low Power Mode ==================== */
+.low-power *,
+.low-power *::before,
+.low-power *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
 
+.low-power .bg-linear-to-br,
+.low-power .bg-linear-to-r,
+.low-power .bg-gradient-to-br,
+.low-power .bg-gradient-to-r {
+  background-image: none !important;
+  background-color: var(--bg-secondary) !important;
+}
+
+.low-power .text-transparent {
+  color: var(--color-primary) !important;
+  background-clip: unset !important;
+}
 /* ==================== Reduce Motion ==================== */
 .reduce-motion *,
 .reduce-motion *::before,

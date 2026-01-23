@@ -61,11 +61,29 @@ const AITutor = () => {
 
   // Scroll to bottom on new messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const isLowPower = document.documentElement.classList.contains('low-power');
+    messagesEndRef.current?.scrollIntoView({ behavior: isLowPower ? 'auto' : 'smooth' });
   }, [messages]);
 
   const handleSend = async () => {
     if (!input.trim() || !enabled) return;
+
+    if (!navigator.onLine) {
+      const offlineMsg: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: 'I am sorry, but I need an internet connection to process your request. Please reconnect and try again.',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, {
+        id: (Date.now() - 1).toString(),
+        role: 'user',
+        content: input,
+        timestamp: new Date(),
+      }, offlineMsg]);
+      setInput('');
+      return;
+    }
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
