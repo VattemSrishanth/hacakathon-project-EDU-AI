@@ -1,11 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const { auth, isAuthenticated, logout } = useAuth();
+  const { t } = useSettings();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -15,13 +17,13 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { to: '/', label: 'Home' },
-    { to: '/dashboard', label: 'Dashboard' },
-    { to: '/lessons', label: 'Lessons' },
-    { to: '/ai-tutor', label: 'AI Tutor' },
-    { to: '/accessibility', label: 'Accessibility' },
-    { to: '/support', label: 'Support' },
-    { to: '/settings', label: 'Settings' },
+    { to: '/', label: t.nav.home },
+    { to: '/dashboard', label: t.nav.dashboard },
+    { to: '/lessons', label: t.nav.lessons },
+    { to: '/ai-tutor', label: t.nav.aiTutor },
+    { to: '/accessibility', label: t.nav.accessibility },
+    { to: '/support', label: t.nav.support },
+    { to: '/settings', label: t.nav.settings },
   ];
 
   return (
@@ -50,7 +52,7 @@ const Navbar = () => {
               to="/login"
               className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200"
             >
-              Login
+              {t.nav.login}
             </Link>
             {isAuthenticated && (
               <div className="relative">
@@ -87,14 +89,14 @@ const Navbar = () => {
                       }}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
-                      Profile
+                      {t.nav.profile}
                     </button>
                     <button
                       type="button"
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
                     >
-                      Logout
+                      {t.nav.logout}
                     </button>
                   </div>
                 )}
@@ -131,7 +133,7 @@ const Navbar = () => {
                 className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200 inline-block w-fit"
                 onClick={() => setIsOpen(false)}
               >
-                Login
+                {t.nav.login}
               </Link>
               {isAuthenticated && (
                 <button
@@ -142,7 +144,7 @@ const Navbar = () => {
                   }}
                   className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200 inline-block w-fit"
                 >
-                  Logout
+                  {t.nav.logout}
                 </button>
               )}
             </div>

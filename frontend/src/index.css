@@ -1,6 +1,165 @@
 @import "tailwindcss";
 
+/* ==================== CSS Variables ==================== */
+:root {
+  /* Theme Colors - Light Mode */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-card: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  
+  /* Brand Colors */
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-secondary: #06b6d4;
+  
+  /* Font Size */
+  --font-size-base: 16px;
+  
+  /* Transitions */
+  --transition-speed: 200ms;
+}
+
+/* ==================== Dark Theme ==================== */
+.dark {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-card: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --border-color: #334155;
+}
+
+.dark body {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.dark .bg-white {
+  background-color: var(--bg-card) !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: var(--bg-card) !important;
+}
+
+.dark .text-gray-900 {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-gray-700 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: var(--border-color) !important;
+}
+
+.dark .shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark .from-indigo-50,
+.dark .via-white,
+.dark .to-cyan-50 {
+  --tw-gradient-from: var(--bg-secondary) !important;
+  --tw-gradient-via: var(--bg-primary) !important;
+  --tw-gradient-to: var(--bg-secondary) !important;
+}
+
+/* ==================== High Contrast Mode ==================== */
+.high-contrast {
+  --color-primary: #0000ff;
+  --color-secondary: #00ffff;
+}
+
+.high-contrast body {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+.high-contrast .bg-white,
+.high-contrast .bg-gray-50,
+.high-contrast .bg-gray-100 {
+  background-color: #000000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+.high-contrast .text-gray-900,
+.high-contrast .text-gray-700,
+.high-contrast .text-gray-600 {
+  color: #ffffff !important;
+}
+
+.high-contrast a,
+.high-contrast button {
+  text-decoration: underline;
+}
+
+.high-contrast .bg-primary {
+  background-color: #0000ff !important;
+}
+
+.high-contrast input,
+.high-contrast select,
+.high-contrast textarea {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+/* ==================== Reduce Motion ==================== */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ==================== Font Size Scaling ==================== */
+html {
+  font-size: var(--font-size-base);
+}
+
+/* ==================== Base Styles ==================== */
 body {
-  background-color: #f9fafb;
-  color: #000000;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* ==================== Smooth Transitions ==================== */
+.bg-white,
+.bg-gray-50,
+.bg-gray-100,
+.text-gray-900,
+.text-gray-700,
+.text-gray-600,
+input,
+select,
+textarea {
+  transition: background-color var(--transition-speed), 
+              color var(--transition-speed), 
+              border-color var(--transition-speed);
 }

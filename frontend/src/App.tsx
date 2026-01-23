@@ -1,22 +1,24 @@
 import { Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
-import Lessons from './pages/Lessons';
-import AITutor from './pages/AITutor';
+import Home from './pages/Home.tsx';
+import Dashboard from './pages/Dashboard.tsx';
+import Lessons from './pages/Lessons.tsx';
+import AITutor from './pages/AITutor.tsx';
 import Accessibility from './pages/Accessibility';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { AuthProvider } from './context/AuthContext';
+import { SettingsProvider } from './context/SettingsContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 
 function App() {
   return (
-    <AuthProvider>
+    <SettingsProvider>
+      <AuthProvider>
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Navbar />
         <main className="flex-1">
@@ -102,6 +104,7 @@ function App() {
         <Footer />
       </div>
     </AuthProvider>
+    </SettingsProvider>
   );
 }
 

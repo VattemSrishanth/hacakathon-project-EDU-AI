@@ -1,29 +1,31 @@
 import { Link } from 'react-router-dom';
 import Button from '../components/Button';
 import Card from '../components/Card';
+import { useSettings } from '../context/SettingsContext';
 
 const Home = () => {
+  const { t } = useSettings();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Welcome to{' '}
+            {t.home.welcome}{' '}
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              RuralAccess AI
+              {t.home.brandName}
             </span>
           </h1>
           <p className="text-xl text-gray-900 mb-8 max-w-3xl mx-auto">
-            Empowering rural communities with AI-powered education. Learn anytime, anywhere with
-            our intelligent tutoring system.
+            {t.home.tagline}
           </p>
           <div className="flex gap-4 justify-center">
             <Link to="/register">
-              <Button variant="primary">Get Started</Button>
+              <Button variant="primary">{t.home.getStarted}</Button>
             </Link>
             <Link to="/ai-tutor">
-              <Button variant="outline">Try AI Tutor</Button>
+              <Button variant="outline">{t.home.tryAiTutor}</Button>
             </Link>
           </div>
         </div>
@@ -32,14 +34,14 @@ const Home = () => {
       {/* Features Section */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Our Features</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">{t.home.features}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card hover>
               <div className="text-center">
                 <div className="text-4xl mb-4">🤖</div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900">AI Tutor</h3>
+                <h3 className="text-xl font-semibold mb-2 text-gray-900">{t.home.aiTutorTitle}</h3>
                 <p className="text-gray-900">
-                  Get instant answers to your questions with our intelligent AI tutor.
+                  {t.home.aiTutorDesc}
                 </p>
               </div>
             </Card>
@@ -47,9 +49,9 @@ const Home = () => {
             <Card hover>
               <div className="text-center">
                 <div className="text-4xl mb-4">📚</div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900">Rich Content</h3>
+                <h3 className="text-xl font-semibold mb-2 text-gray-900">{t.home.richContentTitle}</h3>
                 <p className="text-gray-900">
-                  Access a wide range of lessons across multiple subjects.
+                  {t.home.richContentDesc}
                 </p>
               </div>
             </Card>
@@ -57,9 +59,9 @@ const Home = () => {
             <Card hover>
               <div className="text-center">
                 <div className="text-4xl mb-4">🌐</div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900">Offline Access</h3>
+                <h3 className="text-xl font-semibold mb-2 text-gray-900">{t.home.offlineTitle}</h3>
                 <p className="text-gray-900">
-                  Learn without internet connectivity with our offline mode.
+                  {t.home.offlineDesc}
                 </p>
               </div>
             </Card>
@@ -67,9 +69,9 @@ const Home = () => {
             <Card hover>
               <div className="text-center">
                 <div className="text-4xl mb-4">♿</div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900">Accessible</h3>
+                <h3 className="text-xl font-semibold mb-2 text-gray-900">{t.home.accessibleTitle}</h3>
                 <p className="text-gray-900">
-                  Built with accessibility in mind for all learners.
+                  {t.home.accessibleDesc}
                 </p>
               </div>
             </Card>
@@ -77,9 +79,9 @@ const Home = () => {
             <Card hover>
               <div className="text-center">
                 <div className="text-4xl mb-4">🎯</div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900">Personalized</h3>
+                <h3 className="text-xl font-semibold mb-2 text-gray-900">{t.home.personalizedTitle}</h3>
                 <p className="text-gray-900">
-                  Adaptive learning paths tailored to your needs.
+                  {t.home.personalizedDesc}
                 </p>
               </div>
             </Card>
@@ -87,9 +89,9 @@ const Home = () => {
             <Card hover>
               <div className="text-center">
                 <div className="text-4xl mb-4">📱</div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900">Mobile First</h3>
+                <h3 className="text-xl font-semibold mb-2 text-gray-900">{t.home.mobileFirstTitle}</h3>
                 <p className="text-gray-900">
-                  Responsive design that works on any device.
+                  {t.home.mobileFirstDesc}
                 </p>
               </div>
             </Card>
@@ -100,13 +102,13 @@ const Home = () => {
       {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-primary to-secondary">
         <div className="max-w-4xl mx-auto text-center text-white">
-          <h2 className="text-4xl font-bold mb-6">Ready to Start Learning?</h2>
+          <h2 className="text-4xl font-bold mb-6">{t.home.ctaTitle}</h2>
           <p className="text-xl mb-8 text-white/95">
-            Join thousands of students already using RuralAccess AI to enhance their education.
+            {t.home.ctaDesc}
           </p>
           <Link to="/register">
             <Button className="bg-white text-primary hover:bg-gray-100">
-              Sign Up Now
+              {t.home.startLearning}
             </Button>
           </Link>
         </div>
