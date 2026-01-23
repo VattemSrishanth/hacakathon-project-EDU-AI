@@ -56,12 +56,18 @@ def is_syllabus_question(question):
     question_lower = question.lower()
     return any(topic in question_lower for topic in offline_answers.keys())
 
-def offline_response(question, learner_mode="regular"):
+def offline_response(question, learner_mode="regular", language="English"):
     """Return offline explanation for syllabus topics. NEVER returns empty."""
     subject = "math" if _is_math_question(question) else "general"
-    result = offline_generate_explanation(question, learner_mode=learner_mode, level="basic", subject=subject)
+    result = offline_generate_explanation(question, learner_mode=learner_mode, level="basic", subject=subject, language=language)
+    
+    notice = ""
+    if language != "English":
+        notice = f"(Fallback: Translation not available for {language} in offline mode. Responding in English.)\n\n"
+    
     header = "Step-by-step solution:" if subject == "math" else "Explanation:"
     return (
+        notice +
         header + "\n" + result["explanation"] + "\n\n"
         "Example:\n" + result["example"] + "\n\n"
         "Summary:\n" + result["summary"]
@@ -114,7 +120,7 @@ def get_out_of_scope_message():
     """Return a polite out-of-scope response when no answer is available."""
     return "This question is outside the current scope of this tutor."
 
-def offline_generate_explanation(question, learner_mode="regular", level="basic", subject="general"):
+def offline_generate_explanation(question, learner_mode="regular", level="basic", subject="general", language="English"):
     """Generate structured offline explanation for Math, Science, and Computer basics."""
     if not question:
         return {

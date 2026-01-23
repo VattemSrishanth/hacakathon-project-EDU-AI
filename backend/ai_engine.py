@@ -53,9 +53,13 @@ MODE_GUIDANCE = {
     "speech": "Use short sentences and step-by-step format."
 }
 
-def generate_explanation(question, learner_mode="regular", level="basic"):
+def generate_explanation(question, learner_mode="regular", level="basic", language="English"):
     """Generate a structured explanation (explanation, example, summary)."""
+    if not language:
+        language = "English"
+        
     if not question or not question.strip():
+        # Fallback text based on language if possible, otherwise English
         return {
             "explanation": "Please ask a clear question about a school topic.",
             "example": "Example: What is photosynthesis?",
@@ -70,6 +74,7 @@ def generate_explanation(question, learner_mode="regular", level="basic"):
 
     prompt = (
         SYSTEM_PROMPT
+        + f"\nRESPONSE LANGUAGE: {language}. Respond ONLY in {language}."
         + "\nLearner mode: " + mode_key
         + "\nLevel: " + level
         + "\nStyle guidance: " + mode_hint
@@ -87,10 +92,14 @@ def generate_explanation(question, learner_mode="regular", level="basic"):
     # Fallback to offline structured response if JSON parsing fails
     return offline_generate_explanation(question, learner_mode=mode_key, level=level)
 
-def analyze_image(base64_image, learner_mode="regular", user_question=None):
+def analyze_image(base64_image, learner_mode="regular", user_question=None, language="English"):
     """Analyze image using computer vision and return an academic educational explanation."""
+    if not language:
+        language = "English"
+
     base_prompt = (
         "You are an academic AI tutor. Analyze this image for a student. "
+        f"IMPORTANT: Respond ONLY in the {language} language."
         "Provide a formal, structured description of the visual content and explain its educational relevance. "
         "Maintain a professional tone without emojis or informal language. "
         "Learner mode: " + learner_mode
@@ -107,7 +116,7 @@ def analyze_image(base64_image, learner_mode="regular", user_question=None):
     
     return {"explanation": "I am sorry, but I couldn't analyze the image. Please describe what it shows and I will help you."}
 
-def get_ai_response(question, online=True, mode="regular"):
+def get_ai_response(question, online=True, mode="regular", language="English"):
     """Get AI response with structured, inclusive explanation and offline fallback."""
     normalized = str(question or "").strip()
     if not normalized:
@@ -131,7 +140,7 @@ def get_ai_response(question, online=True, mode="regular"):
         return general_answer
 
     try:
-        result = generate_explanation(normalized, learner_mode=mode, level="basic")
+        result = generate_explanation(normalized, learner_mode=mode, level="basic", language=language)
         return _format_response(result)
     except Exception:
         return offline_response(normalized, learner_mode=mode)
@@ -176,15 +185,18 @@ def _eval_node(node):
     raise ValueError("Unsupported expression")
 
 
-def get_ai_response_payload(question, online=True, mode="regular", context=None):
+def get_ai_response_payload(question, online=True, mode="regular", context=None, language="English"):
     """
     Return structured response for API consumption with quota handling.
     Supports persistent active context (Image/PDF) for multi-turn academic tutoring.
     """
+    if not language:
+        language = "English"
+
     if not (question and question.strip()) and not context:
         return {
             "status": "error",
-            "answer": offline_response("", learner_mode=mode),
+            "answer": offline_response("", learner_mode=mode, language=language),
             "mode": "offline"
         }
 
@@ -197,7 +209,7 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None)
         
         if ctx_type == 'image' and ctx_data:
             # Persistent Image Context Analysis
-            res = analyze_image(ctx_data, learner_mode=mode_key, user_question=question)
+            res = analyze_image(ctx_data, learner_mode=mode_key, user_question=question, language=language)
             return {
                 "status": "success",
                 "answer": res.get("explanation"),
@@ -207,19 +219,19 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None)
         elif ctx_type == 'pdf' and ctx_data:
             # Persistent Document Context Analysis
             if question and question.strip():
-                prompt = f"Academic Task: Answer the following question based ONLY on the provided document text. Maintain a formal, educational tone.\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}\n\nUSER QUESTION: {question}"
+                prompt = f"Academic Task: Answer the following question based ONLY on the provided document text. Maintain a formal, educational tone. Respond ONLY in {language}.\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}\n\nUSER QUESTION: {question}"
             else:
-                prompt = f"Academic Task: Provide a comprehensive summary and key educational takeaways from this document.\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}"
+                prompt = f"Academic Task: Provide a comprehensive summary and key educational takeaways from this document. Respond ONLY in {language}.\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}"
             
             raw, err = _call_ai_model(prompt)
             return {
                 "status": "success" if err == "ok" else "error",
-                "answer": raw if err == "ok" else "I encountered an error while analyzing the document context.",
+                "answer": raw if err == "ok" else f"I encountered an error while analyzing the document context. (Response in {language})",
                 "mode": "online"
             }
 
     if not online:
-        offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic")
+        offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic", language=language)
         return {
             "status": "success",
             "answer": _format_response(offline),
@@ -229,6 +241,7 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None)
     # Standard Text-only Ask Logic
     prompt = (
         SYSTEM_PROMPT
+        + f"\nRESPONSE LANGUAGE: {language}. Respond ONLY in {language}."
         + "\nLearner mode: " + mode_key
         + "\nLevel: basic"
         + "\nStyle guidance: " + MODE_GUIDANCE.get(mode_key, "")
@@ -238,7 +251,7 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None)
 
     raw, err = _call_ai_model(prompt)
     if err == "quota_exceeded":
-        offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic")
+        offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic", language=language)
         return {
             "status": "quota_exceeded",
             "answer": _format_response(offline),
@@ -246,7 +259,7 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None)
         }
 
     if err != "ok":
-        offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic")
+        offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic", language=language)
         return {
             "status": "error",
             "answer": _format_response(offline),
@@ -261,7 +274,7 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None)
             "mode": "online"
         }
 
-    offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic")
+    offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic", language=language)
     return {
         "status": "error",
         "answer": _format_response(offline),
@@ -320,8 +333,11 @@ def _format_response(result):
         "Summary:\n" + result.get("summary", "")
     )
 
-def generate_video_explanation(transcript_text, question="", learner_mode="regular", level="basic", online=True):
+def generate_video_explanation(transcript_text, question="", learner_mode="regular", level="basic", online=True, language="English"):
     """Generate a structured video explanation with offline-safe fallback."""
+    if not language:
+        language = "English"
+
     if not transcript_text or not transcript_text.strip():
         return {
             "simple_explanation": "Transcript is not available for this video.",
@@ -337,6 +353,7 @@ def generate_video_explanation(transcript_text, question="", learner_mode="regul
 
     prompt = (
         VIDEO_SYSTEM_PROMPT
+        + f"\nRESPONSE LANGUAGE: {language}. Respond ONLY in {language}."
         + "\nLearner mode: " + mode_key
         + "\nLevel: " + level
         + "\nStyle guidance: " + mode_hint
