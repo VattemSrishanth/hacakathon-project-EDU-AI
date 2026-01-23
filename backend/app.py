@@ -11,7 +11,7 @@ from xml.etree.ElementTree import ParseError
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
-from ai_engine import get_ai_response, generate_video_explanation, get_ai_response_payload
+from ai_engine import get_ai_response, generate_video_explanation, get_ai_response_payload, analyze_image
 from auth import auth_bp
 from models import db, User
 
@@ -369,6 +369,51 @@ def explain_video():
             "status": "error",
             "error": "Unable to process this video. Please try again."
         }), 500
+
+
+@app.route("/api/analyze-image", methods=["POST"])
+def analyze_image_route():
+    """Analyze uploaded image."""
+    try:
+        data = request.get_json() or {}
+        image_data = data.get("image", "")
+        mode = data.get("mode", "regular")
+        
+        if not image_data:
+            return jsonify({"error": "No image data provided", "success": False}), 400
+            
+        result = analyze_image(image_data, learner_mode=mode)
+        return jsonify({
+            "success": True, 
+            "explanation": result["explanation"]
+        })
+    except Exception as e:
+        print(f"Analyze image error: {e}")
+        return jsonify({"error": "Failed to analyze image", "success": False}), 500
+
+
+@app.route("/api/analyze-pdf", methods=["POST"])
+def analyze_pdf_route():
+    """Analyze extracted PDF text."""
+    try:
+        data = request.get_json() or {}
+        text = data.get("text", "")
+        mode = data.get("mode", "regular")
+        
+        if not text:
+            return jsonify({"error": "No PDF text provided", "success": False}), 400
+            
+        # Re-using get_ai_response for summarizing text with an academic prompt
+        question = f"Academic Task: Please provide a structured, formal summary of the following document text. Avoid informalities and focus on key educational points: {text[:4000]}"
+        summary = get_ai_response(question, online=True, mode=mode)
+        
+        return jsonify({
+            "success": True,
+            "summary": summary
+        })
+    except Exception as e:
+        print(f"Analyze PDF error: {e}")
+        return jsonify({"error": "Failed to analyze PDF", "success": False}), 500
 
 
 # ==================== Lessons Routes ====================

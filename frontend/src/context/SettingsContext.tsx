@@ -40,6 +40,7 @@ export interface ThemeAccessibilitySettings {
   highContrast: boolean;
   reduceMotion: boolean;
   lowPowerMode: boolean;
+  voiceLanguage: SupportedLanguage;
 }
 
 export interface SettingsState {
@@ -83,6 +84,7 @@ export const defaultSettings: SettingsState = {
     highContrast: false,
     reduceMotion: false,
     lowPowerMode: false,
+    voiceLanguage: 'English',
   },
 };
 
