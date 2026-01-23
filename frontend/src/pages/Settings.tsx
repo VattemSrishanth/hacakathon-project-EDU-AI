@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import type { 
   LearningLevel, 
@@ -13,6 +14,7 @@ import type {
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { auth, updateUser: updateAuthUser } = useAuth();
   const { 
     settings, 
     t, 
@@ -25,10 +27,51 @@ const Settings = () => {
   } = useSettings();
   
   const [saveMessage, setSaveMessage] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(settings.profile.name);
+  const [editEmail, setEditEmail] = useState(settings.profile.email);
+  const [error, setError] = useState('');
+
+  // Sync local state when settings change and we're not editing
+  useEffect(() => {
+    if (!isEditing) {
+      setEditName(settings.profile.name);
+      setEditEmail(settings.profile.email);
+    }
+  }, [settings.profile.name, settings.profile.email, isEditing]);
 
   const showSaveMessage = (message: string) => {
     setSaveMessage(message);
     setTimeout(() => setSaveMessage(''), 1500);
+  };
+
+  const handleEditToggle = () => {
+    if (isEditing) {
+      // Validation
+      if (!editName.trim()) {
+        setError('Name cannot be empty');
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(editEmail)) {
+        setError('Please enter a valid email address');
+        return;
+      }
+
+      // 1. Update Settings Context (persists to localStorage 'settings')
+      updateProfile({ name: editName, email: editEmail });
+      
+      // 2. Update Auth Context (persists to localStorage 'auth')
+      updateAuthUser({ name: editName, email: editEmail });
+
+      setIsEditing(false);
+      setError('');
+      showSaveMessage(t.settings.changesSaved);
+    } else {
+      // Enter editing mode
+      setError('');
+      setIsEditing(true);
+    }
   };
 
   const initials = useMemo(() => {
@@ -117,22 +160,47 @@ const Settings = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t.settings.profile.name}</label>
                   <input
                     type="text"
-                    value={settings.profile.name}
-                    onChange={(e) => {
-                      updateProfile({ name: e.target.value });
-                    }}
-                    onBlur={() => showSaveMessage(t.settings.changesSaved)}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
+                    value={isEditing ? editName : settings.profile.name}
+                    onChange={(e) => setEditName(e.target.value)}
+                    readOnly={!isEditing}
+                    className={`w-full rounded-lg border px-4 py-2 transition-colors ${
+                      isEditing 
+                      ? 'border-primary bg-white focus:ring-2 focus:ring-primary/20 outline-none' 
+                      : 'border-gray-200 bg-gray-50 text-gray-600'
+                    }`}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t.settings.profile.email}</label>
                   <input
                     type="email"
-                    value={settings.profile.email}
-                    readOnly
-                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-gray-600"
+                    value={isEditing ? editEmail : settings.profile.email}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    readOnly={!isEditing}
+                    className={`w-full rounded-lg border px-4 py-2 transition-colors ${
+                      isEditing 
+                      ? 'border-primary bg-white focus:ring-2 focus:ring-primary/20 outline-none' 
+                      : 'border-gray-200 bg-gray-50 text-gray-600'
+                    }`}
                   />
+                </div>
+                
+                {error && (
+                  <p className="text-sm text-red-600 font-medium">{error}</p>
+                )}
+
+                <div className="mt-2 text-right">
+                  <button
+                    type="button"
+                    onClick={handleEditToggle}
+                    className={`px-6 py-2 rounded-lg font-semibold transition-all duration-200 ${
+                      isEditing 
+                      ? 'bg-green-600 text-white hover:bg-green-700' 
+                      : 'bg-primary text-white hover:bg-indigo-700'
+                    }`}
+                  >
+                    {isEditing ? 'Save Changes' : 'Edit Profile'}
+                  </button>
                 </div>
               </div>
             </div>

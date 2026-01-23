@@ -48,13 +48,14 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            <Link
-              to="/login"
-              className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200"
-            >
-              {t.nav.login}
-            </Link>
-            {isAuthenticated && (
+            {!isAuthenticated ? (
+              <Link
+                to="/login"
+                className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200"
+              >
+                {t.nav.login}
+              </Link>
+            ) : (
               <div className="relative">
                 <button
                   type="button"
@@ -128,21 +129,22 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
-              <Link
-                to="/login"
-                className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200 inline-block w-fit"
-                onClick={() => setIsOpen(false)}
-              >
-                {t.nav.login}
-              </Link>
-              {isAuthenticated && (
+              {!isAuthenticated ? (
+                <Link
+                  to="/login"
+                  className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200 inline-block w-fit"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {t.nav.login}
+                </Link>
+              ) : (
                 <button
                   type="button"
                   onClick={() => {
                     setIsOpen(false);
                     handleLogout();
                   }}
-                  className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200 inline-block w-fit"
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors duration-200 inline-block w-fit"
                 >
                   {t.nav.logout}
                 </button>
