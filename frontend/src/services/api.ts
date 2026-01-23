@@ -1,0 +1,88 @@
+import axios from 'axios';
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000/api';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+});
+
+// Auth API
+export const authAPI = {
+  login: async (email: string, password: string) => {
+    const response = await api.post('/auth/login', { email, password });
+    return response.data;
+  },
+  
+  register: async (name: string, email: string, password: string) => {
+    const response = await api.post('/auth/register', { name, email, password });
+    return response.data;
+  },
+  
+  getCurrentUser: async () => {
+    const response = await api.get('/auth/me');
+    return response.data;
+  },
+};
+
+// AI Tutor API
+export const aiAPI = {
+  ask: async (question: string, mode: string = 'regular', online: boolean = true) => {
+    const response = await api.post('/ask', { question, mode, online });
+    return response.data;
+  },
+  
+  explainVideo: async (videoUrl: string, question: string = '', mode: string = 'regular') => {
+    const response = await api.post('/explain-video', { 
+      videoUrl, 
+      question,
+      mode,
+      online: true 
+    });
+    return response.data;
+  },
+};
+
+// Lessons API
+export const lessonsAPI = {
+  getAll: async (category?: string, level?: string) => {
+    const params = new URLSearchParams();
+    if (category) params.append('category', category);
+    if (level) params.append('level', level);
+    
+    const response = await api.get(`/lessons${params.toString() ? '?' + params.toString() : ''}`);
+    return response.data;
+  },
+  
+  getById: async (id: string) => {
+    const response = await api.get(`/lessons/${id}`);
+    return response.data;
+  },
+  
+  getCategories: async () => {
+    const response = await api.get('/categories');
+    return response.data;
+  },
+};
+
+// Progress API
+export const progressAPI = {
+  get: async () => {
+    const response = await api.get('/progress');
+    return response.data;
+  },
+};
+
+// Health check
+export const healthAPI = {
+  check: async () => {
+    const response = await api.get('/health');
+    return response.data;
+  },
+};
+
+export default api;

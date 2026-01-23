@@ -58,3 +58,7 @@ logs/
 # Cache
 .cache/
 *.cache
+
+# Flask instance / SQLite
+backend/instance/
+backend/*.db
