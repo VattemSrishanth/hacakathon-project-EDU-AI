@@ -15,24 +15,19 @@ from ai_engine import get_ai_response, generate_video_explanation, get_ai_respon
 from auth import auth_bp
 from models import db, User
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend", "dist"))
+
 # Load environment variables
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    env_path = os.path.join(BASE_DIR, ".env")
+    if os.path.exists(env_path):
+        load_dotenv(env_path)
+    else:
+        load_dotenv()
 except ImportError:
     pass
-
-# YouTube Transcript API imports
-try:
-    from youtube_transcript_api import YouTubeTranscriptApi
-    from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound, VideoUnavailable
-except Exception:
-    YouTubeTranscriptApi = None
-    TranscriptsDisabled = NoTranscriptFound = VideoUnavailable = Exception
-
-
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend", "dist"))
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -51,9 +46,12 @@ app.config["SESSION_COOKIE_SECURE"] = os.getenv("SESSION_COOKIE_SECURE", "false"
 # CORS configuration for React frontend
 CORS(
     app,
-    resources={r"/api/*": {"origins": "*"}},
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    resources={r"/*": {
+        "origins": ["http://localhost:5174", "http://localhost:5173", "http://127.0.0.1:5174", "http://127.0.0.1:5173"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    }},
+    supports_credentials=True
 )
 
 # Initialize database
@@ -221,11 +219,15 @@ def ask():
     """AI tutor question answering endpoint."""
     try:
         data = request.get_json()
+        print(f"[DEBUG] Received ask request: {data}")
         if not data:
+            print("[DEBUG] No request data received")
             return jsonify({"answer": "No request data", "success": False}), 400
         
         question = str(data.get("question", "")).strip()
+        print(f"[DEBUG] Question: {question}")
         if not question or len(question) < 2:
+            print("[DEBUG] Question too short or empty")
             return jsonify({"answer": "Please ask a clear question.", "success": False}), 400
         
         # Limit question length
@@ -233,19 +235,22 @@ def ask():
         
         online = bool(data.get("online", True))
         mode = str(data.get("mode", "regular")).lower()
+        print(f"[DEBUG] Online: {online}, Mode: {mode}")
         
-        if mode not in ["regular", "deaf", "speech", "normal"]:
+        if mode not in ["regular", "deaf", "speech", "normal", "concise", "detailed"]:
             mode = "regular"
         if mode == "normal":
             mode = "regular"
         
         result = get_ai_response_payload(question, online, mode)
+        print(f"[DEBUG] result status: {result.get('status')}, mode: {result.get('mode')}")
 
         status = result.get("status", "error")
         answer = (result.get("answer") or "").strip()
         response_mode = result.get("mode", "offline")
 
         if status == "quota_exceeded":
+            print("[DEBUG] Quota exceeded fallback")
             return jsonify({
                 "success": True,
                 "status": status,
@@ -254,9 +259,11 @@ def ask():
             }), 200  # Return 200 with quota info
 
         if not answer:
+            print("[DEBUG] No answer generated")
             answer = "Unable to generate answer. Please try again or consult your teacher."
             response_mode = "offline"
 
+        print(f"[DEBUG] Returning success with answer length: {len(answer)}")
         return jsonify({
             "success": True,
             "status": status,
@@ -265,7 +272,9 @@ def ask():
         })
     
     except Exception as e:
-        print(f"Ask error: {e}")
+        print(f"[ERROR] Ask error: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             "success": False,
             "answer": "An error occurred. Please try again.",
@@ -572,4 +581,5 @@ if __name__ == "__main__":
     print(f"API Docs: http://127.0.0.1:5000/")
     print("="*50 + "\n")
     
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    # Run on all interfaces to avoid localhost resolution issues
+    app.run(host="0.0.0.0", port=5000, debug=False)

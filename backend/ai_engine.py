@@ -11,7 +11,14 @@ from offline_logic import (
     get_math_concept_answer,
     get_out_of_scope_message
 )
-from llm_service import generate_text
+
+# ============================================
+# GROQ INTEGRATION: Replaced Gemini with Groq
+# ============================================
+# OLD: from llm_service import generate_text
+# NEW: Using Groq API via groq_service.py
+from groq_service import generate_text
+# ============================================
 
 SYSTEM_PROMPT = """You are a dedicated school tutor for rural and disabled learners.
 Your role:
@@ -211,8 +218,10 @@ def get_ai_response_payload(question, online=True, mode="regular"):
 
 
 def _call_ai_model(prompt):
-    """Helper to call Gemini API safely."""
-    text, error_code = generate_text(prompt, temperature=0.5, max_output_tokens=512)
+    """Helper to call Groq API safely."""
+    print(f"[DEBUG] Calling Groq with prompt length: {len(prompt)}")
+    text, error_code = generate_text(prompt, temperature=0.5, max_output_tokens=1024)
+    print(f"[DEBUG] Groq result: {error_code}, text length: {len(text) if text else 0}")
     return text, error_code
 
 
@@ -220,10 +229,29 @@ def _safe_parse_json(text):
     if not text:
         return None
     try:
+        # Try direct parse first
         data = json.loads(text)
         return data if isinstance(data, dict) else None
     except Exception:
-        return None
+        # Fallback: Try cleaning markdown code blocks
+        try:
+            cleaned = text.strip()
+            if "```json" in cleaned:
+                cleaned = cleaned.split("```json")[1].split("```")[0].strip()
+            elif "```" in cleaned:
+                cleaned = cleaned.split("```")[1].split("```")[0].strip()
+            
+            # Remove any trailing/leading text that's not part of the JSON object
+            start = cleaned.find('{')
+            end = cleaned.rfind('}')
+            if start != -1 and end != -1:
+                cleaned = cleaned[start:end+1]
+            
+            data = json.loads(cleaned)
+            return data if isinstance(data, dict) else None
+        except Exception as e:
+            print(f"[DEBUG] JSON parse error: {e}")
+            return None
 
 
 def _ensure_fields(data):

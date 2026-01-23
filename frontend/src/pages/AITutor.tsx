@@ -113,7 +113,7 @@ const AITutor = () => {
             <p className="text-gray-900 mt-2">{t.aiTutor.subtitle}</p>
           </div>
 
-          <Card className="h-[400px] flex flex-col items-center justify-center">
+          <Card className="h-100 flex flex-col items-center justify-center">
             <div className="text-center">
               <div className="text-6xl mb-4">🤖</div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.aiTutor.disabled}</h2>
@@ -139,7 +139,7 @@ const AITutor = () => {
           </div>
         </div>
 
-        <Card className="h-[600px] flex flex-col">
+        <Card className="h-150 flex flex-col">
           <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-4">
             {messages.map((message) => (
               <div

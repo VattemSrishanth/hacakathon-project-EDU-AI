@@ -42,7 +42,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex items-center justify-center py-12">
+    <div className="min-h-screen bg-linear-to-b from-indigo-50 to-white flex items-center justify-center py-12">
       <div className="w-full max-w-md">
         <Card>
           <div className="text-center mb-6">

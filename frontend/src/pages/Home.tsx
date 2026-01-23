@@ -7,13 +7,13 @@ const Home = () => {
   const { t } = useSettings();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
+    <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-cyan-50">
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
             {t.home.welcome}{' '}
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
               {t.home.brandName}
             </span>
           </h1>
@@ -100,7 +100,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-primary to-secondary">
+      <section className="py-20 px-4 bg-linear-to-r from-primary to-secondary">
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-4xl font-bold mb-6">{t.home.ctaTitle}</h2>
           <p className="text-xl mb-8 text-white/95">
