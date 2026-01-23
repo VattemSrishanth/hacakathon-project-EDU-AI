@@ -15,6 +15,15 @@ from ai_engine import get_ai_response, generate_video_explanation, get_ai_respon
 from auth import auth_bp
 from models import db, User
 
+try:
+    from youtube_transcript_api import YouTubeTranscriptApi
+    from youtube_transcript_api.exceptions import TranscriptsDisabled, NoTranscriptFound, VideoUnavailable
+except ImportError:
+    YouTubeTranscriptApi = None
+    TranscriptsDisabled = None
+    NoTranscriptFound = None
+    VideoUnavailable = None
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend", "dist"))
 
@@ -47,7 +56,16 @@ app.config["SESSION_COOKIE_SECURE"] = os.getenv("SESSION_COOKIE_SECURE", "false"
 CORS(
     app,
     resources={r"/*": {
-        "origins": ["http://localhost:5174", "http://localhost:5173", "http://127.0.0.1:5174", "http://127.0.0.1:5173"],
+        "origins": [
+            "http://localhost:5173", 
+            "http://localhost:5174", 
+            "http://localhost:5175", 
+            "http://localhost:5176",
+            "http://127.0.0.1:5173", 
+            "http://127.0.0.1:5174", 
+            "http://127.0.0.1:5175", 
+            "http://127.0.0.1:5176"
+        ],
         "allow_headers": ["Content-Type", "Authorization"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     }},
@@ -235,16 +253,17 @@ def ask():
         
         online = bool(data.get("online", True))
         mode = str(data.get("mode", "regular")).lower()
+        language = str(data.get("language", "English")).strip()
         context = data.get("context") # Support for optional persistent context (Image/PDF)
         
-        print(f"[DEBUG] Online: {online}, Mode: {mode}, Context: {context.get('type') if context else 'None'}")
+        print(f"[DEBUG] Online: {online}, Mode: {mode}, Language: {language}, Context: {context.get('type') if context else 'None'}")
         
         if mode not in ["regular", "deaf", "speech", "normal", "concise", "detailed"]:
             mode = "regular"
         if mode == "normal":
             mode = "regular"
         
-        result = get_ai_response_payload(question, online, mode, context=context)
+        result = get_ai_response_payload(question, online, mode, context=context, language=language)
         print(f"[DEBUG] result status: {result.get('status')}, mode: {result.get('mode')}")
 
         status = result.get("status", "error")
@@ -294,6 +313,7 @@ def explain_video():
         manual_transcript = str(data.get("manualTranscript", "")).strip()
         online = bool(data.get("online", True))
         mode = str(data.get("mode", "regular")).lower()
+        language = str(data.get("language", "English")).strip()
 
         if mode not in ["regular", "deaf", "speech", "normal"]:
             mode = "regular"
@@ -312,7 +332,8 @@ def explain_video():
                 question=question[:500],
                 learner_mode=mode,
                 level="basic",
-                online=online
+                online=online,
+                language=language
             )
             return jsonify({
                 "success": True,
@@ -335,7 +356,7 @@ def explain_video():
         if transcript_status != "ok":
             message = _transcript_status_message(transcript_status)
             if question:
-                answer = get_ai_response(question[:500], online=online, mode=mode)
+                answer = get_ai_response(question[:500], online=online, mode=mode, language=language)
                 return jsonify({
                     "success": True,
                     "status": "no_transcript",
@@ -353,7 +374,8 @@ def explain_video():
             question=question[:500],
             learner_mode=mode,
             level="basic",
-            online=online
+            online=online,
+            language=language
         )
 
         return jsonify({
@@ -380,12 +402,13 @@ def analyze_image_route():
         data = request.get_json() or {}
         image_data = data.get("image", "")
         mode = data.get("mode", "regular")
+        language = data.get("language", "English")
         question = data.get("question")
         
         if not image_data:
             return jsonify({"error": "No image data provided", "success": False}), 400
             
-        result = analyze_image(image_data, learner_mode=mode, user_question=question)
+        result = analyze_image(image_data, learner_mode=mode, user_question=question, language=language)
         return jsonify({
             "success": True, 
             "explanation": result["explanation"]
@@ -402,6 +425,7 @@ def analyze_pdf_route():
         data = request.get_json() or {}
         text = data.get("text", "")
         mode = data.get("mode", "regular")
+        language = data.get("language", "English")
         user_question = data.get("question")
         
         if not text:
@@ -409,11 +433,11 @@ def analyze_pdf_route():
             
         # Re-using get_ai_response for summarizing text with an academic prompt
         if user_question:
-            prompt = f"Academic Task: You are analyzing a document context. Answer the following question based ONLY on the provided text.\n\nDOCUMENT CONTEXT: {text[:8000]}\n\nQUESTION: {user_question}"
+            prompt = f"Academic Task: Answer the following question based ONLY on the provided document text. Maintain a formal, educational tone. Respond ONLY in {language}.\n\nDOCUMENT CONTEXT: {text[:8000]}\n\nQUESTION: {user_question}"
         else:
-            prompt = f"Academic Task: Please provide a structured, formal summary of the following document text. Avoid informalities and focus on key educational points: {text[:8000]}"
+            prompt = f"Academic Task: Please provide a structured, formal summary of the following document text in the {language} language. Avoid informalities and focus on key educational points: {text[:8000]}"
             
-        summary = get_ai_response(prompt, online=True, mode=mode)
+        summary = get_ai_response(prompt, online=True, mode=mode, language=language)
         
         # get_ai_response returns a dict or string? It usually returns a dict if successful
         # Let's check get_ai_response in ai_engine.py
