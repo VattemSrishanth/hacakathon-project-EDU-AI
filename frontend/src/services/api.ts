@@ -45,8 +45,16 @@ export const authAPI = {
 
 // AI Tutor API
 export const aiAPI = {
-  ask: async (question: string, mode: string = 'regular', online: boolean = true) => {
-    const response = await api.post('/ask', { question, mode, online });
+  /**
+   * Universal ask method that supports standard questions and persistent file context (Image/PDF).
+   */
+  ask: async (question: string, mode: string = 'regular', context: any = null, online: boolean = true) => {
+    const response = await api.post('/ask', { 
+      question, 
+      mode, 
+      context, // Active file context (type, data, name)
+      online 
+    });
     return response.data;
   },
   

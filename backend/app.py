@@ -231,18 +231,20 @@ def ask():
             return jsonify({"answer": "Please ask a clear question.", "success": False}), 400
         
         # Limit question length
-        question = question[:500]
+        question = question[:1000]
         
         online = bool(data.get("online", True))
         mode = str(data.get("mode", "regular")).lower()
-        print(f"[DEBUG] Online: {online}, Mode: {mode}")
+        context = data.get("context") # Support for optional persistent context (Image/PDF)
+        
+        print(f"[DEBUG] Online: {online}, Mode: {mode}, Context: {context.get('type') if context else 'None'}")
         
         if mode not in ["regular", "deaf", "speech", "normal", "concise", "detailed"]:
             mode = "regular"
         if mode == "normal":
             mode = "regular"
         
-        result = get_ai_response_payload(question, online, mode)
+        result = get_ai_response_payload(question, online, mode, context=context)
         print(f"[DEBUG] result status: {result.get('status')}, mode: {result.get('mode')}")
 
         status = result.get("status", "error")
