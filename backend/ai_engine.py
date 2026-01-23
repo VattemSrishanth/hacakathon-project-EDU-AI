@@ -176,9 +176,12 @@ def _eval_node(node):
     raise ValueError("Unsupported expression")
 
 
-def get_ai_response_payload(question, online=True, mode="regular"):
-    """Return structured response for API consumption with quota handling."""
-    if not question or not question.strip():
+def get_ai_response_payload(question, online=True, mode="regular", context=None):
+    """
+    Return structured response for API consumption with quota handling.
+    Supports persistent active context (Image/PDF) for multi-turn academic tutoring.
+    """
+    if not (question and question.strip()) and not context:
         return {
             "status": "error",
             "answer": offline_response("", learner_mode=mode),
@@ -186,6 +189,34 @@ def get_ai_response_payload(question, online=True, mode="regular"):
         }
 
     mode_key = mode if mode in MODE_GUIDANCE else "regular"
+
+    # Handle Active Context (Image or Document)
+    if context and online:
+        ctx_type = context.get('type')
+        ctx_data = context.get('data', '')
+        
+        if ctx_type == 'image' and ctx_data:
+            # Persistent Image Context Analysis
+            res = analyze_image(ctx_data, learner_mode=mode_key, user_question=question)
+            return {
+                "status": "success",
+                "answer": res.get("explanation"),
+                "mode": "online"
+            }
+            
+        elif ctx_type == 'pdf' and ctx_data:
+            # Persistent Document Context Analysis
+            if question and question.strip():
+                prompt = f"Academic Task: Answer the following question based ONLY on the provided document text. Maintain a formal, educational tone.\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}\n\nUSER QUESTION: {question}"
+            else:
+                prompt = f"Academic Task: Provide a comprehensive summary and key educational takeaways from this document.\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}"
+            
+            raw, err = _call_ai_model(prompt)
+            return {
+                "status": "success" if err == "ok" else "error",
+                "answer": raw if err == "ok" else "I encountered an error while analyzing the document context.",
+                "mode": "online"
+            }
 
     if not online:
         offline = offline_generate_explanation(question, learner_mode=mode_key, level="basic")
@@ -195,12 +226,13 @@ def get_ai_response_payload(question, online=True, mode="regular"):
             "mode": "offline"
         }
 
+    # Standard Text-only Ask Logic
     prompt = (
         SYSTEM_PROMPT
         + "\nLearner mode: " + mode_key
         + "\nLevel: basic"
         + "\nStyle guidance: " + MODE_GUIDANCE.get(mode_key, "")
-        + "\nQuestion: " + question.strip()
+        + "\nQuestion: " + (question.strip() if question else "Summarize your capabilities.")
         + "\nReturn only valid JSON."
     )
 
