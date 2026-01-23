@@ -60,17 +60,19 @@ export const aiAPI = {
     return response.data;
   },
 
-  analyzeImage: async (base64Image: string, mode: string = 'regular') => {
+  analyzeImage: async (base64Image: string, question: string = '', mode: string = 'regular') => {
     const response = await api.post('/analyze-image', { 
       image: base64Image,
+      question,
       mode
     });
     return response.data;
   },
 
-  analyzePdf: async (pdfText: string, mode: string = 'regular') => {
+  analyzePdf: async (pdfText: string, question: string = '', mode: string = 'regular') => {
     const response = await api.post('/analyze-pdf', { 
       text: pdfText,
+      question,
       mode
     });
     return response.data;

@@ -87,14 +87,19 @@ def generate_explanation(question, learner_mode="regular", level="basic"):
     # Fallback to offline structured response if JSON parsing fails
     return offline_generate_explanation(question, learner_mode=mode_key, level=level)
 
-def analyze_image(base64_image, learner_mode="regular"):
+def analyze_image(base64_image, learner_mode="regular", user_question=None):
     """Analyze image using computer vision and return an academic educational explanation."""
-    prompt = (
+    base_prompt = (
         "You are an academic AI tutor. Analyze this image for a student. "
         "Provide a formal, structured description of the visual content and explain its educational relevance. "
         "Maintain a professional tone without emojis or informal language. "
         "Learner mode: " + learner_mode
     )
+    
+    if user_question:
+        prompt = f"{base_prompt}\n\nUser specific question about this image: {user_question}"
+    else:
+        prompt = base_prompt
     
     raw, err = generate_vision_text(prompt, base64_image)
     if err == "ok":

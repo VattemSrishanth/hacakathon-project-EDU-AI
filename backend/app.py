@@ -378,11 +378,12 @@ def analyze_image_route():
         data = request.get_json() or {}
         image_data = data.get("image", "")
         mode = data.get("mode", "regular")
+        question = data.get("question")
         
         if not image_data:
             return jsonify({"error": "No image data provided", "success": False}), 400
             
-        result = analyze_image(image_data, learner_mode=mode)
+        result = analyze_image(image_data, learner_mode=mode, user_question=question)
         return jsonify({
             "success": True, 
             "explanation": result["explanation"]
@@ -399,17 +400,25 @@ def analyze_pdf_route():
         data = request.get_json() or {}
         text = data.get("text", "")
         mode = data.get("mode", "regular")
+        user_question = data.get("question")
         
         if not text:
             return jsonify({"error": "No PDF text provided", "success": False}), 400
             
         # Re-using get_ai_response for summarizing text with an academic prompt
-        question = f"Academic Task: Please provide a structured, formal summary of the following document text. Avoid informalities and focus on key educational points: {text[:4000]}"
-        summary = get_ai_response(question, online=True, mode=mode)
+        if user_question:
+            prompt = f"Academic Task: You are analyzing a document context. Answer the following question based ONLY on the provided text.\n\nDOCUMENT CONTEXT: {text[:8000]}\n\nQUESTION: {user_question}"
+        else:
+            prompt = f"Academic Task: Please provide a structured, formal summary of the following document text. Avoid informalities and focus on key educational points: {text[:8000]}"
+            
+        summary = get_ai_response(prompt, online=True, mode=mode)
+        
+        # get_ai_response returns a dict or string? It usually returns a dict if successful
+        # Let's check get_ai_response in ai_engine.py
         
         return jsonify({
             "success": True,
-            "summary": summary
+            "summary": summary if isinstance(summary, str) else summary.get("answer", summary.get("response", ""))
         })
     except Exception as e:
         print(f"Analyze PDF error: {e}")

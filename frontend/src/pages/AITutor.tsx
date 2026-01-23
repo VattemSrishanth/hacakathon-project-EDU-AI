@@ -16,6 +16,11 @@ const AITutor = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
+  const [fileContext, setFileContext] = useState<{
+    type: 'image' | 'pdf' | 'youtube' | null;
+    data: string;
+    name?: string;
+  } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
@@ -69,7 +74,12 @@ const AITutor = () => {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!input.trim() || !enabled) return;
+    if (!enabled) return;
+    if (!input.trim() && !fileContext) return;
+
+    // Use default question if input is empty but context exists (e.g. user pressed enter)
+    const activeInput = input.trim() || (fileContext ? "Please summarize and explain this for me." : "");
+    if (!activeInput) return;
 
     if (!navigator.onLine) {
       const offlineMsg: ChatMessage = {
@@ -78,12 +88,16 @@ const AITutor = () => {
         content: 'I am sorry, but I need an internet connection to process your request. Please reconnect and try again.',
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, {
-        id: (Date.now() - 1).toString(),
-        role: 'user',
-        content: input,
-        timestamp: new Date(),
-      }, offlineMsg]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() - 1).toString(),
+          role: 'user',
+          content: activeInput,
+          timestamp: new Date(),
+        },
+        offlineMsg,
+      ]);
       setInput('');
       return;
     }
@@ -91,7 +105,7 @@ const AITutor = () => {
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
+      content: activeInput,
       timestamp: new Date(),
     };
 
@@ -100,14 +114,25 @@ const AITutor = () => {
     setLoading(true);
 
     try {
-      // Pass answerStyle to API - 'Short' maps to concise mode, 'Detailed' to detailed mode
       const mode = answerStyle === 'Short' ? 'concise' : 'detailed';
-      const response = await aiAPI.ask(input, mode);
+      let response;
+
+      if (fileContext) {
+        if (fileContext.type === 'image') {
+          response = await aiAPI.analyzeImage(fileContext.data, activeInput, mode);
+        } else if (fileContext.type === 'pdf') {
+          response = await aiAPI.analyzePdf(fileContext.data, activeInput, mode);
+        } else if (fileContext.type === 'youtube') {
+          response = await aiAPI.explainVideo(fileContext.data); // Youtube doesn't support custom questions yet in this codebase
+        }
+      } else {
+        response = await aiAPI.ask(activeInput, mode);
+      }
       
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response.answer || response.response || t.aiTutor.errorMessage,
+        content: response.answer || response.response || response.explanation || response.summary || t.aiTutor.errorMessage,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
@@ -141,40 +166,26 @@ const AITutor = () => {
     }
 
     const reader = new FileReader();
-    reader.onload = async () => {
+    reader.onload = () => {
       const base64 = reader.result as string;
       const userMsg: ChatMessage = {
         id: Date.now().toString(),
         role: 'user',
-        content: 'Analyzed an image.',
+        content: 'Image uploaded.',
         imageUrl: base64,
         attachmentType: 'image',
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, userMsg]);
-      setLoading(true);
-
-      try {
-        const res = await aiAPI.analyzeImage(base64, settings.themeAccessibility.lowPowerMode ? 'speech' : 'regular');
-        const assistantMsg: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: res.explanation || "I have analyzed the image. It appears to be an educational resource.",
-          timestamp: new Date(),
-        };
-        setMessages(prev => [...prev, assistantMsg]);
-      } catch (err) {
-        setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: "Sorry, I could not analyze the image at this time.",
-          timestamp: new Date(),
-        }]);
-      } finally {
-        setLoading(false);
-      }
+      setMessages(prev => [...prev, userMsg, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "File uploaded. What would you like to do with this image?",
+        timestamp: new Date(),
+      }]);
+      setFileContext({ type: 'image', data: base64, name: file.name });
     };
     reader.readAsDataURL(file);
+    if (e.target) e.target.value = '';
   };
 
   const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -193,44 +204,27 @@ const AITutor = () => {
       return;
     }
 
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: `PDF uploaded: ${file.name}`,
-      attachmentType: 'pdf',
-      attachmentTitle: file.name,
-      timestamp: new Date(),
-    };
-    setMessages(prev => [...prev, userMsg]);
-    setLoading(true);
-
-    // For a hackathon demo, we extract text if possible or send file info
-    // Here we simulate extraction and send to AI
     const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        // Real PDF extraction would use pdf.js, here we send first 2000 chars of raw text as a fallback
-        const text = (reader.result as string).slice(0, 5000); 
-        const res = await aiAPI.analyzePdf(text, 'regular');
-        const assistantMsg: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: res.summary || "This PDF contains educational content about the topic.",
-          timestamp: new Date(),
-        };
-        setMessages(prev => [...prev, assistantMsg]);
-      } catch (err) {
-        setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: "I processed the PDF but couldn't generate a summary. It seems to be a structured document.",
-          timestamp: new Date(),
-        }]);
-      } finally {
-        setLoading(false);
-      }
+    reader.onload = () => {
+      const text = (reader.result as string).slice(0, 5000); 
+      const userMsg: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: `PDF uploaded: ${file.name}`,
+        attachmentType: 'pdf',
+        attachmentTitle: file.name,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, userMsg, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "File uploaded. What would you like to do with this document?",
+        timestamp: new Date(),
+      }]);
+      setFileContext({ type: 'pdf', data: text, name: file.name });
     };
     reader.readAsText(file);
+    if (e.target) e.target.value = '';
   };
 
   const handleYoutubePrompt = async () => {
@@ -269,28 +263,13 @@ const AITutor = () => {
       attachmentTitle: url,
       timestamp: new Date(),
     };
-    setMessages(prev => [...prev, userMsg]);
-    setLoading(true);
-
-    try {
-      const res = await aiAPI.explainVideo(url);
-      const assistantMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: res.simpleExplanation || res.summary || "This video explains the key concepts of the topic.",
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, assistantMsg]);
-    } catch (err) {
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: "I couldn't fetch the video details. Please make sure the video has a transcript available.",
-        timestamp: new Date(),
-      }]);
-    } finally {
-      setLoading(false);
-    }
+    setMessages(prev => [...prev, userMsg, {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: "Video linked. What would you like to know about this video?",
+      timestamp: new Date(),
+    }]);
+    setFileContext({ type: 'youtube', data: url, name: 'YouTube Video' });
   };
 
   // If AI Tutor is disabled, show a message
@@ -369,6 +348,22 @@ const AITutor = () => {
             )}
             <div ref={messagesEndRef} />
           </div>
+
+          {fileContext && (
+            <div className="mx-4 mb-2 p-2 bg-indigo-50 rounded-lg flex items-center justify-between animate-in slide-in-from-bottom-1 border border-indigo-100">
+              <div className="flex items-center gap-2 text-sm text-indigo-700 font-medium truncate">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                <span className="truncate">Active Context: {fileContext.name}</span>
+              </div>
+              <button 
+                onClick={() => setFileContext(null)}
+                className="p-1 hover:bg-indigo-100 rounded-full text-indigo-500 transition-colors"
+                title="Clear context"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+          )}
 
           <div className="flex gap-2 p-4 border-t border-gray-200 relative">
             <div className="relative flex items-center">
