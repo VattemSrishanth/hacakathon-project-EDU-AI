@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import OfflineBanner from './components/OfflineBanner';
+import VoiceControl from './components/VoiceControl';
 import Home from './pages/Home.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import Lessons from './pages/Lessons.tsx';
@@ -104,6 +105,7 @@ function App() {
           </Routes>
         </main>
         <Footer />
+        <VoiceControl />
       </div>
     </AuthProvider>
     </SettingsProvider>

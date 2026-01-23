@@ -14,6 +14,13 @@ export interface TranslationKeys {
     logout: string;
     profile: string;
   };
+  // Voice Control
+  voiceControl: {
+    start: string;
+    listening: string;
+    unrecognized: string;
+    notSupported: string;
+  };
   // Home Page
   home: {
     welcome: string;
@@ -202,6 +209,12 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       logout: 'Logout',
       profile: 'Profile',
     },
+    voiceControl: {
+      start: 'Start Voice Control',
+      listening: 'Listening... Speak now',
+      unrecognized: 'Command not recognized',
+      notSupported: 'Voice control is unavailable on this browser',
+    },
     home: {
       welcome: 'Welcome to',
       brandName: 'RuralAccess AI',
@@ -378,6 +391,12 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       login: 'లాగిన్',
       logout: 'లాగౌట్',
       profile: 'ప్రొఫైల్',
+    },
+    voiceControl: {
+      start: 'వాయిస్ కంట్రోల్ ప్రారంభించండి',
+      listening: 'వినడం... ఇప్పుడే మాట్లాడండి',
+      unrecognized: 'కమాండ్ గుర్తించబడలేదు',
+      notSupported: 'ఈ బ్రౌజర్‌లో వాయిస్ కంట్రోల్ అందుబాటులో లేదు',
     },
     home: {
       welcome: 'స్వాగతం',
@@ -556,6 +575,12 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       logout: 'लॉगआउट',
       profile: 'प्रोफाइल',
     },
+    voiceControl: {
+      start: 'वॉयस कंट्रोल शुरू करें',
+      listening: 'सुन रहे हैं... अब बोलें',
+      unrecognized: 'कमांड पहचाना नहीं गया',
+      notSupported: 'इस ब्राउज़र पर वॉयस कंट्रोल उपलब्ध नहीं है',
+    },
     home: {
       welcome: 'स्वागत है',
       brandName: 'रूरल एक्सेस AI',
@@ -733,6 +758,12 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       logout: 'Cerrar sesión',
       profile: 'Perfil',
     },
+    voiceControl: {
+      start: 'Iniciar control de voz',
+      listening: 'Escuchando... hable ahora',
+      unrecognized: 'Comando no reconocido',
+      notSupported: 'El control de voz no está disponible en este navegador',
+    },
     home: {
       welcome: 'Bienvenido a',
       brandName: 'RuralAccess AI',
@@ -909,6 +940,12 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       login: 'Connexion',
       logout: 'Déconnexion',
       profile: 'Profil',
+    },
+    voiceControl: {
+      start: 'Démarrer le contrôle vocal',
+      listening: 'Écoute... parlez maintenant',
+      unrecognized: 'Commande non reconnue',
+      notSupported: "Le contrôle vocal n'est pas disponible sur ce navigateur",
     },
     home: {
       welcome: 'Bienvenue sur',
