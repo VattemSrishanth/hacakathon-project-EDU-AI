@@ -1,7 +1,10 @@
 export interface User {
-  id: string;
-  email: string;
-  name: string;
+  id?: string | number;
+  username?: string;
+  email?: string;
+  name?: string;
+  avatarUrl?: string;
+  initials?: string;
 }
 
 export interface Lesson {

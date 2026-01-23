@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { authAPI } from '../services/api';
@@ -7,6 +9,8 @@ import './login-animation.css';
 
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,7 +27,9 @@ const Login = () => {
     try {
       const response = await authAPI.login(email, password);
       if (response?.success) {
+        login({ token: response?.token, user: response?.user });
         setSuccessMessage('Login successful!');
+        navigate('/');
       } else {
         setErrorMessage(response?.error || 'Login failed. Please try again.');
       }

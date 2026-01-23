@@ -196,8 +196,21 @@ def login():
 
 @app.route("/api/auth/me", methods=["GET"])
 def get_current_user():
-    """Get current user info (placeholder for session-based auth)."""
-    # In production, verify JWT token here
+    """Get current user info from mock token."""
+    auth_header = request.headers.get("Authorization", "")
+    token = ""
+    if auth_header.startswith("Bearer "):
+        token = auth_header.replace("Bearer ", "", 1).strip()
+
+    if token.startswith("mock_token_"):
+        try:
+            user_id = int(token.split("mock_token_")[-1])
+            user = User.query.get(user_id)
+            if user:
+                return jsonify({"authenticated": True, "user": user.to_public_dict()})
+        except Exception:
+            pass
+
     return jsonify({"authenticated": False, "user": None})
 
 

@@ -1,8 +1,18 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const { auth, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    setProfileOpen(false);
+    navigate('/login');
+  };
 
   const navLinks = [
     { to: '/', label: 'Home' },
@@ -10,6 +20,8 @@ const Navbar = () => {
     { to: '/lessons', label: 'Lessons' },
     { to: '/ai-tutor', label: 'AI Tutor' },
     { to: '/accessibility', label: 'Accessibility' },
+    { to: '/support', label: 'Support' },
+    { to: '/settings', label: 'Settings' },
   ];
 
   return (
@@ -40,6 +52,54 @@ const Navbar = () => {
             >
               Login
             </Link>
+            {isAuthenticated && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setProfileOpen((prev) => !prev)}
+                  className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold"
+                  aria-label="User menu"
+                >
+                  {auth?.user?.avatarUrl ? (
+                    <img
+                      src={auth.user.avatarUrl}
+                      alt="Profile"
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    auth?.user?.initials || 'U'
+                  )}
+                </button>
+
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-semibold text-gray-900">
+                        {auth?.user?.username || auth?.user?.email || 'User'}
+                      </p>
+                      <p className="text-xs text-gray-600">{auth?.user?.email}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        navigate('/dashboard');
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      Profile
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="md:hidden flex items-center">
@@ -73,6 +133,18 @@ const Navbar = () => {
               >
                 Login
               </Link>
+              {isAuthenticated && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleLogout();
+                  }}
+                  className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200 inline-block w-fit"
+                >
+                  Logout
+                </button>
+              )}
             </div>
           </div>
         )}

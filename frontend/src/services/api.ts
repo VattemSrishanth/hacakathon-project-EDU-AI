@@ -10,6 +10,21 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  try {
+    const stored = window.localStorage.getItem('auth');
+    const auth = stored ? JSON.parse(stored) : null;
+    const token = auth?.token;
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } catch {
+    // ignore storage errors
+  }
+  return config;
+});
+
 // Auth API
 export const authAPI = {
   login: async (email: string, password: string) => {
