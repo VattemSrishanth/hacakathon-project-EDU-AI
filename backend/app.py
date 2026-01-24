@@ -18,7 +18,7 @@ from models import db, User
 try:
     from youtube_transcript_api import YouTubeTranscriptApi
     try:
-        from youtube_transcript_api.exceptions import TranscriptsDisabled, NoTranscriptFound, VideoUnavailable
+        from youtube_transcript_api import TranscriptsDisabled, NoTranscriptFound, VideoUnavailable
     except (ImportError, ModuleNotFoundError):
         # Fallback: define exception classes if import fails
         class TranscriptsDisabled(Exception):
@@ -35,6 +35,11 @@ except ImportError:
         pass
     class VideoUnavailable(Exception):
         pass
+
+try:
+    import PyPDF2
+except ImportError:
+    PyPDF2 = None
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend", "dist"))
@@ -481,7 +486,8 @@ LESSONS = [
         "duration": "30 mins",
         "level": "Beginner",
         "category": "Mathematics",
-        "topics": ["Numbers", "Addition", "Subtraction", "Multiplication"]
+        "topics": ["Numbers", "Addition", "Subtraction", "Multiplication"],
+        "pdf_path": "intro_math.pdf"
     },
     {
         "id": "2",
@@ -490,7 +496,8 @@ LESSONS = [
         "duration": "45 mins",
         "level": "Beginner",
         "category": "Science",
-        "topics": ["Matter", "Energy", "Plants", "Animals"]
+        "topics": ["Matter", "Energy", "Plants", "Animals"],
+        "pdf_path": "basic_science.pdf"
     },
     {
         "id": "3",
@@ -499,16 +506,18 @@ LESSONS = [
         "duration": "40 mins",
         "level": "Intermediate",
         "category": "English",
-        "topics": ["Nouns", "Verbs", "Sentences", "Punctuation"]
+        "topics": ["Nouns", "Verbs", "Sentences", "Punctuation"],
+        "pdf_path": "english_grammar.pdf"
     },
     {
         "id": "4",
-        "title": "Computer Basics",
-        "description": "Introduction to computers, hardware, software, and basic operations.",
+        "title": "Programming Fundamentals",
+        "description": "Learn the basics of logic, loops, and variables in programming.",
         "duration": "35 mins",
         "level": "Beginner",
         "category": "Computer Science",
-        "topics": ["Hardware", "Software", "Internet", "Typing"]
+        "topics": ["Logic", "Loops", "Variables", "Functions"],
+        "pdf_path": "programming_fundamentals.pdf"
     },
     {
         "id": "5",
@@ -517,7 +526,8 @@ LESSONS = [
         "duration": "50 mins",
         "level": "Intermediate",
         "category": "Mathematics",
-        "topics": ["Fractions", "Decimals", "Percentages"]
+        "topics": ["Fractions", "Decimals", "Percentages"],
+        "pdf_path": "fractions_decimals.pdf"
     },
     {
         "id": "6",
@@ -526,7 +536,8 @@ LESSONS = [
         "duration": "55 mins",
         "level": "Intermediate",
         "category": "Science",
-        "topics": ["Planets", "Sun", "Moon", "Space"]
+        "topics": ["Planets", "Sun", "Moon", "Space"],
+        "pdf_path": "solar_system.pdf"
     },
     {
         "id": "7",
@@ -535,7 +546,8 @@ LESSONS = [
         "duration": "45 mins",
         "level": "Beginner",
         "category": "English",
-        "topics": ["Reading", "Vocabulary", "Comprehension"]
+        "topics": ["Reading", "Vocabulary", "Comprehension"],
+        "pdf_path": "reading_comp.pdf"
     },
     {
         "id": "8",
@@ -581,6 +593,45 @@ def get_lesson(lesson_id):
         "success": True,
         "lesson": lesson
     })
+
+
+@app.route("/api/lessons/<lesson_id>/content", methods=["GET"])
+def get_lesson_content(lesson_id):
+    """Extract and return text content from a lesson's PDF."""
+    lesson = next((l for l in LESSONS if l["id"] == lesson_id), None)
+    if not lesson or "pdf_path" not in lesson:
+        return jsonify({"error": "Lesson or PDF not found", "success": False}), 404
+        
+    pdf_filename = lesson["pdf_path"]
+    pdf_path = os.path.join(BASE_DIR, "..", "frontend", "public", "lessons", pdf_filename)
+    
+    if not os.path.exists(pdf_path):
+        # Return dummy content for demo if file doesn't exist
+        return jsonify({
+            "success": True,
+            "content": f"This is placeholder content for {lesson['title']}. In a real scenario, this text would be extracted from {pdf_filename} and summarized for students.",
+            "is_dummy": True
+        })
+        
+    try:
+        text = ""
+        if PyPDF2:
+            with open(pdf_path, "rb") as f:
+                reader = PyPDF2.PdfReader(f)
+                for page in reader.pages:
+                    text += page.extract_text() + "\n"
+        else:
+            # Fallback for generic text files or if PyPDF2 is missing
+            with open(pdf_path, "r", encoding="utf-8", errors="ignore") as f:
+                text = f.read()
+                
+        return jsonify({
+            "success": True,
+            "content": text.strip()
+        })
+    except Exception as e:
+        print(f"Error extracting PDF: {e}")
+        return jsonify({"error": "Failed to extract lesson content", "success": False}), 500
 
 
 @app.route("/api/categories", methods=["GET"])

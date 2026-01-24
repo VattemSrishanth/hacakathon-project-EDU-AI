@@ -112,7 +112,14 @@ def analyze_image(base64_image, learner_mode="regular", user_question=None, lang
     if not answer_style:
         answer_style = "Detailed"
 
-    style_instruction = "Direct answer only, 1-3 short sentences." if answer_style == "Short" else "Provide a formal, structured description of the visual content and explain its educational relevance."
+    if answer_style == "Short":
+        style_instruction = "Direct answer only, 1-3 short sentences."
+    elif answer_style == "Explain like I'm 10":
+        style_instruction = "Explain like I'm 10: Use very simple language and metaphors."
+    elif answer_style == "University Professor":
+        style_instruction = "Use terminal academic language and advanced terminology."
+    else:
+        style_instruction = "Provide a formal, structured description of the visual content and explain its educational relevance."
 
     base_prompt = (
         "You are an academic AI tutor. Analyze this image for a student. "
@@ -242,7 +249,15 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None,
             
         elif ctx_type == 'pdf' and ctx_data:
             # Persistent Document Context Analysis
-            style_instruction = "Direct answer only, 1-3 sentences." if answer_style == "Short" else "Comprehensive summary and key educational takeaways."
+            if answer_style == "Short":
+                style_instruction = "Direct answer only, 1-3 sentences."
+            elif answer_style == "Explain like I'm 10":
+                style_instruction = "Explain like I'm 10: Use very simple language and metaphors."
+            elif answer_style == "University Professor":
+                style_instruction = "Use terminal academic language and advanced terminology."
+            else:
+                style_instruction = "Comprehensive summary and key educational takeaways."
+
             if question and question.strip():
                 prompt = f"Academic Task: Answer the following question based ONLY on the provided document text. Maintain a formal, educational tone. Respond ONLY in {language}. Style: {answer_style}\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}\n\nUSER QUESTION: {question}\n\n{style_instruction}"
             else:
@@ -290,12 +305,19 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None,
         }
 
     # Standard Text-only Ask Logic - Detailed Mode (JSON based)
+    style_hint = ""
+    if answer_style == "Explain like I'm 10":
+        style_hint = "\nENFORCE STYLE: Explain using simple metaphors, very basic vocabulary, and like you are talking to a 10-year-old child."
+    elif answer_style == "University Professor":
+        style_hint = "\nENFORCE STYLE: Use advanced academic terminology, terminal-level vocabulary, and assume the student is at a high-education level."
+
     prompt = (
         SYSTEM_PROMPT
         + f"\nRESPONSE LANGUAGE: {language}. Respond ONLY in {language}."
         + "\nLearner mode: " + mode_key
         + "\nLevel: basic"
         + "\nStyle guidance: " + MODE_GUIDANCE.get(mode_key, "")
+        + style_hint
         + "\nQuestion: " + (question.strip() if question else "Summarize your capabilities.")
         + "\nReturn only valid JSON."
     )
