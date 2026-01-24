@@ -27,12 +27,12 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent drop-shadow-sm">
                 RuralAccess AI
               </span>
             </Link>
@@ -43,7 +43,7 @@ const Navbar = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className="text-gray-700 hover:text-primary transition-colors duration-200"
+                className="text-gray-800 dark:text-gray-100 font-medium hover:text-primary dark:hover:text-secondary transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -76,11 +76,11 @@ const Navbar = () => {
 
                 {profileOpen && (
                   <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg z-50 popup-interactive">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-semibold text-gray-900">
+                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">
                         {auth?.user?.username || auth?.user?.email || 'User'}
                       </p>
-                      <p className="text-xs text-gray-600">{auth?.user?.email}</p>
+                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300">{auth?.user?.email}</p>
                     </div>
                     <button
                       type="button"
@@ -88,14 +88,14 @@ const Navbar = () => {
                         setProfileOpen(false);
                         navigate('/dashboard');
                       }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      className="w-full text-left px-4 py-2 text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
                       {t.nav.profile}
                     </button>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+                      className="w-full text-left px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                     >
                       {t.nav.logout}
                     </button>

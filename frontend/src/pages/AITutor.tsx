@@ -388,12 +388,6 @@ const AITutor = () => {
           </div>
 
           <div className="p-4 border-t border-gray-200">
-            {languageFallback && (
-              <div className="mb-2 px-3 py-1 bg-yellow-50 text-yellow-700 text-xs rounded border border-yellow-100 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                {settings.learning.language} is not fully supported for voice input. Falling back to English.
-              </div>
-            )}
             {fileContext && (
               <div className="mb-2 p-2 bg-indigo-50 rounded-lg flex items-center justify-between border border-indigo-100 animate-in slide-in-from-bottom-1 popup-interactive">
                 <div className="flex items-center gap-2 text-xs text-indigo-700 font-bold uppercase tracking-wider">
