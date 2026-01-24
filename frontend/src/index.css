@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ==================== Tailwind v4 Theme Configuration ==================== */
-:root {
+@theme {
   --color-primary: #4F46E5;
   --color-primary-hover: #4338ca;
   --color-secondary: #06B6D4;
@@ -13,9 +13,10 @@
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-card: #ffffff;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --border-color: #e5e7eb;
+  --text-primary: #0f172a;    /* Darkened for better contrast in light mode */
+  --text-secondary: #334155;  /* Darkened for better contrast in light mode */
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
   
   /* Brand Colors */
   --color-primary: #4f46e5;
@@ -36,7 +37,15 @@
   --bg-card: #1e293b;
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
   --border-color: #334155;
+}
+
+/* Global Body Styling */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
 .dark body {
@@ -44,6 +53,7 @@
   color: var(--text-primary);
 }
 
+/* Force variable usage for common Tailwind classes in Dark Mode */
 .dark .bg-white {
   background-color: var(--bg-card) !important;
 }
@@ -56,16 +66,19 @@
   background-color: var(--bg-card) !important;
 }
 
-.dark .text-gray-900 {
+.dark .text-gray-900,
+.dark .text-gray-800 {
   color: var(--text-primary) !important;
 }
 
-.dark .text-gray-700 {
+.dark .text-gray-700,
+.dark .text-gray-600 {
   color: var(--text-secondary) !important;
 }
 
-.dark .text-gray-600 {
-  color: var(--text-secondary) !important;
+.dark .text-gray-500,
+.dark .text-gray-400 {
+  color: var(--text-muted) !important;
 }
 
 .dark .border-gray-200,
@@ -73,16 +86,15 @@
   border-color: var(--border-color) !important;
 }
 
-.dark .shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+/* Fix Hero Section issues */
+.from-indigo-50 {
+  --tw-gradient-from: #eef2ff !important;
 }
-
-.dark input,
-.dark select,
-.dark textarea {
-  background-color: var(--bg-primary) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--border-color) !important;
+.via-white {
+  --tw-gradient-via: #ffffff !important;
+}
+.to-cyan-50 {
+  --tw-gradient-to: #ecfeff !important;
 }
 
 .dark .from-indigo-50,
@@ -91,6 +103,23 @@
   --tw-gradient-from: var(--bg-secondary) !important;
   --tw-gradient-via: var(--bg-primary) !important;
   --tw-gradient-to: var(--bg-secondary) !important;
+}
+
+/* Card and Navigation visibility */
+.nav-link {
+  color: var(--text-secondary);
+}
+.dark .nav-link {
+  color: var(--text-secondary) !important;
+}
+
+/* Shadow adjustments */
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.dark .shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* ==================== Low Power Mode ==================== */

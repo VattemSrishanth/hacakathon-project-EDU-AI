@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessibility - Inclusive AI Learning</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="header">
+    <div class="header-content">
+      <div class="nav-section">
+        <h1 class="app-name">Inclusive AI Learning</h1>
+        <nav class="nav-menu">
+          <a href="home.html" class="nav-item">Home</a>
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <a href="lessons.html" class="nav-item">Lessons</a>
+          <a href="index-react.html" class="nav-item">AI Tutor</a>
+          <a href="accessibility.html" class="nav-item active">Accessibility</a>
+          <a href="support.html" class="nav-item">Support</a>
+          <a href="settings.html" class="nav-item">Settings</a>
+        </nav>
+        </div>
+          <div class="auth-actions" aria-label="Authentication">
+            <a href="login.html" class="button btn-small auth-link">Login</a>
+            <a href="register.html" class="button btn-secondary btn-small auth-link">Sign Up</a>
+          </div>
+      </div>
+      <div class="user-menu">
+        <div class="user-icon" id="userIcon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
+          </svg>
+        </div>
+        <div class="user-panel" id="userPanel">
+          <div class="panel-item user-info">
+            <div class="info-label">Name</div>
+            <div class="info-value" id="panelUserName">User</div>
+          </div>
+          <div class="panel-item user-info" id="emailInfo">
+            <div class="info-label">Email</div>
+            <div class="info-value" id="panelUserEmail">-</div>
+          </div>
+          <div class="panel-item user-info">
+            <div class="info-label">Role</div>
+            <div class="info-value">Student</div>
+          </div>
+          <div class="panel-divider"></div>
+          <div class="panel-item panel-action" onclick="logout()">
+            Logout
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <section class="section" id="accessibilitySection">
+      <h3>Accessibility Settings</h3>
+      <p>Choose your preferred learning mode:</p>
+      <div class="accessibility-options">
+        <label class="radio-option">
+          <input type="radio" name="mode" value="normal" checked onchange="setMode('normal')">
+          <span>Normal Mode - Standard text and audio</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="mode" value="deaf" onchange="setMode('deaf')">
+          <span>Deaf Mode - Visual learning with captions</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="mode" value="dumb" onchange="setMode('dumb')">
+          <span>Dumb Mode - Text-only interaction (Speech-Impaired)</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="mode" value="blind" onchange="setMode('blind')">
+          <span>Blind Mode - Full voice guidance and screen reading</span>
+        </label>
+      </div>
+      <p class="current-mode">Current Mode: <strong id="currentModeText">Normal Mode</strong></p>
+
+      <div class="voice-panel" id="voicePanel" aria-label="Voice Control Panel">
+        <div class="voice-panel-header">
+          <h4>Voice Control Panel</h4>
+          <span class="voice-badge" id="voiceStatus" aria-live="polite">Idle</span>
+        </div>
+
+        <div class="voice-permission">
+          <button class="button btn-secondary" id="voicePermissionBtn" type="button">Tap to Allow Microphone</button>
+          <span class="voice-label">Grant mic access to enable speech features.</span>
+        </div>
+
+        <div class="voice-actions">
+          <button class="button" id="voiceStartBtn" type="button">Start Listening</button>
+          <button class="button btn-secondary" id="voiceStopBtn" type="button" disabled>Stop Listening</button>
+        </div>
+
+        <div class="voice-meta">
+          <div class="voice-meta-item">
+            <span class="voice-label">Detected Language:</span>
+            <strong id="voiceDetectedLang">Auto</strong>
+          </div>
+        </div>
+
+        <div class="voice-transcript" id="voiceTranscript" aria-live="polite">
+          Live transcript will appear here.
+        </div>
+
+        <div class="voice-translation">
+          <label for="voiceLangSelect" class="voice-label">Translate to:</label>
+          <select id="voiceLangSelect" class="text-input" aria-label="Translation language">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+            <option value="te">Telugu</option>
+            <option value="ta">Tamil</option>
+          </select>
+          <button class="button btn-secondary" id="voiceTranslateBtn" type="button">Translate</button>
+        </div>
+
+        <div class="voice-output" id="voiceTranslateOutput" aria-live="polite">
+          Translated text will appear here.
+        </div>
+
+        <label class="voice-toggle">
+          <input type="checkbox" id="voiceTtsToggle">
+          Read translated text aloud
+        </label>
+
+        <label class="voice-toggle">
+          <input type="checkbox" id="voiceGlobalToggle">
+          Enable voice commands across the site
+        </label>
+
+        <div class="voice-error" id="voiceError" role="alert"></div>
+      </div>
+    </section>
+  </main>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script src="voice.js"></script>
+</body>
+</html>

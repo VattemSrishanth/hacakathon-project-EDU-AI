@@ -28,17 +28,31 @@ const Accessibility = () => {
                 <button
                   key={mode.id}
                   onClick={() => updateThemeAccessibility({ accessibilityMode: mode.id })}
-                  className={`p-4 rounded-xl border-2 transition-all text-left ${
+                  className={`p-4 rounded-xl border-2 transition-all text-left relative overflow-hidden group ${
                     settings.themeAccessibility.accessibilityMode === mode.id
-                      ? 'border-blue-600 bg-blue-50'
-                      : 'border-gray-200 hover:border-blue-300'
+                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400'
+                      : 'border-gray-200 hover:border-blue-300 dark:border-gray-700 dark:hover:border-blue-500'
                   }`}
                 >
-                  <h3 className="font-bold text-gray-900">{mode.label}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{mode.desc}</p>
+                  <h3 className={`font-bold transition-colors ${
+                    settings.themeAccessibility.accessibilityMode === mode.id
+                      ? 'text-blue-900 dark:text-blue-100'
+                      : 'text-gray-900 dark:text-gray-100'
+                  }`}>
+                    {mode.label}
+                  </h3>
+                  <p className={`text-sm mt-1 transition-colors ${
+                    settings.themeAccessibility.accessibilityMode === mode.id
+                      ? 'text-blue-700 dark:text-blue-200'
+                      : 'text-gray-600 dark:text-gray-400'
+                  }`}>
+                    {mode.desc}
+                  </p>
                   {settings.themeAccessibility.accessibilityMode === mode.id && (
-                    <div className="mt-2 text-blue-600 text-xs font-semibold flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <div className="mt-3 text-blue-600 dark:text-blue-300 text-xs font-bold flex items-center gap-1.5 animate-in fade-in zoom-in duration-300">
+                      <div className="bg-blue-600 dark:bg-blue-400 text-white rounded-full p-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      </div>
                       Active
                     </div>
                   )}

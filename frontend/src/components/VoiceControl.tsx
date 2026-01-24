@@ -159,12 +159,10 @@ const VoiceControl: React.FC = () => {
     reco.onend = () => {
       // Auto-restart for continuous listening with safety delay
       setTimeout(() => {
-        if (accessibilityMode !== 'Dumb') {
-          try { 
-            recognitionRef.current.start(); 
-          } catch (e) {
-            // Usually means already started
-          }
+        try { 
+          recognitionRef.current.start(); 
+        } catch (e) {
+          // Usually means already started
         }
       }, 300);
     };
