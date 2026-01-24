@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import type { ChatMessage } from '../types';
@@ -10,7 +10,9 @@ const CHAT_HISTORY_KEY = 'ai_chat_history';
 
 const AITutor = () => {
   const { settings, t } = useSettings();
+  const location = useLocation();
   const { enabled, answerStyle, showChatHistory } = settings.aiTutor;
+  const { accessibilityMode } = settings.themeAccessibility;
   
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -73,13 +75,25 @@ const AITutor = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: isLowPower ? 'auto' : 'smooth' });
   }, [messages]);
 
-  const handleSend = async () => {
+  // Handle voice query from navigation
+  useEffect(() => {
+    if (location.state?.voiceQuery) {
+      handleSend(location.state.voiceQuery);
+      // Clean up state so it doesn't re-trigger on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
+  const handleSend = async (forcedQuery?: string) => {
     if (!enabled) return;
+    
+    const queryToUse = forcedQuery || input;
+
     // Allow sending if there's either text input OR an active file context
-    if (!input.trim() && !fileContext) return;
+    if (!queryToUse.trim() && !fileContext) return;
 
     // Use default summary request if input is empty but context exists
-    const activeInput = input.trim() || (fileContext ? "Please summarize and explain this context for me." : "");
+    const activeInput = queryToUse.trim() || (fileContext ? "Please summarize and explain this context for me." : "");
     if (!activeInput) return;
 
     if (!navigator.onLine) {
@@ -107,20 +121,24 @@ const AITutor = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    const currentInput = input; // Store for logic if needed
     setInput('');
     setLoading(true);
 
     try {
-      // Determine analysis mode (concise vs detailed)
-      const mode = answerStyle === 'Short' ? 'concise' : 'detailed';
-      
       /**
        * Send unified request to backend.
-       * If fileContext exists, it remains attached to every prompt 
-       * until manually cleared by the user.
+       * 
+       * ANSWER STYLE: We pass the user's preference (Short vs Detailed).
+       * LANGUAGE SYNC: We include the current website language in all AI requests.
        */
-      const response = await aiAPI.ask(activeInput, mode, fileContext);
+      const response = await aiAPI.ask(
+        activeInput, 
+        'regular', 
+        fileContext, 
+        true, 
+        settings.learning.language,
+        answerStyle
+      );
       
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -129,6 +147,16 @@ const AITutor = () => {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
+
+      // BLIND MODE: Auto-speak assistant response
+      if (accessibilityMode === 'Blind') {
+        const speech = new SpeechSynthesisUtterance(assistantMessage.content);
+        const langMap: Record<string, string> = {
+          'English': 'en-US', 'Hindi': 'hi-IN', 'Telugu': 'te-IN', 'Spanish': 'es-ES', 'French': 'fr-FR'
+        };
+        speech.lang = langMap[settings.learning.language] || 'en-US';
+        window.speechSynthesis.speak(speech);
+      }
     } catch (error) {
       console.error("AI Send Error:", error);
       const errorMessage: ChatMessage = {
@@ -360,8 +388,14 @@ const AITutor = () => {
           </div>
 
           <div className="p-4 border-t border-gray-200">
+            {languageFallback && (
+              <div className="mb-2 px-3 py-1 bg-yellow-50 text-yellow-700 text-xs rounded border border-yellow-100 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                {settings.learning.language} is not fully supported for voice input. Falling back to English.
+              </div>
+            )}
             {fileContext && (
-              <div className="mb-2 p-2 bg-indigo-50 rounded-lg flex items-center justify-between border border-indigo-100 animate-in slide-in-from-bottom-1">
+              <div className="mb-2 p-2 bg-indigo-50 rounded-lg flex items-center justify-between border border-indigo-100 animate-in slide-in-from-bottom-1 popup-interactive">
                 <div className="flex items-center gap-2 text-xs text-indigo-700 font-bold uppercase tracking-wider">
                   <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
                   Active Context: {fileContext.name}
@@ -387,7 +421,7 @@ const AITutor = () => {
                 </button>
 
                 {plusMenuOpen && (
-                  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-bottom-2">
+                  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-bottom-2 popup-interactive">
                     <button
                       onClick={() => { fileInputRef.current?.click(); setPlusMenuOpen(false); }}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 flex items-center gap-2"
@@ -436,16 +470,19 @@ const AITutor = () => {
                 className="hidden"
               />
 
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={fileContext ? `Ask about "${fileContext.name}"...` : t.aiTutor.placeholder}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                disabled={loading}
-              />
-              <Button onClick={handleSend} disabled={loading || (!input.trim() && !fileContext)}>
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder={fileContext ? `Ask about "${fileContext.name}"...` : t.aiTutor.placeholder}
+                  className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                  disabled={loading}
+                />
+              </div>
+
+              <Button onClick={() => handleSend()} disabled={loading || (!input.trim() && !fileContext)}>
                 {loading ? t.aiTutor.sending : t.aiTutor.send}
               </Button>
             </div>

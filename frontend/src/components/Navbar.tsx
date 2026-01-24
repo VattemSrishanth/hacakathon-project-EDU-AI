@@ -75,7 +75,7 @@ const Navbar = () => {
                 </button>
 
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+                  <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg z-50 popup-interactive">
                     <div className="px-4 py-3 border-b border-gray-100">
                       <p className="text-sm font-semibold text-gray-900">
                         {auth?.user?.username || auth?.user?.email || 'User'}

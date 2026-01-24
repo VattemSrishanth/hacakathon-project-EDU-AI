@@ -9,6 +9,7 @@ export type AnswerStyle = 'Short' | 'Detailed';
 export type ReminderFrequency = 'Daily' | 'Weekly' | 'Off';
 export type ThemeMode = 'Light' | 'Dark';
 export type FontSize = 'Small' | 'Medium' | 'Large';
+export type AccessibilityMode = 'Normal' | 'Deaf' | 'Dumb' | 'Blind';
 
 export interface ProfileSettings {
   name: string;
@@ -41,6 +42,7 @@ export interface ThemeAccessibilitySettings {
   reduceMotion: boolean;
   lowPowerMode: boolean;
   voiceLanguage: SupportedLanguage;
+  accessibilityMode: AccessibilityMode;
 }
 
 export interface SettingsState {
@@ -85,6 +87,7 @@ export const defaultSettings: SettingsState = {
     reduceMotion: false,
     lowPowerMode: false,
     voiceLanguage: 'English',
+    accessibilityMode: 'Normal',
   },
 };
 

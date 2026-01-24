@@ -25,7 +25,7 @@ const Login = () => {
       if (response?.success) {
         login({ token: response?.token, user: response?.user });
         setSuccessMessage('Login successful!');
-        navigate('/dashboard');
+        navigate('/', { replace: true });
       } else {
         setErrorMessage(response?.error || 'Login failed. Please try again.');
       }

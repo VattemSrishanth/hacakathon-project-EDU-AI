@@ -14,7 +14,7 @@ import type {
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { auth, updateUser: updateAuthUser } = useAuth();
+  const { updateUser: updateAuthUser } = useAuth();
   const { 
     settings, 
     t, 
@@ -110,7 +110,7 @@ const Settings = () => {
             <p className="text-gray-900 mt-2">{t.settings.subtitle}</p>
           </div>
           {saveMessage && (
-            <div className="rounded-full bg-green-100 px-4 py-2 text-sm font-medium text-green-800">
+            <div className="rounded-full bg-green-100 px-4 py-2 text-sm font-medium text-green-800 popup-interactive">
               {saveMessage}
             </div>
           )}
@@ -403,6 +403,23 @@ const Settings = () => {
                   <option value="Hindi">हिंदी (Hindi)</option>
                   <option value="Spanish">Español (Spanish)</option>
                   <option value="French">Français (French)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Accessibility Mode</label>
+                <select
+                  value={settings.themeAccessibility.accessibilityMode}
+                  onChange={(e) => {
+                    updateThemeAccessibility({ accessibilityMode: e.target.value as any });
+                    showSaveMessage(t.settings.changesSaved);
+                  }}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 font-bold text-primary"
+                >
+                  <option value="Normal">Normal Mode</option>
+                  <option value="Deaf">Deaf Mode</option>
+                  <option value="Dumb">Dumb Mode</option>
+                  <option value="Blind">Blind Mode</option>
                 </select>
               </div>
               

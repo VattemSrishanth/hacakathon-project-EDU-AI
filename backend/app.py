@@ -17,12 +17,24 @@ from models import db, User
 
 try:
     from youtube_transcript_api import YouTubeTranscriptApi
-    from youtube_transcript_api.exceptions import TranscriptsDisabled, NoTranscriptFound, VideoUnavailable
+    try:
+        from youtube_transcript_api.exceptions import TranscriptsDisabled, NoTranscriptFound, VideoUnavailable
+    except (ImportError, ModuleNotFoundError):
+        # Fallback: define exception classes if import fails
+        class TranscriptsDisabled(Exception):
+            pass
+        class NoTranscriptFound(Exception):
+            pass
+        class VideoUnavailable(Exception):
+            pass
 except ImportError:
     YouTubeTranscriptApi = None
-    TranscriptsDisabled = None
-    NoTranscriptFound = None
-    VideoUnavailable = None
+    class TranscriptsDisabled(Exception):
+        pass
+    class NoTranscriptFound(Exception):
+        pass
+    class VideoUnavailable(Exception):
+        pass
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend", "dist"))
@@ -254,16 +266,18 @@ def ask():
         online = bool(data.get("online", True))
         mode = str(data.get("mode", "regular")).lower()
         language = str(data.get("language", "English")).strip()
+        # Answer Style is read from settings to control response verbosity (Short vs Detailed)
+        answer_style = str(data.get("answerStyle", "Detailed")).strip()
         context = data.get("context") # Support for optional persistent context (Image/PDF)
         
-        print(f"[DEBUG] Online: {online}, Mode: {mode}, Language: {language}, Context: {context.get('type') if context else 'None'}")
+        print(f"[DEBUG] Online: {online}, Mode: {mode}, Language: {language}, Style: {answer_style}, Context: {context.get('type') if context else 'None'}")
         
         if mode not in ["regular", "deaf", "speech", "normal", "concise", "detailed"]:
             mode = "regular"
         if mode == "normal":
             mode = "regular"
         
-        result = get_ai_response_payload(question, online, mode, context=context, language=language)
+        result = get_ai_response_payload(question, online, mode, context=context, language=language, answer_style=answer_style)
         print(f"[DEBUG] result status: {result.get('status')}, mode: {result.get('mode')}")
 
         status = result.get("status", "error")
@@ -314,6 +328,7 @@ def explain_video():
         online = bool(data.get("online", True))
         mode = str(data.get("mode", "regular")).lower()
         language = str(data.get("language", "English")).strip()
+        answer_style = str(data.get("answerStyle", "Detailed")).strip()
 
         if mode not in ["regular", "deaf", "speech", "normal"]:
             mode = "regular"
@@ -333,7 +348,8 @@ def explain_video():
                 learner_mode=mode,
                 level="basic",
                 online=online,
-                language=language
+                language=language,
+                answer_style=answer_style
             )
             return jsonify({
                 "success": True,
@@ -356,7 +372,7 @@ def explain_video():
         if transcript_status != "ok":
             message = _transcript_status_message(transcript_status)
             if question:
-                answer = get_ai_response(question[:500], online=online, mode=mode, language=language)
+                answer = get_ai_response(question[:500], online=online, mode=mode, language=language, answer_style=answer_style)
                 return jsonify({
                     "success": True,
                     "status": "no_transcript",
@@ -375,7 +391,8 @@ def explain_video():
             learner_mode=mode,
             level="basic",
             online=online,
-            language=language
+            language=language,
+            answer_style=answer_style
         )
 
         return jsonify({
@@ -403,12 +420,13 @@ def analyze_image_route():
         image_data = data.get("image", "")
         mode = data.get("mode", "regular")
         language = data.get("language", "English")
+        answer_style = data.get("answerStyle", "Detailed")
         question = data.get("question")
         
         if not image_data:
             return jsonify({"error": "No image data provided", "success": False}), 400
             
-        result = analyze_image(image_data, learner_mode=mode, user_question=question, language=language)
+        result = analyze_image(image_data, learner_mode=mode, user_question=question, language=language, answer_style=answer_style)
         return jsonify({
             "success": True, 
             "explanation": result["explanation"]
@@ -426,6 +444,7 @@ def analyze_pdf_route():
         text = data.get("text", "")
         mode = data.get("mode", "regular")
         language = data.get("language", "English")
+        answer_style = data.get("answerStyle", "Detailed")
         user_question = data.get("question")
         
         if not text:
@@ -433,11 +452,11 @@ def analyze_pdf_route():
             
         # Re-using get_ai_response for summarizing text with an academic prompt
         if user_question:
-            prompt = f"Academic Task: Answer the following question based ONLY on the provided document text. Maintain a formal, educational tone. Respond ONLY in {language}.\n\nDOCUMENT CONTEXT: {text[:8000]}\n\nQUESTION: {user_question}"
+            prompt = f"Academic Task: Answer the following question based ONLY on the provided document text. Maintain a formal, educational tone. Respond ONLY in {language}. Style: {answer_style}\n\nDOCUMENT CONTEXT: {text[:8000]}\n\nQUESTION: {user_question}"
         else:
-            prompt = f"Academic Task: Please provide a structured, formal summary of the following document text in the {language} language. Avoid informalities and focus on key educational points: {text[:8000]}"
+            prompt = f"Academic Task: Please provide a structured, formal summary of the following document text in the {language} language. Style: {answer_style}. Avoid informalities and focus on key educational points: {text[:8000]}"
             
-        summary = get_ai_response(prompt, online=True, mode=mode, language=language)
+        summary = get_ai_response(prompt, online=True, mode=mode, language=language, answer_style=answer_style)
         
         # get_ai_response returns a dict or string? It usually returns a dict if successful
         # Let's check get_ai_response in ai_engine.py

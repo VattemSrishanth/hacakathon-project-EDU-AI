@@ -1,165 +1,201 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
 
 /**
- * GLOBAL VOICE CONTROL SYSTEM
- * Uses Browser Speech Recognition API to allow hands-free navigation.
+ * GLOBAL VOICE CONTROL SYSTEM (WAKE-WORD ARCHITECTURE)
+ * 1. Passively listens for "Hey Chat" wake word.
+ * 2. Wakes up into Active Listening mode for 5-7 seconds.
+ * 3. Parses commands (Navigation, AI Interaction, Logout).
+ * 4. Sleeps automatically after action or timeout.
+ * 5. Integrated with AI Tutor for hands-free query execution.
  */
 
-// Handle vendor prefixes for SpeechRecognition
 const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
 const VoiceControl: React.FC = () => {
   const navigate = useNavigate();
-  const { t, settings } = useSettings();
-  const [isListening, setIsListening] = useState(false);
+  const { logout } = useAuth() || {};
+  const { settings } = useSettings();
+  const { accessibilityMode, voiceLanguage } = settings.themeAccessibility;
+  
+  const [status, setStatus] = useState<'sleeping' | 'listening'>('sleeping');
   const [isSupported, setIsSupported] = useState(true);
-  const [recognition, setRecognition] = useState<any>(null);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  
+  const recognitionRef = useRef<any>(null);
+  const timerRef = useRef<any>(null);
+  const statusRef = useRef<'sleeping' | 'listening'>('sleeping');
+
+  // Keep ref in sync for event handlers
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
+
+  // Reset to passive wake-word detection
+  const resetToSleep = useCallback(() => {
+    setStatus('sleeping');
+    statusRef.current = 'sleeping';
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
+
+  // Execute recognized commands
+  const executeCommand = useCallback((transcript: string) => {
+    const text = transcript.toLowerCase();
+    console.log('Voice Command Received:', text);
+
+    // 1. Accessibility Check: Dumb Mode disables all voice
+    if (accessibilityMode === 'Dumb') return;
+
+    // 2. Parse Logout
+    if (text.includes('logout')) {
+      logout?.();
+      resetToSleep();
+      return;
+    }
+
+    // 3. Multi-language Navigation Parsing
+    const navKeywords = {
+      home: ['home', 'mukhy', 'inicio', 'accueil', 'మఖయ', 'మఖపట'],
+      dashboard: ['dashboard', 'tablero', 'tableau', 'డషబరడ', 'डशबरड'],
+      lessons: ['lesson', 'paath', 'lecciones', 'leçons', 'పఠల', 'లసనస', 'सबक'],
+      tutor: ['tutor', 'sikshak', 'ayudante', 'tuteur', 'శకషకడ', 'शकषक'],
+      settings: ['settings', 'vshisht', 'ajuste', 'paramètre', 'సటటగల', 'అమరకల', 'वकलप'],
+      back: ['back', 'pichhe', 'peeche', 'venukku', 'atrás', 'retour', 'వనకక', 'पछ']
+    };
+
+    let targetPath = '';
+    if (navKeywords.home.some(k => text.includes(k))) targetPath = '/';
+    else if (navKeywords.dashboard.some(k => text.includes(k))) targetPath = '/dashboard';
+    else if (navKeywords.lessons.some(k => text.includes(k))) targetPath = '/lessons';
+    else if (navKeywords.tutor.some(k => text.includes(k))) targetPath = '/ai-tutor';
+    else if (navKeywords.settings.some(k => text.includes(k))) targetPath = '/settings';
+    else if (navKeywords.back.some(k => text.includes(k))) { navigate(-1); resetToSleep(); return; }
+
+    // 4. AI Query Parsing
+    const askKeywords = ['ask', 'what is', "what's", 'search', 'tell me', 'बतओ', 'చపప', 'నడ', 'कय ह'];
+    const foundAskIndex = askKeywords.find(k => text.includes(k));
+    
+    let aiQuery = '';
+    if (foundAskIndex) {
+      const parts = text.split(foundAskIndex);
+      if (parts.length > 1) aiQuery = parts[1].trim();
+    }
+
+    // 5. Execution Flow
+    if (targetPath) {
+      // Chained Command: Navigate + Send Query
+      if (aiQuery) {
+        navigate(targetPath, { state: { voiceQuery: aiQuery } });
+      } else {
+        navigate(targetPath);
+      }
+      resetToSleep();
+    } else if (aiQuery) {
+      // Direct Question
+      navigate('/ai-tutor', { state: { voiceQuery: aiQuery } });
+      resetToSleep();
+    } else if (text.length > 3) {
+      // Assume query if no command matched but text exists
+      navigate('/ai-tutor', { state: { voiceQuery: text } });
+      resetToSleep();
+    }
+  }, [navigate, logout, resetToSleep, accessibilityMode]);
 
   useEffect(() => {
-    if (!SpeechRecognition) {
-      setIsSupported(false);
+    if (!SpeechRecognition || accessibilityMode === 'Dumb') {
+      setIsSupported(!!SpeechRecognition);
       return;
     }
 
     const reco = new SpeechRecognition();
-    reco.continuous = false;
-    reco.interimResults = false;
-    
-    // Set language based on user settings
+    reco.continuous = true;
+    reco.interimResults = true;
     const langMap: Record<string, string> = {
-      'English': 'en-US',
-      'Hindi': 'hi-IN',
-      'Telugu': 'te-IN',
-      'Spanish': 'es-ES',
-      'French': 'fr-FR'
+      'English': 'en-US', 'Hindi': 'hi-IN', 'Telugu': 'te-IN', 'Spanish': 'es-ES', 'French': 'fr-FR'
     };
-    
-    reco.lang = langMap[settings.themeAccessibility.voiceLanguage] || 'en-US';
+    reco.lang = langMap[voiceLanguage] || 'en-US';
 
-    reco.onstart = () => {
-      setIsListening(true);
-      setStatusMessage(null);
+    reco.onresult = (event: any) => {
+      let currentTranscript = '';
+      let isFinal = false;
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        currentTranscript += event.results[i][0].transcript;
+        if (event.results[i].isFinal) isFinal = true;
+      }
+      
+      const normalized = currentTranscript.toLowerCase().trim();
+      if (!normalized) return;
+
+      // WAKE WORD DETECTION (Monitor both interim and final results for faster response)
+      if (statusRef.current === 'sleeping') {
+        const wakeWords = ['hey chat', 'hi chat', 'hello chat', 'ay chat', 'oye chat', 'హే చాట్', 'हे चैट'];
+        if (wakeWords.some(w => normalized.includes(w))) {
+          console.log('[Voice] Wake word detected:', normalized);
+          setStatus('listening');
+          statusRef.current = 'listening';
+          
+          if (accessibilityMode === 'Blind') {
+            const msg = new SpeechSynthesisUtterance("How can I help you?");
+            msg.lang = langMap[voiceLanguage] || 'en-US';
+            window.speechSynthesis.speak(msg);
+          }
+
+          if (timerRef.current) clearTimeout(timerRef.current);
+          timerRef.current = setTimeout(() => {
+            resetToSleep();
+          }, 10000);
+
+          // If this was a final segment and contains a command, process it immediately
+          if (isFinal) {
+            executeCommand(normalized);
+          }
+        }
+      } else if (statusRef.current === 'listening' && isFinal) {
+        executeCommand(normalized);
+      }
     };
 
     reco.onend = () => {
-      setIsListening(false);
+      // Auto-restart for continuous listening with safety delay
+      setTimeout(() => {
+        if (accessibilityMode !== 'Dumb') {
+          try { 
+            recognitionRef.current.start(); 
+          } catch (e) {
+            // Usually means already started
+          }
+        }
+      }, 300);
     };
 
-    reco.onerror = (event: any) => {
-      console.error('Speech recognition error:', event.error);
-      setIsListening(false);
-      if (event.error === 'not-allowed') {
-        setStatusMessage('Microphone access denied');
-      }
+    reco.start();
+    recognitionRef.current = reco;
+
+    return () => {
+      reco.stop();
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
+  }, [voiceLanguage, accessibilityMode, executeCommand, resetToSleep]);
 
-    reco.onresult = (event: any) => {
-      const command = event.results[0][0].transcript.toLowerCase();
-      handleCommand(command);
-    };
-
-    setRecognition(reco);
-  }, [settings.themeAccessibility.voiceLanguage]);
-
-  const handleCommand = useCallback((command: string) => {
-    console.log('Voice Command Received:', command);
-    
-    // Navigation logic (Supports English, Telugu, Hindi and more)
-    // Uses broad matching to handle minor pronunciation variations and accent differences
-    const matches = (keywords: string[]) => keywords.some(k => command.includes(k.toLowerCase()));
-
-    if (matches(['home', 'mukhy', 'mukhya', 'inicio', 'accueil', 'hoam', 'ముఖ్య', 'హోమ్', 'ముఖపుట'])) {
-      navigate('/');
-    } else if (matches(['dashboard', 'dashbord', 'desbord', 'tablero', 'tableau', 'డాష్బోర్డ్', 'डैशबोर्ड'])) {
-      navigate('/dashboard');
-    } else if (matches(['lesson', 'paath', 'lecciones', 'leçons', 'lesan', 'పాఠాలు', 'లెసన్స్', 'सबक', 'पाठ'])) {
-      navigate('/lessons');
-    } else if (matches(['tutor', 'sikshak', 'shikshak', 'ayudante', 'tuteur', 'శిక్షకుడు', 'शिक्षक'])) {
-      navigate('/ai-tutor');
-    } else if (matches(['settings', 'seting', 'vshisht', 'ajuste', 'paramètre', 'సెట్టింగులు', 'सेटिंग', 'అమరికలు', 'विकल्प'])) {
-      navigate('/settings');
-    } else if (matches(['back', 'pichhe', 'peeche', 'venukku', 'atrás', 'retour', 'వెనుకకు', 'पीछे'])) {
-      navigate(-1);
-    } else {
-      setStatusMessage(t.voiceControl.unrecognized);
-      setTimeout(() => setStatusMessage(null), 3000);
-    }
-  }, [navigate, t.voiceControl.unrecognized]);
-
-  const toggleListening = () => {
-    if (!recognition) return;
-
-    if (isListening) {
-      recognition.stop();
-    } else {
-      try {
-        recognition.start();
-      } catch (e) {
-        // Recognition might already be starting
-      }
-    }
-  };
-
-  if (!isSupported) {
-    return (
-      <button 
-        disabled 
-        title={t.voiceControl.notSupported}
-        className="fixed bottom-6 right-6 p-4 bg-gray-300 text-gray-500 rounded-full shadow-lg cursor-not-allowed z-[100]"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="1" y1="1" x2="23" y2="23"></line>
-          <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>
-          <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path>
-          <line x1="12" y1="19" x2="12" y2="23"></line>
-          <line x1="8" y1="23" x2="16" y2="23"></line>
-        </svg>
-      </button>
-    );
-  }
+  if (!isSupported || accessibilityMode === 'Dumb') return null;
 
   return (
-    <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-[100]">
-      {statusMessage && (
-        <div className="bg-gray-800 text-white text-xs py-1 px-3 rounded-lg shadow-xl animate-in fade-in slide-in-from-bottom-2">
-          {statusMessage}
+    <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-[100] pointer-events-none">
+      {status === 'listening' && (
+        <div className="bg-primary text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce shadow-primary/50 pointer-events-auto">
+          <div className="flex gap-1">
+            <span className="w-1 h-4 bg-white rounded-full animate-pulse"></span>
+            <span className="w-1 h-6 bg-white rounded-full animate-pulse delay-75"></span>
+            <span className="w-1 h-4 bg-white rounded-full animate-pulse delay-150"></span>
+          </div>
+          <span className="font-medium text-sm text-white">Hey Chat: Active</span>
         </div>
       )}
       
-      <button
-        onClick={toggleListening}
-        className={`p-4 rounded-full shadow-lg transition-all active:scale-95 ${
-          isListening 
-            ? 'bg-red-500 text-white ring-4 ring-red-200' 
-            : 'bg-primary text-white hover:bg-indigo-700'
-        }`}
-        title={isListening ? t.voiceControl.listening : t.voiceControl.start}
-      >
-        {isListening ? (
-          <div className="relative">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-              <line x1="12" y1="19" x2="12" y2="23"></line>
-              <line x1="8" y1="23" x2="16" y2="23"></line>
-            </svg>
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-            </span>
-          </div>
-        ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-            <line x1="12" y1="19" x2="12" y2="23"></line>
-            <line x1="8" y1="23" x2="16" y2="23"></line>
-          </svg>
-        )}
-      </button>
+      <div className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded bg-white/80 backdrop-blur-sm border border-gray-200 transition-opacity duration-500 ${status === 'listening' ? 'opacity-0' : 'opacity-100 shadow-sm'}`}>
+        Say "Hey Chat"
+      </div>
     </div>
   );
 };
