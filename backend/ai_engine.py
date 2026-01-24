@@ -13,11 +13,9 @@ from offline_logic import (
 )
 
 # ============================================
-# GROQ INTEGRATION: Replaced Gemini with Groq
+# RESILIENT LLM INTEGRATION: Gemini with Groq Fallback
 # ============================================
-# OLD: from llm_service import generate_text
-# NEW: Using Groq API via groq_service.py
-from groq_service import generate_text, generate_vision_text
+from unified_llm import generate_text, generate_vision_text
 # ============================================
 
 SYSTEM_PROMPT = """You are a dedicated school tutor for rural and disabled learners.
