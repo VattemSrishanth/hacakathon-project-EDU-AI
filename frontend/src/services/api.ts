@@ -48,40 +48,48 @@ export const aiAPI = {
   /**
    * Universal ask method that supports standard questions and persistent file context (Image/PDF).
    */
-  ask: async (question: string, mode: string = 'regular', context: any = null, online: boolean = true) => {
+  ask: async (question: string, mode: string = 'regular', context: any = null, online: boolean = true, language: string = 'English', answerStyle: string = 'Detailed') => {
     const response = await api.post('/ask', { 
       question, 
       mode, 
       context, // Active file context (type, data, name)
-      online 
+      online,
+      language,
+      answerStyle
     });
     return response.data;
   },
   
-  explainVideo: async (videoUrl: string, question: string = '', mode: string = 'regular') => {
+  explainVideo: async (videoUrl: string, question: string = '', mode: string = 'regular', language: string = 'English', answerStyle: string = 'Detailed') => {
     const response = await api.post('/explain-video', { 
       videoUrl, 
       question,
       mode,
-      online: true 
+      online: true,
+      language,
+      answerStyle
     });
     return response.data;
   },
 
-  analyzeImage: async (base64Image: string, question: string = '', mode: string = 'regular') => {
+  analyzeImage: async (base64Image: string, question: string = '', mode: string = 'regular', language: string = 'English', answerStyle: string = 'Detailed') => {
     const response = await api.post('/analyze-image', { 
       image: base64Image,
       question,
-      mode
+      mode,
+      language,
+      answerStyle
     });
     return response.data;
   },
 
-  analyzePdf: async (pdfText: string, question: string = '', mode: string = 'regular') => {
+  analyzePdf: async (pdfText: string, question: string = '', mode: string = 'regular', language: string = 'English', answerStyle: string = 'Detailed') => {
     const response = await api.post('/analyze-pdf', { 
       text: pdfText,
       question,
-      mode
+      mode,
+      language,
+      answerStyle
     });
     return response.data;
   },

@@ -143,6 +143,11 @@ export interface TranslationKeys {
       lowPowerMode: string;
       lowPowerModeDesc: string;
       voiceLanguage: string;
+      accessibilityMode: string;
+      normalMode: string;
+      deafMode: string;
+      dumbMode: string;
+      blindMode: string;
     };
     navigation: {
       title: string;
@@ -333,6 +338,11 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         lowPowerMode: 'Low Power Mode',
         lowPowerModeDesc: 'Disable animations and reduce resource usage for older devices or low battery.',
         voiceLanguage: 'Voice Navigation Language',
+        accessibilityMode: 'Accessibility Mode',
+        normalMode: 'Normal Mode',
+        deafMode: 'Deaf Mode',
+        dumbMode: 'Dumb Mode',
+        blindMode: 'Blind Mode',
       },
       navigation: {
         title: 'Navigation',
@@ -517,6 +527,11 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         lowPowerMode: 'తక్కువ పవర్ మోడ్',
         lowPowerModeDesc: 'పాత పరికరాలు లేదా తక్కువ బ్యాటరీ కోసం యానిమేషన్లను నిలిపివేస్తుంది.',
         voiceLanguage: 'వాయిస్ నావిగేషన్ భాష',
+        accessibilityMode: 'అందుబాటు మోడ్',
+        normalMode: 'సాధారణ మోడ్',
+        deafMode: 'డెఫ్ మోడ్',
+        dumbMode: 'డమ్ మోడ్',
+        blindMode: 'బ్లైండ్ మోడ్',
       },
       navigation: {
         title: 'నావిగేషన్',
@@ -701,6 +716,11 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         lowPowerMode: 'लो पावर मोड',
         lowPowerModeDesc: 'पुरानी मशीनों या कम बैटरी के लिए एनिमेशन बंद करें।',
         voiceLanguage: 'वॉयस नेविगेशन भाषा',
+        accessibilityMode: 'सुलभता मोड',
+        normalMode: 'सामान्य मोड',
+        deafMode: 'डेफ़ मोड',
+        dumbMode: 'डंब मोड',
+        blindMode: 'ब्लाइंड मोड',
       },
       navigation: {
         title: 'नेविगेशन',
@@ -885,6 +905,11 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         lowPowerMode: 'Modo de bajo consumo',
         lowPowerModeDesc: 'Desactive las animaciones y reduzca el uso de recursos para dispositivos antiguos o batería baja.',
         voiceLanguage: 'Idioma de navegación por voz',
+        accessibilityMode: 'Modo de accesibilidad',
+        normalMode: 'Modo normal',
+        deafMode: 'Modo sordo',
+        dumbMode: 'Modo mudo',
+        blindMode: 'Modo ciego',
       },
       navigation: {
         title: 'Navegación',
@@ -1069,6 +1094,11 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
         lowPowerMode: 'Mode économie d\'énergie',
         lowPowerModeDesc: 'Désactivez les animations et réduisez l\'utilisation des ressources pour les anciens appareils ou la batterie faible.',
         voiceLanguage: 'Langue de navigation vocale',
+        accessibilityMode: "Mode d'accessibilité",
+        normalMode: 'Mode normal',
+        deafMode: 'Mode sourd',
+        dumbMode: 'Mode muet',
+        blindMode: 'Mode aveugle',
       },
       navigation: {
         title: 'Navigation',

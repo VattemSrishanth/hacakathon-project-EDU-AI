@@ -10,7 +10,7 @@ const PublicRoute = ({ children }: PublicRouteProps) => {
 
   // Only redirect if user is authenticated
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // Allow access to public routes (login, register) when not authenticated

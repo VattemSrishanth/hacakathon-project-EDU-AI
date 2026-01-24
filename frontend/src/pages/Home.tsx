@@ -1,10 +1,13 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
+  const navigate = useNavigate();
   const { t } = useSettings();
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-cyan-50">
@@ -21,12 +24,18 @@ const Home = () => {
             {t.home.tagline}
           </p>
           <div className="flex gap-4 justify-center">
-            <Link to="/register">
-              <Button variant="primary">{t.home.getStarted}</Button>
-            </Link>
-            <Link to="/ai-tutor">
-              <Button variant="outline">{t.home.tryAiTutor}</Button>
-            </Link>
+            <Button 
+              variant="primary" 
+              onClick={() => navigate(isAuthenticated ? "/lessons" : "/register")}
+            >
+              {t.home.getStarted}
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/ai-tutor")}
+            >
+              {t.home.tryAiTutor}
+            </Button>
           </div>
         </div>
       </section>
@@ -106,11 +115,12 @@ const Home = () => {
           <p className="text-xl mb-8 text-white/95">
             {t.home.ctaDesc}
           </p>
-          <Link to="/register">
-            <Button className="bg-white text-primary hover:bg-gray-100">
-              {t.home.startLearning}
-            </Button>
-          </Link>
+          <Button 
+            className="bg-white text-primary hover:bg-gray-100"
+            onClick={() => navigate(isAuthenticated ? "/lessons" : "/register")}
+          >
+            {t.home.startLearning}
+          </Button>
         </div>
       </section>
     </div>

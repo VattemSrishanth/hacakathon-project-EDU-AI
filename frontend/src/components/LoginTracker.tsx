@@ -40,7 +40,6 @@ const LoginTracker = () => {
       
       if (tracker.lastLoginDate !== today) {
         // It's a new day
-        const lastLogin = tracker.lastLoginDate ? new Date(tracker.lastLoginDate) : null;
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];

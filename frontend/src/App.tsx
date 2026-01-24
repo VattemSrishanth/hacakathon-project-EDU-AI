@@ -7,6 +7,7 @@ import Home from './pages/Home.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import Lessons from './pages/Lessons.tsx';
 import AITutor from './pages/AITutor.tsx';
+import Assignments from './pages/Assignments.tsx';
 import Accessibility from './pages/Accessibility';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
@@ -40,6 +41,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Lessons />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/assignments"
+              element={
+                <ProtectedRoute>
+                  <Assignments />
                 </ProtectedRoute>
               }
             />

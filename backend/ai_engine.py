@@ -53,7 +53,7 @@ MODE_GUIDANCE = {
     "speech": "Use short sentences and step-by-step format."
 }
 
-def generate_explanation(question, learner_mode="regular", level="basic", language="English"):
+def generate_explanation(question, learner_mode="regular", level="basic", language="English", answer_style="Detailed"):
     """Generate a structured explanation (explanation, example, summary)."""
     if not language:
         language = "English"
@@ -71,6 +71,19 @@ def generate_explanation(question, learner_mode="regular", level="basic", langua
 
     # Offline-first safety when API is not available
     # LLM will return missing_api_key or empty_prompt if unavailable
+
+    if answer_style == "Short":
+        prompt = (
+            f"You are a helpful academic tutor. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
+            "STRICT RULE: Respond ONLY with a direct answer. 1-3 short sentences MAX. "
+            "NO sections like Explanation/Example/Summary. NO filler text. "
+            "If the user says 'hi' or 'hello', give a minimal friendly greeting like 'Hi! How can I help you?' only.\n"
+            "Question: " + question.strip()
+        )
+        raw, err = _call_ai_model(prompt)
+        if err == "ok":
+            return {"explanation": raw.strip(), "example": "", "summary": ""}
+        return offline_generate_explanation(question, learner_mode=mode_key, level=level)
 
     prompt = (
         SYSTEM_PROMPT
@@ -92,15 +105,19 @@ def generate_explanation(question, learner_mode="regular", level="basic", langua
     # Fallback to offline structured response if JSON parsing fails
     return offline_generate_explanation(question, learner_mode=mode_key, level=level)
 
-def analyze_image(base64_image, learner_mode="regular", user_question=None, language="English"):
+def analyze_image(base64_image, learner_mode="regular", user_question=None, language="English", answer_style="Detailed"):
     """Analyze image using computer vision and return an academic educational explanation."""
     if not language:
         language = "English"
+    if not answer_style:
+        answer_style = "Detailed"
+
+    style_instruction = "Direct answer only, 1-3 short sentences." if answer_style == "Short" else "Provide a formal, structured description of the visual content and explain its educational relevance."
 
     base_prompt = (
         "You are an academic AI tutor. Analyze this image for a student. "
-        f"IMPORTANT: Respond ONLY in the {language} language."
-        "Provide a formal, structured description of the visual content and explain its educational relevance. "
+        f"IMPORTANT: Respond ONLY in the {language} language. "
+        f"Style: {answer_style}. {style_instruction} "
         "Maintain a professional tone without emojis or informal language. "
         "Learner mode: " + learner_mode
     )
@@ -116,7 +133,7 @@ def analyze_image(base64_image, learner_mode="regular", user_question=None, lang
     
     return {"explanation": "I am sorry, but I couldn't analyze the image. Please describe what it shows and I will help you."}
 
-def get_ai_response(question, online=True, mode="regular", language="English"):
+def get_ai_response(question, online=True, mode="regular", language="English", answer_style="Detailed"):
     """Get AI response with structured, inclusive explanation and offline fallback."""
     normalized = str(question or "").strip()
     if not normalized:
@@ -124,6 +141,9 @@ def get_ai_response(question, online=True, mode="regular", language="English"):
 
     if not online:
         return offline_response(normalized, learner_mode=mode)
+    
+    # 0) If short mode is enabled, we check if we should skip math/logic logic and just go to LLM for direct answer
+    # but usually math is direct anyway.
 
     # 1) Math expressions → numeric answer only.
     if is_pure_math_expression(normalized):
@@ -140,7 +160,9 @@ def get_ai_response(question, online=True, mode="regular", language="English"):
         return general_answer
 
     try:
-        result = generate_explanation(normalized, learner_mode=mode, level="basic", language=language)
+        result = generate_explanation(normalized, learner_mode=mode, level="basic", language=language, answer_style=answer_style)
+        if answer_style == "Short":
+            return result.get("explanation", "")
         return _format_response(result)
     except Exception:
         return offline_response(normalized, learner_mode=mode)
@@ -185,19 +207,21 @@ def _eval_node(node):
     raise ValueError("Unsupported expression")
 
 
-def get_ai_response_payload(question, online=True, mode="regular", context=None, language="English"):
+def get_ai_response_payload(question, online=True, mode="regular", context=None, language="English", answer_style="Detailed"):
     """
     Return structured response for API consumption with quota handling.
     Supports persistent active context (Image/PDF) for multi-turn academic tutoring.
     """
     if not language:
         language = "English"
+    if not answer_style:
+        answer_style = "Detailed"
 
     if not (question and question.strip()) and not context:
         return {
-            "status": "error",
-            "answer": offline_response("", learner_mode=mode, language=language),
-            "mode": "offline"
+            "status": "success",
+            "answer": "Hi! How can I help you today?" if answer_style == "Short" else offline_response("", learner_mode=mode, language=language),
+            "mode": "online" if online else "offline"
         }
 
     mode_key = mode if mode in MODE_GUIDANCE else "regular"
@@ -209,7 +233,7 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None,
         
         if ctx_type == 'image' and ctx_data:
             # Persistent Image Context Analysis
-            res = analyze_image(ctx_data, learner_mode=mode_key, user_question=question, language=language)
+            res = analyze_image(ctx_data, learner_mode=mode_key, user_question=question, language=language, answer_style=answer_style)
             return {
                 "status": "success",
                 "answer": res.get("explanation"),
@@ -218,10 +242,11 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None,
             
         elif ctx_type == 'pdf' and ctx_data:
             # Persistent Document Context Analysis
+            style_instruction = "Direct answer only, 1-3 sentences." if answer_style == "Short" else "Comprehensive summary and key educational takeaways."
             if question and question.strip():
-                prompt = f"Academic Task: Answer the following question based ONLY on the provided document text. Maintain a formal, educational tone. Respond ONLY in {language}.\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}\n\nUSER QUESTION: {question}"
+                prompt = f"Academic Task: Answer the following question based ONLY on the provided document text. Maintain a formal, educational tone. Respond ONLY in {language}. Style: {answer_style}\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}\n\nUSER QUESTION: {question}\n\n{style_instruction}"
             else:
-                prompt = f"Academic Task: Provide a comprehensive summary and key educational takeaways from this document. Respond ONLY in {language}.\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}"
+                prompt = f"Academic Task: {style_instruction} Respond ONLY in {language}.\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}"
             
             raw, err = _call_ai_model(prompt)
             return {
@@ -238,7 +263,33 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None,
             "mode": "offline"
         }
 
-    # Standard Text-only Ask Logic
+    # Standard Text-only Ask Logic - Short Mode (Concise plain text)
+    # This block enforces the 'Short' Answer Style setting by bypassing JSON structure
+    # and strictly limiting the output length to 1-3 sentences.
+    if answer_style == "Short":
+        prompt = (
+            f"You are a helpful academic tutor. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
+            "STRICT RULE: Respond ONLY with a direct answer. 1-3 short sentences MAX. "
+            "NO sections like Explanation/Example/Summary. NO filler text. "
+            "If the user says 'hi' or 'hello', give a minimal friendly greeting like 'Hi! How can I help you?' only.\n"
+            "Question: " + (question.strip() if question else "Hi")
+        )
+        raw, err = _call_ai_model(prompt)
+        
+        if err == "ok":
+            return {
+                "status": "success",
+                "answer": raw.strip(),
+                "mode": "online"
+            }
+        # Fallback for errors in short mode
+        return {
+            "status": "error",
+            "answer": "Error generating response in short mode.",
+            "mode": "offline"
+        }
+
+    # Standard Text-only Ask Logic - Detailed Mode (JSON based)
     prompt = (
         SYSTEM_PROMPT
         + f"\nRESPONSE LANGUAGE: {language}. Respond ONLY in {language}."
@@ -333,10 +384,12 @@ def _format_response(result):
         "Summary:\n" + result.get("summary", "")
     )
 
-def generate_video_explanation(transcript_text, question="", learner_mode="regular", level="basic", online=True, language="English"):
+def generate_video_explanation(transcript_text, question="", learner_mode="regular", level="basic", online=True, language="English", answer_style="Detailed"):
     """Generate a structured video explanation with offline-safe fallback."""
     if not language:
         language = "English"
+    if not answer_style:
+        answer_style = "Detailed"
 
     if not transcript_text or not transcript_text.strip():
         return {
@@ -349,6 +402,24 @@ def generate_video_explanation(transcript_text, question="", learner_mode="regul
     mode_hint = MODE_GUIDANCE[mode_key]
 
     if not online:
+        return _offline_video_explanation(transcript_text, question, mode_key)
+    
+    # Handle Short mode for video
+    if answer_style == "Short":
+        prompt = (
+            f"You are a video lesson explainer. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
+            "STRICT RULE: Provide a very brief answer based on the video transcript. 1-3 sentences total. "
+            "No sections, no key points, no summary. Just the direct explanation.\n"
+            "Optional question: " + (question.strip() if question else "Summarize the video.") + "\n"
+            "Transcript:\n" + transcript_text.strip()[:6000]
+        )
+        raw, err = _call_ai_model(prompt)
+        if err == "ok":
+            return {
+                "simple_explanation": raw.strip(),
+                "key_points": [],
+                "summary": ""
+            }
         return _offline_video_explanation(transcript_text, question, mode_key)
 
     prompt = (
