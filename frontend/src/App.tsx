@@ -3,11 +3,12 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import OfflineBanner from './components/OfflineBanner';
 import VoiceControl from './components/VoiceControl';
-import Home from './pages/Home.tsx';
-import Dashboard from './pages/Dashboard.tsx';
-import Lessons from './pages/Lessons.tsx';
-import AITutor from './pages/AITutor.tsx';
-import Assignments from './pages/Assignments.tsx';
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import Lessons from './pages/Lessons';
+import AITutor from './pages/AITutor';
+import LessonViewer from './pages/LessonViewer';
+import Assignments from './pages/Assignments';
 import Accessibility from './pages/Accessibility';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
@@ -41,6 +42,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Lessons />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/lessons/:id"
+              element={
+                <ProtectedRoute>
+                  <LessonViewer />
                 </ProtectedRoute>
               }
             />

@@ -106,23 +106,23 @@ const LoginTracker = () => {
   if (!data) return null;
 
   return (
-    <Card className="bg-[#1e1e1e] border-none text-white shadow-2xl">
+    <Card className="bg-app-bg text-app-text-main shadow-2xl">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h3 className="text-xl font-bold flex items-center gap-2">
             Login Progress
           </h3>
-          <p className="text-gray-500 text-xs mt-1">Started {new Date(data.joinDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+          <p className="text-app-text-sub text-xs mt-1">Started {new Date(data.joinDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
         </div>
         <div className="flex flex-col items-end">
-          <div className="text-2xl font-bold text-green-500 leading-none">{data.currentStreak}</div>
-          <p className="text-gray-500 text-[10px] uppercase tracking-tighter mt-1">Day Streak</p>
+          <div className="text-2xl font-bold text-primary leading-none">{data.currentStreak}</div>
+          <p className="text-app-text-sub text-[10px] uppercase tracking-tighter mt-1">Day Streak</p>
         </div>
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-6">
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-          <div key={i} className="text-center text-[10px] text-gray-500 font-bold mb-2">
+          <div key={i} className="text-center text-[10px] text-app-text-muted font-bold mb-2">
             {day}
           </div>
         ))}
@@ -132,9 +132,9 @@ const LoginTracker = () => {
             className={`
               relative flex items-center justify-center rounded-md aspect-square text-[11px] transition-all
               ${day.empty ? 'opacity-0' : 'cursor-default'}
-              ${day.isToday ? 'bg-green-500 text-white font-bold' : ''}
-              ${!day.empty && !day.isToday && day.isLoggedIn ? 'bg-green-500/20 text-green-400' : ''}
-              ${!day.empty && !day.isToday && !day.isLoggedIn ? 'bg-gray-800/40 text-gray-600' : ''}
+              ${day.isToday ? 'bg-primary text-white font-bold' : ''}
+              ${!day.empty && !day.isToday && day.isLoggedIn ? 'bg-primary/20 text-primary font-medium' : ''}
+              ${!day.empty && !day.isToday && !day.isLoggedIn ? 'bg-app-bg-alt text-app-text-muted' : ''}
             `}
           >
             {!day.empty && day.dayNum}

@@ -121,6 +121,11 @@ export const lessonsAPI = {
     const response = await api.get(`/lessons/${id}`);
     return response.data;
   },
+
+  getContent: async (id: string) => {
+    const response = await api.get(`/lessons/${id}/content`);
+    return response.data;
+  },
   
   getCategories: async () => {
     const response = await api.get('/categories');

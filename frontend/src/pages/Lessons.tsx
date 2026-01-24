@@ -1,287 +1,290 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Card from '../components/Card';
-import Button from '../components/Button';
-import type { Lesson } from '../types';
-import { lessonsAPI } from '../services/api';
-import { useSettings } from '../context/SettingsContext';
+﻿import { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import Card from "../components/Card";
+import Button from "../components/Button";
+import type { Lesson } from "../types";
+import { lessonsAPI, aiAPI } from "../services/api";
+import { useSettings } from "../context/SettingsContext";
 
 const Lessons = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { settings, t } = useSettings();
   const { accessibilityMode } = settings.themeAccessibility;
+  const { language } = settings.learning;
+
+  // --- List State ---
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [completedIds, setCompletedIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filterLevel, setFilterLevel] = useState<string>('');
+  const [loadingList, setLoadingList] = useState(true);
+  const [filterLevel, setFilterLevel] = useState<string>("");
 
-  // Load completed lessons from independent localStorage key
+  // --- Viewer State ---
+  const [lesson, setLesson] = useState<Lesson | null>(null);
+  const [summary, setSummary] = useState<string>("");
+  const [loadingLesson, setLoadingLesson] = useState(false);
+  const [summarizing, setSummarizing] = useState(false);
+  const audioStarted = useRef(false);
+
+  // Load completed lessons
   useEffect(() => {
-    const stored = localStorage.getItem('lesson_completion_tracker');
+    const stored = localStorage.getItem("lesson_completion_tracker");
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
         setCompletedIds(Array.isArray(parsed) ? parsed : []);
       } catch (e) {
-        console.error('Failed to parse completed lessons', e);
         setCompletedIds([]);
       }
     }
   }, []);
 
-  const toggleLessonCompletion = (id: string) => {
-    const newCompleted = completedIds.includes(id)
-      ? completedIds.filter(cid => cid !== id)
-      : [...completedIds, id];
-    
+  const toggleLessonCompletion = (lessonId: string) => {
+    const newCompleted = completedIds.includes(lessonId)
+      ? completedIds.filter((cid) => cid !== lessonId)
+      : [...completedIds, lessonId];
     setCompletedIds(newCompleted);
-    localStorage.setItem('lesson_completion_tracker', JSON.stringify(newCompleted));
+    localStorage.setItem("lesson_completion_tracker", JSON.stringify(newCompleted));
   };
 
-  // Get user's preferred level
-  const preferredLevel = settings.learning.level;
-
+  // Fetch all lessons
   useEffect(() => {
     const fetchLessons = async () => {
-      setLoading(true);
+      setLoadingList(true);
       try {
         const data = await lessonsAPI.getAll();
-        // The API returns { success: true, lessons: [], total: 0 }
-        const lessonData = data?.lessons || [];
-        setLessons(Array.isArray(lessonData) ? lessonData : []);
+        setLessons(data?.lessons || []);
       } catch (error) {
-        console.error('Failed to fetch lessons:', error);
-        setLessons([]);
+        console.error("Failed to fetch lessons:", error);
       } finally {
-        setLoading(false);
+        setLoadingList(false);
       }
     };
-
     fetchLessons();
   }, []);
 
-  // Filter lessons by selected level or show all
-  const filteredLessons = Array.isArray(lessons) 
-    ? (filterLevel
-        ? lessons.filter((lesson) => lesson.level === filterLevel)
-        : lessons)
-    : [];
-
-  // Translate level names
-  const getLevelLabel = (level: string) => {
-    switch (level) {
-      case 'Beginner':
-        return t.lessons.beginner;
-      case 'Intermediate':
-        return t.lessons.intermediate;
-      case 'Advanced':
-        return t.lessons.advanced;
-      default:
-        return level;
+  // Handle individual lesson logic (if ID in URL)
+  useEffect(() => {
+    if (!id) {
+       setLesson(null);
+       setSummary("");
+       audioStarted.current = false;
+       return;
     }
+
+    const fetchLessonDetail = async () => {
+      setLoadingLesson(true);
+      audioStarted.current = false;
+      try {
+        const lessonRes = await lessonsAPI.getById(id);
+        if (lessonRes.success) setLesson(lessonRes.lesson);
+
+        const cachedSummary = localStorage.getItem(`lesson_summary_${id}_${language}`);
+        if (cachedSummary) {
+          setSummary(cachedSummary);
+        } else {
+          const contentRes = await lessonsAPI.getContent(id);
+          if (contentRes.success) {
+            setSummarizing(true);
+            const aiRes = await aiAPI.analyzePdf(contentRes.content, "", accessibilityMode.toLowerCase(), language, "Detailed");
+            if (aiRes.success) {
+              setSummary(aiRes.summary);
+              localStorage.setItem(`lesson_summary_${id}_${language}`, aiRes.summary);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error loading lesson:", error);
+      } finally {
+        setLoadingLesson(false);
+        setSummarizing(false);
+      }
+    };
+
+    fetchLessonDetail();
+  }, [id, language, accessibilityMode]);
+
+  // Accessibility: TTS for Blind Mode
+  useEffect(() => {
+    if (accessibilityMode === "Blind" && summary && !audioStarted.current) {
+      const speech = new SpeechSynthesisUtterance(summary);
+      speech.lang = language === "Hindi" ? "hi-IN" : "en-US";
+      speech.rate = 0.9;
+      window.speechSynthesis.speak(speech);
+      audioStarted.current = true;
+    }
+  }, [summary, accessibilityMode, language]);
+
+  // Filtering
+  const preferredLevel = settings.learning.level;
+  const filteredLessons = lessons.filter((l) => !filterLevel || l.level === filterLevel);
+
+  const getLevelLabel = (lvl: string) => {
+    if (lvl === "Beginner") return t.lessons.beginner;
+    if (lvl === "Intermediate") return t.lessons.intermediate;
+    if (lvl === "Advanced") return t.lessons.advanced;
+    return lvl;
   };
 
+  // --- Render Viewer ---
+  if (id && (loadingLesson || lesson)) {
+    if (loadingLesson) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-app-bg">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-app-text-main">Loading lesson context...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (!lesson) return null;
+
+    return (
+      <div className="min-h-screen bg-app-bg-alt py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-app-text-main">{lesson.title}</h1>
+              <p className="text-app-text-sub mt-1">{lesson.level} Level  {lesson.duration}</p>
+            </div>
+            <Button variant="outline" onClick={() => navigate("/lessons")}>Back to List</Button>
+          </div>
+
+          <Card className="mb-8">
+            <div className="flex items-center gap-2 mb-6 p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-100 dark:border-indigo-800">
+              <span className="text-xl"></span>
+              <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300 uppercase tracking-widest">Smart Summarized Content</span>
+            </div>
+
+            {summarizing ? (
+              <div className="py-12 text-center">
+                <div className="animate-pulse flex flex-col items-center">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  <p className="mt-6 text-app-text-sub text-sm">Generating student-friendly summary...</p>
+                </div>
+              </div>
+            ) : (
+              <div className="prose prose-indigo max-w-none dark:prose-invert">
+                <div className="text-app-text-main leading-relaxed space-y-4 whitespace-pre-wrap">{summary || "No summary available."}</div>
+              </div>
+            )}
+
+            <div className="mt-8 pt-8 border-t border-app-border flex justify-between items-center">
+               <div className="flex items-center gap-2">
+                  {completedIds.includes(lesson.id) ? (
+                    <span className="text-green-600 font-bold flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      Lesson Completed
+                    </span>
+                  ) : (
+                    <span className="text-app-text-sub text-sm italic">You haven\"t finished this lesson yet.</span>
+                  )}
+               </div>
+               
+               <div className="flex gap-4">
+                  {accessibilityMode === "Blind" && (
+                     <Button variant="outline" onClick={() => {
+                        window.speechSynthesis.cancel();
+                        const speech = new SpeechSynthesisUtterance(summary);
+                        speech.lang = language === "Hindi" ? "hi-IN" : "en-US";
+                        window.speechSynthesis.speak(speech);
+                     }}>Replay Lesson</Button>
+                  )}
+                  
+                  <Button variant={completedIds.includes(lesson.id) ? "outline" : "primary"} onClick={() => {
+                    if (!completedIds.includes(lesson.id)) toggleLessonCompletion(lesson.id);
+                    navigate("/lessons");
+                  }} className="px-8">
+                    {completedIds.includes(lesson.id) ? "Return to Lessons" : "Mark as Completed"}
+                  </Button>
+               </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Render List ---
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Accessibility Mode Banner */}
-        {accessibilityMode !== 'Normal' && (
+        {/* Banner */}
+        {accessibilityMode !== "Normal" && (
           <div className={`mb-6 p-4 rounded-xl flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-top-4 duration-500 ${
-            accessibilityMode === 'Blind' ? 'bg-purple-100 text-purple-900 border-2 border-purple-300 dark:bg-purple-900/40 dark:text-purple-100 dark:border-purple-500' :
-            accessibilityMode === 'Deaf' ? 'bg-yellow-100 text-yellow-900 border-2 border-yellow-300 dark:bg-yellow-900/40 dark:text-yellow-100 dark:border-yellow-500' :
-            'bg-orange-100 text-orange-900 border-2 border-orange-300 dark:bg-orange-900/40 dark:text-orange-100 dark:border-orange-500'
+            accessibilityMode === "Blind" ? "bg-purple-100 text-purple-900 border-2 border-purple-300 dark:bg-purple-900/40 dark:text-purple-100 dark:border-purple-500" :
+            accessibilityMode === "Deaf" ? "bg-yellow-100 text-yellow-900 border-2 border-yellow-300 dark:bg-yellow-900/40 dark:text-yellow-100 dark:border-yellow-500" :
+            "bg-orange-100 text-orange-900 border-2 border-orange-300 dark:bg-orange-900/40 dark:text-orange-100 dark:border-orange-500"
           }`}>
             <div className="flex items-center gap-3">
-              <span className="text-2xl">
-                {accessibilityMode === 'Blind' ? '👁️' : accessibilityMode === 'Deaf' ? '👂' : '🗣️'}
-              </span>
+              <span className="text-2xl">{accessibilityMode === "Blind" ? "" : accessibilityMode === "Deaf" ? "" : ""}</span>
               <div>
                 <h2 className="font-bold underline">{accessibilityMode} Mode Active</h2>
                 <p className="text-sm font-medium opacity-90">
-                  {accessibilityMode === 'Blind' ? 'Voice guidance and screen optimization active.' :
-                   accessibilityMode === 'Deaf' ? 'Visual captions and enhanced feedback active.' :
-                   'Text-priority interaction active.'}
+                  {accessibilityMode === "Blind" ? "Voice guidance and screen optimization active." :
+                   accessibilityMode === "Deaf" ? "Visual captions and enhanced feedback active." : "Text-priority interaction active."}
                 </p>
               </div>
             </div>
-            {accessibilityMode === 'Blind' && (
-              <Button 
-                variant="primary" 
-                onClick={() => {
-                  const speech = new SpeechSynthesisUtterance(`You are on the lessons page. There are ${lessons.length} lessons available.`);
-                  window.speechSynthesis.speak(speech);
-                }}
-              >
-                Read Summary
-              </Button>
-            )}
-            {accessibilityMode === 'Deaf' && (
-              <div className="flex gap-2">
-                <span className="px-2 py-1 bg-yellow-200 dark:bg-yellow-700 rounded text-xs font-bold">CC</span>
-                <span className="px-2 py-1 bg-yellow-200 dark:bg-yellow-700 rounded text-xs font-bold">Sign Support</span>
-              </div>
-            )}
           </div>
         )}
 
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors">
-              {t.lessons.title}
-            </h1>
-            <p className="text-gray-800 dark:text-gray-200 mt-2 font-medium">
-              {t.lessons.subtitle}
-            </p>
-            <p className="text-sm text-gray-700 dark:text-gray-400 mt-1 font-bold italic">
-              {t.settings.learning.level}: {getLevelLabel(preferredLevel)}
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t.lessons.title}</h1>
+            <p className="text-gray-800 dark:text-gray-200 mt-2 font-medium">{t.lessons.subtitle}</p>
           </div>
-          <Button
-            variant="secondary"
-            onClick={() => navigate('/assignments')}
-            className="flex items-center gap-2 popup-interactive shadow-lg"
-          >
+          <Button variant="secondary" onClick={() => navigate("/assignments")} className="flex items-center gap-2 popup-interactive shadow-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14l2 2 4-4"></path></svg>
             Assignments
           </Button>
         </div>
 
-        {/* Filter Section */}
+        {/* Filters */}
         <div className="mb-6 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={() => setFilterLevel('')}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm ${
-              filterLevel === ''
-                ? 'bg-primary text-white shadow-primary/30'
-                : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
-          >
-            All
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilterLevel('Beginner')}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm ${
-              filterLevel === 'Beginner'
-                ? 'bg-primary text-white shadow-primary/30'
-                : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
-          >
-            {t.lessons.beginner}
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilterLevel('Intermediate')}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm ${
-              filterLevel === 'Intermediate'
-                ? 'bg-primary text-white shadow-primary/30'
-                : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
-          >
-            {t.lessons.intermediate}
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilterLevel('Advanced')}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm ${
-              filterLevel === 'Advanced'
-                ? 'bg-primary text-white shadow-primary/30'
-                : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
-          >
-            {t.lessons.advanced}
-          </button>
-          {/* Quick filter to user's preferred level */}
-          <button
-            type="button"
-            onClick={() => setFilterLevel(preferredLevel)}
-            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm ${
-              filterLevel === preferredLevel
-                ? 'bg-secondary text-white shadow-secondary/30'
-                : 'bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-200 border border-cyan-100 dark:border-cyan-800 hover:bg-cyan-100 dark:hover:bg-cyan-800'
-            }`}
-          >
+          {["", "Beginner", "Intermediate", "Advanced"].map((lvl) => (
+            <button key={lvl} onClick={() => setFilterLevel(lvl)} className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm ${
+              filterLevel === lvl ? "bg-primary text-white shadow-primary/30" : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+            }`}>
+              {lvl || "All"}
+            </button>
+          ))}
+          <button onClick={() => setFilterLevel(preferredLevel)} className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm ${
+            filterLevel === preferredLevel ? "bg-secondary text-white shadow-secondary/30" : "bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-200 border border-cyan-100 dark:border-cyan-800 hover:bg-cyan-100"
+          }`}>
             {t.settings.learning.level}: {getLevelLabel(preferredLevel)}
           </button>
         </div>
 
-        {loading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">{t.common.loading}</p>
-          </div>
+        {loadingList ? (
+          <div className="text-center py-12"><p className="text-gray-600">{t.common.loading}</p></div>
         ) : filteredLessons.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">{t.lessons.noLessons}</p>
-          </div>
+          <div className="text-center py-12"><p className="text-gray-600 font-bold">No lessons found for this level.</p></div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredLessons.map((lesson) => (
               <Card key={lesson.id} hover>
-                <div 
-                  className="flex flex-col h-full"
-                  role="article"
-                  aria-label={`Lesson: ${lesson.title}. Duration: ${lesson.duration}. Level: ${lesson.level}.`}
-                >
+                <div className="flex flex-col h-full">
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2 text-gray-900 flex justify-between items-start">
-                      {lesson.title}
-                      {accessibilityMode === 'Deaf' && (
-                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded border border-yellow-200">
-                          VISUAL
-                        </span>
-                      )}
-                    </h3>
-                    <p className="text-gray-900 mb-4">{lesson.description}</p>
-                    <div className="flex items-center justify-between text-sm text-gray-900 mb-4">
+                    <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">{lesson.title}</h3>
+                    <p className="text-gray-700 dark:text-gray-300 mb-4">{lesson.description}</p>
+                    <div className="flex justify-between text-sm font-semibold">
                       <span>{lesson.duration}</span>
-                      <span className="px-2 py-1 bg-primary/10 text-primary rounded-full">
-                        {getLevelLabel(lesson.level)}
-                      </span>
+                      <span className="text-primary">{lesson.level}</span>
                     </div>
                   </div>
-                  <div className="space-y-2 mt-4">
-                    <Button 
-                      variant="primary" 
-                      className="w-full"
-                      onClick={() => {
-                        if (accessibilityMode === 'Blind') {
-                          const speech = new SpeechSynthesisUtterance(`Starting lesson: ${lesson.title}`);
-                          window.speechSynthesis.speak(speech);
-                        }
-                      }}
-                    >
-                      {t.lessons.startLesson}
-                    </Button>
-                    <button
-                      onClick={() => {
-                        toggleLessonCompletion(lesson.id);
-                        if (accessibilityMode === 'Blind') {
-                          const status = completedIds.includes(lesson.id) ? 'marked incomplete' : 'marked complete';
-                          const speech = new SpeechSynthesisUtterance(`${lesson.title} ${status}`);
-                          window.speechSynthesis.speak(speech);
-                        }
-                      }}
-                      className={`w-full py-2 text-sm font-medium rounded-lg border transition-all ${
-                        completedIds.includes(lesson.id)
-                          ? 'bg-green-50 border-green-200 text-green-700'
-                          : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {completedIds.includes(lesson.id) ? '✓ Completed' : 'Mark as Completed'}
+                  <div className="mt-6 space-y-2">
+                    <Button variant="primary" className="w-full" onClick={() => navigate(`/lessons/${lesson.id}`)}>Start Lesson</Button>
+                    <button onClick={() => toggleLessonCompletion(lesson.id)} className={`w-full py-2 text-sm font-bold rounded-lg border transition-all ${
+                      completedIds.includes(lesson.id) ? "bg-green-50 text-green-700 border-green-200" : "bg-white text-gray-700 border-gray-200"
+                    }`}>
+                      {completedIds.includes(lesson.id) ? " Completed" : "Mark as Completed"}
                     </button>
-                    {accessibilityMode === 'Blind' && (
-                      <button
-                        onClick={() => {
-                          const speech = new SpeechSynthesisUtterance(`Lesson Info: ${lesson.title}. Description: ${lesson.description}. Duration: ${lesson.duration}.`);
-                          window.speechSynthesis.speak(speech);
-                        }}
-                        className="w-full text-xs text-blue-600 underline py-1"
-                      >
-                        Hear Details
-                      </button>
-                    )}
                   </div>
                 </div>
               </Card>
@@ -294,3 +297,4 @@ const Lessons = () => {
 };
 
 export default Lessons;
+
