@@ -269,10 +269,6 @@ const VoiceControl: React.FC = () => {
 
       {/* Manual Microphone Button */}
       <div className="flex items-center gap-3">
-        <div className={`text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-gray-200 shadow-sm transition-all duration-500 ${state !== "idle" ? "opacity-0 translate-x-4" : "opacity-100"}`}>
-          {lowPowerMode ? "MIC ONLY" : "Say \"Hey Chat\""}
-        </div>
-
         <button
           onClick={toggleListening}
           disabled={state === "processing"}

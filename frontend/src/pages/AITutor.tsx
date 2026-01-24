@@ -6,7 +6,14 @@ import type { ChatMessage } from '../types';
 import { aiAPI } from '../services/api';
 import { useSettings } from '../context/SettingsContext';
 
-const CHAT_HISTORY_KEY = 'ai_chat_history';
+const CHAT_SESSIONS_KEY = 'ai_chat_sessions';
+
+interface ChatSession {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  timestamp: Date;
+}
 
 const AITutor = () => {
   const { settings, t } = useSettings();
@@ -18,6 +25,10 @@ const AITutor = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string>('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [fileContext, setFileContext] = useState<{
     type: 'image' | 'pdf' | 'youtube' | null;
     data: string;
@@ -26,19 +37,94 @@ const AITutor = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
+
+  // Speech Recognition Setup
+  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+  const startVoiceInput = () => {
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in your browser. Please use Chrome or Edge.");
+      return;
+    }
+
+    if (isRecording) {
+      // Stop recording
+      recognitionRef.current?.stop();
+      setIsRecording(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    
+    const langMap: Record<string, string> = {
+      'English': 'en-US', 'Hindi': 'hi-IN', 'Telugu': 'te-IN', 'Spanish': 'es-ES', 'French': 'fr-FR'
+    };
+    recognition.lang = langMap[settings.learning.language] || 'en-US';
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      let transcript = '';
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInput(transcript);
+      
+      // Auto-send when speech is final
+      if (event.results[event.results.length - 1].isFinal) {
+        setIsRecording(false);
+        // Small delay to show the transcribed text before sending
+        setTimeout(() => {
+          if (transcript.trim()) {
+            handleSend(transcript.trim());
+          }
+        }, 300);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsRecording(false);
+      if (event.error === 'no-speech') {
+        // Silent failure for no speech detected
+      } else if (event.error === 'not-allowed') {
+        alert("Microphone access denied. Please allow microphone access to use voice input.");
+      }
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
 
   // Load chat history from localStorage
   useEffect(() => {
     if (showChatHistory) {
       try {
-        const stored = window.localStorage.getItem(CHAT_HISTORY_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored) as ChatMessage[];
-          if (parsed.length > 0) {
-            setMessages(parsed.map(m => ({
-              ...m,
-              timestamp: new Date(m.timestamp)
-            })));
+        // Load sessions
+        const storedSessions = window.localStorage.getItem(CHAT_SESSIONS_KEY);
+        if (storedSessions) {
+          const parsed = JSON.parse(storedSessions) as ChatSession[];
+          const sessionsWithDates = parsed.map(s => ({
+            ...s,
+            timestamp: new Date(s.timestamp),
+            messages: s.messages.map(m => ({ ...m, timestamp: new Date(m.timestamp) }))
+          }));
+          setChatSessions(sessionsWithDates);
+          
+          // Load the most recent session
+          if (sessionsWithDates.length > 0) {
+            const latest = sessionsWithDates[0];
+            setCurrentSessionId(latest.id);
+            setMessages(latest.messages);
             return;
           }
         }
@@ -47,7 +133,9 @@ const AITutor = () => {
       }
     }
     
-    // Set initial greeting
+    // Create new session with initial greeting
+    const newSessionId = Date.now().toString();
+    setCurrentSessionId(newSessionId);
     setMessages([
       {
         id: '1',
@@ -60,14 +148,33 @@ const AITutor = () => {
 
   // Save chat history to localStorage
   useEffect(() => {
-    if (showChatHistory && messages.length > 0) {
+    if (showChatHistory && messages.length > 0 && currentSessionId) {
       try {
-        window.localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
+        // Generate session title from first user message
+        const firstUserMsg = messages.find(m => m.role === 'user');
+        const title = firstUserMsg 
+          ? firstUserMsg.content.slice(0, 40) + (firstUserMsg.content.length > 40 ? '...' : '')
+          : 'New Chat';
+
+        const currentSession: ChatSession = {
+          id: currentSessionId,
+          title,
+          messages,
+          timestamp: new Date(),
+        };
+
+        // Update or add current session
+        setChatSessions(prev => {
+          const filtered = prev.filter(s => s.id !== currentSessionId);
+          const updated = [currentSession, ...filtered].slice(0, 50); // Keep max 50 sessions
+          window.localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(updated));
+          return updated;
+        });
       } catch {
         // Ignore storage errors
       }
     }
-  }, [messages, showChatHistory]);
+  }, [messages, showChatHistory, currentSessionId]);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -310,6 +417,40 @@ const AITutor = () => {
     setFileContext({ type: 'youtube', data: url, name: 'YouTube Video' });
   };
 
+  const createNewChat = () => {
+    const newSessionId = Date.now().toString();
+    setCurrentSessionId(newSessionId);
+    setMessages([
+      {
+        id: '1',
+        role: 'assistant',
+        content: t.aiTutor.greeting,
+        timestamp: new Date(),
+      },
+    ]);
+    setFileContext(null);
+    setPlusMenuOpen(false);
+  };
+
+  const loadSession = (session: ChatSession) => {
+    setCurrentSessionId(session.id);
+    setMessages(session.messages);
+    setFileContext(null);
+  };
+
+  const deleteSession = (sessionId: string) => {
+    setChatSessions(prev => {
+      const filtered = prev.filter(s => s.id !== sessionId);
+      window.localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(filtered));
+      return filtered;
+    });
+    
+    // If deleted current session, create new one
+    if (sessionId === currentSessionId) {
+      createNewChat();
+    }
+  };
+
   // If AI Tutor is disabled, show a message
   if (!enabled) {
     return (
@@ -337,14 +478,92 @@ const AITutor = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">{t.aiTutor.title}</h1>
-          <p className="text-gray-900 mt-2">{t.aiTutor.subtitle}</p>
-          <div className="mt-2 text-sm text-gray-600">
-            {t.settings.aiTutorSettings.answerStyle}: {answerStyle === 'Short' ? t.settings.aiTutorSettings.short : t.settings.aiTutorSettings.detailed}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex gap-6">
+          {/* History Sidebar */}
+          <div className={`${sidebarOpen ? 'w-72' : 'w-0'} transition-all duration-300 overflow-hidden flex-shrink-0`}>
+            <div className="bg-white rounded-lg shadow-md p-4 h-full">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-gray-900">Chat History</h2>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-1 hover:bg-gray-100 rounded-lg text-gray-500"
+                  title="Close sidebar"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+
+              <button
+                onClick={createNewChat}
+                className="w-full mb-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-indigo-600 transition-colors flex items-center justify-center gap-2 font-medium"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                New Chat
+              </button>
+
+              <div className="space-y-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 250px)' }}>
+                {chatSessions.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-8">No chat history yet</p>
+                ) : (
+                  chatSessions.map((session) => (
+                    <div
+                      key={session.id}
+                      className={`group relative p-3 rounded-lg cursor-pointer transition-colors ${
+                        session.id === currentSessionId
+                          ? 'bg-primary/10 border border-primary/20'
+                          : 'bg-gray-50 hover:bg-gray-100 border border-transparent'
+                      }`}
+                      onClick={() => loadSession(session)}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {session.title}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {new Date(session.timestamp).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (confirm('Delete this chat?')) {
+                              deleteSession(session.id);
+                            }
+                          }}
+                          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 rounded text-red-500 transition-opacity"
+                          title="Delete chat"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+
+          {/* Main Chat Area */}
+          <div className="flex-1">
+            {!sidebarOpen && (
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="mb-4 px-4 py-2 bg-white rounded-lg shadow-md hover:bg-gray-50 transition-colors flex items-center gap-2 text-gray-700 font-medium"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Show History
+              </button>
+            )}
+
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900">{t.aiTutor.title}</h1>
+              <p className="text-gray-900 mt-2">{t.aiTutor.subtitle}</p>
+              <div className="mt-2 text-sm text-gray-600">
+                {t.settings.aiTutorSettings.answerStyle}: {answerStyle === 'Short' ? t.settings.aiTutorSettings.short : t.settings.aiTutorSettings.detailed}
+              </div>
+            </div>
 
         <Card className="h-150 flex flex-col">
           <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-4">
@@ -439,11 +658,18 @@ const AITutor = () => {
                     </button>
                     <div className="border-t border-gray-100 my-1"></div>
                     <button
+                      onClick={createNewChat}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 flex items-center gap-2"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                      New Chat
+                    </button>
+                    <button
                       onClick={() => { setMessages([{ id: '1', role: 'assistant', content: t.aiTutor.greeting, timestamp: new Date() }]); setFileContext(null); setPlusMenuOpen(false); }}
                       className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                      Clear Chat & Context
+                      Clear Current Chat
                     </button>
                   </div>
                 )}
@@ -470,10 +696,33 @@ const AITutor = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder={fileContext ? `Ask about "${fileContext.name}"...` : t.aiTutor.placeholder}
-                  className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                  disabled={loading}
+                  disabled={loading || isRecording}
                 />
+                <button
+                  onClick={startVoiceInput}
+                  disabled={loading || accessibilityMode === 'Dumb'}
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full transition-all ${
+                    isRecording 
+                      ? 'bg-red-500 text-white animate-pulse' 
+                      : 'text-gray-400 hover:text-primary hover:bg-gray-100'
+                  } ${accessibilityMode === 'Dumb' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  title={isRecording ? 'Stop recording' : 'Voice input'}
+                >
+                  {isRecording ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                      <rect x="6" y="6" width="12" height="12" rx="2"/>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                      <line x1="12" y1="19" x2="12" y2="23"></line>
+                      <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>
+                  )}
+                </button>
               </div>
 
               <Button onClick={() => handleSend()} disabled={loading || (!input.trim() && !fileContext)}>
@@ -482,6 +731,8 @@ const AITutor = () => {
             </div>
           </div>
         </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

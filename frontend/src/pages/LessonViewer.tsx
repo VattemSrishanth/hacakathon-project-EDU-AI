@@ -1,241 +1,217 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { lessonsAPI, aiAPI } from '../services/api';
 import { useSettings } from '../context/SettingsContext';
-import Card from '../components/Card';
+import { ArrowLeft, Upload, Volume2, FileText, BookOpen } from 'lucide-react';
 import Button from '../components/Button';
-import type { Lesson } from '../types';
 
-const LessonViewer = () => {
-  const { id } = useParams<{ id: string }>();
+interface LessonData {
+  id: string;
+  title: string;
+  pdfUrl?: string;
+  aiSummary: string;
+  textVersion: string;
+}
+
+export default function LessonViewer() {
+  const { lessonId } = useParams();
   const navigate = useNavigate();
-  const { settings, t } = useSettings();
-  const { accessibilityMode } = settings.themeAccessibility;
-  const { language } = settings.learning;
-  const answerStyle = ''; // TODO: Define answerStyle source or remove if not needed
-
-  const [lesson, setLesson] = useState<Lesson | null>(null);
-  const [summary, setSummary] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-  const [summarizing, setSummarizing] = useState(false);
-  const [completed, setCompleted] = useState(false);
-  
-  const audioStarted = useRef(false);
+  const { settings } = useSettings();
+  const [lesson, setLesson] = useState<LessonData | null>(null);
+  const [uploadedPdf, setUploadedPdf] = useState<string | null>(null);
+  const [isReading, setIsReading] = useState(false);
 
   useEffect(() => {
-    const fetchLessonData = async () => {
-      if (!id) return;
-      setLoading(true);
-      try {
-        // 1. Get Lesson Metadata
-        const lessonRes = await lessonsAPI.getById(id);
-        if (lessonRes.success) {
-          setLesson(lessonRes.lesson);
-        }
-
-        // 2. Check Cache for Summary
-        const cachedSummary = localStorage.getItem(`lesson_summary_${id}_${language}_${answerStyle}`);
-        if (cachedSummary) {
-          setSummary(cachedSummary);
-          setLoading(false);
-        } else {
-          // 3. Extract PDF Content (logic is on backend)
-          try {
-            const contentRes = await lessonsAPI.getContent(id);
-            if (contentRes.success) {
-              const rawContent = contentRes.content;
-
-              // 4. Summarize via AI
-              setSummarizing(true);
-              const aiRes = await aiAPI.analyzePdf(
-                rawContent,
-                '',
-                accessibilityMode.toLowerCase(),
-                language,
-                answerStyle
-              );
-
-              if (aiRes.success) {
-                const generatedSummary = aiRes.summary;
-                setSummary(generatedSummary);
-                localStorage.setItem(`lesson_summary_${id}_${language}_${answerStyle}`, generatedSummary);
-              }
-            }
-          } catch (err) {
-            console.error('Failed to get content/summary', err);
-            setSummary("Could not load lesson summary. Please try again.");
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load lesson:', error);
-      } finally {
-        setLoading(false);
-        setSummarizing(false);
-      }
+    // Load lesson data
+    const lessonData: LessonData = {
+      id: lessonId || '1',
+      title: 'Introduction to Algebra',
+      pdfUrl: '', // Can be set to a default PDF URL
+      aiSummary: 'This lesson covers fundamental algebraic concepts including variables, expressions, and basic equations. You will learn how to solve simple linear equations and understand the relationship between variables.',
+      textVersion: 'Introduction to Algebra\n\nAlgebra is a branch of mathematics that uses symbols and letters to represent numbers and quantities in formulas and equations.\n\nKey Concepts:\n1. Variables: Letters that represent unknown values (e.g., x, y, z)\n2. Expressions: Combinations of variables and numbers (e.g., 2x + 5)\n3. Equations: Mathematical statements showing equality (e.g., 2x + 5 = 15)\n\nSolving Basic Equations:\nTo solve an equation, isolate the variable on one side.\n\nExample: 2x + 5 = 15\nStep 1: Subtract 5 from both sides: 2x = 10\nStep 2: Divide both sides by 2: x = 5'
     };
 
-    fetchLessonData();
+    // Check for uploaded PDF in localStorage
+    const storedPdf = localStorage.getItem(`lesson-pdf-${lessonId}`);
+    if (storedPdf) {
+      setUploadedPdf(storedPdf);
+    }
 
-    // Check completion status
-    const storedCompleted = localStorage.getItem('lesson_completion_tracker');
-    if (storedCompleted) {
-      try {
-        const ids = JSON.parse(storedCompleted) as string[];
-        if (ids.includes(id || '')) {
-          setCompleted(true);
-        }
-      } catch (e) {
-        console.error('Error parsing completion tracker', e);
+    setLesson(lessonData);
+
+    // Announce lesson loaded for screen readers
+    if (settings.themeAccessibility.accessibilityMode === 'Blind') {
+      announceText(`Lesson ${lessonData.title} loaded`);
+    }
+  }, [lessonId, settings.themeAccessibility.accessibilityMode]);
+
+  const handlePdfUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size must be less than 10MB');
+        return;
       }
-    }
-  }, [id, language, accessibilityMode]);
 
-  // Accessibility: Text-to-Speech for Blind Mode
-  useEffect(() => {
-    if (accessibilityMode === 'Blind' && summary && !audioStarted.current) {
-      const speech = new SpeechSynthesisUtterance(summary);
-      speech.lang = language === 'Hindi' ? 'hi-IN' : 'en-US';
-      speech.rate = 0.9;
-      window.speechSynthesis.speak(speech);
-      audioStarted.current = true;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const pdfDataUrl = e.target?.result as string;
+        setUploadedPdf(pdfDataUrl);
+        // Store in localStorage for persistence
+        localStorage.setItem(`lesson-pdf-${lessonId}`, pdfDataUrl);
+        
+        if (settings.themeAccessibility.accessibilityMode === 'Blind') {
+          announceText('PDF uploaded successfully');
+        }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert('Please upload a valid PDF file');
     }
-    
-    return () => {
-      window.speechSynthesis.cancel();
-    };
-  }, [summary, accessibilityMode, language]);
-
-  const handleMarkCompleted = () => {
-    if (!id) return;
-    
-    const stored = localStorage.getItem('lesson_completion_tracker');
-    const completedIds = stored ? JSON.parse(stored) as string[] : [];
-    
-    if (!completedIds.includes(id)) {
-      const newIds = [...completedIds, id];
-      localStorage.setItem('lesson_completion_tracker', JSON.stringify(newIds));
-      setCompleted(true);
-    }
-    
-    // Redirect to lessons list
-    navigate('/lessons');
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-900 dark:text-gray-100">Loading lesson context...</p>
-        </div>
-      </div>
-    );
-  }
+  const announceText = (text: string) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = settings.learning.language === 'English' ? 'en-US' : 'en-US';
+    utterance.rate = 1.0;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleReadAloud = (text: string) => {
+    if (isReading) {
+      window.speechSynthesis.cancel();
+      setIsReading(false);
+    } else {
+      announceText(text);
+      setIsReading(true);
+      
+      // Reset isReading when speech ends
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.onend = () => setIsReading(false);
+    }
+  };
 
   if (!lesson) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Card>
-          <h2 className="text-xl font-bold text-red-600">Lesson not found</h2>
-          <Button onClick={() => navigate('/lessons')} className="mt-4">Go Back</Button>
-        </Card>
+        <div className="text-center">
+          <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600">Loading lesson...</p>
+        </div>
       </div>
     );
   }
 
+  const showTextVersion = settings.themeAccessibility.accessibilityMode === 'Blind' || settings.themeAccessibility.accessibilityMode === 'Deaf';
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{lesson.title}</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">{lesson.level} Level • {lesson.duration}</p>
-          </div>
-          <Button variant="outline" onClick={() => navigate('/lessons')}>
-            {t.nav.lessons}
-          </Button>
-        </div>
-
-        <Card className="mb-8 p-6 bg-white dark:bg-gray-800 border dark:border-gray-700 shadow-xl">
-          <div className="flex items-center gap-2 mb-6 p-3 bg-primary/5 dark:bg-primary/10 rounded-lg border border-primary/20">
-            <span className="text-xl">📄</span>
-            <span className="text-sm font-semibold text-primary uppercase tracking-widest">
-              Smart Summarized Content
-            </span>
-          </div>
-
-          {summarizing ? (
-            <div className="py-12 text-center">
-              <div className="animate-pulse flex flex-col items-center">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
-                <p className="mt-6 text-gray-500 dark:text-gray-400 text-sm">Generating student-friendly summary...</p>
-              </div>
-            </div>
-          ) : (
-            <div className="prose prose-indigo max-w-none dark:prose-invert">
-              <div className="text-gray-900 dark:text-gray-100 leading-relaxed space-y-4 whitespace-pre-wrap text-lg">
-                {summary || "No summary available."}
-              </div>
-            </div>
-          )}
-
-          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
-             <div className="flex items-center gap-2">
-                {completed ? (
-                  <span className="text-green-600 font-bold flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Lesson Completed
-                  </span>
-                ) : (
-                  <span className="text-gray-500 dark:text-gray-400 text-sm italic">You haven't finished this lesson yet.</span>
-                )}
-             </div>
-             
-             <div className="flex gap-4">
-                {accessibilityMode === 'Blind' && (
-                   <Button variant="outline" onClick={() => {
-                      window.speechSynthesis.cancel();
-                      const speech = new SpeechSynthesisUtterance(summary);
-                      speech.lang = language === 'Hindi' ? 'hi-IN' : 'en-US';
-                      window.speechSynthesis.speak(speech);
-                   }}>
-                      Replay Lesson
-                   </Button>
-                )}
-                
-                <Button 
-                  variant={completed ? "outline" : "primary"} 
-                  onClick={handleMarkCompleted}
-                  className="px-8"
-                >
-                  {completed ? "Return to Lessons" : "Mark as Completed"}
-                </Button>
-             </div>
-          </div>
-        </Card>
-
-        {/* Accessibility Context Notice */}
-        <div className="bg-white dark:bg-gray-800 border-l-4 border-primary p-4 rounded-r-lg shadow-md border dark:border-gray-700">
-          <div className="flex gap-3">
-            <span className="text-xl">🛠️</span>
-            <div>
-              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                {accessibilityMode} Mode Integration
-              </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                {accessibilityMode === 'Blind' && "Text-to-speech is automatically playing. No visual interaction required."}
-                {accessibilityMode === 'Deaf' && "Visual text only. Audio output is disabled for clear focus."}
-                {accessibilityMode === 'Dumb' && "Interaction is limited to reading. Voice tools are disabled."}
-                {accessibilityMode === 'Normal' && "Feel free to read the summary and mark it as complete when ready."}
-              </p>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <button
+            onClick={() => navigate('/lessons')}
+            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 mb-4 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-medium">Back to Lessons</span>
+          </button>
+          
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">{lesson.title}</h1>
+          
+          {/* Upload Button */}
+          <div className="flex gap-3 mb-4">
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={handlePdfUpload}
+                className="hidden"
+              />
+              <Button variant="outline" className="flex items-center gap-2">
+                <Upload className="w-5 h-5" />
+                Upload PDF
+              </Button>
+            </label>
+            
+            {(settings.themeAccessibility.accessibilityMode === 'Blind' || settings.themeAccessibility.accessibilityMode === 'Deaf') && (
+              <Button
+                variant="success"
+                onClick={() => handleReadAloud(lesson.textVersion)}
+                className="flex items-center gap-2"
+              >
+                <Volume2 className="w-5 h-5" />
+                {isReading ? 'Stop Reading' : 'Read Aloud'}
+              </Button>
+            )}
           </div>
         </div>
+
+        {/* AI Summary */}
+        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 mb-8 border border-indigo-200">
+          <div className="flex items-start gap-3 mb-3">
+            <FileText className="w-6 h-6 text-indigo-600 flex-shrink-0 mt-1" />
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">AI Summary</h2>
+              <p className="text-gray-700 leading-relaxed">{lesson.aiSummary}</p>
+            </div>
+            {settings.themeAccessibility.accessibilityMode === 'Blind' && (
+              <button
+                onClick={() => handleReadAloud(lesson.aiSummary)}
+                className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2"
+              >
+                <Volume2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Content Area */}
+        {showTextVersion ? (
+          /* Text Version for Accessibility */
+          <div className="bg-white rounded-xl p-8 shadow-md">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Lesson Content</h2>
+            <div className="prose prose-lg max-w-none">
+              <pre className="whitespace-pre-wrap font-sans text-gray-700 leading-relaxed">
+                {lesson.textVersion}
+              </pre>
+            </div>
+          </div>
+        ) : (
+          /* PDF Viewer */
+          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            {uploadedPdf || lesson.pdfUrl ? (
+              <iframe
+                src={uploadedPdf || lesson.pdfUrl}
+                className="w-full border-0"
+                style={{ height: '800px' }}
+                title={`${lesson.title} PDF`}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+                <Upload className="w-16 h-16 text-gray-400 mb-4" />
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                  No PDF Available
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Upload a PDF to view the lesson content
+                </p>
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handlePdfUpload}
+                    className="hidden"
+                  />
+                  <Button variant="primary" className="flex items-center gap-2">
+                    <Upload className="w-5 h-5" />
+                    Upload PDF Now
+                  </Button>
+                </label>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
-};
-
-export default LessonViewer;
+}
