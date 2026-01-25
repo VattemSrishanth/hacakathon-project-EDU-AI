@@ -172,9 +172,9 @@ const applyTheme = (theme: ThemeMode): void => {
     root.style.setProperty('--bg-primary', '#ffffff');
     root.style.setProperty('--bg-secondary', '#f8fafc');
     root.style.setProperty('--bg-card', '#ffffff');
-    root.style.setProperty('--text-primary', '#1f2937');
-    root.style.setProperty('--text-secondary', '#6b7280');
-    root.style.setProperty('--border-color', '#e5e7eb');
+    root.style.setProperty('--text-primary', '#0f172a');
+    root.style.setProperty('--text-secondary', '#475569');
+    root.style.setProperty('--border-color', '#e2e8f0');
   }
 };
 

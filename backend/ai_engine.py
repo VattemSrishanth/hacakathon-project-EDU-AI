@@ -3,6 +3,14 @@ import ast
 import json
 import operator
 import re
+import base64
+import io
+from datetime import datetime
+
+try:
+    import PyPDF2
+except ImportError:
+    PyPDF2 = None
 
 from offline_logic import (
     offline_generate_explanation,
@@ -18,28 +26,32 @@ from offline_logic import (
 from unified_llm import generate_text, generate_vision_text
 # ============================================
 
-SYSTEM_PROMPT = """You are a dedicated school tutor for rural and disabled learners.
-Your role:
-1. Explain syllabus questions clearly and step-by-step
-2. Use simple language suitable for rural students
-3. Include at least one example
-4. Provide a short, simple summary
-5. If unsure, give a basic explanation first, then expand
-6. Avoid hallucinating facts or pretending to access external sources
-7. NEVER say "I don't know". Offer a safe, basic explanation instead.
+SYSTEM_PROMPT = """You are LearnBridge AI, an intelligent, student-friendly AI tutor dedicated to inclusive education.
+Current Date: {date}
+
+PRIMARY GOAL:
+Always help the learner by answering questions clearly and correctly.
+
+RULES:
+1. Explain syllabus questions clearly and step-by-step.
+2. Use simple language suitable for rural and disabled students.
+3. Be student-friendly and educational.
+4. No unnecessary disclaimers or phrases like “The provided context does not contain…”.
+5. If a question is unclear, make a reasonable academic assumption and explain your reasoning.
+6. Prioritize factual accuracy.
 
 Return a JSON object with keys:
 explanation, example, summary.
 """
 
-VIDEO_SYSTEM_PROMPT = """You are an AI lesson explainer for students with limited internet.
+VIDEO_SYSTEM_PROMPT = """You are LearnBridge AI, explaining a video lesson.
+Current Date: {date}
 Your role:
-1. Read the video transcript text and explain the lesson simply
-2. Provide key points as short bullet-like phrases
-3. Provide a short summary
-4. Adapt the explanation to the learner mode
-5. Keep language clear, calm, and classroom-safe
-6. Do not mention downloading videos or external sources
+1. Read the video transcript and explain the lesson simply.
+2. Provide key points as short bullet-like phrases.
+3. Provide a short summary.
+4. Keep language clear, calm, and student-friendly.
+5. Do NOT say information is missing; use your knowledge to fill gaps educationally.
 
 Return a JSON object with keys:
 simple_explanation, key_points, summary.
@@ -72,7 +84,7 @@ def generate_explanation(question, learner_mode="regular", level="basic", langua
 
     if answer_style == "Short":
         prompt = (
-            f"You are a helpful academic tutor. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
+            f"You are LearnBridge AI, a helpful academic tutor. Current Date: {datetime.now().strftime('%B %d, %Y')}. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
             "STRICT RULE: Respond ONLY with a direct answer. 1-3 short sentences MAX. "
             "NO sections like Explanation/Example/Summary. NO filler text. "
             "If the user says 'hi' or 'hello', give a minimal friendly greeting like 'Hi! How can I help you?' only.\n"
@@ -84,7 +96,7 @@ def generate_explanation(question, learner_mode="regular", level="basic", langua
         return offline_generate_explanation(question, learner_mode=mode_key, level=level)
 
     prompt = (
-        SYSTEM_PROMPT
+        SYSTEM_PROMPT.format(date=datetime.now().strftime("%B %d, %Y"))
         + f"\nRESPONSE LANGUAGE: {language}. Respond ONLY in {language}."
         + "\nLearner mode: " + mode_key
         + "\nLevel: " + level
@@ -120,7 +132,7 @@ def analyze_image(base64_image, learner_mode="regular", user_question=None, lang
         style_instruction = "Provide a formal, structured description of the visual content and explain its educational relevance."
 
     base_prompt = (
-        "You are an academic AI tutor. Analyze this image for a student. "
+        f"You are LearnBridge AI, an intelligent student-friendly AI tutor. Current Date: {datetime.now().strftime('%B %d, %Y')}. Analyze this image for a student. "
         f"IMPORTANT: Respond ONLY in the {language} language. "
         f"Style: {answer_style}. {style_instruction} "
         "Maintain a professional tone without emojis or informal language. "
@@ -212,6 +224,78 @@ def _eval_node(node):
     raise ValueError("Unsupported expression")
 
 
+def _extract_text_from_pdf_base64(data_str):
+    """Helper to extract text from a base64 encoded PDF string or raw binary PDF string."""
+    try:
+        print(f"[ai_engine] Attempting PDF extraction. Input length: {len(data_str)}")
+        
+        # 1. Handle base64 with data URI prefix
+        if data_str.startswith("data:application/pdf;base64,"):
+            print("[ai_engine] Detected Data URI format.")
+            data_str = data_str.split(",")[1]
+            
+            # Strip all whitespace (newlines, spaces) which can mess up length counts
+            data_str = "".join(data_str.split())
+            
+            # Fix base64 padding if necessary
+            missing_padding = len(data_str) % 4
+            if missing_padding == 1:
+                data_str = data_str[:-1] # Remove the stray character
+            elif missing_padding > 1:
+                data_str += "=" * (4 - missing_padding)
+            
+            pdf_bytes = base64.b64decode(data_str)
+        # 2. Handle raw binary PDF string starting with %PDF
+        elif data_str.startswith("%PDF"):
+            print("[ai_engine] Detected raw PDF binary string.")
+            pdf_bytes = data_str.encode('latin1')
+        # 3. Assume it might be naked base64 if it's long and doesn't look like text
+        elif len(data_str) > 100 and not data_str.strip().startswith("Academic Task"):
+            try:
+                print("[ai_engine] Attempting naked base64 decode.")
+                
+                # Strip all whitespace
+                temp_str = "".join(data_str.split())
+                
+                # Fix base64 padding
+                missing_padding = len(temp_str) % 4
+                if missing_padding == 1:
+                    temp_str = temp_str[:-1]
+                elif missing_padding > 1:
+                    temp_str += "=" * (4 - missing_padding)
+                
+                pdf_bytes = base64.b64decode(temp_str)
+            except:
+                print("[ai_engine] Base64 decode failed, using as raw string.")
+                pdf_bytes = data_str.encode('utf-8')
+        else:
+            print("[ai_engine] Input likely already text or too short.")
+            return data_str 
+        
+        pdf_file = io.BytesIO(pdf_bytes)
+        
+        text = ""
+        if PyPDF2:
+            print("[ai_engine] Using PyPDF2 for extraction.")
+            reader = PyPDF2.PdfReader(pdf_file)
+            for i, page in enumerate(reader.pages):
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
+            
+            extracted_length = len(text.strip())
+            print(f"[ai_engine] Extraction complete. Extracted {extracted_length} characters from {len(reader.pages)} pages.")
+            
+            if extracted_length < 10:
+                print("[ai_engine] Warning: Extraction yielded very little text. PDF might be image-based.")
+        else:
+            print("[ai_engine] PyPDF2 not available!")
+        
+        return text.strip() or data_str
+    except Exception as e:
+        print(f"[ai_engine] Error extracting PDF text: {e}")
+        return data_str
+
 def get_ai_response_payload(question, online=True, mode="regular", context=None, language="English", answer_style="Detailed"):
     """
     Return structured response for API consumption with quota handling.
@@ -247,24 +331,56 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None,
             
         elif ctx_type == 'pdf' and ctx_data:
             # Persistent Document Context Analysis
-            if answer_style == "Short":
-                style_instruction = "Direct answer only, 1-3 sentences."
-            elif answer_style == "Explain like I'm 10":
-                style_instruction = "Explain like I'm 10: Use very simple language and metaphors."
-            elif answer_style == "University Professor":
-                style_instruction = "Use terminal academic language and advanced terminology."
-            else:
-                style_instruction = "Comprehensive summary and key educational takeaways."
+            doc_text = _extract_text_from_pdf_base64(ctx_data)
+            
+            # LearnBridge AI - PDF Handling Rules
+            is_solution_req = any(word in question.lower() for word in ["answer", "solve", "solution", "calculate", "result", "generate", "what is", "give"]) if question else False
+            
+            if is_solution_req:
+                prompt = f"""
+The uploaded document is a QUESTION PAPER.
 
-            if question and question.strip():
-                prompt = f"Academic Task: Answer the following question based ONLY on the provided document text. Maintain a formal, educational tone. Respond ONLY in {language}. Style: {answer_style}\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}\n\nUSER QUESTION: {question}\n\n{style_instruction}"
+Answer ALL questions using your general knowledge.
+Do NOT say answers are missing.
+Number answers clearly.
+
+Questions:
+{doc_text[:12000]}
+
+User Request: {question}
+"""
             else:
-                prompt = f"Academic Task: {style_instruction} Respond ONLY in {language}.\n\nDOCUMENT CONTEXT: {ctx_data[:10000]}"
+                prompt = (
+                    f"You are LearnBridge AI, an intelligent, student-friendly AI tutor.\n"
+                    f"DOCUMENT HANDLING RULES:\n"
+                    f"1. If the document contains QUESTIONS, EXERCISES, or PROBLEMS: Solve them immediately. "
+                    f"Use a NUMBERED LIST (Q1, Q2, Q3, etc.). Solve them even if the answers are not in the text.\n"
+                    f"2. If it is STUDY MATERIAL: Use it as primary reference but use your knowledge to explain better.\n"
+                    f"3. NO DISCLAIMERS: Do NOT say 'The document does not contain...' or 'Answers are missing'. JUST ANSWER.\n"
+                    f"4. If a question is unclear, make a reasonable assumption and show reasoning.\n"
+                    f"5. Language: {language}. Style: {answer_style}.\n\n"
+                    f"DOCUMENT CONTENT:\n{doc_text[:12000]}\n\n"
+                )
+
+                if question and question.strip():
+                    prompt += f"USER REQUEST: {question}\n"
+                else:
+                    prompt += "TASK: Analyze this document. If it has questions, solve them. If it is notes, summarize and explain concisely.\n"
+                
+                prompt += "\nRESPONSE FORMAT: Clear headings, proper numbering, concise but complete."
             
             raw, err = _call_ai_model(prompt)
+            if err != "ok":
+                # Fallback that still respects identity
+                return {
+                    "status": "quota_exceeded" if err == "quota_exceeded" else "error",
+                    "answer": f"I am LearnBridge AI. I encountered a service limit, but based on the document: {doc_text[:300]}...",
+                    "mode": "online"
+                }
+            
             return {
-                "status": "success" if err == "ok" else "error",
-                "answer": raw if err == "ok" else f"I encountered an error while analyzing the document context. (Response in {language})",
+                "status": "success",
+                "answer": raw,
                 "mode": "online"
             }
 
@@ -281,7 +397,7 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None,
     # and strictly limiting the output length to 1-3 sentences.
     if answer_style == "Short":
         prompt = (
-            f"You are a helpful academic tutor. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
+            f"You are LearnBridge AI, a helpful academic tutor. Current Date: {datetime.now().strftime('%B %d, %Y')}. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
             "STRICT RULE: Respond ONLY with a direct answer. 1-3 short sentences MAX. "
             "NO sections like Explanation/Example/Summary. NO filler text. "
             "If the user says 'hi' or 'hello', give a minimal friendly greeting like 'Hi! How can I help you?' only.\n"
@@ -310,7 +426,7 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None,
         style_hint = "\nENFORCE STYLE: Use advanced academic terminology, terminal-level vocabulary, and assume the student is at a high-education level."
 
     prompt = (
-        SYSTEM_PROMPT
+        SYSTEM_PROMPT.format(date=datetime.now().strftime("%B %d, %Y"))
         + f"\nRESPONSE LANGUAGE: {language}. Respond ONLY in {language}."
         + "\nLearner mode: " + mode_key
         + "\nLevel: basic"
@@ -354,10 +470,10 @@ def get_ai_response_payload(question, online=True, mode="regular", context=None,
 
 
 def _call_ai_model(prompt):
-    """Helper to call Groq API safely."""
-    print(f"[DEBUG] Calling Groq with prompt length: {len(prompt)}")
+    """Helper to call Unified LLM (Gemini with Groq fallback) safely."""
+    print(f"[DEBUG] Calling Unified LLM with prompt length: {len(prompt)}")
     text, error_code = generate_text(prompt, temperature=0.5, max_output_tokens=1024)
-    print(f"[DEBUG] Groq result: {error_code}, text length: {len(text) if text else 0}")
+    print(f"[DEBUG] Unified LLM result: {error_code}, text length: {len(text) if text else 0}")
     return text, error_code
 
 
@@ -427,7 +543,7 @@ def generate_video_explanation(transcript_text, question="", learner_mode="regul
     # Handle Short mode for video
     if answer_style == "Short":
         prompt = (
-            f"You are a video lesson explainer. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
+            f"You are a video lesson explainer. Current Date: {datetime.now().strftime('%B %d, %Y')}. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
             "STRICT RULE: Provide a very brief answer based on the video transcript. 1-3 sentences total. "
             "No sections, no key points, no summary. Just the direct explanation.\n"
             "Optional question: " + (question.strip() if question else "Summarize the video.") + "\n"
@@ -443,7 +559,7 @@ def generate_video_explanation(transcript_text, question="", learner_mode="regul
         return _offline_video_explanation(transcript_text, question, mode_key)
 
     prompt = (
-        VIDEO_SYSTEM_PROMPT
+        VIDEO_SYSTEM_PROMPT.format(date=datetime.now().strftime("%B %d, %Y"))
         + f"\nRESPONSE LANGUAGE: {language}. Respond ONLY in {language}."
         + "\nLearner mode: " + mode_key
         + "\nLevel: " + level

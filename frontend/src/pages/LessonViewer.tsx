@@ -92,10 +92,12 @@ export default function LessonViewer() {
 
   if (!lesson) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">Loading lesson...</p>
+      <div className="min-h-screen bg-app-bg flex items-center justify-center p-4">
+        <div className="text-center animate-in fade-in duration-500">
+          <div className="w-24 h-24 rounded-3xl bg-blue-500/10 flex items-center justify-center text-blue-600 mx-auto mb-6 animate-pulse">
+            <BookOpen className="w-12 h-12" />
+          </div>
+          <p className="text-app-text-main font-black text-xl uppercase tracking-widest">Loading lesson...</p>
         </div>
       </div>
     );
@@ -104,96 +106,111 @@ export default function LessonViewer() {
   const showTextVersion = settings.themeAccessibility.accessibilityMode === 'Blind' || settings.themeAccessibility.accessibilityMode === 'Deaf';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-app-bg text-app-text-main py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+      <div className="max-w-5xl mx-auto space-y-10">
         {/* Header */}
-        <div className="mb-8">
+        <div className="space-y-6">
           <button
             onClick={() => navigate('/lessons')}
-            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 mb-4 transition-colors"
+            className="group flex items-center gap-3 text-app-text-sub hover:text-blue-500 transition-all font-black text-xs uppercase tracking-[0.2em]"
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium">Back to Lessons</span>
+            <div className="p-2 rounded-xl bg-app-bg-alt border border-app-border group-hover:bg-blue-500/10 group-hover:border-blue-500/20 transition-all">
+              <ArrowLeft className="w-4 h-4" />
+            </div>
+            Back to Learning Area
           </button>
           
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{lesson.title}</h1>
-          
-          {/* Upload Button */}
-          <div className="flex gap-3 mb-4">
-            <label className="cursor-pointer">
-              <input
-                type="file"
-                accept="application/pdf"
-                onChange={handlePdfUpload}
-                className="hidden"
-              />
-              <Button variant="outline" className="flex items-center gap-2">
-                <Upload className="w-5 h-5" />
-                Upload PDF
-              </Button>
-            </label>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-2">
+              <h1 className="text-5xl font-black text-app-text-main tracking-tight uppercase leading-[0.9]">{lesson.title}</h1>
+              <p className="text-app-text-sub font-bold text-sm uppercase tracking-[0.15em] opacity-70">Lesson Overview & Content</p>
+            </div>
             
-            {(settings.themeAccessibility.accessibilityMode === 'Blind' || settings.themeAccessibility.accessibilityMode === 'Deaf') && (
-              <Button
-                variant="success"
-                onClick={() => handleReadAloud(lesson.textVersion)}
-                className="flex items-center gap-2"
-              >
-                <Volume2 className="w-5 h-5" />
-                {isReading ? 'Stop Reading' : 'Read Aloud'}
-              </Button>
-            )}
+            <div className="flex flex-wrap gap-3">
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handlePdfUpload}
+                  className="hidden"
+                />
+                <Button 
+                  variant="primary" 
+                  className="flex items-center gap-3 px-6 py-4 rounded-2xl shadow-lg shadow-blue-500/20 text-xs font-black uppercase tracking-widest"
+                >
+                  <Upload className="w-5 h-5" />
+                  Update Lesson PDF
+                </Button>
+              </label>
+              
+              {(settings.themeAccessibility.accessibilityMode === 'Blind' || settings.themeAccessibility.accessibilityMode === 'Deaf') && (
+                <Button
+                  variant="success"
+                  onClick={() => handleReadAloud(lesson.textVersion)}
+                  className="flex items-center gap-3 px-6 py-4 rounded-2xl shadow-lg shadow-emerald-500/20 text-xs font-black uppercase tracking-widest"
+                >
+                  <Volume2 className={`w-5 h-5 ${isReading ? 'animate-pulse' : ''}`} />
+                  {isReading ? 'Stop Narrator' : 'Start Narrator'}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
         {/* AI Summary */}
-        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 mb-8 border border-indigo-200">
-          <div className="flex items-start gap-3 mb-3">
-            <FileText className="w-6 h-6 text-indigo-600 flex-shrink-0 mt-1" />
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">AI Summary</h2>
-              <p className="text-gray-700 leading-relaxed">{lesson.aiSummary}</p>
+        <div className="bg-app-bg-alt rounded-[2.5rem] p-4 border border-app-border shadow-sm group">
+          <div className="bg-app-bg rounded-4xl p-8 space-y-4 border border-app-border group-hover:border-indigo-500/20 transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-indigo-500/10 rounded-2xl text-indigo-600">
+                <FileText className="w-6 h-6" />
+              </div>
+              <h2 className="text-xl font-black text-app-text-main tracking-tight uppercase">AI Key Summary</h2>
+              {settings.themeAccessibility.accessibilityMode === 'Blind' && (
+                <button
+                  onClick={() => handleReadAloud(lesson.aiSummary)}
+                  className="ml-auto p-3 rounded-2xl bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500 hover:text-white transition-all"
+                >
+                  <Volume2 className="w-5 h-5" />
+                </button>
+              )}
             </div>
-            {settings.themeAccessibility.accessibilityMode === 'Blind' && (
-              <button
-                onClick={() => handleReadAloud(lesson.aiSummary)}
-                className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2"
-              >
-                <Volume2 className="w-4 h-4" />
-              </button>
-            )}
+            <p className="text-app-text-main leading-relaxed font-bold text-lg max-w-4xl">{lesson.aiSummary}</p>
           </div>
         </div>
 
         {/* Content Area */}
         {showTextVersion ? (
           /* Text Version for Accessibility */
-          <div className="bg-white rounded-xl p-8 shadow-md">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Lesson Content</h2>
-            <div className="prose prose-lg max-w-none">
-              <pre className="whitespace-pre-wrap font-sans text-gray-700 leading-relaxed">
+          <div className="bg-app-bg-alt rounded-[2.5rem] p-10 border border-app-border shadow-inner">
+            <h2 className="text-2xl font-black text-app-text-main mb-8 uppercase tracking-tight">Lesson Content</h2>
+            <div className="prose prose-slate prose-xl dark:prose-invert max-w-none">
+              <pre className="whitespace-pre-wrap font-sans text-app-text-main leading-relaxed font-bold">
                 {lesson.textVersion}
               </pre>
             </div>
           </div>
         ) : (
           /* PDF Viewer */
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="bg-app-bg-alt rounded-[2.5rem] p-3 border border-app-border shadow-2xl overflow-hidden ring-1 ring-app-border">
             {uploadedPdf || lesson.pdfUrl ? (
-              <iframe
-                src={uploadedPdf || lesson.pdfUrl}
-                className="w-full border-0"
-                style={{ height: '800px' }}
-                title={`${lesson.title} PDF`}
-              />
+              <div className="relative rounded-[1.8rem] overflow-hidden bg-app-bg">
+                <iframe
+                  src={uploadedPdf || lesson.pdfUrl}
+                  className="w-full border-0"
+                  style={{ height: '850px' }}
+                  title={`${lesson.title} PDF`}
+                />
+              </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
-                <Upload className="w-16 h-16 text-gray-400 mb-4" />
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  No PDF Available
+              <div className="flex flex-col items-center justify-center py-32 px-4 text-center bg-app-bg rounded-4xl">
+                <div className="w-24 h-24 rounded-3xl bg-app-bg-alt border border-app-border flex items-center justify-center text-app-text-muted mb-8 group-hover:scale-110 transition-transform">
+                  <Upload className="w-10 h-10" />
+                </div>
+                <h3 className="text-2xl font-black text-app-text-main mb-3 uppercase tracking-tight">
+                  No PDF Content Available
                 </h3>
-                <p className="text-gray-500 mb-6">
-                  Upload a PDF to view the lesson content
+                <p className="text-app-text-sub font-bold mb-10 max-w-md uppercase text-xs tracking-widest opacity-60">
+                  Please upload a PDF document to begin viewing this lesson's specialized content.
                 </p>
                 <label className="cursor-pointer">
                   <input
@@ -202,8 +219,8 @@ export default function LessonViewer() {
                     onChange={handlePdfUpload}
                     className="hidden"
                   />
-                  <Button variant="primary" className="flex items-center gap-2">
-                    <Upload className="w-5 h-5" />
+                  <Button variant="primary" className="flex items-center gap-4 px-10 py-5 rounded-4xl shadow-2xl shadow-blue-500/30 text-sm font-black uppercase tracking-[0.2em] transform active:scale-95 transition-all">
+                    <Upload className="w-6 h-6" />
                     Upload PDF Now
                   </Button>
                 </label>

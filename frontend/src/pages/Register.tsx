@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { UserPlus, Mail, Lock, User, ShieldCheck, AlertCircle } from 'lucide-react';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { authAPI } from '../services/api';
@@ -40,71 +41,96 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex items-center justify-center py-12">
+    <div className="min-h-screen bg-app-bg text-app-text-main flex items-center justify-center py-12 px-4 transition-colors duration-300">
       <div className="w-full max-w-md">
-        <Card>
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Create Account</h1>
-            <p className="text-gray-900 mt-2">Join RuralAccess AI today</p>
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-indigo-500/10 text-indigo-600 mb-6 shadow-sm ring-1 ring-indigo-500/20">
+            <UserPlus className="w-10 h-10" />
           </div>
+          <h1 className="text-4xl font-black text-app-text-main tracking-tight uppercase">Create Account</h1>
+          <p className="text-app-text-sub mt-3 font-bold uppercase text-xs tracking-widest">Join the LearnBridge community today</p>
+        </div>
 
+        <Card className="shadow-2xl border-app-border bg-app-bg-alt rounded-3xl overflow-hidden p-8">
           {errorMessage && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {errorMessage}
+            <div className="mb-6 rounded-2xl border-2 border-red-500/20 bg-red-500/10 px-5 py-4 text-sm text-red-600 font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+              <AlertCircle className="w-5 h-5 shrink-0" />
+              <span>{errorMessage}</span>
             </div>
           )}
 
           {successMessage && (
-            <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-              {successMessage}
+            <div className="mb-6 rounded-2xl border-2 border-emerald-500/20 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-600 font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+              <ShieldCheck className="w-5 h-5 shrink-0" />
+              <span>{successMessage}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Full Name</label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-app-text-muted group-focus-within:text-indigo-500 transition-colors">
+                  <User className="w-5 h-5" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
+                  required
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              />
+            <div className="space-y-2">
+              <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Email Address</label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-app-text-muted group-focus-within:text-indigo-500 transition-colors">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
+                  required
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              />
+            <div className="space-y-2">
+              <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Password</label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-app-text-muted group-focus-within:text-indigo-500 transition-colors">
+                  <Lock className="w-5 h-5" />
+                </div>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
+                  required
+                />
+              </div>
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating account...' : 'Sign Up'}
+            <Button type="submit" className="w-full py-5 rounded-2xl shadow-xl shadow-indigo-500/20 text-sm font-black uppercase tracking-widest" disabled={loading}>
+              {loading ? 'Creating account...' : 'Create Account Now'}
             </Button>
           </form>
 
-          <p className="text-center text-gray-900 mt-6">
-            Already have an account?{' '}
-            <Link to="/login" className="text-primary hover:underline">
-              Sign in
-            </Link>
-          </p>
+          <div className="mt-10 pt-8 border-t border-app-border text-center">
+            <p className="text-app-text-sub text-xs font-bold uppercase tracking-widest">
+              Already have an account?{' '}
+              <Link to="/login" className="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 underline decoration-2 underline-offset-4">
+                Sign In
+              </Link>
+            </p>
+          </div>
         </Card>
       </div>
     </div>

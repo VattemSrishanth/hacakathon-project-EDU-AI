@@ -23,7 +23,7 @@ function App() {
   return (
     <SettingsProvider>
       <AuthProvider>
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="min-h-screen flex flex-col bg-app-bg transition-colors duration-300">
         <OfflineBanner />
         <Navbar />
         <main className="flex-1">

@@ -4,6 +4,16 @@ import { useSettings } from '../context/SettingsContext';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { lessonsAPI } from '../services/api';
+import { 
+  BookOpen, 
+  Search, 
+  Filter, 
+  Clock, 
+  CheckCircle2, 
+  PlayCircle,
+  GraduationCap,
+  Sparkles
+} from 'lucide-react';
 
 interface Lesson {
   id: string;
@@ -24,6 +34,7 @@ const Lessons = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('All');
   const [progress, setProgress] = useState<Record<string, number>>({});
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Load lessons from API
   useEffect(() => {
@@ -42,27 +53,26 @@ const Lessons = () => {
 
     fetchLessons();
 
-    // Load progress from localStorage
     const savedProgress = localStorage.getItem('lesson_progress');
     if (savedProgress) {
       setProgress(JSON.parse(savedProgress));
     }
   }, []);
 
-  // Filter lessons by category
-  const filteredLessons = filter === 'All' 
-    ? lessons 
-    : lessons.filter(lesson => lesson.category === filter);
+  // Filter lessons
+  const filteredLessons = lessons.filter(lesson => {
+    const matchesCategory = filter === 'All' || lesson.category === filter;
+    const matchesSearch = lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          lesson.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
-  // Get unique categories
   const categories = ['All', ...Array.from(new Set(lessons.map(l => l.category)))];
 
-  // Handle start learning
   const handleStartLearning = (lessonId: string) => {
     navigate(`/lessons/${lessonId}`);
   };
 
-  // Handle mark progress
   const handleMarkProgress = (lessonId: string) => {
     const currentProgress = progress[lessonId] || 0;
     const newProgress = currentProgress >= 100 ? 0 : Math.min(currentProgress + 25, 100);
@@ -75,7 +85,6 @@ const Lessons = () => {
     setProgress(updatedProgress);
     localStorage.setItem('lesson_progress', JSON.stringify(updatedProgress));
 
-    // Speak progress if in blind mode
     if (settings.themeAccessibility.accessibilityMode === 'Blind' && 'speechSynthesis' in window) {
       const lesson = lessons.find(l => l.id === lessonId);
       const utterance = new SpeechSynthesisUtterance(
@@ -86,192 +95,165 @@ const Lessons = () => {
     }
   };
 
-  // Get progress color
   const getProgressColor = (percent: number) => {
-    if (percent === 0) return 'bg-gray-200';
-    if (percent < 50) return 'bg-yellow-400';
-    if (percent < 100) return 'bg-blue-500';
+    if (percent === 0) return 'bg-app-border';
+    if (percent < 50) return 'bg-secondary';
+    if (percent < 100) return 'bg-primary';
     return 'bg-green-500';
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 flex items-center justify-center">
+      <div className="min-h-screen bg-app-bg flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium">Loading lessons...</p>
+          <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-app-text-sub font-bold animate-pulse">Loading Lessons...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 py-8 px-4 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto relative">
-        {/* Accessibility Status Pill */}
-        {settings.themeAccessibility.accessibilityMode !== 'Normal' && (
-          <div className="absolute top-0 right-0 z-50 animate-fade-in">
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-full shadow-lg border border-white/20 backdrop-blur-sm flex items-center gap-3 hover:shadow-xl transition-all duration-300">
-              <div className="relative flex items-center">
-                <span className="absolute inline-flex h-4 w-4 rounded-full bg-white opacity-75 animate-ping"></span>
-                <span className="relative inline-flex rounded-full h-4 w-4 bg-white"></span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm font-bold uppercase tracking-wider">
-                  {settings.themeAccessibility.accessibilityMode}
-                </span>
-              </div>
-            </div>
+    <div className="min-h-screen bg-app-bg-alt py-12 px-4 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Header Section */}
+        <div className="text-center mb-16 space-y-4">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4">
+            <GraduationCap size={14} />
+            Learning Catalog
           </div>
-        )}
-
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            📚 {t.lessons.title}
+          <h1 className="text-5xl font-black text-app-text-main tracking-tight sm:text-6xl">
+            {t.lessons.title}
           </h1>
-          <p className="text-xl text-gray-700 dark:text-gray-200 max-w-2xl mx-auto font-medium">
+          <p className="text-xl text-app-text-sub max-w-2xl mx-auto font-medium">
             {t.lessons.subtitle}
           </p>
         </div>
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-3 mb-8">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setFilter(category)}
-              className={`px-6 py-2.5 rounded-full font-semibold transition-all duration-300 ${
-                filter === category
-                  ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-105'
-                  : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 hover:border-primary/30'
-              }`}
-              aria-label={`Filter by ${category}`}
-            >
-              {category}
-            </button>
-          ))}
+        {/* Controls Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+          {/* Search */}
+          <div className="lg:col-span-2 relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted group-focus-within:text-primary transition-colors" size={20} />
+            <input 
+              type="text"
+              placeholder="Search lessons..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-app-bg border border-app-border rounded-2xl py-4 pl-12 pr-4 text-app-text-main font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+            />
+          </div>
+
+          {/* Categories */}
+          <div className="lg:col-span-2 flex flex-wrap gap-2 items-center justify-center lg:justify-end">
+            <Filter size={18} className="text-app-text-muted mr-2" />
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setFilter(category)}
+                className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${
+                  filter === category
+                    ? 'bg-primary text-white shadow-lg shadow-primary/25 scale-105'
+                    : 'bg-app-bg text-app-text-main hover:bg-primary/5 hover:text-primary border border-app-border'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Lessons Grid */}
         {filteredLessons.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">📭</div>
-            <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">
-              {t.lessons.noLessons}
-            </p>
-          </div>
+          <Card className="py-20 text-center">
+            <div className="w-20 h-20 bg-app-bg-alt rounded-3xl flex items-center justify-center mx-auto mb-6 text-app-text-muted">
+              <Search size={40} />
+            </div>
+            <h3 className="text-2xl font-black text-app-text-main mb-2">No Lessons Found</h3>
+            <p className="text-app-text-sub font-medium">Try adjusting your filters or search query.</p>
+          </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredLessons.map((lesson) => {
               const lessonProgress = progress[lesson.id] || 0;
               
               return (
-                <Card key={lesson.id} hover className="flex flex-col">
-                  {/* Category Badge */}
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
-                      {lesson.category}
-                    </span>
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
-                      lesson.level === 'Beginner' ? 'bg-green-100 text-green-700 border border-green-200' :
-                      lesson.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
-                      'bg-red-100 text-red-700 border border-red-200'
-                    }`}>
-                      {lesson.level}
-                    </span>
-                  </div>
+                <Card key={lesson.id} hover className="group flex flex-col h-full overflow-hidden">
+                  {/* Decorative Header */}
+                  <div className="h-2 w-full bg-linear-to-r from-primary/40 to-secondary/40 absolute top-0 left-0" />
+                  
+                  <div className="pt-2">
+                    {/* Category & Level */}
+                    <div className="flex items-center justify-between mb-6">
+                      <span className="bg-primary/5 text-primary px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-primary/10">
+                        {lesson.category}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest border ${
+                        lesson.level === 'Beginner' ? 'bg-green-500/5 text-green-500 border-green-500/20' :
+                        lesson.level === 'Intermediate' ? 'bg-secondary/5 text-secondary border-secondary/20' :
+                        'bg-red-500/5 text-red-500 border-red-500/20'
+                      }`}>
+                        {lesson.level}
+                      </span>
+                    </div>
 
-                  {/* Title */}
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2">
-                    {lesson.title}
-                  </h3>
+                    <h3 className="text-2xl font-black text-app-text-main mb-4 leading-tight group-hover:text-primary transition-colors">
+                      {lesson.title}
+                    </h3>
 
-                  {/* Description */}
-                  <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow leading-relaxed">
-                    {lesson.description}
-                  </p>
+                    <p className="text-app-text-sub mb-6 grow font-medium leading-relaxed line-clamp-3">
+                      {lesson.description}
+                    </p>
 
-                  {/* Topics */}
-                  {lesson.topics && lesson.topics.length > 0 && (
-                    <div className="mb-4">
-                      <div className="flex flex-wrap gap-2">
-                        {lesson.topics.slice(0, 3).map((topic, idx) => (
-                          <span
-                            key={idx}
-                            className="text-xs px-2.5 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md font-medium border border-gray-200 dark:border-gray-600"
-                          >
-                            {topic}
-                          </span>
-                        ))}
-                        {lesson.topics.length > 3 && (
-                          <span className="text-xs px-2.5 py-1 text-gray-500 font-medium">
-                            +{lesson.topics.length - 3} more
-                          </span>
-                        )}
+                    {/* Meta Info */}
+                    <div className="flex items-center gap-4 text-app-text-muted mb-6">
+                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider">
+                        <Clock size={14} className="text-primary" />
+                        {lesson.duration}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider">
+                        <BookOpen size={14} className="text-secondary" />
+                        {lesson.topics?.length || 0} Topics
                       </div>
                     </div>
-                  )}
 
-                  {/* Duration */}
-                  <div className="flex items-center text-gray-600 dark:text-gray-400 mb-4 text-sm font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {lesson.duration}
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
-                        Progress
-                      </span>
-                      <span className="text-xs font-bold text-primary">
-                        {lessonProgress}%
-                      </span>
+                    {/* Progress */}
+                    <div className="space-y-3 mb-8">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-black text-app-text-muted uppercase tracking-widest">Progress</span>
+                        <span className="text-xs font-black text-primary">{lessonProgress}%</span>
+                      </div>
+                      <div className="w-full bg-app-bg-alt rounded-full h-2.5 p-0.5 border border-app-border overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-1000 ${getProgressColor(lessonProgress)}`}
+                          style={{ width: `${lessonProgress}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-                      <div
-                        className={`h-full transition-all duration-500 ${getProgressColor(lessonProgress)}`}
-                        style={{ width: `${lessonProgress}%` }}
-                      ></div>
-                    </div>
-                  </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 mt-auto">
-                    <Button
-                      variant="primary"
-                      onClick={() => handleStartLearning(lesson.id)}
-                      className="flex-1 flex items-center justify-center gap-2 font-semibold"
-                      aria-label={`Start learning ${lesson.title}`}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Start Learning
-                    </Button>
-                    <Button
-                      variant={lessonProgress >= 100 ? 'primary' : 'outline'}
-                      onClick={() => handleMarkProgress(lesson.id)}
-                      className="flex items-center justify-center px-4 font-semibold"
-                      aria-label={`Mark progress for ${lesson.title}`}
-                    >
-                      {lessonProgress >= 100 ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                      )}
-                    </Button>
+                    {/* Actions */}
+                    <div className="flex gap-3 pt-4 border-t border-app-border">
+                      <Button
+                        variant="primary"
+                        onClick={() => handleStartLearning(lesson.id)}
+                        className="flex-1 rounded-xl py-3 flex items-center justify-center gap-2 group/btn font-black uppercase tracking-widest text-[10px]"
+                      >
+                        <PlayCircle size={16} className="transition-transform group-hover/btn:scale-110" />
+                        Start Learning
+                      </Button>
+                      <button
+                        onClick={() => handleMarkProgress(lesson.id)}
+                        className={`w-12 flex items-center justify-center rounded-xl border-2 transition-all duration-300 ${
+                          lessonProgress >= 100 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'bg-app-bg border-app-border text-app-text-muted hover:border-primary hover:text-primary'
+                        }`}
+                        title="Mark progress"
+                      >
+                        {lessonProgress >= 100 ? <CheckCircle2 size={20} /> : <Sparkles size={20} />}
+                      </button>
+                    </div>
                   </div>
                 </Card>
               );
@@ -282,4 +264,5 @@ const Lessons = () => {
     </div>
   );
 };
+
 export default Lessons;

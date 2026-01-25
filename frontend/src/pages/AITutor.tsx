@@ -5,6 +5,21 @@ import Button from '../components/Button';
 import type { ChatMessage } from '../types';
 import { aiAPI } from '../services/api';
 import { useSettings } from '../context/SettingsContext';
+import { 
+  Plus, 
+  Send, 
+  Mic, 
+  Trash2, 
+  History, 
+  PanelLeftClose, 
+  PanelLeftOpen,
+  Image as ImageIcon,
+  FileText,
+  Youtube,
+  MessageSquare,
+  Sparkles,
+  X
+} from 'lucide-react';
 
 const CHAT_SESSIONS_KEY = 'ai_chat_sessions';
 
@@ -215,8 +230,12 @@ const AITutor = () => {
         role: 'user',
         content: activeInput,
         timestamp: new Date(),
+        imageUrl: fileContext?.type === 'image' ? fileContext.data : undefined,
+        attachmentType: fileContext?.type ?? undefined,
+        attachmentTitle: fileContext?.name,
       }, offlineMsg]);
       setInput('');
+      // Keep file context for retry/follow-up even in offline mode
       return;
     }
 
@@ -225,10 +244,18 @@ const AITutor = () => {
       role: 'user',
       content: activeInput,
       timestamp: new Date(),
+      imageUrl: fileContext?.type === 'image' ? fileContext.data : undefined,
+      attachmentType: fileContext?.type ?? undefined,
+      attachmentTitle: fileContext?.name,
     };
+
+    // Save current file context for the request
+    const currentContext = fileContext;
 
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
+    // We KEEP the fileContext active so it's sent along with follow-up questions.
+    // The user can manually clear it using the 'X' button in the UI.
     setLoading(true);
 
     try {
@@ -241,7 +268,7 @@ const AITutor = () => {
       const response = await aiAPI.ask(
         activeInput, 
         'regular', 
-        fileContext, 
+        currentContext, 
         true, 
         settings.learning.language,
         answerStyle
@@ -297,20 +324,6 @@ const AITutor = () => {
     const reader = new FileReader();
     reader.onload = () => {
       const base64 = reader.result as string;
-      const userMsg: ChatMessage = {
-        id: Date.now().toString(),
-        role: 'user',
-        content: 'Image uploaded.',
-        imageUrl: base64,
-        attachmentType: 'image',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, userMsg, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: "File uploaded. What would you like to do with this image?",
-        timestamp: new Date(),
-      }]);
       setFileContext({ type: 'image', data: base64, name: file.name });
     };
     reader.onerror = () => {
@@ -343,22 +356,8 @@ const AITutor = () => {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const text = (reader.result as string).slice(0, 5000); 
-      const userMsg: ChatMessage = {
-        id: Date.now().toString(),
-        role: 'user',
-        content: `PDF uploaded: ${file.name}`,
-        attachmentType: 'pdf',
-        attachmentTitle: file.name,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, userMsg, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: "File uploaded. What would you like to do with this document?",
-        timestamp: new Date(),
-      }]);
-      setFileContext({ type: 'pdf', data: text, name: file.name });
+      const base64 = reader.result as string; 
+      setFileContext({ type: 'pdf', data: base64, name: file.name });
     };
     reader.onerror = () => {
       setMessages(prev => [...prev, {
@@ -368,53 +367,8 @@ const AITutor = () => {
         timestamp: new Date(),
       }]);
     };
-    reader.readAsText(file);
+    reader.readAsDataURL(file);
     if (e.target) e.target.value = '';
-  };
-
-  const handleYoutubePrompt = async () => {
-    setPlusMenuOpen(false);
-    const url = prompt("Please enter a YouTube URL:");
-    if (!url) return;
-
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
-    if (!youtubeRegex.test(url)) {
-      const errorMsg: ChatMessage = {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: "I'm sorry, but that YouTube URL appears to be invalid. Please provide a full link to a public video.",
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, errorMsg]);
-      return;
-    }
-
-    if (!navigator.onLine) {
-      const offlineMsg: ChatMessage = {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: "I'm sorry, but video analysis requires an active internet connection. Please connect to the internet and try again.",
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, offlineMsg]);
-      return;
-    }
-
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: `Analyze this video: ${url}`,
-      attachmentType: 'youtube',
-      attachmentTitle: url,
-      timestamp: new Date(),
-    };
-    setMessages(prev => [...prev, userMsg, {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: "Video linked. What would you like to know about this video?",
-      timestamp: new Date(),
-    }]);
-    setFileContext({ type: 'youtube', data: url, name: 'YouTube Video' });
   };
 
   const createNewChat = () => {
@@ -454,22 +408,24 @@ const AITutor = () => {
   // If AI Tutor is disabled, show a message
   if (!enabled) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">{t.aiTutor.title}</h1>
-            <p className="text-gray-900 mt-2">{t.aiTutor.subtitle}</p>
-          </div>
-
-          <Card className="h-100 flex flex-col items-center justify-center">
-            <div className="text-center">
-              <div className="text-6xl mb-4">🤖</div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.aiTutor.disabled}</h2>
-              <p className="text-gray-700 mb-4">{t.aiTutor.disabledMessage}</p>
-              <Link to="/settings">
-                <Button variant="primary">{t.nav.settings}</Button>
-              </Link>
+      <div className="min-h-screen bg-app-bg-alt py-12 px-4 flex items-center justify-center transition-colors duration-300">
+        <div className="max-w-xl w-full">
+          <Card className="p-12 text-center border-2 border-app-border bg-app-bg shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-primary to-secondary" />
+            <div className="w-24 h-24 bg-app-bg-alt rounded-3xl flex items-center justify-center mx-auto mb-8 text-app-text-muted group-hover:scale-110 transition-transform duration-500">
+              <Sparkles size={48} className="opacity-20" />
             </div>
+            <h1 className="text-3xl font-black text-app-text-main mb-4 tracking-tight">
+              {t.aiTutor.disabled}
+            </h1>
+            <p className="text-app-text-sub mb-10 font-medium leading-relaxed">
+              {t.aiTutor.disabledMessage}
+            </p>
+            <Link to="/settings" className="block">
+              <Button variant="primary" className="w-full py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-primary/25">
+                Go to Settings
+              </Button>
+            </Link>
           </Card>
         </div>
       </div>
@@ -477,65 +433,96 @@ const AITutor = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex gap-6">
-          {/* History Sidebar */}
-          <div className={`${sidebarOpen ? 'w-72' : 'w-0'} transition-all duration-300 overflow-hidden flex-shrink-0`}>
-            <div className="bg-white rounded-lg shadow-md p-4 h-full">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-900">Chat History</h2>
+    <div className="min-h-screen bg-app-bg-alt py-12 px-4 transition-colors duration-300">
+      {/* Hidden File Inputs */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleImageUpload}
+        accept="image/*"
+        className="hidden"
+      />
+      <input
+        type="file"
+        ref={pdfInputRef}
+        onChange={handlePdfUpload}
+        accept="application/pdf"
+        className="hidden"
+      />
+
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-8 h-187.5 max-h-[85vh]">
+          
+          {/* Sidebar - Chat History */}
+          <div 
+            className={`
+              ${sidebarOpen ? 'w-full lg:w-80' : 'w-0'} 
+              transition-all duration-300 overflow-hidden shrink-0 flex flex-col
+              bg-app-bg rounded-3xl border border-app-border shadow-xl
+            `}
+          >
+            <div className="p-6 flex flex-col h-full">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <History size={18} />
+                  </div>
+                  <h2 className="text-xl font-black text-app-text-main tracking-tight">History</h2>
+                </div>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-1 hover:bg-gray-100 rounded-lg text-gray-500"
-                  title="Close sidebar"
+                  className="p-2 hover:bg-app-bg-alt rounded-xl text-app-text-muted transition-colors lg:block hidden"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <PanelLeftClose size={20} />
                 </button>
               </div>
 
               <button
                 onClick={createNewChat}
-                className="w-full mb-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-indigo-600 transition-colors flex items-center justify-center gap-2 font-medium"
+                className="w-full mb-8 px-6 py-4 bg-primary text-white rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/25"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                New Chat
+                <Plus size={18} />
+                New Conversation
               </button>
 
-              <div className="space-y-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 250px)' }}>
+              <div className="flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar">
                 {chatSessions.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-8">No chat history yet</p>
+                  <div className="text-center py-12 px-4 flex flex-col items-center gap-4 border-2 border-dashed border-app-border rounded-2xl">
+                    <MessageSquare size={32} className="text-app-text-muted/30" />
+                    <p className="text-sm font-bold text-app-text-muted">No conversations yet</p>
+                  </div>
                 ) : (
                   chatSessions.map((session) => (
                     <div
                       key={session.id}
-                      className={`group relative p-3 rounded-lg cursor-pointer transition-colors ${
-                        session.id === currentSessionId
-                          ? 'bg-primary/10 border border-primary/20'
-                          : 'bg-gray-50 hover:bg-gray-100 border border-transparent'
-                      }`}
+                      className={`
+                        group relative p-4 rounded-2xl cursor-pointer transition-all duration-200 border
+                        ${session.id === currentSessionId
+                          ? 'bg-primary/5 border-primary/20 ring-1 ring-primary/10'
+                          : 'bg-app-bg-alt border-transparent hover:border-app-border shadow-sm'
+                        }
+                      `}
                       onClick={() => loadSession(session)}
                     >
-                      <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
+                          <p className={`text-sm font-black truncate ${session.id === currentSessionId ? 'text-primary' : 'text-app-text-main'}`}>
                             {session.title}
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {new Date(session.timestamp).toLocaleDateString()}
+                          <p className="text-[10px] font-bold text-app-text-muted mt-1 uppercase tracking-widest">
+                            {new Date(session.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                           </p>
                         </div>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (confirm('Delete this chat?')) {
+                            if (confirm('Delete this conversation?')) {
                               deleteSession(session.id);
                             }
                           }}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 rounded text-red-500 transition-opacity"
-                          title="Delete chat"
+                          className={`${session.id === currentSessionId ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 p-1.5 hover:bg-red-500/10 rounded-lg text-red-500 transition-all`}
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </div>
@@ -546,191 +533,217 @@ const AITutor = () => {
           </div>
 
           {/* Main Chat Area */}
-          <div className="flex-1">
-            {!sidebarOpen && (
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="mb-4 px-4 py-2 bg-white rounded-lg shadow-md hover:bg-gray-50 transition-colors flex items-center gap-2 text-gray-700 font-medium"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                Show History
-              </button>
-            )}
-
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">{t.aiTutor.title}</h1>
-              <p className="text-gray-900 mt-2">{t.aiTutor.subtitle}</p>
-              <div className="mt-2 text-sm text-gray-600">
-                {t.settings.aiTutorSettings.answerStyle}: {answerStyle === 'Short' ? t.settings.aiTutorSettings.short : t.settings.aiTutorSettings.detailed}
-              </div>
-            </div>
-
-        <Card className="h-150 flex flex-col">
-          <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg whitespace-pre-wrap ${
-                    message.role === 'user' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-900'
-                  }`}
-                >
-                  {message.imageUrl && (
-                    <img src={message.imageUrl} alt="Attached" className="max-w-full rounded mb-2 border border-white/20" />
-                  )}
-                  {message.attachmentType === 'pdf' && (
-                    <div className="flex items-center gap-2 mb-2 p-2 bg-black/10 rounded">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                      <span className="text-xs font-medium truncate">{message.attachmentTitle}</span>
-                    </div>
-                  )}
-                  {message.attachmentType === 'youtube' && (
-                    <div className="flex items-center gap-2 mb-2 p-2 bg-black/10 rounded">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
-                      <span className="text-xs font-medium truncate">YouTube Video</span>
-                    </div>
-                  )}
-                  {message.content}
-                </div>
-              </div>
-            ))}
-            {loading && (
-              <div className="flex justify-start">
-                <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-gray-100 text-gray-900">
-                  <span className="animate-pulse">Analyzing context...</span>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <div className="p-4 border-t border-gray-200">
-            {fileContext && (
-              <div className="mb-2 p-2 bg-indigo-50 rounded-lg flex items-center justify-between border border-indigo-100 animate-in slide-in-from-bottom-1 popup-interactive">
-                <div className="flex items-center gap-2 text-xs text-indigo-700 font-bold uppercase tracking-wider">
-                  <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                  Active Context: {fileContext.name}
-                </div>
-                <button 
-                  onClick={() => setFileContext(null)}
-                  className="p-1 hover:bg-indigo-100 rounded-full text-indigo-500 transition-colors"
-                  title="Remove context"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-              </div>
-            )}
+          <div className="flex-1 flex flex-col min-w-0 bg-app-bg rounded-3xl border border-app-border shadow-xl overflow-hidden relative">
             
-            <div className="flex gap-2 relative">
-              <div className="relative flex items-center">
-                <button
-                  onClick={() => setPlusMenuOpen(!plusMenuOpen)}
-                  className="p-2 text-gray-500 hover:text-primary transition-colors bg-gray-100 rounded-lg"
-                  title="Add attachment"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-
-                {plusMenuOpen && (
-                  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-bottom-2 popup-interactive">
-                    <button
-                      onClick={() => { fileInputRef.current?.click(); setPlusMenuOpen(false); }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 flex items-center gap-2"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                      Upload Image
-                    </button>
-                    <button
-                      onClick={() => { pdfInputRef.current?.click(); setPlusMenuOpen(false); }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 flex items-center gap-2"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                      Upload PDF
-                    </button>
-                    <button
-                      onClick={handleYoutubePrompt}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 flex items-center gap-2"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
-                      Add YouTube URL
-                    </button>
-                    <div className="border-t border-gray-100 my-1"></div>
-                    <button
-                      onClick={createNewChat}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 flex items-center gap-2"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                      New Chat
-                    </button>
-                    <button
-                      onClick={() => { setMessages([{ id: '1', role: 'assistant', content: t.aiTutor.greeting, timestamp: new Date() }]); setFileContext(null); setPlusMenuOpen(false); }}
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                      Clear Current Chat
-                    </button>
-                  </div>
+            {/* Chat Header */}
+            <div className="p-4 md:p-6 border-b border-app-border flex items-center justify-between bg-app-bg z-10 sticky top-0 backdrop-blur-md bg-opacity-80">
+              <div className="flex items-center gap-4">
+                {!sidebarOpen && (
+                  <button
+                    onClick={() => setSidebarOpen(true)}
+                    className="p-2 bg-app-bg-alt rounded-xl hover:bg-app-border transition-colors text-app-text-muted"
+                  >
+                    <PanelLeftOpen size={20} />
+                  </button>
                 )}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center text-white shadow-lg">
+                    <Sparkles size={20} />
+                  </div>
+                  <div>
+                    <h1 className="text-lg md:text-xl font-black text-app-text-main tracking-tight leading-none">
+                      {t.aiTutor.title}
+                    </h1>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">
+                        AI Model Online
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageUpload}
-                accept="image/*"
-                className="hidden"
-              />
-              <input
-                type="file"
-                ref={pdfInputRef}
-                onChange={handlePdfUpload}
-                accept="application/pdf"
-                className="hidden"
-              />
+              {/* Status Info */}
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-app-bg-alt rounded-lg border border-app-border">
+                <span className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">
+                  Style:
+                </span>
+                <span className="text-[10px] font-black text-primary uppercase tracking-widest">
+                  {answerStyle}
+                </span>
+              </div>
+            </div>
 
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder={fileContext ? `Ask about "${fileContext.name}"...` : t.aiTutor.placeholder}
-                  className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                  disabled={loading || isRecording}
-                />
-                <button
-                  onClick={startVoiceInput}
-                  disabled={loading || accessibilityMode === 'Dumb'}
-                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full transition-all ${
-                    isRecording 
-                      ? 'bg-red-500 text-white animate-pulse' 
-                      : 'text-gray-400 hover:text-primary hover:bg-gray-100'
-                  } ${accessibilityMode === 'Dumb' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  title={isRecording ? 'Stop recording' : 'Voice input'}
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 custom-scrollbar">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  {isRecording ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                      <rect x="6" y="6" width="12" height="12" rx="2"/>
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                      <line x1="12" y1="19" x2="12" y2="23"></line>
-                      <line x1="8" y1="23" x2="16" y2="23"></line>
-                    </svg>
+                  <div className={`flex flex-col ${message.role === 'user' ? 'items-end' : 'items-start'} max-w-[85%] sm:max-w-[70%]`}>
+                    <div
+                      className={`
+                        px-6 py-4 rounded-3xl whitespace-pre-wrap text-sm md:text-base leading-relaxed relative
+                        ${message.role === 'user' 
+                          ? 'bg-primary text-white rounded-br-none shadow-lg shadow-primary/20 font-medium' 
+                          : 'bg-app-bg-alt text-app-text-main rounded-bl-none border border-app-border'
+                        }
+                      `}
+                    >
+                      {message.imageUrl && (
+                        <div className="mb-4 rounded-2xl overflow-hidden border border-white/10 shadow-md">
+                          <img src={message.imageUrl} alt="Context" className="w-full h-auto object-cover" />
+                        </div>
+                      )}
+                      {message.attachmentType === 'pdf' && (
+                        <div className="flex items-center gap-3 mb-4 p-3 bg-black/10 rounded-2xl border border-white/5">
+                          <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center text-red-500">
+                            <FileText size={18} />
+                          </div>
+                          <span className="text-xs font-black truncate">{message.attachmentTitle}</span>
+                        </div>
+                      )}
+                      {message.attachmentType === 'youtube' && (
+                        <div className="flex items-center gap-3 mb-4 p-3 bg-black/10 rounded-2xl border border-white/5">
+                          <div className="w-8 h-8 rounded-lg bg-red-500 flex items-center justify-center text-white">
+                            <Youtube size={18} />
+                          </div>
+                          <span className="text-xs font-black truncate">YouTube: {message.attachmentTitle}</span>
+                        </div>
+                      )}
+                      {message.content}
+                    </div>
+                    <span className="text-[10px] font-bold text-app-text-muted mt-2 uppercase tracking-widest px-2">
+                      {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="bg-app-bg-alt border border-app-border rounded-3xl rounded-bl-none p-4 flex items-center gap-3">
+                    <div className="flex gap-1">
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce"></div>
+                    </div>
+                    <span className="text-xs font-black text-app-text-muted uppercase tracking-widest">Studying Context...</span>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Chat Input Area */}
+            <div className="p-4 md:p-6 bg-app-bg border-t border-app-border">
+              {/* File Context Indicator */}
+              {fileContext && (
+                <div className="mb-4 p-3 bg-primary/5 rounded-2xl flex items-center justify-between border border-primary/10 animate-in slide-in-from-bottom-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+                      {fileContext.type === 'image' ? <ImageIcon size={16} /> : <FileText size={16} />}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-primary uppercase tracking-widest">Active Context</p>
+                      <p className="text-xs font-bold text-app-text-main truncate max-w-50">{fileContext.name}</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setFileContext(null)}
+                    className="p-1.5 hover:bg-primary/10 rounded-lg text-primary transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+              
+              <div className="flex items-end gap-3 relative">
+                {/* Plus Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => setPlusMenuOpen(!plusMenuOpen)}
+                    className={`
+                      p-3.5 rounded-2xl transition-all duration-300
+                      ${plusMenuOpen ? 'bg-primary text-white rotate-45' : 'bg-app-bg-alt text-app-text-muted hover:text-primary border border-app-border'}
+                    `}
+                  >
+                    <Plus size={20} />
+                  </button>
+
+                  {plusMenuOpen && (
+                    <div className="absolute bottom-full left-0 mb-4 w-56 bg-app-bg rounded-2xl shadow-2xl border border-app-border py-3 z-50 animate-in fade-in slide-in-from-bottom-4">
+                      <button
+                        onClick={() => { fileInputRef.current?.click(); setPlusMenuOpen(false); }}
+                        className="w-full text-left px-4 py-3 text-sm font-bold text-app-text-main hover:bg-app-bg-alt flex items-center gap-3 transition-colors"
+                      >
+                        <ImageIcon size={18} className="text-primary" />
+                        Analyze Image
+                      </button>
+                      <button
+                        onClick={() => { pdfInputRef.current?.click(); setPlusMenuOpen(false); }}
+                        className="w-full text-left px-4 py-3 text-sm font-bold text-app-text-main hover:bg-app-bg-alt flex items-center gap-3 transition-colors"
+                      >
+                        <FileText size={18} className="text-red-500" />
+                        Read PDF Document
+                      </button>
+                      <div className="h-px bg-app-border mx-3 my-2" />
+                      <button
+                        className="w-full text-left px-4 py-3 text-sm font-bold text-app-text-main hover:bg-app-bg-alt flex items-center gap-3 transition-colors opacity-50 cursor-not-allowed"
+                      >
+                        <Youtube size={18} className="text-red-600" />
+                        Video Analysis
+                      </button>
+                    </div>
                   )}
+                </div>
+
+                {/* Textarea */}
+                <div className="flex-1 relative group">
+                  <textarea
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSend();
+                      }
+                    }}
+                    placeholder="Ask LearnBridge AI..."
+                    className="w-full bg-app-bg-alt border border-app-border rounded-2xl py-3.5 pl-4 pr-12 text-app-text-main font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none max-h-32 min-h-13 custom-scrollbar"
+                    rows={1}
+                  />
+                  
+                  {/* Voice Button */}
+                  <button
+                    onClick={startVoiceInput}
+                    className={`
+                      absolute right-2 bottom-2 p-2 rounded-xl transition-all duration-300
+                      ${isRecording ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/20' : 'text-app-text-muted hover:text-primary'}
+                    `}
+                  >
+                    <Mic size={18} />
+                  </button>
+                </div>
+
+                {/* Send Button */}
+                <button
+                  onClick={() => handleSend()}
+                  disabled={loading || (!input.trim() && !fileContext)}
+                  className={`
+                    p-3.5 rounded-2xl transition-all duration-300 shadow-lg
+                    ${loading || (!input.trim() && !fileContext)
+                      ? 'bg-app-bg-alt text-app-text-muted border border-app-border cursor-not-allowed grayscale'
+                      : 'bg-primary text-white hover:scale-105 active:scale-95 shadow-primary/25'
+                    }
+                  `}
+                >
+                  <Send size={20} />
                 </button>
               </div>
-
-              <Button onClick={() => handleSend()} disabled={loading || (!input.trim() && !fileContext)}>
-                {loading ? t.aiTutor.sending : t.aiTutor.send}
-              </Button>
             </div>
-          </div>
-        </Card>
           </div>
         </div>
       </div>

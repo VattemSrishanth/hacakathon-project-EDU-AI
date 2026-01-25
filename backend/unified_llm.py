@@ -20,7 +20,8 @@ def generate_text(prompt, temperature=0.5, max_output_tokens=512, **kwargs):
         tuple: (generated_text, error_code)
     """
     # 1. Attempt Primary Provider: Google Gemini
-    print("[unified_llm] Attempting generation with Primary Provider (Gemini)...")
+    print(f"[unified_llm] --- NEW REQUEST ---")
+    print("[unified_llm] Attempting Primary Provider: Gemini...")
     text, error_code = llm_service.generate_text(
         prompt, 
         temperature=temperature, 
@@ -40,7 +41,7 @@ def generate_text(prompt, temperature=0.5, max_output_tokens=512, **kwargs):
     
     # 2. Determine if Fallback is Necessary
     if error_code in SHOULD_FALLBACK:
-        print(f"[unified_llm] Gemini failed ({error_code}). Falling back to Backup Provider (Groq)...")
+        print(f"[unified_llm] Gemini failed with code: {error_code}. Falling back to Groq...")
         
         # 3. Attempt Backup Provider: Groq
         fallback_text, fallback_error = groq_service.generate_text(
@@ -50,14 +51,18 @@ def generate_text(prompt, temperature=0.5, max_output_tokens=512, **kwargs):
         )
         
         if fallback_error == "ok":
-            print("[unified_llm] Groq fallback successful.")
+            print("[unified_llm] Groq fallback successful. Result from Groq (Llama).")
             return fallback_text, "ok"
         else:
-            print(f"[unified_llm] Groq fallback also failed with: {fallback_error}")
-            # Return the original error or the new one
+            print(f"[unified_llm] Groq fallback also failed: {fallback_error}")
             return fallback_text, fallback_error
             
-    # 3. If Gemini succeeded or failed with a non-fallback error (like 'blocked'), return result
+    # 3. If Gemini succeeded
+    if error_code == "ok":
+        print("[unified_llm] Gemini success. Result from Gemini-Flash.")
+    else:
+        print(f"[unified_llm] Gemini returned non-fallback error code: {error_code}")
+        
     return text, error_code
 
 def generate_vision_text(prompt, image_data, **kwargs):

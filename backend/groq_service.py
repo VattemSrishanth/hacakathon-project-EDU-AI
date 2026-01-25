@@ -193,6 +193,14 @@ def generate_vision_text(prompt, base64_image, model_name=VISION_MODEL, temperat
             image_data = base64_image.split(",")[1]
         else:
             image_data = base64_image
+            
+        # Strip all whitespace and fix padding
+        image_data = "".join(image_data.split())
+        padding_needed = len(image_data) % 4
+        if padding_needed == 1:
+            image_data = image_data[:-1]
+        elif padding_needed > 1:
+            image_data += "=" * (4 - padding_needed)
 
         client = Groq(api_key=api_key)
         response = client.chat.completions.create(

@@ -149,4 +149,12 @@ export const healthAPI = {
   },
 };
 
+// Voice API
+export const voiceAPI = {
+  tts: async (text: string) => {
+    const response = await api.post('/tts', { text }, { responseType: 'arraybuffer' });
+    return response.data;
+  },
+};
+
 export default api;

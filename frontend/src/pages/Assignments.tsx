@@ -1,11 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { useSettings } from '../context/SettingsContext';
 import Card from '../components/Card';
 import Button from '../components/Button';
+import { ClipboardList, Clock, CheckCircle2, AlertCircle, ArrowLeft, Calendar, FileText } from 'lucide-react';
 
 const Assignments = () => {
   const navigate = useNavigate();
-  useSettings();
 
   const sampleAssignments = [
     {
@@ -13,70 +12,101 @@ const Assignments = () => {
       title: 'Mathematics: Algebra Basics',
       description: 'Solve the first 10 problems in the Algebra workbook. Focus on linear equations and variables.',
       dueDate: 'Jan 30, 2026',
-      status: 'Pending'
+      status: 'Pending',
+      category: 'Math'
     },
     {
       id: 2,
       title: 'Science: Ecosystems Report',
       description: 'Write a short report on the local ecosystem. Mention 3 native plants and animals.',
       dueDate: 'Feb 05, 2026',
-      status: 'Submitted'
+      status: 'Submitted',
+      category: 'Science'
     },
     {
       id: 3,
       title: 'English: Narrative Essay',
       description: 'Write a 200-word story about a personal experience using the past tense correctly.',
       dueDate: 'Feb 10, 2026',
-      status: 'Pending'
+      status: 'Pending',
+      category: 'Language'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Assignments</h1>
-            <p className="text-gray-600 mt-2">Track your academic tasks and deadlines here.</p>
+    <div className="min-h-screen bg-app-bg-alt py-12 px-4 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto">
+        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-lg shadow-primary/5">
+              <ClipboardList size={32} />
+            </div>
+            <div>
+              <h1 className="text-4xl font-black text-app-text-main tracking-tight">Assignments</h1>
+              <p className="text-app-text-sub font-bold uppercase tracking-widest text-[10px] mt-1">Track your academic tasks and deadlines</p>
+            </div>
           </div>
-          <Button variant="outline" onClick={() => navigate('/lessons')} className="w-fit">
-            Back to Lessons
+          <Button variant="outline" onClick={() => navigate('/lessons')} className="w-fit flex items-center gap-2 font-black uppercase tracking-widest text-xs border-app-border bg-app-bg text-app-text-main hover:bg-app-bg-alt">
+            <ArrowLeft size={16} /> Back to Learning
           </Button>
-        </div>
+        </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {sampleAssignments.map((assignment) => (
-            <Card key={assignment.id} className="popup-interactive flex flex-col h-full border border-gray-100">
+            <Card key={assignment.id} className="group relative flex flex-col h-full bg-app-bg border border-app-border rounded-3xl p-8 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
               <div className="flex-1">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-bold text-gray-900">{assignment.title}</h3>
+                <div className="flex justify-between items-start mb-6">
+                  <span className="px-3 py-1 bg-app-bg-alt rounded-lg text-[10px] font-black uppercase tracking-widest text-primary border border-primary/10">
+                    {assignment.category}
+                  </span>
+                  {assignment.status === 'Submitted' ? (
+                    <CheckCircle2 size={20} className="text-emerald-500" />
+                  ) : (
+                    <Clock size={20} className="text-amber-500 animate-pulse" />
+                  )}
                 </div>
-                <p className="text-gray-600 text-sm mb-4 italic">{assignment.description}</p>
+                
+                <h3 className="text-xl font-black text-app-text-main tracking-tight mb-4 group-hover:text-primary transition-colors">
+                  {assignment.title}
+                </h3>
+                
+                <div className="flex items-start gap-3 p-4 bg-app-bg-alt rounded-2xl border border-app-border mb-6">
+                  <FileText size={18} className="text-app-text-muted shrink-0 mt-1" />
+                  <p className="text-sm font-medium text-app-text-muted leading-relaxed">
+                    {assignment.description}
+                  </p>
+                </div>
               </div>
               
-              <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-500 font-medium font-bold uppercase tracking-wider text-[10px]">Due Date</span>
-                  <span className="text-gray-900 font-semibold">{assignment.dueDate}</span>
+              <div className="space-y-4 pt-6 border-t border-app-border">
+                <div className="flex justify-between items-center px-2">
+                  <div className="flex items-center gap-2 text-app-text-muted font-black uppercase tracking-widest text-[10px]">
+                    <Calendar size={14} /> Due Date
+                  </div>
+                  <span className="text-sm font-black text-app-text-main">{assignment.dueDate}</span>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-500 font-medium font-bold uppercase tracking-wider text-[10px]">Status</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+
+                <div className="flex justify-between items-center px-2">
+                  <div className="flex items-center gap-2 text-app-text-muted font-black uppercase tracking-widest text-[10px]">
+                    <AlertCircle size={14} /> Status
+                  </div>
+                  <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm ${
                     assignment.status === 'Submitted' 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-amber-100 text-amber-700'
+                      ? 'bg-emerald-500 text-white shadow-emerald-500/20' 
+                      : 'bg-amber-500 text-white shadow-amber-500/20'
                   }`}>
                     {assignment.status}
                   </span>
                 </div>
+
                 {assignment.status === 'Pending' ? (
-                  <Button variant="primary" className="w-full mt-2 py-2 text-sm">
-                    Submit Now
+                  <Button variant="primary" className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/25 mt-4">
+                    Submit Project
                   </Button>
                 ) : (
-                  <Button variant="outline" disabled className="w-full mt-2 py-2 text-sm border-gray-200 text-gray-400">
-                    Completed
-                  </Button>
+                  <div className="w-full py-4 rounded-2xl bg-app-bg-alt border border-app-border text-app-text-muted font-black uppercase tracking-widest text-center text-xs mt-4">
+                    Already Completed
+                  </div>
                 )}
               </div>
             </Card>

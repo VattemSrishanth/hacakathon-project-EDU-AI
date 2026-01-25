@@ -1,0 +1,13 @@
+{
+  "name": "llm-fallback-node",
+  "version": "1.0.0",
+  "description": "Node.js implementation of Gemini to Groq fallback service",
+  "main": "server.js",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.7.0",
+    "dotenv": "^16.4.0",
+    "express": "^4.19.0",
+    "groq-sdk": "^0.15.0"
+  }
+}

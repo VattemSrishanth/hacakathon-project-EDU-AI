@@ -32,7 +32,7 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent drop-shadow-sm">
+              <span className="text-2xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent drop-shadow-sm">
                 LearnBridge AI
               </span>
             </Link>

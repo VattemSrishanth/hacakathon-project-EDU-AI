@@ -2,17 +2,42 @@ import os
 import re
 
 try:
+    from dotenv import load_dotenv
+    # Load from the current directory where .env usually lives
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    env_path = os.path.join(current_dir, ".env")
+    if os.path.exists(env_path):
+        print(f"[llm_service] Loading .env from: {env_path}")
+        load_dotenv(env_path, override=True)
+    else:
+        print("[llm_service] .env not found in backend folder, using default load_dotenv()")
+        load_dotenv()
+except ImportError:
+    print("[llm_service] python-dotenv not installed.")
+    pass
+
+try:
     import google.generativeai as genai
-except Exception:
+    print("[llm_service] Google Generative AI library loaded.")
+except Exception as e:
+    print(f"[llm_service] Failed to load google-generativeai: {e}")
     genai = None
 
 
 MAX_PROMPT_CHARS = 12000
-DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "models/gemini-flash-latest")
+
+def _get_model():
+    model = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
+    return model
 
 
 def _get_api_key():
-    return os.getenv("GEMINI_API_KEY", "").strip()
+    key = os.getenv("GEMINI_API_KEY", "").strip()
+    if key:
+        print(f"[llm_service] API Key found (starts with: {key[:4]}...)")
+    else:
+        print("[llm_service] API Key NOT FOUND in environment.")
+    return key
 
 
 def _sanitize_prompt(prompt):
@@ -48,11 +73,14 @@ def _extract_status_code(exc):
     return int(match.group(1)) if match else None
 
 
-def generate_text(prompt, model_name=DEFAULT_MODEL, temperature=0.5, max_output_tokens=512):
+def generate_text(prompt, model_name=None, temperature=0.5, max_output_tokens=512):
     """Generate text using Gemini. Returns (text, error_code)."""
     api_key = _get_api_key()
     if not api_key or not genai:
         return "", "missing_api_key"
+
+    if model_name is None:
+        model_name = _get_model()
 
     prompt = _sanitize_prompt(prompt)
     if prompt is None:

@@ -6,13 +6,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const Button = ({ variant = 'primary', children, className = '', ...props }: ButtonProps) => {
-  const baseStyles = 'px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'px-6 py-3 rounded-xl font-black uppercase tracking-widest text-xs transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95';
   
   const variantStyles = {
-    primary: 'bg-primary text-white hover:bg-indigo-700 shadow-md hover:shadow-lg',
-    secondary: 'bg-secondary text-white hover:bg-cyan-700 shadow-md hover:shadow-lg',
-    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white',
-    success: 'bg-green-500 text-white hover:bg-green-600 shadow-md hover:shadow-lg',
+    primary: 'bg-primary text-white hover:bg-primary-hover shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30',
+    secondary: 'bg-secondary text-white hover:opacity-90 shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/30',
+    outline: 'border-2 border-app-border text-app-text-main hover:bg-app-bg-alt hover:border-app-text-main/20',
+    success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/30',
   };
 
   return (
