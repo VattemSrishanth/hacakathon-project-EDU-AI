@@ -3,22 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { 
   User, 
   BookOpen, 
-  MessageSquare, 
   Bell, 
-  Monitor, 
-  Navigation as NavIcon, 
   Camera,
   Trash2,
   CheckCircle2,
-  ChevronRight
+  ChevronRight,
+  Lock,
+  Eye,
+  Shield,
+  Layout,
+  Sparkles,
+  Moon,
+  Sun,
+  Trees,
+  Sunrise,
+  Accessibility
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import Button from '../components/Button';
 import type { 
   LearningLevel, 
-  ContentPreference, 
-  AnswerStyle, 
   ReminderFrequency, 
   ThemeMode, 
   FontSize,
@@ -40,6 +45,7 @@ const Settings = () => {
     clearChatHistory 
   } = useSettings();
   
+  const [activeTab, setActiveTab] = useState<'account' | 'security' | 'visibility' | 'privacy' | 'advertising' | 'notifications' | 'appearance'>('account');
   const [saveMessage, setSaveMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(settings.profile.name);
@@ -105,535 +111,560 @@ const Settings = () => {
     }
   };
 
+  const SidebarItem = ({ 
+    id, 
+    label, 
+    icon: Icon, 
+    colorClass 
+  }: { 
+    id: typeof activeTab, 
+    label: string, 
+    icon: any,
+    colorClass: string
+  }) => (
+    <button
+      onClick={() => setActiveTab(id)}
+      className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${
+        activeTab === id 
+          ? 'bg-app-bg text-color-primary shadow-sm' 
+          : 'text-app-text-sub hover:bg-app-bg/50'
+      }`}
+    >
+      <Icon className={`w-5 h-5 ${activeTab === id ? colorClass : 'text-app-text-muted opacity-60'}`} />
+      <span className={`text-sm font-bold ${activeTab === id ? 'text-color-primary' : ''}`}>{label}</span>
+    </button>
+  );
+
   return (
     <div className="min-h-screen bg-app-bg text-app-text-main py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header */}
-        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600">
-              <User className="w-8 h-8" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-black text-app-text-main tracking-tight uppercase">{t.settings.title}</h1>
-              <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest">{t.settings.subtitle}</p>
-            </div>
-          </div>
-          {saveMessage && (
-            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-600 rounded-2xl border border-emerald-500/20 animate-in fade-in slide-in-from-top-4">
-              <CheckCircle2 className="w-4 h-4" />
-              <span className="text-xs font-black uppercase tracking-wider">{saveMessage}</span>
-            </div>
-          )}
-        </header>
-
-        <div className="space-y-10">
-          {/* Section: Profile */}
-          <section className="bg-app-bg-alt rounded-3xl border border-app-border overflow-hidden shadow-sm">
-            <div className="p-8 border-b border-app-border flex items-center gap-4 bg-app-bg/50">
-              <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-600">
-                <User className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-xl font-black text-app-text-main tracking-tight uppercase">{t.settings.profile.title}</h2>
-                <p className="text-xs text-app-text-sub font-bold uppercase tracking-tight">Manage your personal identity</p>
-              </div>
-            </div>
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-12">
+          
+          {/* Sidebar - Matching Image 2 */}
+          <aside className="w-full md:w-72 shrink-0 space-y-1">
+            <SidebarItem id="account" label="Account preferences" icon={User} colorClass="text-emerald-500" />
+            <SidebarItem id="security" label="Sign in & security" icon={Lock} colorClass="text-slate-500" />
+            <SidebarItem id="visibility" label="Visibility" icon={Eye} colorClass="text-slate-500" />
+            <SidebarItem id="privacy" label="Data privacy" icon={Shield} colorClass="text-slate-500" />
+            <SidebarItem id="advertising" label="Advertising data" icon={Layout} colorClass="text-slate-500" />
+            <SidebarItem id="notifications" label="Notifications" icon={Bell} colorClass="text-slate-500" />
+            <SidebarItem id="appearance" label="Appearance & Theme" icon={Sparkles} colorClass="text-blue-500" />
             
-            <div className="p-8">
-              <div className="flex flex-col md:flex-row gap-10 items-start">
-                <div className="flex flex-col items-center gap-4 shrink-0 mx-auto md:mx-0">
-                  <div className="relative group p-1 rounded-full border-4 border-app-border">
-                    <div className="w-32 h-32 rounded-full overflow-hidden bg-app-bg flex items-center justify-center relative shadow-inner">
+            <div className="pt-8 mt-8 border-t border-app-border">
+              <button
+                onClick={() => navigate('/accessibility')}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-app-text-sub hover:bg-red-500/5 hover:text-red-500 transition-all font-bold group"
+              >
+                <div className="flex items-center gap-4">
+                  <Accessibility className="w-5 h-5 opacity-60 group-hover:opacity-100" />
+                  <span className="text-sm">Accessibility Center</span>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </aside>
+
+          {/* Main Content Area */}
+          <main className="flex-1 min-w-0">
+            {saveMessage && (
+              <div className="mb-6 flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-600 rounded-2xl border border-emerald-500/20 animate-in fade-in slide-in-from-top-4 w-fit">
+                <CheckCircle2 className="w-4 h-4" />
+                <span className="text-xs font-black uppercase tracking-wider">{saveMessage}</span>
+              </div>
+            )}
+
+            {activeTab === 'account' && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                <header>
+                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Account Preferences</h1>
+                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Manage your basic settings</p>
+                </header>
+
+                <div className="grid grid-cols-1 gap-8">
+                  {/* Profile Summary */}
+                  <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 flex items-center gap-6">
+                    <div className="w-20 h-20 rounded-full overflow-hidden bg-app-bg flex items-center justify-center border-4 border-app-border">
                       {settings.profile.avatarDataUrl ? (
-                        <img src={settings.profile.avatarDataUrl} alt="Avatar" className="h-full w-full object-cover" />
+                         <img src={settings.profile.avatarDataUrl} alt="Avatar" className="h-full w-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-4xl font-black text-blue-600 bg-blue-500/5 uppercase">
-                          {initials}
-                        </div>
+                        <div className="text-2xl font-black text-color-primary">{initials}</div>
                       )}
-                      <button 
-                        onClick={() => fileInputRef.current?.click()}
-                        className="absolute inset-0 bg-app-text-main/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-full text-app-bg pointer-events-auto"
-                      >
-                        <Camera className="w-8 h-8" />
-                      </button>
-                    </div>
-                  </div>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleAvatarChange(e.target.files?.[0])}
-                  />
-                  {settings.profile.avatarDataUrl && (
-                    <button
-                      type="button"
-                      onClick={() => { updateProfile({ avatarDataUrl: '' }); showSaveMessage(t.settings.changesSaved); }}
-                      className="text-xs font-black text-red-500 hover:text-red-600 transition-colors uppercase tracking-widest bg-red-500/5 px-4 py-2 rounded-xl"
-                    >
-                      {t.settings.profile.removeAvatar}
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex-1 w-full space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.profile.name}</label>
-                    <input
-                      type="text"
-                      placeholder="Your Full Name"
-                      value={isEditing ? editName : settings.profile.name}
-                      onChange={(e) => setEditName(e.target.value)}
-                      disabled={!isEditing}
-                      className="w-full bg-app-bg border border-app-border rounded-2xl px-5 py-4 text-app-text-main focus:bg-app-bg focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.profile.email}</label>
-                    <input
-                      type="email"
-                      value={settings.profile.email}
-                      disabled
-                      className="w-full bg-app-bg border border-app-border rounded-2xl px-5 py-4 text-app-text-muted cursor-not-allowed font-bold shadow-inner"
-                    />
-                    <p className="text-[10px] text-app-text-muted font-black ml-1 uppercase tracking-widest">Email cannot be changed for security.</p>
-                  </div>
-
-                  {error && (
-                    <div className="text-sm text-red-600 font-bold bg-red-500/10 p-4 rounded-2xl border border-red-500/20">
-                      {error}
-                    </div>
-                  )}
-
-                  <div className="flex justify-end pt-4">
-                    <Button
-                      onClick={handleEditToggle}
-                      variant={isEditing ? 'success' : 'primary'}
-                      className="px-10 py-4 rounded-2xl text-sm font-black uppercase tracking-widest shadow-lg shadow-blue-500/10"
-                    >
-                      {isEditing ? 'Save Changes' : 'Edit Profile'}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Section: Learning */}
-          <section className="bg-app-bg-alt rounded-3xl border border-app-border overflow-hidden shadow-sm">
-            <div className="p-8 border-b border-app-border flex items-center gap-4 bg-app-bg/50">
-              <div className="p-3 bg-indigo-500/10 rounded-2xl text-indigo-600">
-                <BookOpen className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-xl font-black text-app-text-main tracking-tight uppercase">{t.settings.learning.title}</h2>
-                <p className="text-xs text-app-text-sub font-bold uppercase tracking-tight">Customize your educational journey</p>
-              </div>
-            </div>
-            
-            <div className="p-8 space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.learning.language}</label>
-                  <select
-                    value={settings.learning.language}
-                    onChange={(e) => {
-                      updateLearning({ language: e.target.value as SupportedLanguage });
-                      showSaveMessage(t.settings.changesSaved);
-                    }}
-                    className="w-full bg-app-bg border border-app-border rounded-2xl px-5 py-4 text-app-text-main focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all cursor-pointer font-bold"
-                  >
-                    <option value="English">English</option>
-                    <option value="Telugu">తెలుగు (Telugu)</option>
-                    <option value="Hindi">हिंदी (Hindi)</option>
-                    <option value="Spanish">Español (Spanish)</option>
-                    <option value="French">Français (French)</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.learning.level}</label>
-                  <select
-                    value={settings.learning.level}
-                    onChange={(e) => {
-                      updateLearning({ level: e.target.value as LearningLevel });
-                      showSaveMessage(t.settings.changesSaved);
-                    }}
-                    className="w-full bg-app-bg border border-app-border rounded-2xl px-5 py-4 text-app-text-main focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all cursor-pointer font-bold"
-                  >
-                    <option value="Beginner">{t.lessons.beginner}</option>
-                    <option value="Intermediate">{t.lessons.intermediate}</option>
-                    <option value="Advanced">{t.lessons.advanced}</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.learning.contentPreference}</label>
-                  <select
-                    value={settings.learning.contentPreference}
-                    onChange={(e) => {
-                      updateLearning({ contentPreference: e.target.value as ContentPreference });
-                      showSaveMessage(t.settings.changesSaved);
-                    }}
-                    className="w-full bg-app-bg border border-app-border rounded-2xl px-5 py-4 text-app-text-main focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all cursor-pointer font-bold"
-                  >
-                    <option value="Text">{t.settings.learning.text}</option>
-                    <option value="Video">{t.settings.learning.video}</option>
-                    <option value="Both">{t.settings.learning.both}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Section: AI Tutor */}
-          <section className="bg-app-bg-alt rounded-3xl border border-app-border overflow-hidden shadow-sm">
-            <div className="p-8 border-b border-app-border flex items-center gap-4 bg-app-bg/50">
-              <div className="p-3 bg-purple-500/10 rounded-2xl text-purple-600">
-                <MessageSquare className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-xl font-black text-app-text-main tracking-tight uppercase">{t.settings.aiTutorSettings.title}</h2>
-                <p className="text-xs text-app-text-sub font-bold uppercase tracking-tight">Configure your AI assistant engine</p>
-              </div>
-            </div>
-            
-            <div className="p-8 space-y-8">
-              <div className="flex flex-col gap-6">
-                <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer group transition-all hover:border-purple-500/50 shadow-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-app-bg-alt border border-app-border text-purple-600 shadow-sm transition-transform group-hover:scale-110">
-                      <Monitor className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="text-sm font-black text-app-text-main uppercase tracking-tight">{t.settings.aiTutorSettings.enabled}</p>
-                      <p className="text-[10px] text-app-text-sub font-black uppercase tracking-widest opacity-60">AI Assistant Status</p>
+                      <h3 className="text-xl font-black truncate">{settings.profile.name}</h3>
+                      <p className="text-app-text-sub font-medium">{settings.profile.email}</p>
+                      <button onClick={() => setActiveTab('security')} className="text-xs font-black text-color-primary uppercase tracking-widest mt-2 hover:underline">Change</button>
                     </div>
                   </div>
-                  <div className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={settings.aiTutor.enabled}
-                      onChange={(e) => {
-                        updateAiTutor({ enabled: e.target.checked });
-                        showSaveMessage(t.settings.changesSaved);
-                      }}
-                    />
-                    <div className="w-14 h-8 bg-app-bg-alt border border-app-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-500/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-1 after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-purple-600"></div>
-                  </div>
-                </label>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.aiTutorSettings.answerStyle}</label>
-                    <select
-                      value={settings.aiTutor.answerStyle}
-                      onChange={(e) => {
-                        updateAiTutor({ answerStyle: e.target.value as AnswerStyle });
-                        showSaveMessage(t.settings.changesSaved);
-                      }}
-                      className="w-full bg-app-bg border border-app-border rounded-2xl px-5 py-4 text-app-text-main focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all cursor-pointer font-bold"
-                    >
-                      <option value="Short">{t.settings.aiTutorSettings.short}</option>
-                      <option value="Detailed">{t.settings.aiTutorSettings.detailed}</option>
-                    </select>
-                  </div>
-                  
-                  <div className="flex flex-col justify-center px-4">
-                    <label className="flex items-center gap-4 cursor-pointer select-none group">
-                      <div className="relative flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={settings.aiTutor.showChatHistory}
+                  {/* Learning Preferences */}
+                  <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-8">
+                    <div className="flex items-center gap-3">
+                      <BookOpen className="w-5 h-5 text-indigo-500" />
+                      <h4 className="font-black uppercase tracking-widest text-sm">Learning Controls</h4>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.learning.language}</label>
+                        <select
+                          value={settings.learning.language}
                           onChange={(e) => {
-                            updateAiTutor({ showChatHistory: e.target.checked });
+                            updateLearning({ language: e.target.value as SupportedLanguage });
                             showSaveMessage(t.settings.changesSaved);
                           }}
-                          className="w-6 h-6 rounded-lg border-2 border-app-border bg-app-bg text-purple-600 focus:ring-purple-500 transition-all cursor-pointer"
+                          className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-color-primary/20 font-bold text-sm"
+                        >
+                          <option value="English">English</option>
+                          <option value="Telugu">తెలుగు (Telugu)</option>
+                          <option value="Hindi">हिंदी (Hindi)</option>
+                          <option value="Spanish">Español (Spanish)</option>
+                          <option value="French">Français (French)</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.learning.level}</label>
+                        <select
+                          value={settings.learning.level}
+                          onChange={(e) => {
+                            updateLearning({ level: e.target.value as LearningLevel });
+                            showSaveMessage(t.settings.changesSaved);
+                          }}
+                          className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-color-primary/20 font-bold text-sm"
+                        >
+                          <option value="Beginner">{t.lessons.beginner}</option>
+                          <option value="Intermediate">{t.lessons.intermediate}</option>
+                          <option value="Advanced">{t.lessons.advanced}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'security' && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                <header>
+                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Sign In & Security</h1>
+                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Manage your credentials</p>
+                </header>
+
+                <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-8">
+                  <div className="flex flex-col md:flex-row gap-10 items-start">
+                    <div className="flex flex-col items-center gap-4 shrink-0">
+                      <div className="relative group p-1 rounded-full border-4 border-app-border">
+                        <div className="w-32 h-32 rounded-full overflow-hidden bg-app-bg flex items-center justify-center relative shadow-inner">
+                          {settings.profile.avatarDataUrl ? (
+                            <img src={settings.profile.avatarDataUrl} alt="Avatar" className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-4xl font-black text-color-primary bg-color-primary/5 uppercase">
+                              {initials}
+                            </div>
+                          )}
+                          <button 
+                            onClick={() => fileInputRef.current?.click()}
+                            className="absolute inset-0 bg-app-text-main/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-full text-app-bg pointer-events-auto"
+                          >
+                            <Camera className="w-8 h-8" />
+                          </button>
+                        </div>
+                      </div>
+                      <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={(e) => handleAvatarChange(e.target.files?.[0])} />
+                    </div>
+
+                    <div className="flex-1 w-full space-y-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.profile.name}</label>
+                        <input
+                          type="text"
+                          value={isEditing ? editName : settings.profile.name}
+                          onChange={(e) => setEditName(e.target.value)}
+                          disabled={!isEditing}
+                          className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-color-primary/20 font-bold disabled:opacity-50"
                         />
                       </div>
-                      <span className="text-xs font-black text-app-text-sub group-hover:text-purple-600 transition-colors uppercase tracking-widest">{t.settings.aiTutorSettings.showChatHistory}</span>
-                    </label>
+                      
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.profile.email}</label>
+                        <input
+                          type="email"
+                          value={settings.profile.email}
+                          disabled
+                          className="w-full bg-app-bg/50 border border-app-border rounded-xl px-4 py-3 text-app-text-muted cursor-not-allowed font-bold"
+                        />
+                      </div>
+
+                      {error && <div className="text-sm text-red-500 font-bold bg-red-500/5 p-4 rounded-xl border border-red-500/10">{error}</div>}
+
+                      <div className="flex justify-end pt-4">
+                        <Button
+                          onClick={handleEditToggle}
+                          variant={isEditing ? 'success' : 'primary'}
+                          className="px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest"
+                        >
+                          {isEditing ? 'Save Changes' : 'Edit Profile'}
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                <div className="flex justify-start pt-6 border-t border-app-border">
-                  <button
-                    type="button"
-                    onClick={handleClearChatHistory}
-                    className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-red-500/5 text-red-600 font-black hover:bg-red-500 text-[10px] uppercase tracking-widest hover:text-white transition-all shadow-sm"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    {t.settings.aiTutorSettings.clearChatHistory}
-                  </button>
-                </div>
               </div>
-            </div>
-          </section>
+            )}
 
-          {/* Section: Notifications */}
-          <section className="bg-app-bg-alt rounded-3xl border border-app-border overflow-hidden shadow-sm">
-            <div className="p-8 border-b border-app-border flex items-center gap-4 bg-app-bg/50">
-              <div className="p-3 bg-orange-500/10 rounded-2xl text-orange-600">
-                <Bell className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-xl font-black text-app-text-main tracking-tight uppercase">{t.settings.notifications.title}</h2>
-                <p className="text-xs text-app-text-sub font-bold uppercase tracking-tight">Stay updated with your progress</p>
-              </div>
-            </div>
-            
-            <div className="p-8 space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-orange-500/50 transition-all shadow-sm group">
-                  <span className="text-xs font-black text-app-text-sub uppercase tracking-widest group-hover:text-orange-600 transition-colors">{t.settings.notifications.assignmentReminders}</span>
-                  <input
-                    type="checkbox"
-                    className="w-6 h-6 rounded-lg border-2 border-app-border bg-app-bg text-orange-600 focus:ring-orange-500 shadow-sm"
-                    checked={settings.notifications.assignmentReminders}
-                    onChange={(e) => {
-                      updateNotifications({ assignmentReminders: e.target.checked });
-                      showSaveMessage(t.settings.changesSaved);
-                    }}
-                  />
-                </label>
-                <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-orange-500/50 transition-all shadow-sm group">
-                  <span className="text-xs font-black text-app-text-sub uppercase tracking-widest group-hover:text-orange-600 transition-colors">{t.settings.notifications.newLessonNotifications}</span>
-                  <input
-                    type="checkbox"
-                    className="w-6 h-6 rounded-lg border-2 border-app-border bg-app-bg text-orange-600 focus:ring-orange-500 shadow-sm"
-                    checked={settings.notifications.newLessonNotifications}
-                    onChange={(e) => {
-                      updateNotifications({ newLessonNotifications: e.target.checked });
-                      showSaveMessage(t.settings.changesSaved);
-                    }}
-                  />
-                </label>
-              </div>
+            {activeTab === 'visibility' && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                <header>
+                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Visibility</h1>
+                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Control who can see your activity</p>
+                </header>
 
-              <div className="p-6 bg-app-bg rounded-2xl border border-app-border space-y-4">
-                <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.notifications.reminderFrequency}</label>
-                <select
-                  value={settings.notifications.reminderFrequency}
-                  onChange={(e) => {
-                    updateNotifications({ reminderFrequency: e.target.value as ReminderFrequency });
-                    showSaveMessage(t.settings.changesSaved);
-                  }}
-                  className="w-full sm:max-w-xs bg-app-bg-alt border border-app-border rounded-2xl px-5 py-4 text-app-text-main focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all cursor-pointer font-bold shadow-sm"
-                >
-                  <option value="Daily">{t.settings.notifications.daily}</option>
-                  <option value="Weekly">{t.settings.notifications.weekly}</option>
-                  <option value="Off">{t.settings.notifications.off}</option>
-                </select>
-              </div>
-            </div>
-          </section>
-
-          {/* Section: Theme */}
-          <section className="bg-app-bg-alt rounded-3xl border border-app-border overflow-hidden shadow-sm">
-            <div className="p-8 border-b border-app-border flex items-center gap-4 bg-app-bg/50">
-              <div className="p-3 bg-teal-500/10 rounded-2xl text-teal-600">
-                <Monitor className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-xl font-black text-app-text-main tracking-tight uppercase">{t.settings.themeAccessibility.title}</h2>
-                <p className="text-xs text-app-text-sub font-bold uppercase tracking-tight">Appearance and support tools</p>
-              </div>
-            </div>
-            
-            <div className="p-8 space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-medium">
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.themeAccessibility.theme}</label>
-                  <select
-                    value={settings.themeAccessibility.theme}
-                    onChange={(e) => {
-                      updateThemeAccessibility({ theme: e.target.value as ThemeMode });
-                      showSaveMessage(t.settings.changesSaved);
-                    }}
-                    className="w-full bg-app-bg border border-app-border rounded-2xl px-5 py-4 text-app-text-main focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none cursor-pointer font-bold"
-                  >
-                    <option value="Light">{t.settings.themeAccessibility.light}</option>
-                    <option value="Dark">{t.settings.themeAccessibility.dark}</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.themeAccessibility.fontSize}</label>
-                  <select
-                    value={settings.themeAccessibility.fontSize}
-                    onChange={(e) => {
-                      updateThemeAccessibility({ fontSize: e.target.value as FontSize });
-                      showSaveMessage(t.settings.changesSaved);
-                    }}
-                    className="w-full bg-app-bg border border-app-border rounded-2xl px-5 py-4 text-app-text-main focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none cursor-pointer font-bold"
-                  >
-                    <option value="Small">{t.settings.themeAccessibility.small}</option>
-                    <option value="Medium">{t.settings.themeAccessibility.medium}</option>
-                    <option value="Large">{t.settings.themeAccessibility.large}</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.themeAccessibility.voiceLanguage}</label>
-                  <select
-                    value={settings.themeAccessibility.voiceLanguage}
-                    onChange={(e) => {
-                      updateThemeAccessibility({ voiceLanguage: e.target.value as SupportedLanguage });
-                      showSaveMessage(t.settings.changesSaved);
-                    }}
-                    className="w-full bg-app-bg border border-app-border rounded-2xl px-5 py-4 text-app-text-main focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none cursor-pointer font-bold"
-                  >
-                    <option value="English">English</option>
-                    <option value="Telugu">తెలుగు (Telugu)</option>
-                    <option value="Hindi">हिंदी (Hindi)</option>
-                    <option value="Spanish">Español (Spanish)</option>
-                    <option value="French">Français (French)</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-app-text-sub uppercase tracking-widest ml-1">Accessibility Mode</label>
-                  <select
-                    value={settings.themeAccessibility.accessibilityMode}
-                    onChange={(e) => {
-                      updateThemeAccessibility({ accessibilityMode: e.target.value as any });
-                      showSaveMessage(t.settings.changesSaved);
-                    }}
-                    className="w-full bg-blue-500/10 border border-blue-500/20 rounded-2xl px-5 py-4 text-blue-600 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none cursor-pointer font-black uppercase tracking-widest"
-                  >
-                    <option value="Normal">Normal Mode</option>
-                    <option value="Deaf">Deaf Mode</option>
-                    <option value="Blind">Blind Mode</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-blue-500/50 transition-all shadow-sm group">
-                  <span className="text-xs font-black text-app-text-sub uppercase tracking-widest group-hover:text-blue-600 transition-colors">{t.settings.themeAccessibility.highContrast}</span>
-                  <div className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={settings.themeAccessibility.highContrast}
-                      onChange={(e) => {
-                        updateThemeAccessibility({ highContrast: e.target.checked });
-                        showSaveMessage(t.settings.changesSaved);
-                      }}
-                    />
-                    <div className="w-14 h-8 bg-app-bg-alt border border-app-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-1 after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
-                  </div>
-                </label>
-
-                <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-blue-500/50 transition-all shadow-sm group">
-                  <span className="text-xs font-black text-app-text-sub uppercase tracking-widest group-hover:text-blue-600 transition-colors">{t.settings.themeAccessibility.reduceMotion}</span>
-                  <div className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={settings.themeAccessibility.reduceMotion}
-                      onChange={(e) => {
-                        updateThemeAccessibility({ reduceMotion: e.target.checked });
-                        showSaveMessage(t.settings.changesSaved);
-                      }}
-                    />
-                    <div className="w-14 h-8 bg-app-bg-alt border border-app-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-1 after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
-                  </div>
-                </label>
-              </div>
-
-              <div className="bg-blue-600/5 p-8 rounded-3xl border border-blue-500/10 shadow-inner relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Monitor className="w-24 h-24" />
-                </div>
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-4 w-4 rounded-full bg-blue-500 animate-pulse ring-4 ring-blue-500/20" />
-                      <span className="text-sm font-black text-app-text-main uppercase tracking-widest">{t.settings.themeAccessibility.lowPowerMode}</span>
+                <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-6">
+                  <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer group transition-all hover:border-color-primary/50 shadow-sm">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-app-bg-alt border border-app-border text-purple-600 shadow-sm transition-transform group-hover:scale-110">
+                        <Eye className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-black text-app-text-main uppercase tracking-tight">{t.settings.aiTutorSettings.showChatHistory}</p>
+                        <p className="text-[10px] text-app-text-sub font-black uppercase tracking-widest opacity-60">Visibility of your tutoring sessions</p>
+                      </div>
                     </div>
                     <div className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
                         className="sr-only peer"
-                        checked={settings.themeAccessibility.lowPowerMode}
+                        checked={settings.aiTutor.showChatHistory}
                         onChange={(e) => {
-                          updateThemeAccessibility({ lowPowerMode: e.target.checked });
+                          updateAiTutor({ showChatHistory: e.target.checked });
                           showSaveMessage(t.settings.changesSaved);
                         }}
                       />
-                      <div className="w-14 h-8 bg-app-bg-alt border border-app-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-1 after:bg-white after:border-gray-100 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
+                      <div className="w-14 h-8 bg-app-bg-alt border border-app-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-1 after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-purple-600"></div>
+                    </div>
+                  </label>
+                  
+                  <div className="p-6 bg-emerald-500/5 rounded-2xl border border-emerald-500/10">
+                    <p className="text-xs text-emerald-600 font-bold uppercase tracking-widest leading-relaxed">
+                      Your learning progress and activity are private by default. Currently, only you can see your dashboard.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'privacy' && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                <header>
+                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Data Privacy</h1>
+                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Manage your data and exports</p>
+                </header>
+
+                <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-8">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-black uppercase tracking-tight">Personal Data Management</h3>
+                    <p className="text-sm text-app-text-sub font-medium">You have full control over your data. You can delete your AI history at any time.</p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                    <button
+                      onClick={handleClearChatHistory}
+                      className="flex items-center gap-3 px-6 py-4 rounded-xl bg-red-500/10 text-red-600 font-bold text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Clear Chat History
+                    </button>
+                    
+                    <button
+                      onClick={() => showSaveMessage('Data export started...')}
+                      className="flex items-center gap-3 px-6 py-4 rounded-xl bg-app-bg border border-app-border text-app-text-main font-bold text-xs uppercase tracking-widest hover:bg-app-bg-alt transition-all shadow-sm"
+                    >
+                      <Shield className="w-4 h-4" />
+                      Download My Data
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'advertising' && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                <header>
+                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Advertising Data</h1>
+                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Learnburner Ad Preferences</p>
+                </header>
+
+                <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-6">
+                  <div className="p-8 bg-blue-500/5 rounded-2xl border border-blue-500/10 text-center">
+                    <Layout className="w-12 h-12 text-blue-500 mx-auto mb-4 opacity-40" />
+                    <h3 className="font-black uppercase tracking-tighter text-xl mb-2">Clean Experience Guaranteed</h3>
+                    <p className="text-sm text-app-text-sub font-medium max-w-md mx-auto">
+                      LearnBridge AI is an educational platform. We do not sell your data or serve third-party advertisements in our app.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'notifications' && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                <header>
+                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Notifications</h1>
+                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Control how you're notified</p>
+                </header>
+
+                <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-8">
+                  <div className="grid grid-cols-1 gap-6">
+                    <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-color-primary/50 transition-all shadow-sm group">
+                      <div className="space-y-1">
+                        <span className="text-sm font-black text-app-text-main uppercase tracking-tight group-hover:text-color-primary transition-colors">Assignment Reminders</span>
+                        <p className="text-[10px] text-app-text-sub font-bold uppercase tracking-widest opacity-60">When assignments are due</p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        className="w-6 h-6 rounded-lg border-2 border-app-border bg-app-bg text-color-primary focus:ring-color-primary shadow-sm"
+                        checked={settings.notifications.assignmentReminders}
+                        onChange={(e) => {
+                          updateNotifications({ assignmentReminders: e.target.checked });
+                          showSaveMessage(t.settings.changesSaved);
+                        }}
+                      />
+                    </label>
+                    <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-color-primary/50 transition-all shadow-sm group">
+                      <div className="space-y-1">
+                        <span className="text-sm font-black text-app-text-main uppercase tracking-tight group-hover:text-color-primary transition-colors">New Lesson Notifications</span>
+                        <p className="text-[10px] text-app-text-sub font-bold uppercase tracking-widest opacity-60">When new content is available</p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        className="w-6 h-6 rounded-lg border-2 border-app-border bg-app-bg text-color-primary focus:ring-color-primary shadow-sm"
+                        checked={settings.notifications.newLessonNotifications}
+                        onChange={(e) => {
+                          updateNotifications({ newLessonNotifications: e.target.checked });
+                          showSaveMessage(t.settings.changesSaved);
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  <div className="p-6 bg-app-bg rounded-2xl border border-app-border space-y-4">
+                    <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">Frequency</label>
+                    <div className="flex flex-wrap gap-2">
+                      {['Daily', 'Weekly', 'Off'].map((freq) => (
+                        <button
+                          key={freq}
+                          onClick={() => {
+                            updateNotifications({ reminderFrequency: freq as ReminderFrequency });
+                            showSaveMessage(t.settings.changesSaved);
+                          }}
+                          className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                            settings.notifications.reminderFrequency === freq
+                              ? 'bg-color-primary text-white'
+                              : 'bg-app-bg-alt text-app-text-sub border border-app-border hover:bg-app-bg'
+                          }`}
+                        >
+                          {freq}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                  <p className="text-xs text-app-text-sub font-bold leading-relaxed uppercase tracking-tight max-w-md">
-                    {t.settings.themeAccessibility.lowPowerModeDesc}
-                  </p>
                 </div>
               </div>
-            </div>
-          </section>
+            )}
 
-          {/* Section: Quick Links */}
-          <section className="bg-app-bg-alt rounded-3xl border border-app-border overflow-hidden mb-20 shadow-sm transition-all hover:shadow-md">
-            <div className="p-8 border-b border-app-border flex items-center gap-4 bg-app-bg/50">
-              <div className="p-3 bg-app-bg rounded-2xl text-app-text-muted border border-app-border">
-                <NavIcon className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-xl font-black text-app-text-main tracking-tight uppercase">{t.settings.navigation.title}</h2>
-                <p className="text-xs text-app-text-sub font-bold uppercase tracking-tight">Quick navigation to related resources</p>
-              </div>
-            </div>
-            
-            <div className="divide-y divide-app-border">
-              <button
-                type="button"
-                onClick={() => navigate('/accessibility')}
-                className="w-full flex items-center justify-between p-8 hover:bg-app-bg transition-colors group"
-              >
-                <div className="flex items-center gap-6">
-                  <div className="h-14 w-14 flex items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 group-hover:scale-110 transition-transform shadow-sm">
-                    <Monitor className="w-6 h-6" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-black text-app-text-main text-lg tracking-tight uppercase">{t.settings.navigation.accessibilitySettings}</p>
-                    <p className="text-[10px] text-app-text-muted font-black uppercase tracking-widest">Configure Global Accessibility</p>
-                  </div>
-                </div>
-                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-app-bg border border-app-border group-hover:bg-blue-500 group-hover:text-white transition-all">
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-                </div>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => navigate('/support')}
-                className="w-full flex items-center justify-between p-8 hover:bg-app-bg transition-colors group"
-              >
-                <div className="flex items-center gap-6">
-                  <div className="h-14 w-14 flex items-center justify-center rounded-2xl bg-green-500/10 text-green-600 group-hover:scale-110 transition-transform shadow-sm">
-                    <Bell className="w-6 h-6" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-black text-app-text-main text-lg tracking-tight uppercase">{t.settings.navigation.supportPage}</p>
-                    <p className="text-[10px] text-app-text-muted font-black uppercase tracking-widest">Get Help & Support</p>
-                  </div>
-                </div>
-                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-app-bg border border-app-border group-hover:bg-green-500 group-hover:text-white transition-all">
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-                </div>
-              </button>
-            </div>
-          </section>
+            {activeTab === 'appearance' && (
+              <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
+                <header>
+                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Appearance & Theme</h1>
+                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Personalize your workspace</p>
+                </header>
 
+                {/* Theme Selection - Matching Image 1 */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 ml-1 mb-6">
+                    <Sparkles className="w-5 h-5 text-blue-500" />
+                    <h3 className="font-black uppercase tracking-widest text-sm">Select Your Theme</h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <ThemeCard 
+                      id={"Midnight Void" as ThemeMode} 
+                      title="Midnight Void" 
+                      desc="Deep, immersive dark theme with electric blue accents" 
+                      icon={Moon} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="gradient-midnight"
+                      accentClass="bg-blue-500"
+                    />
+                    <ThemeCard 
+                      id={"Crystal Light" as ThemeMode} 
+                      title="Crystal Light" 
+                      desc="Clean, bright theme with soft blue accents" 
+                      icon={Sun} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="gradient-crystal border border-app-border"
+                      accentClass="bg-blue-600"
+                    />
+                    <ThemeCard 
+                      id={"Forest Depths" as ThemeMode} 
+                      title="Forest Depths" 
+                      desc="Nature-inspired dark theme with emerald greens" 
+                      icon={Trees} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="gradient-forest"
+                      accentClass="bg-emerald-500"
+                    />
+                    <ThemeCard 
+                      id={"Aurora Borealis" as ThemeMode} 
+                      title="Aurora Borealis" 
+                      desc="Mystical theme with purple and cyan gradients" 
+                      icon={Sparkles} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="gradient-aurora"
+                      accentClass="bg-purple-500"
+                    />
+                    <ThemeCard 
+                      id={"Sunset Ember" as ThemeMode} 
+                      title="Sunset Ember" 
+                      desc="Warm, cozy theme with orange and amber tones" 
+                      icon={Sunrise} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="gradient-sunset"
+                      accentClass="bg-orange-500"
+                    />
+                  </div>
+                </section>
+
+                {/* Extra Accessibility Controls */}
+                <section className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-8">
+                  <div className="flex items-center gap-3">
+                    <Accessibility className="w-5 h-5 text-teal-500" />
+                    <h3 className="font-black uppercase tracking-widest text-sm">Accessibility Controls</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">Font Size</label>
+                      <div className="flex gap-2">
+                        {(['Small', 'Medium', 'Large'] as FontSize[]).map((size) => (
+                           <button
+                            key={size}
+                            onClick={() => updateThemeAccessibility({ fontSize: size })}
+                            className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                              settings.themeAccessibility.fontSize === size
+                                ? 'bg-color-primary text-white shadow-lg shadow-color-primary/20'
+                                : 'bg-app-bg text-app-text-sub border border-app-border hover:bg-app-bg-alt'
+                            }`}
+                           >
+                            {size}
+                           </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">Voice Accent</label>
+                      <select
+                        value={settings.themeAccessibility.voiceLanguage}
+                        onChange={(e) => updateThemeAccessibility({ voiceLanguage: e.target.value as SupportedLanguage })}
+                        className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-color-primary/20 font-bold text-sm"
+                      >
+                         <option value="English">English</option>
+                         <option value="Telugu">Telugu</option>
+                         <option value="Hindi">Hindi</option>
+                      </select>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+          </main>
         </div>
       </div>
     </div>
+  );
+};
+
+/* Sub-component: Theme Card matching Image 1 exactly */
+const ThemeCard = ({ 
+  id, 
+  title, 
+  desc, 
+  icon: Icon, 
+  current, 
+  onClick,
+  previewClass,
+  accentClass
+}: { 
+  id: ThemeMode, 
+  title: string, 
+  desc: string, 
+  icon: any, 
+  current: ThemeMode, 
+  onClick: (id: ThemeMode) => void,
+  previewClass: string,
+  accentClass: string
+}) => {
+  const isSelected = current === id;
+  
+  return (
+    <button
+      onClick={() => onClick(id)}
+      className={`group flex flex-col items-start p-1 rounded-4xl transition-all duration-500 text-left ${
+        isSelected 
+          ? 'ring-2 ring-blue-500 p-0.5' 
+          : 'hover:-translate-y-1'
+      }`}
+    >
+      <div className={`w-full aspect-16/10 ${previewClass} rounded-[1.8rem] relative overflow-hidden mb-6 p-4 shadow-inner`}>
+        {/* Mock UI Preview in card */}
+        <div className="h-full w-full flex gap-2">
+          <div className="w-1/4 h-full bg-white/10 rounded-lg p-2 space-y-1">
+             <div className={`h-2 w-full rounded-full ${accentClass} opacity-80`} />
+             <div className="h-1 w-2/3 bg-white/20 rounded-full" />
+             <div className="h-1 w-full bg-white/20 rounded-full" />
+             <div className="h-1 w-1/2 bg-white/20 rounded-full" />
+          </div>
+          <div className="flex-1 h-full space-y-2">
+            <div className="flex gap-2 h-1/3">
+              <div className="flex-1 rounded-lg bg-white/5 border border-white/5" />
+              <div className="flex-1 rounded-lg bg-white/5 border border-white/5" />
+            </div>
+            <div className="flex-1 h-2/3 rounded-lg bg-white/5 border border-white/5 p-2 flex items-end justify-center">
+               <div className="flex gap-1">
+                 <div className="w-3 h-3 rounded bg-white/10" />
+                 <div className="w-3 h-3 rounded bg-white/10" />
+                 <div className={`w-3 h-3 rounded ${accentClass}`} />
+                 <div className="w-3 h-3 rounded bg-white/10" />
+                 <div className="w-3 h-3 rounded bg-white/10" />
+               </div>
+            </div>
+          </div>
+        </div>
+        
+        {isSelected && (
+          <div className="absolute top-3 right-3 h-7 w-7 bg-blue-500 rounded-full flex items-center justify-center border-4 border-app-bg shadow-lg scale-110 animate-in zoom-in duration-300">
+            <CheckCircle2 className="w-4 h-4 text-white" />
+          </div>
+        )}
+      </div>
+
+      <div className="px-6 pb-6 space-y-1">
+        <div className="flex items-center gap-2">
+          <Icon className={`w-5 h-5 ${isSelected ? 'text-color-primary' : 'text-app-text-sub'}`} />
+          <h4 className="font-black text-lg tracking-tight uppercase">{title}</h4>
+        </div>
+        <p className="text-xs text-app-text-sub font-bold leading-relaxed uppercase tracking-tight opacity-60">
+          {desc}
+        </p>
+      </div>
+    </button>
   );
 };
 
