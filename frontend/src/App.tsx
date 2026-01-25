@@ -1,4 +1,5 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import OfflineBanner from './components/OfflineBanner';
@@ -7,6 +8,8 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Lessons from './pages/Lessons';
 import LessonViewer from './pages/LessonViewer';
+import UploadedPdf from './pages/UploadedPdf';
+import PdfQuiz from './pages/PdfQuiz';
 import AITutor from './pages/AITutor';
 import Assignments from './pages/Assignments';
 import Accessibility from './pages/Accessibility';
@@ -20,6 +23,13 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 
 function App() {
+  const location = useLocation();
+
+  // Keep every page starting at the top when navigating between routes.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [location.pathname]);
+
   return (
     <SettingsProvider>
       <AuthProvider>
@@ -50,6 +60,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <LessonViewer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/lessons/uploaded"
+              element={
+                <ProtectedRoute>
+                  <UploadedPdf />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/lessons/quiz"
+              element={
+                <ProtectedRoute>
+                  <PdfQuiz />
                 </ProtectedRoute>
               }
             />

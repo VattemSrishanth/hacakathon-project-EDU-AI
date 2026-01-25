@@ -30,6 +30,55 @@ interface ChatSession {
   timestamp: Date;
 }
 
+// Themed delete confirmation modal centered on the viewport.
+const DeleteConfirmModal = ({
+  open,
+  title,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  title?: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) => {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onCancel}
+        aria-hidden="true"
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="relative w-full max-w-sm bg-app-bg border border-app-border rounded-2xl shadow-2xl p-6 space-y-4 text-app-text-main"
+      >
+        <div className="space-y-2 text-center">
+          <p className="text-sm font-bold text-app-text-muted">Delete this conversation?</p>
+          {title && <p className="text-base font-black truncate" title={title}>{title}</p>}
+        </div>
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-colors"
+          >
+            Delete
+          </button>
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 rounded-xl bg-app-bg-alt text-app-text-main font-bold border border-app-border hover:bg-app-border transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AITutor = () => {
   const { settings, t } = useSettings();
   const location = useLocation();
@@ -49,6 +98,9 @@ const AITutor = () => {
     data: string;
     name?: string;
   } | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; title: string } | null>(null);
+  const hasInteractedRef = useRef(false);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +108,11 @@ const AITutor = () => {
 
   // Speech Recognition Setup
   const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+  // Always enter the page scrolled to the top, even if coming from a scrolled view.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [location.pathname]);
 
   const startVoiceInput = () => {
     if (!SpeechRecognition) {
@@ -133,15 +190,8 @@ const AITutor = () => {
             timestamp: new Date(s.timestamp),
             messages: s.messages.map(m => ({ ...m, timestamp: new Date(m.timestamp) }))
           }));
-          setChatSessions(sessionsWithDates);
-          
-          // Load the most recent session
-          if (sessionsWithDates.length > 0) {
-            const latest = sessionsWithDates[0];
-            setCurrentSessionId(latest.id);
-            setMessages(latest.messages);
-            return;
-          }
+          const filteredSessions = sessionsWithDates.filter(s => s.messages.some(m => m.role === 'user'));
+          setChatSessions(filteredSessions);
         }
       } catch {
         // Ignore parse errors
@@ -163,7 +213,8 @@ const AITutor = () => {
 
   // Save chat history to localStorage
   useEffect(() => {
-    if (showChatHistory && messages.length > 0 && currentSessionId) {
+    const hasUserMessage = messages.some(m => m.role === 'user');
+    if (showChatHistory && messages.length > 0 && currentSessionId && hasUserMessage) {
       try {
         // Generate session title from first user message
         const firstUserMsg = messages.find(m => m.role === 'user');
@@ -193,8 +244,13 @@ const AITutor = () => {
 
   // Scroll to bottom on new messages
   useEffect(() => {
+    // Avoid auto-scrolling on first load; only scroll after user has interacted.
+    if (!hasInteractedRef.current) return;
     const isLowPower = document.documentElement.classList.contains('low-power');
-    messagesEndRef.current?.scrollIntoView({ behavior: isLowPower ? 'auto' : 'smooth' });
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.scrollTo({ top: container.scrollHeight, behavior: isLowPower ? 'auto' : 'smooth' });
+    }
   }, [messages]);
 
   // Handle voice query from navigation
@@ -208,6 +264,8 @@ const AITutor = () => {
 
   const handleSend = async (forcedQuery?: string) => {
     if (!enabled) return;
+    // Enable auto-scroll after the first user-triggered action.
+    hasInteractedRef.current = true;
     
     const queryToUse = forcedQuery || input;
 
@@ -372,6 +430,7 @@ const AITutor = () => {
   };
 
   const createNewChat = () => {
+    hasInteractedRef.current = true;
     const newSessionId = Date.now().toString();
     setCurrentSessionId(newSessionId);
     setMessages([
@@ -387,6 +446,7 @@ const AITutor = () => {
   };
 
   const loadSession = (session: ChatSession) => {
+    hasInteractedRef.current = true;
     setCurrentSessionId(session.id);
     setMessages(session.messages);
     setFileContext(null);
@@ -516,9 +576,7 @@ const AITutor = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (confirm('Delete this conversation?')) {
-                              deleteSession(session.id);
-                            }
+                            setPendingDelete({ id: session.id, title: session.title });
                           }}
                           className={`${session.id === currentSessionId ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 p-1.5 hover:bg-red-500/10 rounded-lg text-red-500 transition-all`}
                         >
@@ -555,6 +613,7 @@ const AITutor = () => {
                       {t.aiTutor.title}
                     </h1>
                     <div className="flex items-center gap-2 mt-1">
+
                       <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                       <span className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">
                         AI Model Online
@@ -576,7 +635,10 @@ const AITutor = () => {
             </div>
 
             {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 custom-scrollbar">
+            <div
+              ref={messagesContainerRef}
+              className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 custom-scrollbar"
+            >
               {messages.map((message) => (
                 <div
                   key={message.id}
@@ -747,6 +809,18 @@ const AITutor = () => {
           </div>
         </div>
       </div>
+
+      <DeleteConfirmModal
+        open={!!pendingDelete}
+        title={pendingDelete?.title}
+        onConfirm={() => {
+          if (pendingDelete) {
+            deleteSession(pendingDelete.id);
+          }
+          setPendingDelete(null);
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 };

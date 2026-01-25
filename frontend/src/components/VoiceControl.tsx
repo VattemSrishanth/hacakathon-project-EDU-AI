@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSettings } from "../context/SettingsContext";
 
 /**
@@ -14,6 +14,7 @@ const SpeechRecognition = (window as any).SpeechRecognition || (window as any).w
 
 const VoiceControl: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { settings } = useSettings();
   const { accessibilityMode, voiceLanguage, lowPowerMode } = settings.themeAccessibility;
 
@@ -24,10 +25,23 @@ const VoiceControl: React.FC = () => {
   const timerRef = useRef<any>(null);
   const stateRef = useRef<"idle" | "listening" | "processing">("idle");
 
+  const isQuizRoute = location.pathname.startsWith("/lessons/quiz");
+
   // Keep state sync for high-frequency recognition callbacks
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
+
+  // Hard-disable voice control on quiz route
+  useEffect(() => {
+    if (isQuizRoute && recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        // ignore stop errors
+      }
+    }
+  }, [isQuizRoute]);
 
   const resetToIdle = useCallback(() => {
     setState("idle");
@@ -75,7 +89,41 @@ const VoiceControl: React.FC = () => {
     // 1. Accessibility Check
     if (accessibilityMode === "Dumb") return;
 
-    // 2. Command Parsing - expanded triggers for better recognition
+    // 2. Fullscreen Commands
+    const enterFsTriggers = [
+      "full screen", "fullscreen", "enter full screen", "open full screen", "open fullscreen", "go full screen", "go fullscreen"
+    ];
+    const exitFsTriggers = [
+      "exit full screen", "exit fullscreen", "leave full screen", "leave fullscreen", "close full screen", "close fullscreen", "normal screen"
+    ];
+
+    const textHas = (phrases: string[]) => phrases.some(p => text.includes(p));
+
+    if (textHas(enterFsTriggers)) {
+      setState("processing");
+      stateRef.current = "processing";
+      document.documentElement.requestFullscreen?.().catch(() => undefined);
+      if (accessibilityMode === "Blind") {
+        const msg = new SpeechSynthesisUtterance("Entering full screen");
+        window.speechSynthesis.speak(msg);
+      }
+      setTimeout(() => resetToIdle(), 800);
+      return;
+    }
+
+    if (textHas(exitFsTriggers)) {
+      setState("processing");
+      stateRef.current = "processing";
+      document.exitFullscreen?.().catch(() => undefined);
+      if (accessibilityMode === "Blind") {
+        const msg = new SpeechSynthesisUtterance("Exiting full screen");
+        window.speechSynthesis.speak(msg);
+      }
+      setTimeout(() => resetToIdle(), 800);
+      return;
+    }
+
+    // 3. Command Parsing - expanded triggers for better recognition
     const commands = [
       { trigger: ["home", "go home", "main", "main page", "go to home", "homepage"], path: "/" },
       { trigger: ["dashboard", "dash", "dash board", "progress", "go to dashboard", "my progress"], path: "/dashboard" },
@@ -88,7 +136,7 @@ const VoiceControl: React.FC = () => {
 
     const matched = commands.find(cmd => cmd.trigger.some(k => text.includes(k)));
 
-    // 3. AI Direct Query Check (If no nav command matches)
+    // 4. AI Direct Query Check (If no nav command matches)
     const askKeywords = ["what is", "tell me", "explain", "how to", "why", "what are", "who is", "define"];
     const askMatch = askKeywords.find(k => text.includes(k));
 
@@ -146,6 +194,8 @@ const VoiceControl: React.FC = () => {
   }, [startListening, resetToIdle]);
 
   useEffect(() => {
+    if (isQuizRoute) return; // Do not init mic on quiz pages
+
     if (!SpeechRecognition || accessibilityMode === "Dumb") {
       setIsSupported(!!SpeechRecognition);
       return;
@@ -232,9 +282,10 @@ const VoiceControl: React.FC = () => {
       reco.stop();
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [voiceLanguage, accessibilityMode, lowPowerMode, executeCommand, startListening]);
+  }, [voiceLanguage, accessibilityMode, lowPowerMode, executeCommand, startListening, isQuizRoute]);
 
-  if (!isSupported || accessibilityMode === "Dumb") return null;
+  // Hide microphone UI on quiz route to prevent interaction during exams
+  if (isQuizRoute || !isSupported || accessibilityMode === "Dumb") return null;
 
   return (
     <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-[100]">

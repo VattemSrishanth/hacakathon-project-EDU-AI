@@ -6,11 +6,12 @@ import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { t } = useSettings();
+  const { t, settings } = useSettings();
   const { isAuthenticated } = useAuth();
+  const isDark = settings.themeAccessibility.theme === 'Dark';
 
   return (
-    <div className="min-h-screen bg-app-bg text-app-text-main transition-colors duration-300">
+    <div className="min-h-screen bg-white text-app-text-main transition-colors duration-300">
       {/* Hero Section */}
       <section className="py-24 px-4 relative overflow-hidden">
         {/* Decorative Background Elements */}
@@ -32,7 +33,7 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
               variant="primary" 
-              className="px-10 py-4 text-lg rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-transform"
+              className="px-10 py-4 text-lg rounded-2xl shadow-xl shadow-green-500/30 bg-green-600 hover:bg-green-700 text-white hover:scale-105 transition-transform"
               onClick={() => navigate(isAuthenticated ? "/lessons" : "/register")}
             >
               {t.home.getStarted}
@@ -49,7 +50,7 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-app-bg-alt/50">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-sm font-black text-primary uppercase tracking-[0.3em] mb-4">
@@ -138,10 +139,17 @@ const Home = () => {
 
       {/* CTA Section */}
       <section className="py-24 px-4">
-        <div className="max-w-5xl mx-auto bg-linear-to-br from-primary to-indigo-700 rounded-[3rem] p-12 text-center text-white shadow-2xl shadow-primary/30 relative overflow-hidden">
-          {/* Subtle CTA background patterns */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-400/20 rounded-full -ml-32 -mb-32 blur-3xl" />
+        <div
+          className={`max-w-5xl mx-auto rounded-[3rem] p-12 text-center relative overflow-hidden border
+            ${isDark
+              ? 'bg-linear-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-2xl shadow-black/40 border-white/10'
+              : 'bg-linear-to-br from-primary to-indigo-700 text-white shadow-2xl shadow-primary/30 border-primary/10'
+            }
+          `}
+        >
+          {/* Subtle CTA background patterns tuned per theme */}
+          <div className={`absolute top-0 right-0 w-64 h-64 rounded-full -mr-32 -mt-32 blur-3xl ${isDark ? 'bg-white/10' : 'bg-white/10'}`} />
+          <div className={`absolute bottom-0 left-0 w-64 h-64 rounded-full -ml-32 -mb-32 blur-3xl ${isDark ? 'bg-cyan-300/15' : 'bg-cyan-400/20'}`} />
           
           <div className="relative z-10">
             <h2 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">{t.home.ctaTitle}</h2>
@@ -149,7 +157,10 @@ const Home = () => {
               {t.home.ctaDesc}
             </p>
             <Button 
-              className="bg-white px-12 py-5 text-xl font-black rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all text-indigo-900"
+              className={`${isDark
+                ? 'bg-white/90 text-indigo-900 hover:bg-white shadow-xl shadow-black/20'
+                : 'bg-white text-indigo-900 shadow-xl shadow-primary/20'
+              } px-12 py-5 text-xl font-black rounded-2xl hover:scale-105 active:scale-95 transition-all`}
               onClick={() => navigate(isAuthenticated ? "/lessons" : "/register")}
             >
               {t.home.startLearning}

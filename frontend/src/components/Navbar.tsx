@@ -1,14 +1,22 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [profilePinned, setProfilePinned] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(() => !!document.fullscreenElement);
   const { auth, isAuthenticated, logout } = useAuth();
-  const { t } = useSettings();
+  const { t, settings } = useSettings();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -25,6 +33,14 @@ const Navbar = () => {
     { to: '/support', label: t.nav.support },
     { to: '/settings', label: t.nav.settings },
   ];
+
+  const isDark = settings.themeAccessibility.theme === 'Dark';
+  const popupBg = isDark ? 'bg-gray-800 border-gray-700 text-gray-100' : 'bg-white border-gray-200 text-gray-900';
+  const popupHeaderBg = isDark ? 'bg-gray-900/60 border-gray-700 text-gray-100' : 'bg-gray-50 border-gray-100 text-gray-900';
+  const popupHover = isDark ? 'hover:bg-gray-700 text-gray-100' : 'hover:bg-gray-100 text-gray-800';
+  const logoutHover = isDark ? 'hover:bg-red-900/30 text-red-300' : 'hover:bg-red-50 text-red-600';
+
+  if (isFullscreen) return null;
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-colors duration-200">
@@ -56,10 +72,19 @@ const Navbar = () => {
                 {t.nav.login}
               </Link>
             ) : (
-              <div className="relative">
+              <div
+                className="relative"
+                onMouseEnter={() => setProfileOpen(true)}
+                onMouseLeave={() => {
+                  if (!profilePinned) setProfileOpen(false);
+                }}
+              >
                 <button
                   type="button"
-                  onClick={() => setProfileOpen((prev) => !prev)}
+                  onClick={() => {
+                    setProfileOpen((prev) => !prev);
+                    setProfilePinned((prev) => !prev);
+                  }}
                   className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold"
                   aria-label="User menu"
                 >
@@ -75,27 +100,30 @@ const Navbar = () => {
                 </button>
 
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg z-50 popup-interactive">
-                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">
+                  <div
+                    className={`absolute right-0 mt-2 rounded-lg border shadow-lg z-50 popup-interactive profile-dropdown ${popupBg}`}
+                  >
+                    <div className={`px-4 py-3 border-b profile-dropdown__header ${popupHeaderBg}`}>
+                      <p className="text-sm font-bold profile-dropdown__text">
                         {auth?.user?.username || auth?.user?.email || 'User'}
                       </p>
-                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300">{auth?.user?.email}</p>
+                      <p className="text-xs font-medium opacity-80 profile-dropdown__email">{auth?.user?.email}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => {
                         setProfileOpen(false);
+                        setProfilePinned(false);
                         navigate('/dashboard');
                       }}
-                      className="w-full text-left px-4 py-2 text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className={`w-full text-left px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${popupHover}`}
                     >
                       {t.nav.profile}
                     </button>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      className={`w-full text-left px-4 py-2 text-sm font-bold whitespace-nowrap transition-colors ${logoutHover}`}
                     >
                       {t.nav.logout}
                     </button>

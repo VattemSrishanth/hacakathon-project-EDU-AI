@@ -1,17 +1,27 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserPlus, Mail, Lock, User, ShieldCheck, AlertCircle } from 'lucide-react';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { authAPI } from '../services/api';
+import { useSettings } from '../context/SettingsContext';
+import type { SupportedLanguage } from '../i18n/translations';
 
 const Register = () => {
+  const { settings, updateLearning, updateThemeAccessibility } = useSettings();
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [preferredLanguage, setPreferredLanguage] = useState<SupportedLanguage>(settings.learning.language);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  const languageOptions = useMemo<SupportedLanguage[]>(
+    () => ['English', 'Telugu', 'Hindi', 'Spanish', 'French'],
+    []
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,6 +30,10 @@ const Register = () => {
     setSuccessMessage('');
 
     try {
+      // Persist preferred language immediately so the whole app switches right after signup.
+      updateLearning({ language: preferredLanguage });
+      updateThemeAccessibility({ voiceLanguage: preferredLanguage });
+
       const response = await authAPI.register(name, email, password);
       if (response?.success) {
         setSuccessMessage('Registration successful! You can now sign in.');
@@ -67,6 +81,29 @@ const Register = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Preferred Language</label>
+              <div className="relative group">
+                <select
+                  value={preferredLanguage}
+                  onChange={(e) => {
+                    const lang = e.target.value as SupportedLanguage;
+                    setPreferredLanguage(lang);
+                    updateLearning({ language: lang });
+                    updateThemeAccessibility({ voiceLanguage: lang });
+                  }}
+                  className="w-full pl-4 pr-10 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold shadow-sm appearance-none"
+                >
+                  {languageOptions.map((lang) => (
+                    <option key={lang} value={lang}>{lang}</option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-app-text-muted">
+                  ▼
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Full Name</label>
               <div className="relative group">

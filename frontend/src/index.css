@@ -52,6 +52,13 @@ body {
   font-size: var(--font-size-base);
 }
 
+/* Gentle site-wide transitions for color-related changes */
+* {
+  transition-property: background-color, color, border-color, box-shadow, transform;
+  transition-duration: var(--transition-speed);
+  transition-timing-function: ease;
+}
+
 .dark body {
   background-color: var(--bg-secondary);
 }
@@ -115,6 +122,34 @@ body {
 
 .dark .popup-interactive:hover {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* ==================== Profile Dropdown Responsiveness ==================== */
+.profile-dropdown {
+  /* Fit to content without a fixed width while staying within the viewport. */
+  width: fit-content;
+  min-width: max-content;
+  max-width: min(90vw, 22rem);
+}
+
+.profile-dropdown__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.profile-dropdown__text {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-dropdown__email {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ==================== High Contrast Mode ==================== */

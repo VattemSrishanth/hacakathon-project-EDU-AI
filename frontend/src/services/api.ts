@@ -157,4 +157,17 @@ export const voiceAPI = {
   },
 };
 
+// Quiz API
+export const quizAPI = {
+  generateFromPdf: async (pdfBase64: string, pdfName?: string, language: string = 'English', count: number = 15) => {
+    const response = await api.post('/quiz/generate', {
+      pdf_base64: pdfBase64,
+      pdf_name: pdfName,
+      language,
+      count,
+    });
+    return response.data;
+  },
+};
+
 export default api;

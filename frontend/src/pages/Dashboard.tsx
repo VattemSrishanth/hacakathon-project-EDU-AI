@@ -9,7 +9,8 @@ import {
   Clock, 
   CheckCircle2, 
   Target,
-  Zap
+  Zap,
+  FileQuestion
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -21,6 +22,8 @@ const Dashboard = () => {
     percentage: 0,
     certificates: 0
   });
+
+  const [lastQuiz, setLastQuiz] = useState<{ pdfName: string; score: number; total: number; submittedAt: string } | null>(null);
   
   useEffect(() => {
     try {
@@ -38,6 +41,18 @@ const Dashboard = () => {
       }
     } catch (e) {
       console.error('Failed to load lesson metrics', e);
+    }
+
+    try {
+      const quizRaw = localStorage.getItem('quiz_results');
+      if (quizRaw) {
+        const quizzes = JSON.parse(quizRaw) as { pdfName: string; score: number; total: number; submittedAt: string }[];
+        if (quizzes.length > 0) {
+          setLastQuiz(quizzes[0]);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load quiz results', e);
     }
   }, []);
 
@@ -181,6 +196,21 @@ const Dashboard = () => {
           </div>
 
           <div className="lg:col-span-1">
+            {lastQuiz && (
+              <Card className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <FileQuestion size={20} className="text-primary" />
+                  <h2 className="text-xl font-black text-app-text-main tracking-tight">Last Quiz</h2>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-app-text-main font-bold">{lastQuiz.pdfName}</p>
+                  <p className="text-app-text-sub font-medium">Score: {lastQuiz.score}/{lastQuiz.total}</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-app-text-muted">
+                    {new Date(lastQuiz.submittedAt).toLocaleString()}
+                  </p>
+                </div>
+              </Card>
+            )}
             <LoginTracker />
           </div>
         </div>

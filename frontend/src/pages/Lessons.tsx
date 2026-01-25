@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
 import Card from '../components/Card';
@@ -12,7 +12,8 @@ import {
   CheckCircle2, 
   PlayCircle,
   GraduationCap,
-  Sparkles
+  Sparkles,
+  UploadCloud
 } from 'lucide-react';
 
 interface Lesson {
@@ -35,6 +36,7 @@ const Lessons = () => {
   const [filter, setFilter] = useState<string>('All');
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [searchQuery, setSearchQuery] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load lessons from API
   useEffect(() => {
@@ -71,6 +73,26 @@ const Lessons = () => {
 
   const handleStartLearning = (lessonId: string) => {
     navigate(`/lessons/${lessonId}`);
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const pdfData = reader.result as string; // base64 data URL
+      const pdfUrl = URL.createObjectURL(file);
+      navigate('/lessons/uploaded', { state: { pdfUrl, pdfName: file.name, pdfData } });
+    };
+    reader.readAsDataURL(file);
+
+    // Reset input so the same file can be selected again
+    event.target.value = '';
   };
 
   const handleMarkProgress = (lessonId: string) => {
@@ -133,6 +155,24 @@ const Lessons = () => {
 
         {/* Controls Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+          <div className="lg:col-span-4 flex flex-wrap gap-3 justify-center lg:justify-start">
+            <Button
+              variant="primary"
+              onClick={handleUploadClick}
+              className="inline-flex items-center gap-2 rounded-xl px-5 py-3 font-black uppercase tracking-widest text-[10px]"
+            >
+              <UploadCloud size={16} />
+              Upload PDF
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          </div>
+
           {/* Search */}
           <div className="lg:col-span-2 relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted group-focus-within:text-primary transition-colors" size={20} />
@@ -164,102 +204,14 @@ const Lessons = () => {
           </div>
         </div>
 
-        {/* Lessons Grid */}
-        {filteredLessons.length === 0 ? (
-          <Card className="py-20 text-center">
-            <div className="w-20 h-20 bg-app-bg-alt rounded-3xl flex items-center justify-center mx-auto mb-6 text-app-text-muted">
-              <Search size={40} />
-            </div>
-            <h3 className="text-2xl font-black text-app-text-main mb-2">No Lessons Found</h3>
-            <p className="text-app-text-sub font-medium">Try adjusting your filters or search query.</p>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredLessons.map((lesson) => {
-              const lessonProgress = progress[lesson.id] || 0;
-              
-              return (
-                <Card key={lesson.id} hover className="group flex flex-col h-full overflow-hidden">
-                  {/* Decorative Header */}
-                  <div className="h-2 w-full bg-linear-to-r from-primary/40 to-secondary/40 absolute top-0 left-0" />
-                  
-                  <div className="pt-2">
-                    {/* Category & Level */}
-                    <div className="flex items-center justify-between mb-6">
-                      <span className="bg-primary/5 text-primary px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-primary/10">
-                        {lesson.category}
-                      </span>
-                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest border ${
-                        lesson.level === 'Beginner' ? 'bg-green-500/5 text-green-500 border-green-500/20' :
-                        lesson.level === 'Intermediate' ? 'bg-secondary/5 text-secondary border-secondary/20' :
-                        'bg-red-500/5 text-red-500 border-red-500/20'
-                      }`}>
-                        {lesson.level}
-                      </span>
-                    </div>
-
-                    <h3 className="text-2xl font-black text-app-text-main mb-4 leading-tight group-hover:text-primary transition-colors">
-                      {lesson.title}
-                    </h3>
-
-                    <p className="text-app-text-sub mb-6 grow font-medium leading-relaxed line-clamp-3">
-                      {lesson.description}
-                    </p>
-
-                    {/* Meta Info */}
-                    <div className="flex items-center gap-4 text-app-text-muted mb-6">
-                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider">
-                        <Clock size={14} className="text-primary" />
-                        {lesson.duration}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider">
-                        <BookOpen size={14} className="text-secondary" />
-                        {lesson.topics?.length || 0} Topics
-                      </div>
-                    </div>
-
-                    {/* Progress */}
-                    <div className="space-y-3 mb-8">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs font-black text-app-text-muted uppercase tracking-widest">Progress</span>
-                        <span className="text-xs font-black text-primary">{lessonProgress}%</span>
-                      </div>
-                      <div className="w-full bg-app-bg-alt rounded-full h-2.5 p-0.5 border border-app-border overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-1000 ${getProgressColor(lessonProgress)}`}
-                          style={{ width: `${lessonProgress}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-3 pt-4 border-t border-app-border">
-                      <Button
-                        variant="primary"
-                        onClick={() => handleStartLearning(lesson.id)}
-                        className="flex-1 rounded-xl py-3 flex items-center justify-center gap-2 group/btn font-black uppercase tracking-widest text-[10px]"
-                      >
-                        <PlayCircle size={16} className="transition-transform group-hover/btn:scale-110" />
-                        Start Learning
-                      </Button>
-                      <button
-                        onClick={() => handleMarkProgress(lesson.id)}
-                        className={`w-12 flex items-center justify-center rounded-xl border-2 transition-all duration-300 ${
-                          lessonProgress >= 100 
-                            ? 'bg-green-500 border-green-500 text-white' 
-                            : 'bg-app-bg border-app-border text-app-text-muted hover:border-primary hover:text-primary'
-                        }`}
-                        title="Mark progress"
-                      >
-                        {lessonProgress >= 100 ? <CheckCircle2 size={20} /> : <Sparkles size={20} />}
-                      </button>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
+        {/* Lessons disabled placeholder */}
+        <div className="py-16 px-8 bg-app-bg border border-app-border rounded-3xl text-center shadow-sm">
+          <div className="w-20 h-20 bg-app-bg-alt rounded-3xl flex items-center justify-center mx-auto mb-6 text-app-text-muted">
+            <Search size={40} />
           </div>
-        )}
+          <h3 className="text-2xl font-black text-app-text-main mb-3">Lessons are currently unavailable</h3>
+          <p className="text-app-text-sub font-medium">Please check back soon for updated content.</p>
+        </div>
       </div>
     </div>
   );

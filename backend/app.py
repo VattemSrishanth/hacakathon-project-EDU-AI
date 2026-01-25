@@ -5,6 +5,9 @@ A Flask-based backend for the educational platform serving rural and disabled le
 
 import os
 import re
+import io
+import base64
+import json
 from urllib.parse import urlparse, parse_qs
 from xml.etree.ElementTree import ParseError
 
@@ -12,6 +15,7 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 from ai_engine import get_ai_response, generate_video_explanation, get_ai_response_payload, analyze_image
+import llm_service
 from auth import auth_bp
 from models import db, User
 
@@ -40,6 +44,154 @@ try:
     import PyPDF2
 except ImportError:
     PyPDF2 = None
+
+
+def _decode_pdf_base64(pdf_base64: str):
+    """Decode base64 data URL or raw base64 string to bytes."""
+    if not pdf_base64:
+        return None
+    try:
+        if pdf_base64.startswith('data:') and ',' in pdf_base64:
+            pdf_base64 = pdf_base64.split(',', 1)[1]
+        return base64.b64decode(pdf_base64)
+    except Exception as exc:
+        print(f"[quiz] Failed to decode base64 PDF: {exc}")
+        return None
+
+
+def _extract_pdf_text_from_bytes(pdf_bytes: bytes):
+    """Extract text from PDF bytes using PyPDF2 if available."""
+    if not pdf_bytes:
+        return ""
+    if PyPDF2 is None:
+        print("[quiz] PyPDF2 not installed; cannot extract PDF text")
+        return ""
+    try:
+        reader = PyPDF2.PdfReader(io.BytesIO(pdf_bytes))
+        pages = []
+        for page in reader.pages:
+            pages.append(page.extract_text() or "")
+        return "\n".join(pages)
+    except Exception as exc:
+        print(f"[quiz] Failed to read PDF bytes: {exc}")
+        return ""
+
+
+def _split_text_into_chunks(text: str, chunk_size: int = 4000, overlap: int = 200):
+    """
+    Split text into overlapping chunks to stay within API limits.
+    
+    Args:
+        text: The full text to split
+        chunk_size: Maximum characters per chunk (default 4000)
+        overlap: Characters to overlap between chunks for context continuity
+    
+    Returns:
+        List of text chunks
+    """
+    if not text:
+        return []
+    
+    # Clean text - remove excessive whitespace
+    text = ' '.join(text.split())
+    
+    if len(text) <= chunk_size:
+        return [text]
+    
+    chunks = []
+    start = 0
+    
+    while start < len(text):
+        # Calculate end position
+        end = start + chunk_size
+        
+        # If not the last chunk, try to break at a sentence boundary
+        if end < len(text):
+            # Look for sentence endings (.!?) within the last 200 chars of chunk
+            search_start = max(start, end - 200)
+            last_period = text.rfind('.', search_start, end)
+            last_question = text.rfind('?', search_start, end)
+            last_exclaim = text.rfind('!', search_start, end)
+            
+            # Find the latest sentence boundary
+            break_point = max(last_period, last_question, last_exclaim)
+            
+            if break_point > start:
+                end = break_point + 1  # Include the punctuation
+        
+        # Extract chunk and add to list
+        chunk = text[start:end].strip()
+        if chunk:
+            chunks.append(chunk)
+        
+        # Move start position (with overlap for context)
+        start = end - overlap if end < len(text) else end
+    
+    return chunks
+
+
+def _generate_quiz_from_chunk(chunk_text: str, chunk_index: int, total_chunks: int, 
+                               questions_per_chunk: int, language: str, pdf_name: str):
+    """
+    Generate quiz questions from a single text chunk using Gemini API.
+    
+    Args:
+        chunk_text: Text content of this chunk
+        chunk_index: Index of this chunk (0-based)
+        total_chunks: Total number of chunks being processed
+        questions_per_chunk: Number of questions to generate from this chunk
+        language: Language for questions
+        pdf_name: Name of the PDF for context
+    
+    Returns:
+        Tuple of (questions_list, error_message)
+    """
+    prompt = (
+        f"You are an education assessment generator. This is chunk {chunk_index + 1} of {total_chunks} "
+        f"from document '{pdf_name}'. Based ONLY on the provided text, "
+        f"create exactly {questions_per_chunk} multiple-choice questions in {language}. "
+        "Each question must have 4 concise options with exactly one correct answer. "
+        "Vary question types (recall, understanding, application). Avoid generic filler. "
+        "Return ONLY valid JSON array matching this schema (no markdown, no explanation): "
+        "[{\"id\":1,\"question\":\"text\",\"options\":[\"A\",\"B\",\"C\",\"D\"],\"answer\":0}] "
+        "IDs should start at 1. 'answer' is the correct option index (0-3). "
+        f"Text content:\n{chunk_text}"
+    )
+    
+    try:
+        # Call Gemini API
+        llm_response, error_code = llm_service.generate_text(
+            prompt, 
+            temperature=0.35, 
+            max_output_tokens=800
+        )
+        
+        if error_code != "ok" or not llm_response:
+            print(f"[quiz] Chunk {chunk_index + 1} LLM error: {error_code}")
+            return [], f"LLM error on chunk {chunk_index + 1}: {error_code}"
+        
+        # Parse JSON response
+        # Remove potential markdown code blocks
+        clean_response = llm_response.strip()
+        if clean_response.startswith('```'):
+            clean_response = clean_response.split('\n', 1)[-1]
+        if clean_response.endswith('```'):
+            clean_response = clean_response.rsplit('```', 1)[0]
+        clean_response = clean_response.strip()
+        
+        parsed = json.loads(clean_response)
+        if not isinstance(parsed, list):
+            return [], f"Invalid response format from chunk {chunk_index + 1}"
+        
+        return parsed, None
+        
+    except json.JSONDecodeError as exc:
+        print(f"[quiz] Chunk {chunk_index + 1} JSON parse error: {exc}")
+        print(f"[quiz] Raw response: {llm_response[:300] if llm_response else 'None'}")
+        return [], f"Failed to parse response from chunk {chunk_index + 1}"
+    except Exception as exc:
+        print(f"[quiz] Chunk {chunk_index + 1} error: {exc}")
+        return [], f"Error processing chunk {chunk_index + 1}: {str(exc)}"
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend", "dist"))
@@ -473,6 +625,156 @@ def analyze_pdf_route():
     except Exception as e:
         print(f"Analyze PDF error: {e}")
         return jsonify({"error": "Failed to analyze PDF", "success": False}), 500
+
+
+@app.route("/api/quiz/generate", methods=["POST"])
+def generate_quiz_route():
+    """
+    Generate AI-based quiz questions from PDF text or PDF base64.
+    
+    Supports PDFs of any size by:
+    1. Extracting text from the uploaded PDF
+    2. Splitting text into chunks (4000 chars each) if it exceeds limit
+    3. Sending each chunk to Gemini API sequentially
+    4. Merging all responses into one final quiz
+    5. Handling errors gracefully per chunk
+    """
+    try:
+        # === Step 1: Parse request data ===
+        data = request.get_json() or {}
+        pdf_text = (data.get("pdf_text") or "").strip()
+        pdf_base64 = data.get("pdf_base64")
+        pdf_name = (data.get("pdf_name") or "Uploaded PDF").strip()[:120]
+        language = (data.get("language") or "English").strip() or "English"
+        desired_count = data.get("count") or 15
+        
+        try:
+            desired_count = int(desired_count)
+        except Exception:
+            desired_count = 15
+        question_count = max(5, min(desired_count, 30))  # Allow up to 30 questions for large PDFs
+
+        # === Step 2: Extract text from PDF if base64 provided ===
+        if not pdf_text and pdf_base64:
+            print(f"[quiz] Decoding PDF base64 for '{pdf_name}'...")
+            pdf_bytes = _decode_pdf_base64(pdf_base64)
+            pdf_text = _extract_pdf_text_from_bytes(pdf_bytes)
+
+        if not pdf_text:
+            return jsonify({"success": False, "error": "No PDF content provided or could not extract text."}), 400
+
+        # Clean the text
+        pdf_text = pdf_text.strip().replace("\r", " ")
+        print(f"[quiz] Extracted {len(pdf_text)} characters from PDF")
+
+        # === Step 3: Split text into chunks if needed ===
+        # Use 4000 chars per chunk to stay well within 12000 char API limit
+        CHUNK_SIZE = 4000
+        chunks = _split_text_into_chunks(pdf_text, chunk_size=CHUNK_SIZE, overlap=100)
+        total_chunks = len(chunks)
+        print(f"[quiz] Split into {total_chunks} chunk(s)")
+
+        # Calculate questions per chunk (distribute evenly)
+        # Minimum 3 questions per chunk, distribute remaining
+        base_questions_per_chunk = max(3, question_count // total_chunks)
+        remaining_questions = question_count - (base_questions_per_chunk * total_chunks)
+
+        # === Step 4: Process each chunk and collect questions ===
+        all_questions = []
+        errors = []
+        
+        for i, chunk in enumerate(chunks):
+            # Add extra questions to first chunks if there's remainder
+            questions_for_this_chunk = base_questions_per_chunk
+            if remaining_questions > 0:
+                questions_for_this_chunk += 1
+                remaining_questions -= 1
+            
+            print(f"[quiz] Processing chunk {i + 1}/{total_chunks} ({len(chunk)} chars, {questions_for_this_chunk} questions)...")
+            
+            # Generate questions from this chunk
+            chunk_questions, error = _generate_quiz_from_chunk(
+                chunk_text=chunk,
+                chunk_index=i,
+                total_chunks=total_chunks,
+                questions_per_chunk=questions_for_this_chunk,
+                language=language,
+                pdf_name=pdf_name
+            )
+            
+            if error:
+                errors.append(error)
+                print(f"[quiz] Chunk {i + 1} error: {error}")
+            else:
+                all_questions.extend(chunk_questions)
+                print(f"[quiz] Chunk {i + 1} generated {len(chunk_questions)} questions")
+
+        # === Step 5: Normalize and deduplicate questions ===
+        normalized = []
+        seen_questions = set()  # Track question text to avoid duplicates
+        
+        for idx, item in enumerate(all_questions, start=1):
+            try:
+                question_text = str(item.get("question", "")).strip()
+                
+                # Skip empty or duplicate questions
+                if not question_text or question_text.lower() in seen_questions:
+                    continue
+                    
+                options = item.get("options") or []
+                answer_index = item.get("answer", 0)
+                
+                # Validate options
+                if len(options) < 4:
+                    continue
+                options = [str(opt).strip() for opt in options][:4]
+                if len(options) < 4 or any(not opt for opt in options):
+                    continue
+                
+                # Validate answer index
+                answer_index = int(answer_index)
+                if answer_index < 0 or answer_index > 3:
+                    answer_index = 0
+                
+                # Add to normalized list with sequential ID
+                normalized.append({
+                    "id": len(normalized) + 1,  # Sequential IDs
+                    "text": question_text,
+                    "options": options,
+                    "correct": answer_index
+                })
+                seen_questions.add(question_text.lower())
+                
+            except Exception as e:
+                print(f"[quiz] Error normalizing question: {e}")
+                continue
+
+        # === Step 6: Return results ===
+        if not normalized:
+            error_msg = "; ".join(errors) if errors else "No usable questions generated"
+            return jsonify({"success": False, "error": error_msg}), 500
+
+        # Limit to requested count
+        final_questions = normalized[:question_count]
+        
+        print(f"[quiz] Successfully generated {len(final_questions)} questions from {total_chunks} chunk(s)")
+        
+        return jsonify({
+            "success": True,
+            "questions": final_questions,
+            "metadata": {
+                "total_chunks": total_chunks,
+                "total_chars": len(pdf_text),
+                "questions_generated": len(final_questions),
+                "errors": errors if errors else None
+            }
+        })
+        
+    except Exception as e:
+        print(f"[quiz] Generate quiz error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": f"Failed to generate quiz: {str(e)}"}), 500
 
 
 # ==================== Lessons Routes ====================
