@@ -11,37 +11,53 @@ automatically switches to Groq to ensure uninterrupted service for learners.
 
 import llm_service
 import groq_service
+import time
 
 def generate_text(prompt, temperature=0.5, max_output_tokens=512, **kwargs):
     """
-    Generates text using the primary LLM (Gemini) with automatic fallback to Groq.
+    Generates text using the primary LLM (Gemini) with automatic retry and switch to Groq.
     
     Returns:
         tuple: (generated_text, error_code)
     """
     # 1. Attempt Primary Provider: Google Gemini
     print(f"[unified_llm] --- NEW REQUEST ---")
-    print("[unified_llm] Attempting Primary Provider: Gemini...")
-    text, error_code = llm_service.generate_text(
-        prompt, 
-        temperature=temperature, 
-        max_output_tokens=max_output_tokens
-    )
     
-    # Define error codes that should trigger a fallback
-    # We fallback on transient errors or configuration issues
+    max_retries = 1
+    text, error_code = "", "unknown"
+    
+    for attempt in range(max_retries + 1):
+        print(f"[unified_llm] Attempting Gemini (Attempt {attempt + 1})...")
+        text, error_code = llm_service.generate_text(
+            prompt, 
+            temperature=temperature, 
+            max_output_tokens=max_output_tokens
+        )
+        
+        if error_code == "ok":
+            print("[unified_llm] Gemini success.")
+            return text, "ok"
+            
+        if error_code == "quota_exceeded" and attempt < max_retries:
+            print("[unified_llm] Gemini quota exceeded. Retrying in 2 seconds...")
+            time.sleep(2)
+            continue
+        break
+
+    # Define error codes that should trigger a fallback to Groq
     SHOULD_FALLBACK = [
         "quota_exceeded", 
         "service_unavailable", 
         "invalid_api_key", 
         "missing_api_key",
         "empty_response", 
-        "unknown"
+        "unknown",
+        "blocked"
     ]
     
     # 2. Determine if Fallback is Necessary
     if error_code in SHOULD_FALLBACK:
-        print(f"[unified_llm] Gemini failed with code: {error_code}. Falling back to Groq...")
+        print(f"[unified_llm] Gemini failed with code: {error_code}. Silently switching to Groq...")
         
         # 3. Attempt Backup Provider: Groq
         fallback_text, fallback_error = groq_service.generate_text(

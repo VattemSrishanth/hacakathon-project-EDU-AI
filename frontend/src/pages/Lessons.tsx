@@ -1,18 +1,12 @@
-import { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { useState, useEffect, useRef, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
-import Card from '../components/Card';
 import Button from '../components/Button';
 import { lessonsAPI } from '../services/api';
 import { 
-  BookOpen, 
   Search, 
   Filter, 
-  Clock, 
-  CheckCircle2, 
-  PlayCircle,
   GraduationCap,
-  Sparkles,
   UploadCloud
 } from 'lucide-react';
 
@@ -204,14 +198,72 @@ const Lessons = () => {
           </div>
         </div>
 
-        {/* Lessons disabled placeholder */}
-        <div className="py-16 px-8 bg-app-bg border border-app-border rounded-3xl text-center shadow-sm">
-          <div className="w-20 h-20 bg-app-bg-alt rounded-3xl flex items-center justify-center mx-auto mb-6 text-app-text-muted">
-            <Search size={40} />
-          </div>
-          <h3 className="text-2xl font-black text-app-text-main mb-3">Lessons are currently unavailable</h3>
-          <p className="text-app-text-sub font-medium">Please check back soon for updated content.</p>
+        {/* Lessons Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredLessons.map((lesson) => (
+            <div key={lesson.id} className="bg-app-bg border border-app-border rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group">
+              <div className="p-8">
+                <div className="flex justify-between items-start mb-6">
+                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider">
+                    {lesson.category}
+                  </span>
+                  <span className="text-app-text-muted text-xs font-bold">{lesson.duration}</span>
+                </div>
+                
+                <h3 className="text-2xl font-black text-app-text-main mb-3 group-hover:text-primary transition-colors">
+                  {lesson.title}
+                </h3>
+                <p className="text-app-text-sub font-medium mb-8 line-clamp-2">
+                  {lesson.description}
+                </p>
+
+                {/* Progress Bar */}
+                <div className="mb-8">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-black uppercase tracking-widest text-app-text-muted">Progress</span>
+                    <span className="text-xs font-black text-app-text-main">
+                      {progress[lesson.id] || 0}%
+                    </span>
+                  </div>
+                  <div className="h-2 bg-app-bg-alt rounded-full overflow-hidden border border-app-border/50">
+                    <div 
+                      className={`h-full transition-all duration-500 ease-out ${getProgressColor(progress[lesson.id] || 0)}`}
+                      style={{ width: `${progress[lesson.id] || 0}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button 
+                    variant="primary" 
+                    onClick={() => handleStartLearning(lesson.id)}
+                    className="w-full rounded-xl py-3 font-black uppercase tracking-widest text-[10px]"
+                  >
+                    Start Lesson
+                  </Button>
+                  <button 
+                    onClick={() => handleMarkProgress(lesson.id)}
+                    className="flex items-center justify-center w-12 h-12 rounded-xl bg-app-bg-alt border border-app-border text-app-text-main hover:bg-primary/10 hover:text-primary transition-colors"
+                  >
+                    <div className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center p-0.5">
+                      {(progress[lesson.id] || 0) >= 100 && <div className="w-full h-full bg-current rounded-full" />}
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
+
+        {filteredLessons.length === 0 && (
+          <div className="py-16 px-8 bg-app-bg border border-app-border rounded-3xl text-center shadow-sm">
+            <div className="w-20 h-20 bg-app-bg-alt rounded-3xl flex items-center justify-center mx-auto mb-6 text-app-text-muted">
+              <Search size={40} />
+            </div>
+            <h3 className="text-2xl font-black text-app-text-main mb-3">No lessons found</h3>
+            <p className="text-app-text-sub font-medium">Try adjusting your search or filter to find what you're looking for.</p>
+          </div>
+        )}
       </div>
     </div>
   );

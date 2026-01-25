@@ -288,7 +288,7 @@ const VoiceControl: React.FC = () => {
   if (isQuizRoute || !isSupported || accessibilityMode === "Dumb") return null;
 
   return (
-    <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-[100]">
+    <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-100">
       {/* Active Indicator & Status */}
       {state === "listening" && (
         <div className="bg-primary text-white p-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-in fade-in zoom-in slide-in-from-bottom-2 duration-300 ring-4 ring-primary/20">

@@ -12,18 +12,18 @@ interface LocationState {
 
 interface Question {
   id: number;
-  text: string;
-  options: string[];
-  correct: number;
+  type: 'mcq' | 'short' | 'conceptual';
+  question: string;
+  options?: string[];
+  correct_answer: string;
+  explanation: string;
 }
-
-const EMPTY_QUIZ: Question[] = [];
 
 const PdfQuiz = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state || {}) as LocationState;
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [answers, setAnswers] = useState<Record<number, any>>({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState<number | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -85,7 +85,6 @@ const PdfQuiz = () => {
         if (response?.success && Array.isArray(response.questions)) {
           setQuestions(response.questions as Question[]);
         } else {
-          setQuestions(EMPTY_QUIZ);
           setError(response?.error || 'Could not generate quiz from PDF.');
         }
       } catch (e: any) {
@@ -99,24 +98,36 @@ const PdfQuiz = () => {
     load();
   }, [pdfData, pdfName]);
 
-  const handleSelect = (id: number, optionIndex: number) => {
+  const handleSelect = (id: number, val: any) => {
     if (submitted) return;
-    setAnswers((prev) => ({ ...prev, [id]: optionIndex }));
+    setAnswers((prev) => ({ ...prev, [id]: val }));
   };
 
   const handleSubmit = () => {
     if (loading || error || !questions.length) return;
     const total = questions.length;
-    const correctCount = questions.reduce((acc, q) => {
-      return acc + ((answers[q.id] ?? -1) === q.correct ? 1 : 0);
-    }, 0);
+    
+    let correctCount = 0;
+    questions.forEach(q => {
+      const ans = answers[q.id];
+      if (q.type === 'mcq') {
+        if (ans === q.correct_answer) correctCount++;
+      } else {
+        // Simple string match for short/conceptual
+        if (ans?.toString().toLowerCase().trim() === q.correct_answer.toLowerCase().trim()) {
+          correctCount++;
+        }
+      }
+    });
+
     setScore(correctCount);
     setSubmitted(true);
 
     if (document.fullscreenElement) {
       document.exitFullscreen?.().catch(() => undefined);
     }
-
+    
+    // Persist result
     const result = {
       id: Date.now(),
       pdfName,
@@ -179,61 +190,104 @@ const PdfQuiz = () => {
           </div>
 
           {loading ? (
-            <div className="flex items-center justify-center py-10 text-app-text-sub font-bold">Generating quiz from your PDF...</div>
+            <div className="flex items-center justify-center py-10 text-app-text-sub font-bold">Generating exam-grade quiz from your PDF...</div>
           ) : error ? (
             <div className="p-4 rounded-xl border border-red-300 bg-red-50 text-red-700 font-bold">{error}</div>
           ) : (
             <div className="space-y-6">
               {questions.map((q) => (
-                <div key={q.id} className="p-4 rounded-xl border border-app-border bg-app-bg-alt">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-sm">{q.id}</span>
-                    <p className="text-app-text-main font-bold leading-snug">{q.text}</p>
+                <div key={q.id} className="p-6 rounded-2xl border border-app-border bg-app-bg shadow-sm">
+                  <div className="flex items-start gap-3 mb-4">
+                    <span className="shrink-0 w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center font-black text-xs">
+                      {q.id}
+                    </span>
+                    <div className="flex-1">
+                       <span className="text-[10px] font-black uppercase tracking-tighter text-blue-500 mb-1 block">
+                         {q.type} Question
+                       </span>
+                       <p className="text-app-text-main font-bold text-lg leading-tight">{q.question}</p>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {q.options.map((opt, idx) => {
-                      const selected = answers[q.id] === idx;
-                      const isCorrect = submitted && q.correct === idx;
-                      const isWrong = submitted && selected && q.correct !== idx;
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => handleSelect(q.id, idx)}
-                          className={`text-left rounded-xl border px-4 py-3 font-medium transition-all ${
-                            selected ? 'border-primary text-primary bg-primary/5' : 'border-app-border text-app-text-main hover:border-primary/40'
-                          } ${isCorrect ? 'border-green-500 text-green-600 bg-green-500/10' : ''} ${isWrong ? 'border-red-500 text-red-600 bg-red-500/10' : ''}`}
-                          disabled={submitted}
-                        >
-                          {opt}
-                        </button>
-                      );
-                    })}
-                  </div>
+
+                  {q.type === 'mcq' && q.options && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                      {q.options.map((opt, idx) => {
+                        const isSelected = answers[q.id] === opt;
+                        const isCorrect = submitted && opt === q.correct_answer;
+                        const isWrong = submitted && isSelected && opt !== q.correct_answer;
+                        
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => handleSelect(q.id, opt)}
+                            disabled={submitted}
+                            className={`text-left rounded-xl border-2 px-6 py-4 font-bold transition-all relative ${
+                              isSelected 
+                                ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-600' 
+                                : 'border-slate-100 dark:border-slate-800 text-app-text-main hover:border-blue-200'
+                            } ${isCorrect ? 'border-green-500! bg-green-50! text-green-700!' : ''} 
+                            ${isWrong ? 'border-red-500! bg-red-50! text-red-700!' : ''}`}
+                          >
+                            <span className="mr-3 text-sm opacity-50">{String.fromCharCode(65 + idx)}.</span>
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {(q.type === 'short' || q.type === 'conceptual') && (
+                    <div className="mt-4">
+                       <textarea
+                         className="w-full p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/10 focus:border-blue-500 outline-none transition-all font-medium text-app-text-main"
+                         placeholder="Type your answer here..."
+                         rows={2}
+                         value={answers[q.id] || ''}
+                         onChange={(e) => handleSelect(q.id, e.target.value)}
+                         disabled={submitted}
+                       />
+                       {submitted && (
+                         <div className="mt-4 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+                            <p className="text-xs font-black uppercase text-blue-600 mb-1">Correct Answer / Criteria:</p>
+                            <p className="text-blue-800 dark:text-blue-200 font-bold">{q.correct_answer}</p>
+                         </div>
+                       )}
+                    </div>
+                  )}
+
+                  {submitted && q.explanation && (
+                    <div className="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800">
+                       <p className="text-xs font-black uppercase text-slate-500 mb-1">Explanation:</p>
+                       <p className="text-app-text-sub text-sm font-medium">{q.explanation}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
 
           {submitted && score !== null && (
-            <div className="mt-8 p-5 rounded-xl bg-app-bg border border-app-border flex items-center justify-between flex-wrap gap-3">
+            <div className="mt-12 p-8 rounded-4xl bg-slate-900 text-white shadow-2xl flex items-center justify-between flex-wrap gap-6 border border-white/10">
               <div>
-                <p className="text-xs font-black uppercase tracking-widest text-app-text-muted">Quiz submitted</p>
-                <p className="text-app-text-main font-black text-xl">Score: {score}/{questions.length}</p>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-400 mb-2">Quiz Results</p>
+                <div className="flex items-baseline gap-2">
+                   <span className="text-5xl font-black">{score}</span>
+                   <span className="text-xl text-slate-400">/ {questions.length}</span>
+                </div>
+                <p className="text-slate-400 mt-2 font-medium">Great effort! Review the explanations above to improve.</p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <Button
-                  variant="secondary"
+                  className="px-8 py-4 bg-white text-slate-900 rounded-2xl font-black hover:scale-105 transition-all"
                   onClick={() => navigate('/lessons', { replace: true })}
-                  className="rounded-xl font-black uppercase tracking-widest text-[10px]"
                 >
-                  Back to Lessons
+                  Lessons
                 </Button>
                 <Button
-                  variant="primary"
+                  className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black hover:scale-105 transition-all shadow-xl shadow-blue-500/30"
                   onClick={() => navigate('/dashboard', { replace: true })}
-                  className="rounded-xl font-black uppercase tracking-widest text-[10px]"
                 >
-                  View Dashboard
+                  Dashboard
                 </Button>
               </div>
             </div>
@@ -243,5 +297,4 @@ const PdfQuiz = () => {
     </div>
   );
 };
-
 export default PdfQuiz;

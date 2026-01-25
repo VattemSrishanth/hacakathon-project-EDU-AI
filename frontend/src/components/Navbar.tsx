@@ -43,23 +43,23 @@ const Navbar = () => {
   if (isFullscreen) return null;
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-colors duration-200">
+    <nav className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 transition-colors duration-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between h-20">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent drop-shadow-sm">
+            <Link to="/" className="flex items-center group">
+              <span className="text-3xl font-black tracking-tighter text-blue-600 dark:text-blue-400">
                 LearnBridge AI
               </span>
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-10">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                className="text-gray-800 dark:text-gray-100 font-medium hover:text-primary dark:hover:text-secondary transition-colors duration-200"
+                className="text-slate-700 dark:text-slate-200 font-black text-lg hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
               >
                 {link.label}
               </Link>

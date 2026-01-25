@@ -30,17 +30,17 @@ const Home = () => {
           <p className="text-xl md:text-2xl text-app-text-sub mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
             {t.home.tagline}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Button 
               variant="primary" 
-              className="px-10 py-4 text-lg rounded-2xl shadow-xl shadow-green-500/30 bg-green-600 hover:bg-green-700 text-white hover:scale-105 transition-transform"
+              className="px-12 py-5 text-xl rounded-2xl shadow-xl shadow-blue-500/20 bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 transition-all"
               onClick={() => navigate(isAuthenticated ? "/lessons" : "/register")}
             >
               {t.home.getStarted}
             </Button>
             <Button 
               variant="outline" 
-              className="px-10 py-4 text-lg rounded-2xl border-2 hover:scale-105 transition-transform bg-app-bg/50 backdrop-blur-sm"
+              className="px-12 py-5 text-xl rounded-2xl border-2 border-slate-200 hover:border-blue-600/30 hover:scale-105 transition-all bg-white/50 backdrop-blur-sm text-slate-700"
               onClick={() => navigate("/ai-tutor")}
             >
               {t.home.tryAiTutor}
@@ -138,29 +138,24 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-4">
+      <section className="py-24 px-4 bg-slate-50">
         <div
-          className={`max-w-5xl mx-auto rounded-[3rem] p-12 text-center relative overflow-hidden border
+          className={`max-w-6xl mx-auto rounded-[3rem] p-16 text-center relative overflow-hidden shadow-2xl border-2
             ${isDark
-              ? 'bg-linear-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-2xl shadow-black/40 border-white/10'
-              : 'bg-linear-to-br from-primary to-indigo-700 text-white shadow-2xl shadow-primary/30 border-primary/10'
+              ? 'bg-slate-900 border-white/10'
+              : 'bg-white border-slate-200'
             }
           `}
         >
-          {/* Subtle CTA background patterns tuned per theme */}
-          <div className={`absolute top-0 right-0 w-64 h-64 rounded-full -mr-32 -mt-32 blur-3xl ${isDark ? 'bg-white/10' : 'bg-white/10'}`} />
-          <div className={`absolute bottom-0 left-0 w-64 h-64 rounded-full -ml-32 -mb-32 blur-3xl ${isDark ? 'bg-cyan-300/15' : 'bg-cyan-400/20'}`} />
-          
           <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">{t.home.ctaTitle}</h2>
-            <p className="text-xl md:text-2xl mb-10 text-white/90 max-w-2xl mx-auto font-medium">
+            <h2 className={`text-5xl md:text-8xl font-black mb-8 leading-tight m-0 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              {t.home.ctaTitle}
+            </h2>
+            <p className={`text-2xl md:text-4xl mb-12 max-w-4xl mx-auto font-bold leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {t.home.ctaDesc}
             </p>
             <Button 
-              className={`${isDark
-                ? 'bg-white/90 text-indigo-900 hover:bg-white shadow-xl shadow-black/20'
-                : 'bg-white text-indigo-900 shadow-xl shadow-primary/20'
-              } px-12 py-5 text-xl font-black rounded-2xl hover:scale-105 active:scale-95 transition-all`}
+              className="px-24 py-10 text-4xl font-black rounded-4xl shadow-2xl hover:scale-105 active:scale-95 transition-all bg-blue-600! text-white! border-none uppercase tracking-tighter"
               onClick={() => navigate(isAuthenticated ? "/lessons" : "/register")}
             >
               {t.home.startLearning}

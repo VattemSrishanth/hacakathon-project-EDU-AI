@@ -8,6 +8,7 @@ import re
 import io
 import base64
 import json
+import time
 from urllib.parse import urlparse, parse_qs
 from xml.etree.ElementTree import ParseError
 
@@ -15,7 +16,7 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 from ai_engine import get_ai_response, generate_video_explanation, get_ai_response_payload, analyze_image
-import llm_service
+import unified_llm as llm_service
 from auth import auth_bp
 from models import db, User
 
@@ -131,47 +132,40 @@ def _split_text_into_chunks(text: str, chunk_size: int = 4000, overlap: int = 20
 
 
 def _generate_quiz_from_chunk(chunk_text: str, chunk_index: int, total_chunks: int, 
-                               questions_per_chunk: int, language: str, pdf_name: str):
+                               questions_to_generate: list, language: str, pdf_name: str, seen_concepts: list):
     """
-    Generate quiz questions from a single text chunk using Gemini API.
-    
-    Args:
-        chunk_text: Text content of this chunk
-        chunk_index: Index of this chunk (0-based)
-        total_chunks: Total number of chunks being processed
-        questions_per_chunk: Number of questions to generate from this chunk
-        language: Language for questions
-        pdf_name: Name of the PDF for context
-    
-    Returns:
-        Tuple of (questions_list, error_message)
+    Generate specific types of questions from a text chunk.
+    questions_to_generate: list of types like ['mcq', 'short']
     """
+    types_str = ", ".join(questions_to_generate)
     prompt = (
-        f"You are an education assessment generator. This is chunk {chunk_index + 1} of {total_chunks} "
-        f"from document '{pdf_name}'. Based ONLY on the provided text, "
-        f"create exactly {questions_per_chunk} multiple-choice questions in {language}. "
-        "Each question must have 4 concise options with exactly one correct answer. "
-        "Vary question types (recall, understanding, application). Avoid generic filler. "
-        "Return ONLY valid JSON array matching this schema (no markdown, no explanation): "
-        "[{\"id\":1,\"question\":\"text\",\"options\":[\"A\",\"B\",\"C\",\"D\"],\"answer\":0}] "
-        "IDs should start at 1. 'answer' is the correct option index (0-3). "
-        f"Text content:\n{chunk_text}"
+        f"You are an exam-grade quiz generation engine. System Role: Generate quizzes from PDF text.\n"
+        f"Document: {pdf_name}\n"
+        f"Processing Chunk {chunk_index + 1} of {total_chunks}.\n\n"
+        f"TASK:\n"
+        f"1. Extract 2-3 high-quality exam-relevant concepts from the text below.\n"
+        f"2. Check if these concepts overlap with existing concepts: {seen_concepts}\n"
+        f"3. Generate exactly {len(questions_to_generate)} questions of the following types: {types_str}\n"
+        f"4. Difficulty target for these questions should be a mix of Easy, Medium, or Hard (derived from content).\n"
+        "5. Ensure questions are strictly derived from the provided text.\n\n"
+        "STRICT JSON OUTPUT FORMAT (NO MARKDOWN, NO EMOJIS):\n"
+        "{\"concepts\": [\"concept1\", \"concept2\"], \"questions\": ["
+        "{\"type\": \"mcq\", \"question\": \"...\", \"options\": [\"A\", \"B\", \"C\", \"D\"], \"correct_answer\": \"...\", \"explanation\": \"...\"},"
+        "{\"type\": \"short\", \"question\": \"...\", \"correct_answer\": \"...\", \"explanation\": \"...\"}"
+        "]}\n\n"
+        f"TEXT CONTENT:\n{chunk_text}"
     )
     
     try:
-        # Call Gemini API
         llm_response, error_code = llm_service.generate_text(
             prompt, 
-            temperature=0.35, 
-            max_output_tokens=800
+            temperature=0.4, 
+            max_output_tokens=1000
         )
         
         if error_code != "ok" or not llm_response:
-            print(f"[quiz] Chunk {chunk_index + 1} LLM error: {error_code}")
-            return [], f"LLM error on chunk {chunk_index + 1}: {error_code}"
+            return None, error_code
         
-        # Parse JSON response
-        # Remove potential markdown code blocks
         clean_response = llm_response.strip()
         if clean_response.startswith('```'):
             clean_response = clean_response.split('\n', 1)[-1]
@@ -180,18 +174,11 @@ def _generate_quiz_from_chunk(chunk_text: str, chunk_index: int, total_chunks: i
         clean_response = clean_response.strip()
         
         parsed = json.loads(clean_response)
-        if not isinstance(parsed, list):
-            return [], f"Invalid response format from chunk {chunk_index + 1}"
+        return parsed, "ok"
         
-        return parsed, None
-        
-    except json.JSONDecodeError as exc:
-        print(f"[quiz] Chunk {chunk_index + 1} JSON parse error: {exc}")
-        print(f"[quiz] Raw response: {llm_response[:300] if llm_response else 'None'}")
-        return [], f"Failed to parse response from chunk {chunk_index + 1}"
     except Exception as exc:
-        print(f"[quiz] Chunk {chunk_index + 1} error: {exc}")
-        return [], f"Error processing chunk {chunk_index + 1}: {str(exc)}"
+        print(f"[quiz] Chunk {chunk_index + 1} processing error: {exc}")
+        return None, "error"
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend", "dist"))
@@ -630,134 +617,95 @@ def analyze_pdf_route():
 @app.route("/api/quiz/generate", methods=["POST"])
 def generate_quiz_route():
     """
-    Generate AI-based quiz questions from PDF text or PDF base64.
-    
-    Supports PDFs of any size by:
-    1. Extracting text from the uploaded PDF
-    2. Splitting text into chunks (4000 chars each) if it exceeds limit
-    3. Sending each chunk to Gemini API sequentially
-    4. Merging all responses into one final quiz
-    5. Handling errors gracefully per chunk
+    Robust exam-grade quiz generation engine.
+    Implements sequential chunk processing, type distribution, 
+    and Gemini-to-Groq fallback.
     """
     try:
-        # === Step 1: Parse request data ===
         data = request.get_json() or {}
         pdf_text = (data.get("pdf_text") or "").strip()
         pdf_base64 = data.get("pdf_base64")
         pdf_name = (data.get("pdf_name") or "Uploaded PDF").strip()[:120]
         language = (data.get("language") or "English").strip() or "English"
-        desired_count = data.get("count") or 15
         
-        try:
-            desired_count = int(desired_count)
-        except Exception:
-            desired_count = 15
-        question_count = max(5, min(desired_count, 30))  # Allow up to 30 questions for large PDFs
-
-        # === Step 2: Extract text from PDF if base64 provided ===
+        # Step 1: Extract Text
         if not pdf_text and pdf_base64:
-            print(f"[quiz] Decoding PDF base64 for '{pdf_name}'...")
             pdf_bytes = _decode_pdf_base64(pdf_base64)
             pdf_text = _extract_pdf_text_from_bytes(pdf_bytes)
 
         if not pdf_text:
-            return jsonify({"success": False, "error": "No PDF content provided or could not extract text."}), 400
+            return jsonify({"success": False, "error": "No content found"}), 400
 
-        # Clean the text
-        pdf_text = pdf_text.strip().replace("\r", " ")
-        print(f"[quiz] Extracted {len(pdf_text)} characters from PDF")
-
-        # === Step 3: Split text into chunks if needed ===
-        # Use 4000 chars per chunk to stay well within 12000 char API limit
-        CHUNK_SIZE = 4000
-        chunks = _split_text_into_chunks(pdf_text, chunk_size=CHUNK_SIZE, overlap=100)
+        # Step 2: Chunking (Roughly 600-800 tokens = 2800 chars)
+        CHUNK_SIZE = 2800
+        chunks = _split_text_into_chunks(pdf_text.strip(), chunk_size=CHUNK_SIZE, overlap=200)
         total_chunks = len(chunks)
-        print(f"[quiz] Split into {total_chunks} chunk(s)")
-
-        # Calculate questions per chunk (distribute evenly)
-        # Minimum 3 questions per chunk, distribute remaining
-        base_questions_per_chunk = max(3, question_count // total_chunks)
-        remaining_questions = question_count - (base_questions_per_chunk * total_chunks)
-
-        # === Step 4: Process each chunk and collect questions ===
+        
+        # Step 3: Sequential Processing with State
+        targets = {"mcq": 8, "short": 4, "conceptual": 3}
+        current = {"mcq": 0, "short": 0, "conceptual": 0}
+        total_target = 15
+        
         all_questions = []
-        errors = []
+        global_concepts = []
         
         for i, chunk in enumerate(chunks):
-            # Add extra questions to first chunks if there's remainder
-            questions_for_this_chunk = base_questions_per_chunk
-            if remaining_questions > 0:
-                questions_for_this_chunk += 1
-                remaining_questions -= 1
+            if len(all_questions) >= total_target:
+                break
+                
+            # Determine what types we still need
+            needed_types = []
+            if current["mcq"] < targets["mcq"]: needed_types.append("mcq")
+            if current["short"] < targets["short"]: needed_types.append("short")
+            if current["conceptual"] < targets["conceptual"]: needed_types.append("conceptual")
             
-            print(f"[quiz] Processing chunk {i + 1}/{total_chunks} ({len(chunk)} chars, {questions_for_this_chunk} questions)...")
+            # Pick up to 3 types for this chunk
+            to_gen = needed_types[:3]
+            if not to_gen: break
             
-            # Generate questions from this chunk
-            chunk_questions, error = _generate_quiz_from_chunk(
-                chunk_text=chunk,
-                chunk_index=i,
-                total_chunks=total_chunks,
-                questions_per_chunk=questions_for_this_chunk,
-                language=language,
-                pdf_name=pdf_name
+            print(f"[quiz] Processing chunk {i+1}/{total_chunks}. Target types: {to_gen}")
+            
+            # Generate from chunk
+            result, status = _generate_quiz_from_chunk(
+                chunk, i, total_chunks, to_gen, language, pdf_name, global_concepts
             )
             
-            if error:
-                errors.append(error)
-                print(f"[quiz] Chunk {i + 1} error: {error}")
-            else:
-                all_questions.extend(chunk_questions)
-                print(f"[quiz] Chunk {i + 1} generated {len(chunk_questions)} questions")
+            if status != "ok" or not result:
+                print(f"[quiz] Chunk {i+1} failed ({status}). Silently continuing to next chunk...")
+                continue # RULE 5: Skip failed chunks, continue with next
+                
+            # Process results
+            new_qs = result.get("questions") or []
+            new_concepts = result.get("concepts") or []
+            
+            for q in new_qs:
+                q_type = str(q.get("type", "")).lower()
+                # Accept type if it matches what we need
+                if q_type in current and current[q_type] < targets[q_type] and len(all_questions) < total_target:
+                    # Map IDs and titles if necessary
+                    q["id"] = len(all_questions) + 1
+                    all_questions.append(q)
+                    current[q_type] += 1
+            
+            global_concepts.extend(new_concepts)
+            
+        # Step 4: Final Output
+        if not all_questions:
+            return jsonify({"success": False, "error": "Failed to generate questions from PDF"}), 500
 
-        # === Step 5: Normalize and deduplicate questions ===
-        normalized = []
-        seen_questions = set()  # Track question text to avoid duplicates
+        final_response = {
+            "success": True,
+            "quiz_title": f"Quiz on {pdf_name}",
+            "total_questions": len(all_questions),
+            "questions": all_questions
+        }
         
-        for idx, item in enumerate(all_questions, start=1):
-            try:
-                question_text = str(item.get("question", "")).strip()
-                
-                # Skip empty or duplicate questions
-                if not question_text or question_text.lower() in seen_questions:
-                    continue
-                    
-                options = item.get("options") or []
-                answer_index = item.get("answer", 0)
-                
-                # Validate options
-                if len(options) < 4:
-                    continue
-                options = [str(opt).strip() for opt in options][:4]
-                if len(options) < 4 or any(not opt for opt in options):
-                    continue
-                
-                # Validate answer index
-                answer_index = int(answer_index)
-                if answer_index < 0 or answer_index > 3:
-                    answer_index = 0
-                
-                # Add to normalized list with sequential ID
-                normalized.append({
-                    "id": len(normalized) + 1,  # Sequential IDs
-                    "text": question_text,
-                    "options": options,
-                    "correct": answer_index
-                })
-                seen_questions.add(question_text.lower())
-                
-            except Exception as e:
-                print(f"[quiz] Error normalizing question: {e}")
-                continue
+        print(f"[quiz] Generation complete: {len(all_questions)}/15 questions")
+        return jsonify(final_response)
 
-        # === Step 6: Return results ===
-        if not normalized:
-            error_msg = "; ".join(errors) if errors else "No usable questions generated"
-            return jsonify({"success": False, "error": error_msg}), 500
-
-        # Limit to requested count
-        final_questions = normalized[:question_count]
-        
-        print(f"[quiz] Successfully generated {len(final_questions)} questions from {total_chunks} chunk(s)")
+    except Exception as e:
+        print(f"[quiz] Critical error in generation: {e}")
+        return jsonify({"success": False, "error": "Internal processor error"}), 500
         
         return jsonify({
             "success": True,
