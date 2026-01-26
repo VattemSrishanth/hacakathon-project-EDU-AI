@@ -12,6 +12,8 @@ import { useSettings } from "../context/SettingsContext";
 
 const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
+const WAKE_WORDS = ["hey chat", "hi chat", "hello chat", "oye chat", "tutor", "ai tutor", "wake up"];
+
 const VoiceControl: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -74,15 +76,14 @@ const VoiceControl: React.FC = () => {
 
   const executeCommand = useCallback((transcript: string) => {
     // Strip wake words from the command to get clean navigation text
-    const wakeWords = ["hey chat", "hi chat", "hello chat", "oye chat"];
     let text = transcript.toLowerCase().trim();
-    wakeWords.forEach(w => { text = text.replace(w, "").trim(); });
+    WAKE_WORDS.forEach(w => { text = text.replace(w, "").trim(); });
     
     console.log("[VoiceControl] Processing command:", text);
     
     if (!text) {
-      console.log("[VoiceControl] Empty command after stripping wake words");
-      resetToIdle();
+      console.log("[VoiceControl] Empty command after stripping wake words, staying in listening...");
+      // DO NOT resetToIdle here. We want to stay listening for the actual instruction.
       return;
     }
 
@@ -169,20 +170,19 @@ const VoiceControl: React.FC = () => {
     stateRef.current = "listening";
     console.log("[VoiceControl] Started listening mode");
 
-    // Blind Mode: Spoken Prompt
-    if (accessibilityMode === "Blind") {
-      const msg = new SpeechSynthesisUtterance("Listening for command...");
-      window.speechSynthesis.speak(msg);
-    }
+    // Standard Feedback: Spoken Prompt for all users to confirm wake-word
+    const msg = new SpeechSynthesisUtterance("Yes?");
+    msg.rate = 1.1;
+    window.speechSynthesis.speak(msg);
 
-    // 10-Second Inactivity Timeout (extended for slower speakers)
+    // 30-Second Inactivity Timeout (extended for better user experience)
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       if (stateRef.current === "listening") {
         console.log("[VoiceControl] Listening timeout, returning to idle");
         resetToIdle();
       }
-    }, 10000);
+    }, 30000);
   }, [accessibilityMode, resetToIdle]);
 
   const toggleListening = useCallback(() => {
@@ -202,7 +202,7 @@ const VoiceControl: React.FC = () => {
     }
 
     // Disable continuous wake-word if Low Power
-    const canListenPassively = !lowPowerMode;
+    // const canListenPassively = !lowPowerMode;
 
     const reco = new SpeechRecognition();
     reco.continuous = true;
@@ -224,16 +224,20 @@ const VoiceControl: React.FC = () => {
       const normalized = currentTranscript.toLowerCase().trim();
       if (!normalized) return;
 
-      console.log("[VoiceControl] Transcript:", normalized, "| State:", stateRef.current, "| Final:", isFinal);
+      console.log(`[VoiceControl] State: ${stateRef.current} | Final: ${isFinal} | Transcript: "${normalized}"`);
 
-      if (stateRef.current === "idle" && canListenPassively) {
-        // WAKE WORD ACTIVATION
-        const wakeWords = ["hey chat", "hi chat", "hello chat", "oye chat"];
-        if (wakeWords.some(w => normalized.includes(w))) {
-          console.log("[VoiceControl] Wake word detected!");
+      // WAKE WORD DETECTION (Always active in idle)
+      if (stateRef.current === "idle") {
+        if (WAKE_WORDS.some(w => normalized.includes(w))) {
+          console.log("[VoiceControl] Wake phrase detected!");
+          
+          window.speechSynthesis.cancel();
           startListening();
-          // If command follows wake word in same utterance, process it immediately
-          if (isFinal && normalized.length > 15) {
+          
+          // Only execute immediately if there's significant content after the wake word
+          const instructionOnly = WAKE_WORDS.reduce((acc, word) => acc.replace(word, ""), normalized).trim();
+          if (isFinal && instructionOnly.length > 2) {
+            console.log("[VoiceControl] Executing immediate command:", instructionOnly);
             executeCommand(normalized);
           }
         }
@@ -241,13 +245,19 @@ const VoiceControl: React.FC = () => {
         // Reset timeout on any speech activity
         if (timerRef.current) clearTimeout(timerRef.current);
         timerRef.current = setTimeout(() => {
-          if (stateRef.current === "listening") resetToIdle();
-        }, 10000);
+          if (stateRef.current === "listening") {
+            console.log("[VoiceControl] 30s timeout reached, resetting to idle");
+            resetToIdle();
+          }
+        }, 30000);
 
         // Process final results
         if (isFinal) {
-          console.log("[VoiceControl] Executing command:", normalized);
-          executeCommand(normalized);
+          const instructionOnly = WAKE_WORDS.reduce((acc, word) => acc.replace(word, ""), normalized).trim();
+          if (instructionOnly.length > 0) {
+            console.log("[VoiceControl] Final command received:", instructionOnly);
+            executeCommand(normalized);
+          }
         }
       }
     };
@@ -257,16 +267,20 @@ const VoiceControl: React.FC = () => {
     };
 
     reco.onend = () => {
+      console.log("[VoiceControl] Recognition ended, restarting...");
       // Ensure microphone persists in idle/wake state unless manual override stops it
-      setTimeout(() => {
-        try { 
-          if (recognitionRef.current) {
-            recognitionRef.current.start(); 
+      // Only restart if the current ref still points to this instance
+      if (!isQuizRoute && recognitionRef.current === reco) {
+        setTimeout(() => {
+          try { 
+            if (recognitionRef.current === reco) {
+              reco.start(); 
+            }
+          } catch (e) {
+            console.log("[VoiceControl] Restart notice:", e);
           }
-        } catch (e) {
-          // Ignore errors when restarting
-        }
-      }, 200);
+        }, 300);
+      }
     };
 
     try {
@@ -279,6 +293,8 @@ const VoiceControl: React.FC = () => {
     recognitionRef.current = reco;
 
     return () => {
+      console.log("[VoiceControl] Cleaning up recognition instance");
+      recognitionRef.current = null;
       reco.stop();
       if (timerRef.current) clearTimeout(timerRef.current);
     };
@@ -288,7 +304,7 @@ const VoiceControl: React.FC = () => {
   if (isQuizRoute || !isSupported || accessibilityMode === "Dumb") return null;
 
   return (
-    <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-100">
+    <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-[9999]">
       {/* Active Indicator & Status */}
       {state === "listening" && (
         <div className="bg-primary text-white p-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-in fade-in zoom-in slide-in-from-bottom-2 duration-300 ring-4 ring-primary/20">

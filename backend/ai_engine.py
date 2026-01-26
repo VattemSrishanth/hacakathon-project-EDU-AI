@@ -31,6 +31,7 @@ Current Date: {date}
 
 PRIMARY GOAL:
 Always help the learner by answering questions clearly and correctly.
+You can also CONTROL the website interface if the user asks you to navigate, change settings, or switch modes.
 
 RULES:
 1. Explain syllabus questions clearly and step-by-step.
@@ -40,8 +41,32 @@ RULES:
 5. If a question is unclear, make a reasonable academic assumption and explain your reasoning.
 6. Prioritize factual accuracy.
 
+ACTION COMMANDS:
+You MUST control the website whenever the user asks for changes.
+If the user asks to perform a UI action, return a JSON with an "action" field.
+Supported Actions (STRICT VALUES):
+- SET_ACCESSIBILITY: "Enable Deaf Mode", "Switch to Dumb Mode", "Disable accessibility"
+  Payload: {{ "action": {{ "command": "SET_ACCESSIBILITY", "value": "Deaf" | "Dumb" | "Normal" | "Blind" }} }}
+- SET_LANGUAGE: "Change language to Telugu", "Switch to English", "I want to hear Telugu"
+  Payload: {{ "action": {{ "command": "SET_LANGUAGE", "value": "Telugu" | "English" | "Hindi" | "Spanish" | "French" }} }}
+- SET_THEME: "Enable dark mode", "Turn on low power mode", "Switch to sunset", "Change theme to forest"
+  Payload: {{ "action": {{ "command": "SET_THEME", "value": "dark" | "light" | "low-power" | "high-contrast" | "sunset" | "forest" | "aurora" }} }}
+- NAVIGATE: "Go to dashboard", "Open lessons", "Open settings", "Open tutor"
+  Payload: {{ "action": {{ "command": "NAVIGATE", "value": "/dashboard" | "/lessons" | "/settings" | "/ai-tutor" }} }}
+
+IMPORTANT: If you perform an action, you must still include an "explanation" field briefly confirming the action in the requested language.
+Example for "Change language to Telugu":
+{{
+  "explanation": "సరే, నేను భాషను తెలుగులోకి మారుస్తున్నాను.",
+  "action": {{ "command": "SET_LANGUAGE", "value": "Telugu" }}
+}}
+
+OUTPUT FORMAT:
 Return a JSON object with keys:
-explanation, example, summary.
+explanation: The text response to show the user.
+action: (Optional) The command object if an action is triggered.
+example: (Optional) An example if explaining a concept.
+summary: (Optional) A summary if explaining a concept.
 """
 
 VIDEO_SYSTEM_PROMPT = """You are LearnBridge AI, explaining a video lesson.
@@ -83,17 +108,21 @@ def generate_explanation(question, learner_mode="regular", level="basic", langua
     # LLM will return missing_api_key or empty_prompt if unavailable
 
     if answer_style == "Short":
-        prompt = (
-            f"You are LearnBridge AI, a helpful academic tutor. Current Date: {datetime.now().strftime('%B %d, %Y')}. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
-            "STRICT RULE: Respond ONLY with a direct answer. 1-3 short sentences MAX. "
-            "NO sections like Explanation/Example/Summary. NO filler text. "
-            "If the user says 'hi' or 'hello', give a minimal friendly greeting like 'Hi! How can I help you?' only.\n"
-            "Question: " + question.strip()
-        )
-        raw, err = _call_ai_model(prompt)
-        if err == "ok":
-            return {"explanation": raw.strip(), "example": "", "summary": ""}
-        return offline_generate_explanation(question, learner_mode=mode_key, level=level)
+        # Check if it's a command first even in short mode
+        if any(kw in question.lower() for kw in ["enable", "disable", "turn on", "turn off", "switch", "change", "go to", "open", "navigate"]):
+             pass # Fall through to full LLM for command parsing
+        else:
+            prompt = (
+                f"You are LearnBridge AI, a helpful academic tutor. Current Date: {datetime.now().strftime('%B %d, %Y')}. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
+                "STRICT RULE: Respond ONLY with a direct answer. 1-3 short sentences MAX. "
+                "NO sections like Explanation/Example/Summary. NO filler text. "
+                "If the user says 'hi' or 'hello', give a minimal friendly greeting like 'Hi! How can I help you?' only.\n"
+                "Question: " + question.strip()
+            )
+            raw, err = _call_ai_model(prompt)
+            if err == "ok":
+                return {"explanation": raw.strip(), "example": "", "summary": ""}
+            return offline_generate_explanation(question, learner_mode=mode_key, level=level)
 
     prompt = (
         SYSTEM_PROMPT.format(date=datetime.now().strftime("%B %d, %Y"))
@@ -396,27 +425,31 @@ User Request: {question}
     # This block enforces the 'Short' Answer Style setting by bypassing JSON structure
     # and strictly limiting the output length to 1-3 sentences.
     if answer_style == "Short":
-        prompt = (
-            f"You are LearnBridge AI, a helpful academic tutor. Current Date: {datetime.now().strftime('%B %d, %Y')}. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
-            "STRICT RULE: Respond ONLY with a direct answer. 1-3 short sentences MAX. "
-            "NO sections like Explanation/Example/Summary. NO filler text. "
-            "If the user says 'hi' or 'hello', give a minimal friendly greeting like 'Hi! How can I help you?' only.\n"
-            "Question: " + (question.strip() if question else "Hi")
-        )
-        raw, err = _call_ai_model(prompt)
-        
-        if err == "ok":
+        # EVEN IN SHORT MODE, WE MUST PARSE COMMANDS
+        if any(kw in (question or "").lower() for kw in ["enable", "disable", "turn on", "turn off", "switch", "change", "go to", "open", "navigate"]):
+             pass # Fall through to full LLM for command parsing
+        else:
+            prompt = (
+                f"You are LearnBridge AI, a helpful academic tutor. Current Date: {datetime.now().strftime('%B %d, %Y')}. RESPONSE LANGUAGE: {language}. Respond ONLY in {language}.\n"
+                "STRICT RULE: Respond ONLY with a direct answer. 1-3 short sentences MAX. "
+                "NO sections like Explanation/Example/Summary. NO filler text. "
+                "If the user says 'hi' or 'hello', give a minimal friendly greeting like 'Hi! How can I help you?' only.\n"
+                "Question: " + (question.strip() if question else "Hi")
+            )
+            raw, err = _call_ai_model(prompt)
+            
+            if err == "ok":
+                return {
+                    "status": "success",
+                    "answer": raw.strip(),
+                    "mode": "online"
+                }
+            # Fallback for errors in short mode
             return {
-                "status": "success",
-                "answer": raw.strip(),
-                "mode": "online"
+                "status": "error",
+                "answer": "Error generating response in short mode.",
+                "mode": "offline"
             }
-        # Fallback for errors in short mode
-        return {
-            "status": "error",
-            "answer": "Error generating response in short mode.",
-            "mode": "offline"
-        }
 
     # Standard Text-only Ask Logic - Detailed Mode (JSON based)
     style_hint = ""
@@ -455,9 +488,32 @@ User Request: {question}
 
     parsed = _safe_parse_json(raw)
     if parsed:
+        data = _ensure_fields(parsed)
+        # If it's a controller action, return the dict directly so frontend can parse it
+        # Also check for 'command' key as some LLMs might return it directly
+        if "action" in data or "command" in data or (isinstance(data, dict) and any(k in ["SET_ACCESSIBILITY", "SET_LANGUAGE", "SET_THEME", "NAVIGATE"] for k in data.values())):
+             # Clean up the action structure
+             action_obj = data.get("action")
+             if not action_obj:
+                 # Check if command is directly in root
+                 if "command" in data:
+                     action_obj = {"command": data["command"], "value": data.get("value")}
+                 else:
+                     # Maybe the whole object is the action
+                     action_obj = data
+             
+             return {
+                "status": "success",
+                "answer": {
+                    "explanation": data.get("explanation", "Setting updated successfully.") if isinstance(data, dict) else "Setting updated.",
+                    "action": action_obj
+                },
+                "mode": "online"
+            }
+
         return {
             "status": "success",
-            "answer": _format_response(_ensure_fields(parsed)),
+            "answer": _format_response(data),
             "mode": "online"
         }
 
@@ -507,6 +563,14 @@ def _safe_parse_json(text):
 
 
 def _ensure_fields(data):
+    # If this is a controller action, preserve it
+    if "action" in data or "command" in data:
+        return {
+            "action": data.get("action") or data,
+            "explanation": str(data.get("explanation", "")).strip() or "Here is the result."
+        }
+    
+    # Otherwise assume standard educational response
     return {
         "explanation": str(data.get("explanation", "")).strip() or "Basic explanation is provided.",
         "example": str(data.get("example", "")).strip() or "Example is provided.",

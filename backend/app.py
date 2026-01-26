@@ -18,6 +18,7 @@ from flask_cors import CORS
 from ai_engine import get_ai_response, generate_video_explanation, get_ai_response_payload, analyze_image
 import unified_llm as llm_service
 from auth import auth_bp
+import quiz_pipeline
 from models import db, User
 
 try:
@@ -425,7 +426,12 @@ def ask():
         print(f"[DEBUG] result status: {result.get('status')}, mode: {result.get('mode')}")
 
         status = result.get("status", "error")
-        answer = (result.get("answer") or "").strip()
+        answer = result.get("answer")
+        if isinstance(answer, str):
+            answer = answer.strip()
+        elif not answer:
+            answer = ""
+            
         response_mode = result.get("mode", "offline")
 
         if status == "quota_exceeded":
@@ -617,9 +623,7 @@ def analyze_pdf_route():
 @app.route("/api/quiz/generate", methods=["POST"])
 def generate_quiz_route():
     """
-    Robust exam-grade quiz generation engine.
-    Implements sequential chunk processing, type distribution, 
-    and Gemini-to-Groq fallback.
+    Robust exam-grade quiz generation engine using the multi-step pipeline.
     """
     try:
         data = request.get_json() or {}
@@ -628,84 +632,25 @@ def generate_quiz_route():
         pdf_name = (data.get("pdf_name") or "Uploaded PDF").strip()[:120]
         language = (data.get("language") or "English").strip() or "English"
         
-        # Step 1: Extract Text
-        if not pdf_text and pdf_base64:
-            pdf_bytes = _decode_pdf_base64(pdf_base64)
-            pdf_text = _extract_pdf_text_from_bytes(pdf_bytes)
-
-        if not pdf_text:
-            return jsonify({"success": False, "error": "No content found"}), 400
-
-        # Step 2: Chunking (Roughly 600-800 tokens = 2800 chars)
-        CHUNK_SIZE = 2800
-        chunks = _split_text_into_chunks(pdf_text.strip(), chunk_size=CHUNK_SIZE, overlap=200)
-        total_chunks = len(chunks)
+        # If extraction is already done by frontend or previous step, use pdf_text
+        # Otherwise, pass base64 to pipeline
         
-        # Step 3: Sequential Processing with State
-        targets = {"mcq": 8, "short": 4, "conceptual": 3}
-        current = {"mcq": 0, "short": 0, "conceptual": 0}
-        total_target = 15
+        result = quiz_pipeline.process_pdf_pipeline(
+            pdf_base64=pdf_base64,
+            raw_text=pdf_text,
+            pdf_name=pdf_name
+        )
         
-        all_questions = []
-        global_concepts = []
-        
-        for i, chunk in enumerate(chunks):
-            if len(all_questions) >= total_target:
-                break
-                
-            # Determine what types we still need
-            needed_types = []
-            if current["mcq"] < targets["mcq"]: needed_types.append("mcq")
-            if current["short"] < targets["short"]: needed_types.append("short")
-            if current["conceptual"] < targets["conceptual"]: needed_types.append("conceptual")
+        if not result.get("success"):
+            return jsonify(result), 400 if "content" in str(result.get("error")) else 500
             
-            # Pick up to 3 types for this chunk
-            to_gen = needed_types[:3]
-            if not to_gen: break
-            
-            print(f"[quiz] Processing chunk {i+1}/{total_chunks}. Target types: {to_gen}")
-            
-            # Generate from chunk
-            result, status = _generate_quiz_from_chunk(
-                chunk, i, total_chunks, to_gen, language, pdf_name, global_concepts
-            )
-            
-            if status != "ok" or not result:
-                print(f"[quiz] Chunk {i+1} failed ({status}). Silently continuing to next chunk...")
-                continue # RULE 5: Skip failed chunks, continue with next
-                
-            # Process results
-            new_qs = result.get("questions") or []
-            new_concepts = result.get("concepts") or []
-            
-            for q in new_qs:
-                q_type = str(q.get("type", "")).lower()
-                # Accept type if it matches what we need
-                if q_type in current and current[q_type] < targets[q_type] and len(all_questions) < total_target:
-                    # Map IDs and titles if necessary
-                    q["id"] = len(all_questions) + 1
-                    all_questions.append(q)
-                    current[q_type] += 1
-            
-            global_concepts.extend(new_concepts)
-            
-        # Step 4: Final Output
-        if not all_questions:
-            return jsonify({"success": False, "error": "Failed to generate questions from PDF"}), 500
-
-        final_response = {
-            "success": True,
-            "quiz_title": f"Quiz on {pdf_name}",
-            "total_questions": len(all_questions),
-            "questions": all_questions
-        }
-        
-        print(f"[quiz] Generation complete: {len(all_questions)}/15 questions")
-        return jsonify(final_response)
+        return jsonify(result)
 
     except Exception as e:
         print(f"[quiz] Critical error in generation: {e}")
-        return jsonify({"success": False, "error": "Internal processor error"}), 500
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": f"Internal processor error: {str(e)}"}), 500
         
         return jsonify({
             "success": True,

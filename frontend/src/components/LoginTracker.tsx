@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import Card from './Card';
+import { useAuth } from '../context/AuthContext';
 
 interface TrackerData {
   joinDate: string;
@@ -9,8 +10,6 @@ interface TrackerData {
   lastLoginDate: string | null;
 }
 
-const STORAGE_KEY = 'user_login_tracker';
-
 /**
  * DAILY LOGIN PROGRESS SYSTEM (Independent)
  * This component tracks user engagement streaks strictly based on calendar days.
@@ -18,52 +17,96 @@ const STORAGE_KEY = 'user_login_tracker';
  * metrics (streaks) and academic metrics (lesson progress) are handled separately.
  */
 const LoginTracker = () => {
+  const { auth } = useAuth();
   const [data, setData] = useState<TrackerData | null>(null);
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
+    // Ensure we have a user to track
+    const userId = auth?.user?.id || auth?.user?.username || 'guest';
+    const STORAGE_KEY = `user_login_tracker_${userId}`;
+    
+    // Get today's date in YYYY-MM-DD format
+    // Using UTC to ensure consistent days across timezones
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    
     const stored = localStorage.getItem(STORAGE_KEY);
     
     let tracker: TrackerData;
 
-    if (!stored) {
-      // First time user
-      tracker = {
-        joinDate: today,
-        loginDates: [today],
-        currentStreak: 1,
-        longestStreak: 1,
-        lastLoginDate: today,
-      };
-    } else {
-      tracker = JSON.parse(stored);
-      
-      if (tracker.lastLoginDate !== today) {
-        // It's a new day
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toISOString().split('T')[0];
+    try {
+      if (!stored) {
+        // First time user
+        tracker = {
+          joinDate: today,
+          loginDates: [today],
+          currentStreak: 1,
+          longestStreak: 1,
+          lastLoginDate: today,
+        };
+      } else {
+        tracker = JSON.parse(stored);
+        
+        // Handle migration or corrupted data
+        if (!tracker.loginDates) tracker.loginDates = [];
+        if (!tracker.joinDate) tracker.joinDate = today;
 
-        if (!tracker.loginDates.includes(today)) {
-          tracker.loginDates.push(today);
+        if (tracker.lastLoginDate !== today) {
+          // Calculate if the streak continues
+          // lastLoginDate + 1 day should equal today for streak confirmation
+          
+          let isConsecutive = false;
+          if (tracker.lastLoginDate) {
+              const last = new Date(tracker.lastLoginDate);
+              // Set to noon to avoid DST/timezone edge cases when adding days
+              // But since we use UTC strings (YYYY-MM-DD), straight comparison is better.
+              // Logic: Create date from string, add 1 day, format back to string.
+              
+              const nextDayDate = new Date(last);
+              nextDayDate.setUTCDate(nextDayDate.getUTCDate() + 1);
+              const nextDay = nextDayDate.toISOString().split('T')[0];
+              
+              if (nextDay === today) {
+                  isConsecutive = true;
+              }
+          }
+
+          if (!tracker.loginDates.includes(today)) {
+            tracker.loginDates.push(today);
+          }
+
+          if (isConsecutive) {
+            // Continuous streak
+            tracker.currentStreak += 1;
+          } else if (tracker.lastLoginDate && tracker.lastLoginDate < today) {
+            // Streak broken (missed a day or more)
+            // But verify it's not simply re-login on same day (already handled by outer check)
+            // If today > lastLoginDate + 1, reset.
+            tracker.currentStreak = 1;
+          }
+          // If tracker.lastLoginDate > today (time travel?), do nothing or keep as is.
+
+          tracker.longestStreak = Math.max(tracker.longestStreak, tracker.currentStreak);
+          tracker.lastLoginDate = today;
         }
-
-        if (tracker.lastLoginDate === yesterdayStr) {
-          // Continuous streak
-          tracker.currentStreak += 1;
-        } else {
-          // Streak broken
-          tracker.currentStreak = 1;
-        }
-
-        tracker.longestStreak = Math.max(tracker.longestStreak, tracker.currentStreak);
-        tracker.lastLoginDate = today;
       }
-    }
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tracker));
-    setData(tracker);
-  }, []);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tracker));
+      setData(tracker);
+    } catch (e) {
+      console.error("Error updating login tracker", e);
+      // Fallback reset if error
+      const fresh: TrackerData = {
+          joinDate: today,
+          loginDates: [today],
+          currentStreak: 1,
+          longestStreak: 1,
+          lastLoginDate: today,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+      setData(fresh);
+    }
+  }, [auth?.user?.id]); // Re-run if user changes
 
   const calendarDays = useMemo(() => {
     if (!data) return [];

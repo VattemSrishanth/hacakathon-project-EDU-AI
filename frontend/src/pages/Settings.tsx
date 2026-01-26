@@ -318,11 +318,45 @@ const Settings = () => {
             {activeTab === 'visibility' && (
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                 <header>
-                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Visibility</h1>
-                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Control who can see your activity</p>
+                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Visibility & AI</h1>
+                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Control your tutoring experience</p>
                 </header>
 
                 <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-6">
+                  {/* AI Tutor Answer Style */}
+                  <div className="p-6 bg-app-bg rounded-2xl border border-app-border group transition-all hover:border-primary/50 shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-app-bg-alt border border-app-border text-blue-600 shadow-sm transition-transform group-hover:scale-110">
+                          <Sparkles className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-black text-app-text-main uppercase tracking-tight">{t.settings.aiTutorSettings.answerStyle}</p>
+                          <p className="text-[10px] text-app-text-sub font-black uppercase tracking-widest opacity-60">How the AI tutor responds to you</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2 p-1 bg-app-bg-alt border border-app-border rounded-xl">
+                        {(['Short', 'Detailed'] as const).map((style) => (
+                          <button
+                            key={style}
+                            onClick={() => {
+                              updateAiTutor({ answerStyle: style });
+                              showSaveMessage(t.settings.changesSaved);
+                            }}
+                            className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                              settings.aiTutor.answerStyle === style
+                                ? 'bg-primary text-white shadow-md'
+                                : 'text-app-text-sub hover:bg-app-bg hover:text-app-text-main'
+                            }`}
+                          >
+                            {style === 'Short' ? t.settings.aiTutorSettings.short : t.settings.aiTutorSettings.detailed}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
                   <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer group transition-all hover:border-primary/50 shadow-sm">
                     <div className="flex items-center gap-4">
                       <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-app-bg-alt border border-app-border text-purple-600 shadow-sm transition-transform group-hover:scale-110">

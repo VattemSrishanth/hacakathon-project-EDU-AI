@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 
@@ -12,22 +12,26 @@ const UploadedPdf = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state || {}) as LocationState;
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
 
   const pdfUrl = state.pdfUrl;
   const pdfName = state.pdfName || 'Uploaded PDF';
   const pdfData = state.pdfData;
 
   const handleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.().catch(() => undefined);
+    if (!document.fullscreenElement && pdfContainerRef.current) {
+      pdfContainerRef.current.requestFullscreen?.().catch(() => undefined);
+    } else if (document.fullscreenElement) {
+        document.exitFullscreen();
     }
   };
 
   useEffect(() => {
+    // We do NOT revoke the object URL here anymore because passing it to the 
+    // Quiz page (which might need to fetch it again) requires the URL to stay valid.
+    // The browser will clean it up on document unload, or we can rely on GC.
     return () => {
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
+       // Intentional no-op to allow Blob URL to survive navigation
     };
   }, [pdfUrl]);
 
@@ -83,7 +87,7 @@ const UploadedPdf = () => {
               </Button>
             </div>
           </div>
-          <div className="h-[75vh] overflow-auto bg-app-bg-alt">
+          <div ref={pdfContainerRef} className="h-[75vh] overflow-auto bg-app-bg-alt">
             <iframe
               src={pdfUrl}
               title={pdfName}
@@ -93,6 +97,7 @@ const UploadedPdf = () => {
         </div>
       </div>
     );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, pdfData, pdfName, pdfUrl]);
 
   return (

@@ -70,6 +70,8 @@ export default function LessonViewer() {
   };
 
   const announceText = (text: string) => {
+    if (settings.themeAccessibility.accessibilityMode !== 'Blind') return;
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = settings.learning.language === 'English' ? 'en-US' : 'en-US';
     utterance.rate = 1.0;
@@ -143,7 +145,7 @@ export default function LessonViewer() {
                 </Button>
               </label>
               
-              {(settings.themeAccessibility.accessibilityMode === 'Blind' || settings.themeAccessibility.accessibilityMode === 'Deaf') && (
+              {settings.themeAccessibility.accessibilityMode === 'Blind' && (
                 <Button
                   variant="success"
                   onClick={() => handleReadAloud(lesson.textVersion)}

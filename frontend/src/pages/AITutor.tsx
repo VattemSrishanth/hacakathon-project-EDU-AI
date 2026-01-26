@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import type { ChatMessage } from '../types';
@@ -80,7 +80,8 @@ const DeleteConfirmModal = ({
 };
 
 const AITutor = () => {
-  const { settings, t } = useSettings();
+  const { settings, t, updateLearning, updateThemeAccessibility } = useSettings();
+  const navigate = useNavigate();
   const location = useLocation();
   const { enabled, answerStyle, showChatHistory } = settings.aiTutor;
   const { accessibilityMode } = settings.themeAccessibility;
@@ -319,9 +320,6 @@ const AITutor = () => {
     try {
       /**
        * Send unified request to backend.
-       * 
-       * ANSWER STYLE: We pass the user's preference (Short vs Detailed).
-       * LANGUAGE SYNC: We include the current website language in all AI requests.
        */
       const response = await aiAPI.ask(
         activeInput, 
@@ -332,15 +330,75 @@ const AITutor = () => {
         answerStyle
       );
       
+      let aiContent = response.answer || response.response || response.explanation || response.summary || t.aiTutor.errorMessage;
+      
+      // Intent Checking Logic
+      try {
+        let parsed: any = null;
+        
+        // Handle if backend returned a direct object
+        if (typeof aiContent === 'object' && aiContent !== null) {
+            parsed = aiContent;
+        } 
+        // Handle if backend returned a JSON string
+        else if (typeof aiContent === 'string' && (aiContent.trim().startsWith('{') || aiContent.includes('"command":'))) {
+             const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
+             if (jsonMatch) {
+                 parsed = JSON.parse(jsonMatch[0]);
+             }
+        }
+
+        if (parsed) {
+             // Handle Action (can be in 'action' field or top level if raw command)
+             const cmd = parsed.action || (parsed.command ? parsed : null);
+             
+             if (cmd && cmd.command) {
+                 console.log("Executing AI Command:", cmd);
+                 
+                 if (cmd.command === 'NAVIGATE') {
+                    navigate(cmd.value);
+                 } else if (cmd.command === 'SET_ACCESSIBILITY') {
+                    updateThemeAccessibility({ accessibilityMode: cmd.value });
+                 } else if (cmd.command === 'SET_LANGUAGE') {
+                    // Update both app UI language and voice language for consistency
+                    updateLearning({ language: cmd.value });
+                    updateThemeAccessibility({ voiceLanguage: cmd.value });
+                 } else if (cmd.command === 'SET_THEME') {
+                     const t = cmd.value.toLowerCase();
+                     if (t.includes('dark') || t.includes('void')) updateThemeAccessibility({ theme: 'Midnight Void' });
+                     else if (t.includes('light') || t.includes('crystal')) updateThemeAccessibility({ theme: 'Crystal Light' });
+                     else if (t.includes('forest') || t.includes('green')) updateThemeAccessibility({ theme: 'Forest Depths' });
+                     else if (t.includes('aurora') || t.includes('purple')) updateThemeAccessibility({ theme: 'Aurora Borealis' });
+                     else if (t.includes('sunset') || t.includes('orange')) updateThemeAccessibility({ theme: 'Sunset Ember' });
+                     
+                     if (t.includes('low') || t.includes('power')) updateThemeAccessibility({ lowPowerMode: true });
+                     if (t.includes('high') || t.includes('contrast')) updateThemeAccessibility({ highContrast: true });
+                 }
+             }
+             
+             // Update text to show clean explanation from JSON
+             if (parsed.explanation) {
+                 aiContent = parsed.explanation;
+             } else if (parsed.answer && typeof parsed.answer === 'string') {
+                 aiContent = parsed.answer;
+             } else if (typeof aiContent === 'object') {
+                 // Fallback if it's still an object and we have no explanation field
+                 aiContent = "Action performed successfully.";
+             }
+        }
+      } catch (e) {
+          console.log("Not a command JSON or error parsing", e);
+      }
+
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response.answer || response.response || response.explanation || response.summary || t.aiTutor.errorMessage,
+        content: String(aiContent), // Ensure it's a string for rendering
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
 
-      // BLIND MODE: Auto-speak assistant response
+      // BLIND MODE ONLY - Auto-speak responses
       if (accessibilityMode === 'Blind') {
         const speech = new SpeechSynthesisUtterance(assistantMessage.content);
         const langMap: Record<string, string> = {
