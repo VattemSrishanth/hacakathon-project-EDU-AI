@@ -101,6 +101,8 @@ const AITutor = () => {
   } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<{ id: string; title: string } | null>(null);
   const hasInteractedRef = useRef(false);
+  const lastProcessedVoiceQueryRef = useRef<string | null>(null);
+  const lastLocalTranscriptRef = useRef<string>("");
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -150,12 +152,18 @@ const AITutor = () => {
       
       // Auto-send when speech is final
       if (event.results[event.results.length - 1].isFinal) {
+        const finalTranscript = transcript.trim();
+        if (!finalTranscript || finalTranscript === lastLocalTranscriptRef.current) return;
+        lastLocalTranscriptRef.current = finalTranscript;
+
         setIsRecording(false);
+        recognition.stop();
+
         // Small delay to show the transcribed text before sending
         setTimeout(() => {
-          if (transcript.trim()) {
-            handleSend(transcript.trim());
-          }
+          handleSend(finalTranscript);
+          // Clear the ref after a delay so the user can say the same thing again later
+          setTimeout(() => { lastLocalTranscriptRef.current = ""; }, 2000);
         }, 300);
       }
     };
@@ -256,12 +264,18 @@ const AITutor = () => {
 
   // Handle voice query from navigation
   useEffect(() => {
-    if (location.state?.voiceQuery) {
-      handleSend(location.state.voiceQuery);
-      // Clean up state so it doesn't re-trigger on refresh
-      window.history.replaceState({}, document.title);
+    const voiceQuery = location.state?.voiceQuery;
+    if (voiceQuery && voiceQuery !== lastProcessedVoiceQueryRef.current) {
+      lastProcessedVoiceQueryRef.current = voiceQuery;
+      handleSend(voiceQuery);
+      
+      // Clear voiceQuery to avoid double-processing on re-renders or navigation
+      navigate(location.pathname, { 
+        replace: true, 
+        state: { ...location.state, voiceQuery: null } 
+      });
     }
-  }, [location.state]);
+  }, [location.state, location.pathname, navigate]);
 
   const handleSend = async (forcedQuery?: string) => {
     if (!enabled) return;

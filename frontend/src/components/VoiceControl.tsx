@@ -26,6 +26,7 @@ const VoiceControl: React.FC = () => {
   const recognitionRef = useRef<any>(null);
   const timerRef = useRef<any>(null);
   const stateRef = useRef<"idle" | "listening" | "processing">("idle");
+  const lastFinalTranscriptRef = useRef<string>("");
 
   const isQuizRoute = location.pathname.startsWith("/lessons/quiz");
 
@@ -75,6 +76,8 @@ const VoiceControl: React.FC = () => {
   }, [navigate, accessibilityMode, resetToIdle]);
 
   const executeCommand = useCallback((transcript: string) => {
+    if (stateRef.current === "processing") return;
+
     // Strip wake words from the command to get clean navigation text
     let text = transcript.toLowerCase().trim();
     WAKE_WORDS.forEach(w => { text = text.replace(w, "").trim(); });
@@ -86,6 +89,9 @@ const VoiceControl: React.FC = () => {
       // DO NOT resetToIdle here. We want to stay listening for the actual instruction.
       return;
     }
+
+    setState("processing");
+    stateRef.current = "processing";
 
     // 1. Accessibility Check
     if (accessibilityMode === "Dumb") return;
@@ -137,18 +143,18 @@ const VoiceControl: React.FC = () => {
 
     const matched = commands.find(cmd => cmd.trigger.some(k => text.includes(k)));
 
-    // 4. AI Direct Query Check (If no nav command matches)
-    const askKeywords = ["what is", "tell me", "explain", "how to", "why", "what are", "who is", "define"];
+    // 4. AI Direct Query Check (PRIORITIZE queries over simple nav if they look like questions)
+    const askKeywords = ["what is", "tell me", "explain", "how to", "why", "what are", "who is", "define", "how does", "describe"];
     const askMatch = askKeywords.find(k => text.includes(k));
 
-    if (matched) {
-      console.log("[VoiceControl] Navigation matched:", matched.path);
-      handleNavigation(matched.path);
-    } else if (askMatch) {
+    if (askMatch) {
       const parts = text.split(askMatch);
       const query = parts.length > 1 ? parts[1].trim() : text;
-      console.log("[VoiceControl] AI Query detected:", query);
+      console.log("[VoiceControl] AI Query detected (prioritized):", query || text);
       handleNavigation("/ai-tutor", query || text);
+    } else if (matched) {
+      console.log("[VoiceControl] Navigation matched:", matched.path);
+      handleNavigation(matched.path);
     } else if (text.length > 5) {
       // General fallthrough to AI Tutor if text is substantial
       console.log("[VoiceControl] Fallback to AI Tutor:", text);
@@ -223,6 +229,15 @@ const VoiceControl: React.FC = () => {
 
       const normalized = currentTranscript.toLowerCase().trim();
       if (!normalized) return;
+
+      // Avoid double-processing the exact same final result (common SpeechRecognition jitter)
+      if (isFinal) {
+        if (normalized === lastFinalTranscriptRef.current) {
+          console.log("[VoiceControl] Skipping duplicate final result");
+          return;
+        }
+        lastFinalTranscriptRef.current = normalized;
+      }
 
       console.log(`[VoiceControl] State: ${stateRef.current} | Final: ${isFinal} | Transcript: "${normalized}"`);
 
@@ -304,7 +319,7 @@ const VoiceControl: React.FC = () => {
   if (isQuizRoute || !isSupported || accessibilityMode === "Dumb") return null;
 
   return (
-    <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-[9999]">
+    <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-9999">
       {/* Active Indicator & Status */}
       {state === "listening" && (
         <div className="bg-primary text-white p-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-in fade-in zoom-in slide-in-from-bottom-2 duration-300 ring-4 ring-primary/20">
