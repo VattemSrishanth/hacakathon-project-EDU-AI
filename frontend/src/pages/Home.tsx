@@ -7,7 +7,17 @@ import { useAuth } from '../context/AuthContext';
 const Home = () => {
   const navigate = useNavigate();
   const { t } = useSettings();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isGuest } = useAuth();
+
+  const handleRestrictedAction = (path: string) => {
+    if (isGuest) {
+      if (window.confirm("This feature is restricted to logged-in users. Would you like to log in now?")) {
+        navigate('/login');
+      }
+    } else {
+      navigate(path);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-app-bg text-app-text-main transition-colors duration-300">
@@ -22,7 +32,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-extrabold text-app-text-main mb-8 leading-tight tracking-tight">
             {t.home.welcome}{' '}
-            <span className="text-color-primary italic">
+            <span className="text-primary italic">
               {t.home.brandName}
             </span>
           </h1>
@@ -32,17 +42,23 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Button 
               variant="primary" 
-              className="px-12 py-5 text-xl rounded-2xl shadow-xl shadow-color-primary/20 hover:scale-105 transition-all"
-              onClick={() => navigate(isAuthenticated ? "/lessons" : "/register")}
+              className={`px-12 py-5 text-xl rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all ${isGuest ? 'opacity-80' : ''}`}
+              onClick={() => {
+                if (isAuthenticated) navigate("/lessons");
+                else if (isGuest) handleRestrictedAction("/lessons");
+                else navigate("/register");
+              }}
             >
               {t.home.getStarted}
+              {isGuest && <span className="ml-2 text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Pro</span>}
             </Button>
             <Button 
               variant="outline" 
-              className="px-12 py-5 text-xl rounded-2xl border-2 border-app-border hover:border-color-primary/30 hover:scale-105 transition-all bg-app-bg/50 backdrop-blur-sm"
-              onClick={() => navigate("/ai-tutor")}
+              className={`px-12 py-5 text-xl rounded-2xl border-2 border-app-border hover:border-primary/30 hover:scale-105 transition-all bg-app-bg/50 backdrop-blur-sm ${isGuest ? 'opacity-50' : ''}`}
+              onClick={() => handleRestrictedAction("/ai-tutor")}
             >
               {t.home.tryAiTutor}
+              {isGuest && <span className="ml-2 text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">Login Required</span>}
             </Button>
           </div>
         </div>
@@ -149,8 +165,12 @@ const Home = () => {
               {t.home.ctaDesc}
             </p>
             <Button 
-              className="px-24 py-10 text-4xl font-black rounded-4xl shadow-2xl hover:scale-105 active:scale-95 transition-all bg-color-primary! text-white! border-none uppercase tracking-tight"
-              onClick={() => navigate(isAuthenticated ? "/lessons" : "/register")}
+              className={`px-24 py-10 text-4xl font-black rounded-4xl shadow-2xl hover:scale-105 active:scale-95 transition-all bg-primary! text-white! border-none uppercase tracking-tight ${isGuest ? 'opacity-80' : ''}`}
+              onClick={() => {
+                if (isAuthenticated) navigate("/lessons");
+                else if (isGuest) handleRestrictedAction("/lessons");
+                else navigate("/register");
+              }}
             >
               {t.home.startLearning}
             </Button>

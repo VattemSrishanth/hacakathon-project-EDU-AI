@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -17,13 +17,23 @@ import Support from './pages/Support';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { SettingsProvider } from './context/SettingsContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 
-function App() {
+// New component to handle the mandatory selection between Login/Guest
+const RequireSelection = ({ children }: { children: React.ReactElement }) => {
+  const { auth } = useAuth();
+  if (!auth) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
+function AppContent() {
   const location = useLocation();
+  const isAuthPage = ['/login', '/register'].includes(location.pathname);
 
   // Keep every page starting at the top when navigating between routes.
   useEffect(() => {
@@ -31,127 +41,133 @@ function App() {
   }, [location.pathname]);
 
   return (
+    <div className="min-h-screen flex flex-col bg-app-bg transition-colors duration-300">
+      <OfflineBanner />
+      {!isAuthPage && <Navbar />}
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<RequireSelection><Home /></RequireSelection>} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lessons"
+            element={
+              <ProtectedRoute>
+                <Lessons />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lessons/:id"
+            element={
+              <ProtectedRoute>
+                <LessonViewer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lessons/uploaded"
+            element={
+              <ProtectedRoute>
+                <UploadedPdf />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lessons/quiz"
+            element={
+              <ProtectedRoute>
+                <PdfQuiz />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/assignments"
+            element={
+              <ProtectedRoute>
+                <Assignments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ai-tutor"
+            element={
+              <ProtectedRoute>
+                <AITutor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/accessibility"
+            element={
+              <RequireSelection>
+                <Accessibility />
+              </RequireSelection>
+            }
+          />
+          <Route
+            path="/support"
+            element={
+              <RequireSelection>
+                <Support />
+              </RequireSelection>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <div className="min-h-[60vh] flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-3xl font-bold text-gray-900">Page Not Found</h1>
+                  <p className="text-gray-600 mt-2">The page you are looking for does not exist.</p>
+                </div>
+              </div>
+            }
+          />
+        </Routes>
+      </main>
+      {!isAuthPage && <Footer />}
+      <VoiceControl />
+    </div>
+  );
+}
+
+function App() {
+  return (
     <SettingsProvider>
       <AuthProvider>
-      <div className="min-h-screen flex flex-col bg-app-bg transition-colors duration-300">
-        <OfflineBanner />
-        <Navbar />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/lessons"
-              element={
-                <ProtectedRoute>
-                  <Lessons />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/lessons/:id"
-              element={
-                <ProtectedRoute>
-                  <LessonViewer />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/lessons/uploaded"
-              element={
-                <ProtectedRoute>
-                  <UploadedPdf />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/lessons/quiz"
-              element={
-                <ProtectedRoute>
-                  <PdfQuiz />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/assignments"
-              element={
-                <ProtectedRoute>
-                  <Assignments />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ai-tutor"
-              element={
-                <ProtectedRoute>
-                  <AITutor />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/accessibility"
-              element={
-                <ProtectedRoute>
-                  <Accessibility />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/support"
-              element={
-                <ProtectedRoute>
-                  <Support />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <Login />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/register"
-              element={
-                <PublicRoute>
-                  <Register />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="*"
-              element={
-                <div className="min-h-[60vh] flex items-center justify-center">
-                  <div className="text-center">
-                    <h1 className="text-3xl font-bold text-gray-900">Page Not Found</h1>
-                    <p className="text-gray-600 mt-2">The page you are looking for does not exist.</p>
-                  </div>
-                </div>
-              }
-            />
-          </Routes>
-        </main>
-        <Footer />
-        <VoiceControl />
-      </div>
-    </AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </SettingsProvider>
   );
 }

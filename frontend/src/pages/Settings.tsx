@@ -17,7 +17,8 @@ import {
   Sun,
   Trees,
   Sunrise,
-  Accessibility
+  Accessibility,
+  MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -45,7 +46,7 @@ const Settings = () => {
     clearChatHistory 
   } = useSettings();
   
-  const [activeTab, setActiveTab] = useState<'account' | 'security' | 'visibility' | 'privacy' | 'advertising' | 'notifications' | 'appearance'>('account');
+  const [activeTab, setActiveTab] = useState<'account' | 'security' | 'visibility' | 'privacy' | 'advertising' | 'notifications' | 'aitutor' | 'appearance'>('account');
   const [saveMessage, setSaveMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(settings.profile.name);
@@ -126,12 +127,12 @@ const Settings = () => {
       onClick={() => setActiveTab(id)}
       className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${
         activeTab === id 
-          ? 'bg-app-bg text-color-primary shadow-sm' 
+          ? 'bg-app-bg text-primary shadow-sm' 
           : 'text-app-text-sub hover:bg-app-bg/50'
       }`}
     >
       <Icon className={`w-5 h-5 ${activeTab === id ? colorClass : 'text-app-text-muted opacity-60'}`} />
-      <span className={`text-sm font-bold ${activeTab === id ? 'text-color-primary' : ''}`}>{label}</span>
+      <span className={`text-sm font-bold ${activeTab === id ? 'text-primary' : ''}`}>{label}</span>
     </button>
   );
 
@@ -148,6 +149,7 @@ const Settings = () => {
             <SidebarItem id="privacy" label="Data privacy" icon={Shield} colorClass="text-slate-500" />
             <SidebarItem id="advertising" label="Advertising data" icon={Layout} colorClass="text-slate-500" />
             <SidebarItem id="notifications" label="Notifications" icon={Bell} colorClass="text-slate-500" />
+            <SidebarItem id="aitutor" label="AI Tutor Settings" icon={MessageSquare} colorClass="text-purple-500" />
             <SidebarItem id="appearance" label="Appearance & Theme" icon={Sparkles} colorClass="text-blue-500" />
             
             <div className="pt-8 mt-8 border-t border-app-border">
@@ -187,13 +189,13 @@ const Settings = () => {
                       {settings.profile.avatarDataUrl ? (
                          <img src={settings.profile.avatarDataUrl} alt="Avatar" className="h-full w-full object-cover" />
                       ) : (
-                        <div className="text-2xl font-black text-color-primary">{initials}</div>
+                        <div className="text-2xl font-black text-primary">{initials}</div>
                       )}
                     </div>
                     <div>
                       <h3 className="text-xl font-black truncate">{settings.profile.name}</h3>
                       <p className="text-app-text-sub font-medium">{settings.profile.email}</p>
-                      <button onClick={() => setActiveTab('security')} className="text-xs font-black text-color-primary uppercase tracking-widest mt-2 hover:underline">Change</button>
+                      <button onClick={() => setActiveTab('security')} className="text-xs font-black text-primary uppercase tracking-widest mt-2 hover:underline">Change</button>
                     </div>
                   </div>
 
@@ -213,7 +215,7 @@ const Settings = () => {
                             updateLearning({ language: e.target.value as SupportedLanguage });
                             showSaveMessage(t.settings.changesSaved);
                           }}
-                          className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-color-primary/20 font-bold text-sm"
+                          className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-primary/20 font-bold text-sm"
                         >
                           <option value="English">English</option>
                           <option value="Telugu">తెలుగు (Telugu)</option>
@@ -231,7 +233,7 @@ const Settings = () => {
                             updateLearning({ level: e.target.value as LearningLevel });
                             showSaveMessage(t.settings.changesSaved);
                           }}
-                          className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-color-primary/20 font-bold text-sm"
+                          className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-primary/20 font-bold text-sm"
                         >
                           <option value="Beginner">{t.lessons.beginner}</option>
                           <option value="Intermediate">{t.lessons.intermediate}</option>
@@ -259,7 +261,7 @@ const Settings = () => {
                           {settings.profile.avatarDataUrl ? (
                             <img src={settings.profile.avatarDataUrl} alt="Avatar" className="h-full w-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-4xl font-black text-color-primary bg-color-primary/5 uppercase">
+                            <div className="w-full h-full flex items-center justify-center text-4xl font-black text-primary bg-primary/5 uppercase">
                               {initials}
                             </div>
                           )}
@@ -282,7 +284,7 @@ const Settings = () => {
                           value={isEditing ? editName : settings.profile.name}
                           onChange={(e) => setEditName(e.target.value)}
                           disabled={!isEditing}
-                          className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-color-primary/20 font-bold disabled:opacity-50"
+                          className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-primary/20 font-bold disabled:opacity-50"
                         />
                       </div>
                       
@@ -321,7 +323,7 @@ const Settings = () => {
                 </header>
 
                 <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-6">
-                  <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer group transition-all hover:border-color-primary/50 shadow-sm">
+                  <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer group transition-all hover:border-primary/50 shadow-sm">
                     <div className="flex items-center gap-4">
                       <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-app-bg-alt border border-app-border text-purple-600 shadow-sm transition-transform group-hover:scale-110">
                         <Eye className="w-6 h-6" />
@@ -341,7 +343,7 @@ const Settings = () => {
                           showSaveMessage(t.settings.changesSaved);
                         }}
                       />
-                      <div className="w-14 h-8 bg-app-bg-alt border border-app-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-1 after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-purple-600"></div>
+<div className="w-14 h-8 bg-app-bg-alt border border-app-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-1 after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
                     </div>
                   </label>
                   
@@ -416,14 +418,14 @@ const Settings = () => {
 
                 <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-8">
                   <div className="grid grid-cols-1 gap-6">
-                    <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-color-primary/50 transition-all shadow-sm group">
+                    <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-primary/50 transition-all shadow-sm group">
                       <div className="space-y-1">
-                        <span className="text-sm font-black text-app-text-main uppercase tracking-tight group-hover:text-color-primary transition-colors">Assignment Reminders</span>
+                        <span className="text-sm font-black text-app-text-main uppercase tracking-tight group-hover:text-primary transition-colors">Assignment Reminders</span>
                         <p className="text-[10px] text-app-text-sub font-bold uppercase tracking-widest opacity-60">When assignments are due</p>
                       </div>
                       <input
                         type="checkbox"
-                        className="w-6 h-6 rounded-lg border-2 border-app-border bg-app-bg text-color-primary focus:ring-color-primary shadow-sm"
+                        className="w-6 h-6 rounded-lg border-2 border-app-border bg-app-bg text-primary focus:ring-primary shadow-sm"
                         checked={settings.notifications.assignmentReminders}
                         onChange={(e) => {
                           updateNotifications({ assignmentReminders: e.target.checked });
@@ -431,14 +433,14 @@ const Settings = () => {
                         }}
                       />
                     </label>
-                    <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-color-primary/50 transition-all shadow-sm group">
+                    <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-primary/50 transition-all shadow-sm group">
                       <div className="space-y-1">
-                        <span className="text-sm font-black text-app-text-main uppercase tracking-tight group-hover:text-color-primary transition-colors">New Lesson Notifications</span>
+                        <span className="text-sm font-black text-app-text-main uppercase tracking-tight group-hover:text-primary transition-colors">New Lesson Notifications</span>
                         <p className="text-[10px] text-app-text-sub font-bold uppercase tracking-widest opacity-60">When new content is available</p>
                       </div>
                       <input
                         type="checkbox"
-                        className="w-6 h-6 rounded-lg border-2 border-app-border bg-app-bg text-color-primary focus:ring-color-primary shadow-sm"
+                        className="w-6 h-6 rounded-lg border-2 border-app-border bg-app-bg text-primary focus:ring-primary shadow-sm"
                         checked={settings.notifications.newLessonNotifications}
                         onChange={(e) => {
                           updateNotifications({ newLessonNotifications: e.target.checked });
@@ -460,11 +462,68 @@ const Settings = () => {
                           }}
                           className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                             settings.notifications.reminderFrequency === freq
-                              ? 'bg-color-primary text-white'
+                              ? 'bg-primary text-white'
                               : 'bg-app-bg-alt text-app-text-sub border border-app-border hover:bg-app-bg'
                           }`}
                         >
                           {freq}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'aitutor' && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                <header>
+                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">AI Tutor Settings</h1>
+                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Configure your personal learning assistant</p>
+                </header>
+
+                <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-8">
+                  <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-primary/50 transition-all shadow-sm group">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 shadow-sm transition-transform group-hover:scale-110">
+                        <MessageSquare className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-black text-app-text-main uppercase tracking-tight">Enable AI Tutor</p>
+                        <p className="text-[10px] text-app-text-sub font-black uppercase tracking-widest opacity-60">Get instant help from our AI models</p>
+                      </div>
+                    </div>
+                    <div className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={settings.aiTutor.enabled}
+                        onChange={(e) => {
+                          updateAiTutor({ enabled: e.target.checked });
+                          showSaveMessage(t.settings.changesSaved);
+                        }}
+                      />
+                      <div className="w-14 h-8 bg-app-bg-alt border border-app-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-1 after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-purple-600"></div>
+                    </div>
+                  </label>
+
+                  <div className="p-6 bg-app-bg rounded-2xl border border-app-border space-y-4">
+                    <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.aiTutorSettings.answerStyle}</label>
+                    <div className="flex flex-wrap gap-2">
+                      {['Short', 'Detailed'].map((style) => (
+                        <button
+                          key={style}
+                          onClick={() => {
+                            updateAiTutor({ answerStyle: style as any });
+                            showSaveMessage(t.settings.changesSaved);
+                          }}
+                          className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                            settings.aiTutor.answerStyle === style
+                              ? 'bg-purple-600 text-white'
+                              : 'bg-app-bg-alt text-app-text-sub border border-app-border hover:bg-app-bg'
+                          }`}
+                        >
+                          {style}
                         </button>
                       ))}
                     </div>
@@ -558,7 +617,7 @@ const Settings = () => {
                             onClick={() => updateThemeAccessibility({ fontSize: size })}
                             className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                               settings.themeAccessibility.fontSize === size
-                                ? 'bg-color-primary text-white shadow-lg shadow-color-primary/20'
+                                ? 'bg-primary text-white shadow-lg shadow-primary/20'
                                 : 'bg-app-bg text-app-text-sub border border-app-border hover:bg-app-bg-alt'
                             }`}
                            >
@@ -573,12 +632,51 @@ const Settings = () => {
                       <select
                         value={settings.themeAccessibility.voiceLanguage}
                         onChange={(e) => updateThemeAccessibility({ voiceLanguage: e.target.value as SupportedLanguage })}
-                        className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-color-primary/20 font-bold text-sm"
+                        className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-primary/20 font-bold text-sm"
                       >
                          <option value="English">English</option>
                          <option value="Telugu">Telugu</option>
                          <option value="Hindi">Hindi</option>
                       </select>
+                    </div>
+
+                    <div className="col-span-full border-t border-app-border pt-8 space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <label className="flex items-center justify-between p-4 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-primary/50 transition-all">
+                          <span className="text-xs font-black uppercase tracking-tight text-app-text-main">High Contrast</span>
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={settings.themeAccessibility.highContrast}
+                            onChange={(e) => updateThemeAccessibility({ highContrast: e.target.checked })}
+                          />
+                          <div className="w-10 h-5 bg-app-bg-alt rounded-full peer peer-checked:bg-primary relative after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-5"></div>
+                        </label>
+                        
+                        <label className="flex items-center justify-between p-4 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-primary/50 transition-all">
+                          <span className="text-xs font-black uppercase tracking-tight text-app-text-main">Reduce Motion</span>
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={settings.themeAccessibility.reduceMotion}
+                            onChange={(e) => updateThemeAccessibility({ reduceMotion: e.target.checked })}
+                          />
+                          <div className="w-10 h-5 bg-app-bg-alt rounded-full peer peer-checked:bg-primary relative after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-5"></div>
+                        </label>
+
+                        <label className="flex items-center justify-between p-4 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-primary/50 transition-all">
+                          <div className="flex flex-col">
+                            <span className="text-xs font-black uppercase tracking-tight text-app-text-main">Low Power</span>
+                          </div>
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={settings.themeAccessibility.lowPowerMode}
+                            onChange={(e) => updateThemeAccessibility({ lowPowerMode: e.target.checked })}
+                          />
+                          <div className="w-10 h-5 bg-app-bg-alt rounded-full peer peer-checked:bg-primary relative after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-5"></div>
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </section>
@@ -657,7 +755,7 @@ const ThemeCard = ({
 
       <div className="px-6 pb-6 space-y-1">
         <div className="flex items-center gap-2">
-          <Icon className={`w-5 h-5 ${isSelected ? 'text-color-primary' : 'text-app-text-sub'}`} />
+          <Icon className={`w-5 h-5 ${isSelected ? 'text-primary' : 'text-app-text-sub'}`} />
           <h4 className="font-black text-lg tracking-tight uppercase">{title}</h4>
         </div>
         <p className="text-xs text-app-text-sub font-bold leading-relaxed uppercase tracking-tight opacity-60">

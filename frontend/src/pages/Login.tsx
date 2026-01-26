@@ -1,31 +1,41 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { LogIn, Mail, Lock, ShieldCheck, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { ShieldCheck, Globe, Languages, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import Card from '../components/Card';
-import Button from '../components/Button';
+import { useSettings } from '../context/SettingsContext';
 import { authAPI } from '../services/api';
+import './login-animation.css';
+
+import { auth as firebaseAuth, googleProvider } from '../firebase';
+import { signInWithPopup } from 'firebase/auth';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation();
+  const { login, continueAsGuest } = useAuth();
+  const { settings, updateLearning, t } = useSettings();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+
+  // Handle message from ProtectedRoute redirection
+  useEffect(() => {
+    if (location.state?.message) {
+      setErrorMessage(location.state.message);
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMessage('');
-    setSuccessMessage('');
 
     try {
       const response = await authAPI.login(email, password);
       if (response?.success) {
         login({ token: response?.token, user: response?.user });
-        setSuccessMessage('Login successful!');
         navigate('/', { replace: true });
       } else {
         setErrorMessage(response?.error || 'Login failed. Please try again.');
@@ -42,85 +52,179 @@ const Login = () => {
     }
   };
 
+  const handleGuestMode = () => {
+    continueAsGuest();
+    navigate('/', { replace: true });
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setErrorMessage('');
+
+    try {
+      // Calling REAL Firebase Google Sign-In
+      const result = await signInWithPopup(firebaseAuth, googleProvider);
+      const user = result.user;
+      
+      login({ 
+        token: await user.getIdToken(), 
+        user: { 
+          name: user.displayName || 'Google User', 
+          email: user.email || '',
+          avatarUrl: user.photoURL || '',
+          id: user.uid
+        } 
+      });
+
+      navigate('/', { replace: true });
+    } catch (error: any) {
+      console.error("Auth Error:", error);
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        setErrorMessage('Login cancelled.');
+      } else if (error.code === 'auth/api-key-not-valid' || error.code === 'auth/invalid-api-key') {
+        setErrorMessage('CRITICAL: You must provide a valid Firebase API Key in src/firebase.ts to use real Gmail accounts.');
+      } else {
+        setErrorMessage(`Google Login failed: ${error.message}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-app-bg text-app-text-main flex items-center justify-center py-12 px-4 transition-colors duration-300">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-blue-500/10 text-blue-600 mb-6 shadow-sm ring-1 ring-blue-500/20">
-            <LogIn className="w-10 h-10" />
+    <div className="auth-layout">
+      {/* Illustration Side */}
+      <div className="illustration-side">
+        <div className="character-box">
+          <div className="char-purple">
+            <div className="eye eye-left"></div>
+            <div className="eye eye-right"></div>
           </div>
-          <h1 className="text-4xl font-black text-app-text-main tracking-tight uppercase">Welcome Back</h1>
-          <p className="text-app-text-sub mt-3 font-bold uppercase text-xs tracking-widest">Sign in to your LearnBridge account</p>
+          <div className="char-orange">
+            <div className="eye eye-left"></div>
+            <div className="eye eye-right"></div>
+          </div>
+          <div className="char-black">
+            <div className="eye eye-left"></div>
+            <div className="eye eye-right"></div>
+          </div>
+          <div className="char-yellow">
+            <div className="eye eye-left" style={{ top: '30px' }}></div>
+            <div className="eye eye-right" style={{ top: '30px' }}></div>
+          </div>
         </div>
+        <div className="absolute bottom-10 left-10">
+          <h2 className="text-6xl font-black text-zinc-300 opacity-20 uppercase tracking-tighter">LearnBridge</h2>
+        </div>
+      </div>
 
-        <Card className="shadow-2xl border-app-border bg-app-bg-alt rounded-3xl overflow-hidden p-8">
-          {errorMessage && (
-            <div className="mb-6 rounded-2xl border-2 border-red-500/20 bg-red-500/10 px-5 py-4 text-sm text-red-600 font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-              <AlertCircle className="w-5 h-5 shrink-0" />
-              <span>{errorMessage}</span>
+      {/* Form Side */}
+      <div className="form-side flex-1 flex items-center justify-center">
+        <div className="w-full max-w-sm">
+          <div className="text-center mb-8">
+            <div className="w-12 h-12 bg-app-text-main rounded-xl mx-auto mb-4 flex items-center justify-center rotate-12 transition-transform hover:rotate-0 cursor-pointer shadow-lg">
+              <ShieldCheck className="w-6 h-6 text-app-bg" />
             </div>
-          )}
+            <h1 className="text-3xl font-black tracking-tight">{t.auth.welcomeBack}!</h1>
+            <p className="text-app-text-sub text-sm mt-1">{t.auth.signInToAccount}</p>
+          </div>
 
-          {successMessage && (
-            <div className="mb-6 rounded-2xl border-2 border-emerald-500/20 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-600 font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-              <ShieldCheck className="w-5 h-5 shrink-0" />
-              <span>{successMessage}</span>
+          <div className="mb-6">
+            <div className="relative group">
+              <select
+                value={settings.learning.language}
+                onChange={(e) => updateLearning({ language: e.target.value as any })}
+                className="w-full pl-10 pr-10 py-3 bg-app-bg-alt border border-app-border text-xs font-black uppercase tracking-widest rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer"
+              >
+                <option value="English">English</option>
+                <option value="Telugu">తెలుగు (Telugu)</option>
+                <option value="Hindi">हिन्दी (Hindi)</option>
+                <option value="Spanish">Español (Spanish)</option>
+                <option value="French">Français (French)</option>
+              </select>
+              <Languages className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-app-text-muted" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-app-text-muted" />
+            </div>
+          </div>
+
+          {errorMessage && (
+            <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100 animate-shake text-center">
+              {errorMessage}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">
-                Email Address
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-app-text-muted group-focus-within:text-blue-500 transition-colors">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@company.com"
-                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
-                  required
-                />
-              </div>
+            <div className="space-y-1">
+              <label className="text-xs font-black text-app-text-sub uppercase tracking-widest pl-1">{t.auth.email}</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@company.com"
+                className="w-full px-1 py-3 bg-transparent border-b-2 border-app-border focus:border-app-text-main focus:outline-none transition-all font-bold placeholder:opacity-30"
+                required
+              />
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">
-                Password
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-app-text-muted group-focus-within:text-blue-500 transition-colors">
-                  <Lock className="w-5 h-5" />
-                </div>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
-                  required
-                />
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-black text-app-text-sub uppercase tracking-widest pl-1">{t.auth.password}</label>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-app-text-muted hover:text-app-text-main transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-1 py-3 bg-transparent border-b-2 border-app-border focus:border-app-text-main focus:outline-none transition-all font-bold placeholder:opacity-30"
+                required
+              />
             </div>
 
-            <Button type="submit" className="w-full py-5 rounded-2xl shadow-xl shadow-blue-500/20 text-sm font-black uppercase tracking-widest" disabled={loading}>
-              {loading ? 'Authenticating...' : 'Sign In Now'}
-            </Button>
+            <button
+              disabled={loading}
+              className="w-full py-4 bg-zinc-900 text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-zinc-900/20 disabled:opacity-50"
+            >
+              {loading ? t.auth.signingIn : 'Log In'}
+            </button>
           </form>
 
-          <div className="mt-10 pt-8 border-t border-app-border text-center">
-            <p className="text-app-text-sub text-xs font-bold uppercase tracking-widest">
-              Don&apos;t have an account?{' '}
-              <Link to="/register" className="text-blue-600 font-black hover:text-blue-700 transition-colors ml-1 underline decoration-2 underline-offset-4">
-                Create One
+          <div className="mt-4 space-y-3">
+            <button
+              onClick={handleGoogleLogin}
+              disabled={loading}
+              className="w-full py-4 bg-white border border-zinc-200 rounded-full font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-zinc-50 transition-all shadow-sm group"
+            >
+              <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" className="w-4 h-4 group-hover:scale-110 transition-transform" alt="G" />
+              {t.auth.googleSignIn}
+            </button>
+
+            <button
+              onClick={handleGuestMode}
+              disabled={loading}
+              className="w-full py-4 bg-white text-zinc-900 border border-zinc-200 rounded-full font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:border-zinc-900 transition-all"
+            >
+              <Globe className="w-4 h-4 text-emerald-500" />
+              {t.auth.guestSignIn}
+            </button>
+          </div>
+
+          <div className="mt-10 text-center">
+            <p className="text-xs font-bold text-app-text-sub uppercase tracking-wider">
+              {t.auth.noAccount}{' '}
+              <Link to="/register" className="text-app-text-main font-black underline decoration-2 underline-offset-4 hover:text-blue-600 transition-colors">
+                {t.auth.signUp}
               </Link>
             </p>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

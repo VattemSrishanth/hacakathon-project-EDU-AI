@@ -10,15 +10,20 @@ export interface AuthUser {
   initials?: string;
 }
 
+export type AuthStatus = 'logged_in' | 'guest' | 'logged_out';
+
 export interface AuthState {
   token?: string;
   user?: AuthUser;
+  status: AuthStatus;
 }
 
 interface AuthContextValue {
   auth: AuthState | null;
   isAuthenticated: boolean;
-  login: (state: AuthState) => void;
+  isGuest: boolean;
+  login: (state: Omit<AuthState, 'status'>) => void;
+  continueAsGuest: () => void;
   logout: () => void;
   updateUser: (user: Partial<AuthUser>) => void;
 }
@@ -42,20 +47,22 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const value = useMemo<AuthContextValue>(() => {
     const normalizedAuth: AuthState | null = auth
       ? {
-          token: auth.token,
-          user: {
+          ...auth,
+          user: auth.user ? {
             ...auth.user,
             initials: auth.user?.initials || getInitials(auth.user),
-          },
+          } : undefined,
         }
       : null;
 
     return {
       auth: normalizedAuth,
-      isAuthenticated: Boolean(normalizedAuth?.token),
+      isAuthenticated: normalizedAuth?.status === 'logged_in',
+      isGuest: normalizedAuth?.status === 'guest',
       login: (state) => {
         const normalized: AuthState = {
           token: state.token,
+          status: 'logged_in',
           user: {
             ...state.user,
             initials: state.user?.initials || getInitials(state.user),
@@ -63,19 +70,25 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
         };
         setAuth(normalized);
       },
+      continueAsGuest: () => {
+        setAuth({
+          status: 'guest',
+          user: { name: 'Guest User', initials: 'GU' }
+        });
+      },
       logout: () => setAuth(null),
       updateUser: (userUpdates) => {
-        if (!auth) return;
-        const updated = {
+        if (!auth || auth.status !== 'logged_in') return;
+        const updated: AuthState = {
           ...auth,
           user: {
-            ...auth.user,
+            ...auth.user!,
             ...userUpdates,
           }
         };
         // Re-calculate initials if name or email changed
         if (userUpdates.name || userUpdates.email) {
-          updated.user.initials = getInitials(updated.user);
+          updated.user!.initials = getInitials(updated.user);
         }
         setAuth(updated);
       }

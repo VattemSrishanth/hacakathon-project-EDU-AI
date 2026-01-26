@@ -8,7 +8,7 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [profilePinned, setProfilePinned] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(() => !!document.fullscreenElement);
-  const { auth, isAuthenticated, logout } = useAuth();
+  const { auth, isAuthenticated, isGuest, logout } = useAuth();
   const { t, isDark } = useSettings();
   const navigate = useNavigate();
 
@@ -47,30 +47,58 @@ const Navbar = () => {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center group">
-              <span className="text-3xl font-black tracking-tighter text-color-primary">
+              <span className="text-3xl font-black tracking-tighter text-primary">
                 LearnBridge AI
               </span>
             </Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-10">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="text-app-text-sub font-black text-lg hover:text-color-primary transition-colors duration-200"
-              >
-                {link.label}
-              </Link>
-            ))}
-            {!isAuthenticated ? (
+            {navLinks.map((link) => {
+              const isRestricted = !['/', '/accessibility', '/support'].includes(link.to);
+              const isDisabled = isGuest && isRestricted;
+              
+              return (
+                <Link
+                  key={link.to}
+                  to={isDisabled ? '#' : link.to}
+                  onClick={(e) => {
+                    if (isDisabled) {
+                      e.preventDefault();
+                      if (window.confirm("This feature is for logged-in users only. Go to login?")) {
+                        navigate('/login');
+                      }
+                    }
+                  }}
+                  className={`text-app-text-sub font-black text-lg hover:text-primary transition-colors duration-200 ${
+                    isDisabled ? 'opacity-40 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+            {isGuest && (
+              <div className="flex items-center gap-4">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
+                  Guest Mode
+                </span>
+                <Link
+                  to="/login"
+                  className="px-6 py-2 rounded-xl bg-app-bg border-2 border-primary text-primary hover:bg-primary hover:text-white font-black text-sm uppercase tracking-widest transition-all"
+                >
+                  Log In
+                </Link>
+              </div>
+            )}
+            {!isAuthenticated && !isGuest ? (
               <Link
                 to="/login"
-                className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200"
+                className="px-8 py-3 rounded-2xl bg-primary text-white hover:bg-primary/90 font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95"
               >
                 {t.nav.login}
               </Link>
-            ) : (
+            ) : isAuthenticated && (
               <div
                 className="relative"
                 onMouseEnter={() => setProfileOpen(true)}

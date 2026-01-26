@@ -188,6 +188,9 @@ export interface TranslationKeys {
     haveAccount: string;
     loginSuccess: string;
     registerSuccess: string;
+    googleSignIn: string;
+    guestSignIn: string;
+    orUseEmail: string;
   };
   // Common
   common: {
@@ -380,6 +383,9 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       haveAccount: 'Already have an account?',
       loginSuccess: 'Login successful!',
       registerSuccess: 'Registration successful!',
+      googleSignIn: 'Continue with Google',
+      guestSignIn: 'Continue without login',
+      orUseEmail: 'Or use email',
     },
     common: {
       loading: 'Loading...',
@@ -569,6 +575,9 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       haveAccount: 'ఇప్పటికే ఖాతా ఉందా?',
       loginSuccess: 'లాగిన్ విజయవంతం!',
       registerSuccess: 'రిజిస్ట్రేషన్ విజయవంతం!',
+      googleSignIn: 'గూగుల్‌తో కొనసాగండి',
+      guestSignIn: 'లాగిన్ లేకుండా కొనసాగండి',
+      orUseEmail: 'లేదా ఇమెయిల్ ఉపయోగించండి',
     },
     common: {
       loading: 'లోడ్ అవుతోంది...',
@@ -758,6 +767,9 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       haveAccount: 'पहले से खाता है?',
       loginSuccess: 'लॉगिन सफल!',
       registerSuccess: 'पंजीकरण सफल!',
+      googleSignIn: 'गूगल के साथ जारी रखें',
+      guestSignIn: 'बिना लॉगिन के जारी रखें',
+      orUseEmail: 'या ईमेल का उपयोग करें',
     },
     common: {
       loading: 'लोड हो रहा है...',
@@ -947,6 +959,9 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       haveAccount: '¿Ya tienes cuenta?',
       loginSuccess: '¡Inicio de sesión exitoso!',
       registerSuccess: '¡Registro exitoso!',
+      googleSignIn: 'Continuar con Google',
+      guestSignIn: 'Continuar sin iniciar sesión',
+      orUseEmail: 'O usar correo electrónico',
     },
     common: {
       loading: 'Cargando...',
@@ -1136,6 +1151,9 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       haveAccount: 'Déjà un compte?',
       loginSuccess: 'Connexion réussie!',
       registerSuccess: 'Inscription réussie!',
+      googleSignIn: 'Continuer avec Google',
+      guestSignIn: 'Continuer sans connexion',
+      orUseEmail: 'Ou utiliser l\'email',
     },
     common: {
       loading: 'Chargement...',
