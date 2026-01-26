@@ -6,12 +6,11 @@ import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { t, settings } = useSettings();
+  const { t } = useSettings();
   const { isAuthenticated } = useAuth();
-  const isDark = settings.themeAccessibility.theme === 'Dark';
 
   return (
-    <div className="min-h-screen bg-white text-app-text-main transition-colors duration-300">
+    <div className="min-h-screen bg-app-bg text-app-text-main transition-colors duration-300">
       {/* Hero Section */}
       <section className="py-24 px-4 relative overflow-hidden">
         {/* Decorative Background Elements */}
@@ -23,7 +22,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-extrabold text-app-text-main mb-8 leading-tight tracking-tight">
             {t.home.welcome}{' '}
-            <span className="text-secondary italic">
+            <span className="text-color-primary italic">
               {t.home.brandName}
             </span>
           </h1>
@@ -33,14 +32,14 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Button 
               variant="primary" 
-              className="px-12 py-5 text-xl rounded-2xl shadow-xl shadow-blue-500/20 bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 transition-all"
+              className="px-12 py-5 text-xl rounded-2xl shadow-xl shadow-color-primary/20 hover:scale-105 transition-all"
               onClick={() => navigate(isAuthenticated ? "/lessons" : "/register")}
             >
               {t.home.getStarted}
             </Button>
             <Button 
               variant="outline" 
-              className="px-12 py-5 text-xl rounded-2xl border-2 border-slate-200 hover:border-blue-600/30 hover:scale-105 transition-all bg-white/50 backdrop-blur-sm text-slate-700"
+              className="px-12 py-5 text-xl rounded-2xl border-2 border-app-border hover:border-color-primary/30 hover:scale-105 transition-all bg-app-bg/50 backdrop-blur-sm"
               onClick={() => navigate("/ai-tutor")}
             >
               {t.home.tryAiTutor}
@@ -50,7 +49,7 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-20 px-4 bg-app-bg">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-sm font-black text-primary uppercase tracking-[0.3em] mb-4">
@@ -138,24 +137,19 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-4 bg-slate-50">
+      <section className="py-24 px-4 bg-app-bg-alt">
         <div
-          className={`max-w-6xl mx-auto rounded-[3rem] p-16 text-center relative overflow-hidden shadow-2xl border-2
-            ${isDark
-              ? 'bg-slate-900 border-white/10'
-              : 'bg-white border-slate-200'
-            }
-          `}
+          className="max-w-6xl mx-auto rounded-[3rem] p-16 text-center relative overflow-hidden shadow-2xl border-2 bg-app-bg border-app-border"
         >
           <div className="relative z-10">
-            <h2 className={`text-5xl md:text-8xl font-black mb-8 leading-tight m-0 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <h2 className="text-5xl md:text-8xl font-black mb-8 leading-tight m-0 text-app-text-main">
               {t.home.ctaTitle}
             </h2>
-            <p className={`text-2xl md:text-4xl mb-12 max-w-4xl mx-auto font-bold leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+            <p className="text-2xl md:text-4xl mb-12 max-w-4xl mx-auto font-bold leading-relaxed text-app-text-sub">
               {t.home.ctaDesc}
             </p>
             <Button 
-              className="px-24 py-10 text-4xl font-black rounded-4xl shadow-2xl hover:scale-105 active:scale-95 transition-all bg-blue-600! text-white! border-none uppercase tracking-tighter"
+              className="px-24 py-10 text-4xl font-black rounded-4xl shadow-2xl hover:scale-105 active:scale-95 transition-all bg-color-primary! text-white! border-none uppercase tracking-tight"
               onClick={() => navigate(isAuthenticated ? "/lessons" : "/register")}
             >
               {t.home.startLearning}

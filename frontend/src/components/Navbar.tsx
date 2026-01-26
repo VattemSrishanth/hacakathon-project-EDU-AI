@@ -9,7 +9,7 @@ const Navbar = () => {
   const [profilePinned, setProfilePinned] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(() => !!document.fullscreenElement);
   const { auth, isAuthenticated, logout } = useAuth();
-  const { t, settings } = useSettings();
+  const { t, isDark } = useSettings();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +34,6 @@ const Navbar = () => {
     { to: '/settings', label: t.nav.settings },
   ];
 
-  const isDark = settings.themeAccessibility.theme === 'Dark';
   const popupBg = isDark ? 'bg-gray-800 border-gray-700 text-gray-100' : 'bg-white border-gray-200 text-gray-900';
   const popupHeaderBg = isDark ? 'bg-gray-900/60 border-gray-700 text-gray-100' : 'bg-gray-50 border-gray-100 text-gray-900';
   const popupHover = isDark ? 'hover:bg-gray-700 text-gray-100' : 'hover:bg-gray-100 text-gray-800';
@@ -43,12 +42,12 @@ const Navbar = () => {
   if (isFullscreen) return null;
 
   return (
-    <nav className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 transition-colors duration-200 shadow-sm">
+    <nav className="bg-app-bg border-b border-app-border sticky top-0 z-50 transition-colors duration-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center group">
-              <span className="text-3xl font-black tracking-tighter text-blue-600 dark:text-blue-400">
+              <span className="text-3xl font-black tracking-tighter text-color-primary">
                 LearnBridge AI
               </span>
             </Link>
@@ -59,7 +58,7 @@ const Navbar = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className="text-slate-700 dark:text-slate-200 font-black text-lg hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                className="text-app-text-sub font-black text-lg hover:text-color-primary transition-colors duration-200"
               >
                 {link.label}
               </Link>

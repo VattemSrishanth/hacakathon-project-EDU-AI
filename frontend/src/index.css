@@ -44,6 +44,79 @@
   --border-color: #1e293b; /* Slate 800 */
 }
 
+/* ==================== Themes ==================== */
+.theme-crystal {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-card: #ffffff;
+  --text-primary: #020617;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-secondary: #0891b2;
+}
+
+.theme-midnight {
+  --bg-primary: #020617;
+  --bg-secondary: #0f172a;
+  --bg-card: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-color: #334155;
+  --color-primary: #3b82f6;
+  --color-primary-hover: #60a5fa;
+  --color-secondary: #22d3ee;
+}
+
+.theme-forest {
+  --bg-primary: #022c22;
+  --bg-secondary: #064e3b;
+  --bg-card: #065f46;
+  --text-primary: #ecfdf5;
+  --text-secondary: #a7f3d0;
+  --text-muted: #6ee7b7;
+  --border-color: #065f46;
+  --color-primary: #10b981;
+  --color-primary-hover: #34d399;
+  --color-secondary: #34d399;
+}
+
+.theme-aurora {
+  --bg-primary: #1e1b4b;
+  --bg-secondary: #312e81;
+  --bg-card: #3730a3;
+  --text-primary: #f5f3ff;
+  --text-secondary: #ddd6fe;
+  --text-muted: #a78bfa;
+  --border-color: #4338ca;
+  --color-primary: #8b5cf6;
+  --color-primary-hover: #a78bfa;
+  --color-secondary: #22d3ee;
+}
+
+.theme-sunset {
+  --bg-primary: #fff7ed;
+  --bg-secondary: #ffedd5;
+  --bg-card: #ffffff;
+  --text-primary: #7c2d12;
+  --text-secondary: #9a3412;
+  --text-muted: #c2410c;
+  --border-color: #fed7aa;
+  --color-primary: #f97316;
+  --color-primary-hover: #fb923c;
+  --color-secondary: #fbbf24;
+}
+
+/* Theme Gradient Utility Classes for Settings Preview */
+.gradient-midnight { background: linear-gradient(135deg, #020617 0%, #1e293b 100%); }
+.gradient-crystal { background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); }
+.gradient-forest { background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); }
+.gradient-aurora { background: linear-gradient(135deg, #4c1d95 0%, #06b6d4 100%); }
+.gradient-sunset { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); }
+
 /* Global Body Styling */
 body {
   background-color: var(--bg-primary);
@@ -53,7 +126,7 @@ body {
 }
 
 /* Gentle site-wide transitions for color-related changes */
-* {
+body, nav, footer, .card, button, input, select {
   transition-property: background-color, color, border-color, box-shadow, transform;
   transition-duration: var(--transition-speed);
   transition-timing-function: ease;

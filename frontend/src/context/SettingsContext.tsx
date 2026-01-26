@@ -7,7 +7,7 @@ export type LearningLevel = 'Beginner' | 'Intermediate' | 'Advanced';
 export type ContentPreference = 'Text' | 'Video' | 'Both';
 export type AnswerStyle = 'Short' | 'Detailed';
 export type ReminderFrequency = 'Daily' | 'Weekly' | 'Off';
-export type ThemeMode = 'Light' | 'Dark';
+export type ThemeMode = 'Midnight Void' | 'Crystal Light' | 'Forest Depths' | 'Aurora Borealis' | 'Sunset Ember';
 export type FontSize = 'Small' | 'Medium' | 'Large';
 export type AccessibilityMode = 'Normal' | 'Deaf' | 'Dumb' | 'Blind';
 
@@ -81,7 +81,7 @@ export const defaultSettings: SettingsState = {
     reminderFrequency: 'Weekly',
   },
   themeAccessibility: {
-    theme: 'Light',
+    theme: 'Crystal Light',
     fontSize: 'Medium',
     highContrast: false,
     reduceMotion: false,
@@ -95,6 +95,7 @@ export const defaultSettings: SettingsState = {
 interface SettingsContextValue {
   settings: SettingsState;
   t: TranslationKeys;
+  isDark: boolean;
   updateProfile: (profile: Partial<ProfileSettings>) => void;
   updateLearning: (learning: Partial<LearningPreferences>) => void;
   updateAiTutor: (aiTutor: Partial<AiTutorSettings>) => void;
@@ -140,7 +141,11 @@ const loadSettingsFromStorage = (): SettingsState => {
       },
       themeAccessibility: {
         ...defaultSettings.themeAccessibility,
-        ...storedSettings?.themeAccessibility,
+        ...(storedSettings?.themeAccessibility || {}),
+        // migration/fallback for old theme values
+        theme: (['Midnight Void', 'Crystal Light', 'Forest Depths', 'Aurora Borealis', 'Sunset Ember'].includes(storedSettings?.themeAccessibility?.theme as any)
+          ? storedSettings?.themeAccessibility?.theme 
+          : defaultSettings.themeAccessibility.theme) as ThemeMode,
       },
     };
   } catch {
@@ -159,22 +164,33 @@ const saveSettingsToStorage = (settings: SettingsState): void => {
 // ==================== Apply Global Effects ====================
 const applyTheme = (theme: ThemeMode): void => {
   const root = document.documentElement;
-  if (theme === 'Dark') {
+  
+  // Remove all potential theme classes
+  const themeClasses = ['theme-midnight', 'theme-crystal', 'theme-forest', 'theme-aurora', 'theme-sunset', 'dark'];
+  root.classList.remove(...themeClasses);
+
+  // Set base variables first (default to Crystal Light if needed)
+  if (theme === 'Midnight Void' || theme === 'Forest Depths' || theme === 'Aurora Borealis') {
     root.classList.add('dark');
-    root.style.setProperty('--bg-primary', '#1a1a2e');
-    root.style.setProperty('--bg-secondary', '#16213e');
-    root.style.setProperty('--bg-card', '#1e293b');
-    root.style.setProperty('--text-primary', '#f8fafc');
-    root.style.setProperty('--text-secondary', '#cbd5e1');
-    root.style.setProperty('--border-color', '#334155');
-  } else {
-    root.classList.remove('dark');
-    root.style.setProperty('--bg-primary', '#ffffff');
-    root.style.setProperty('--bg-secondary', '#f8fafc');
-    root.style.setProperty('--bg-card', '#ffffff');
-    root.style.setProperty('--text-primary', '#0f172a');
-    root.style.setProperty('--text-secondary', '#475569');
-    root.style.setProperty('--border-color', '#e2e8f0');
+  }
+
+  // Add specific theme class
+  switch (theme) {
+    case 'Midnight Void':
+      root.classList.add('theme-midnight');
+      break;
+    case 'Crystal Light':
+      root.classList.add('theme-crystal');
+      break;
+    case 'Forest Depths':
+      root.classList.add('theme-forest');
+      break;
+    case 'Aurora Borealis':
+      root.classList.add('theme-aurora');
+      break;
+    case 'Sunset Ember':
+      root.classList.add('theme-sunset');
+      break;
   }
 };
 
@@ -239,6 +255,10 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
     return translations[settings.learning.language] || translations.English;
   }, [settings.learning.language]);
 
+  const isDark = useMemo(() => {
+    return ['Midnight Void', 'Forest Depths', 'Aurora Borealis'].includes(settings.themeAccessibility.theme);
+  }, [settings.themeAccessibility.theme]);
+
   const updateProfile = useCallback((profile: Partial<ProfileSettings>) => {
     setSettings((prev) => ({
       ...prev,
@@ -291,6 +311,7 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
     () => ({
       settings,
       t,
+      isDark,
       updateProfile,
       updateLearning,
       updateAiTutor,
@@ -299,7 +320,7 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
       clearChatHistory,
       resetSettings,
     }),
-    [settings, t, updateProfile, updateLearning, updateAiTutor, updateNotifications, updateThemeAccessibility, clearChatHistory, resetSettings]
+    [settings, t, isDark, updateProfile, updateLearning, updateAiTutor, updateNotifications, updateThemeAccessibility, clearChatHistory, resetSettings]
   );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
