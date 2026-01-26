@@ -6,7 +6,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, auth } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   // If not logged in (either logged_out or guest), redirect to login for restricted routes
   if (!isAuthenticated) {
