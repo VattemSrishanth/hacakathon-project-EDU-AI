@@ -2,6 +2,20 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
+import { 
+  Home, 
+  LayoutDashboard, 
+  BookOpen, 
+  Sparkles, 
+  Accessibility, 
+  LifeBuoy, 
+  Settings,
+  Menu,
+  X,
+  User,
+  LogOut,
+  ChevronRight
+} from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,13 +39,13 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { to: '/', label: t.nav.home },
-    { to: '/dashboard', label: t.nav.dashboard },
-    { to: '/lessons', label: t.nav.lessons },
-    { to: '/ai-tutor', label: t.nav.aiTutor },
-    { to: '/accessibility', label: t.nav.accessibility },
-    { to: '/support', label: t.nav.support },
-    { to: '/settings', label: t.nav.settings },
+    { to: '/', label: t.nav.home, icon: Home },
+    { to: '/dashboard', label: t.nav.dashboard, icon: LayoutDashboard },
+    { to: '/lessons', label: t.nav.lessons, icon: BookOpen },
+    { to: '/ai-tutor', label: t.nav.aiTutor, icon: Sparkles },
+    { to: '/accessibility', label: t.nav.accessibility, icon: Accessibility },
+    { to: '/support', label: t.nav.support, icon: LifeBuoy },
+    { to: '/settings', label: t.nav.settings, icon: Settings },
   ];
 
   const popupBg = isDark ? 'bg-gray-800 border-gray-700 text-gray-100' : 'bg-white border-gray-200 text-gray-900';
@@ -57,6 +71,7 @@ const Navbar = () => {
             {navLinks.map((link) => {
               const isRestricted = !['/', '/accessibility', '/support'].includes(link.to);
               const isDisabled = isGuest && isRestricted;
+              const Icon = link.icon;
               
               return (
                 <Link
@@ -70,11 +85,12 @@ const Navbar = () => {
                       }
                     }
                   }}
-                  className={`text-app-text-sub font-black text-lg hover:text-primary transition-colors duration-200 ${
+                  className={`flex items-center gap-2 text-app-text-sub font-black text-xs uppercase tracking-widest hover:text-primary transition-all duration-300 group ${
                     isDisabled ? 'opacity-40 cursor-not-allowed' : ''
                   }`}
                 >
-                  {link.label}
+                  <Icon className="w-4 h-4 text-app-text-muted group-hover:text-primary transition-colors" />
+                  <span>{link.label}</span>
                 </Link>
               );
             })}
@@ -131,10 +147,17 @@ const Navbar = () => {
                     className={`absolute right-0 mt-2 rounded-lg border shadow-lg z-50 popup-interactive profile-dropdown ${popupBg}`}
                   >
                     <div className={`px-4 py-3 border-b profile-dropdown__header ${popupHeaderBg}`}>
-                      <p className="text-sm font-bold profile-dropdown__text">
-                        {auth?.user?.username || auth?.user?.email || 'User'}
-                      </p>
-                      <p className="text-xs font-medium opacity-80 profile-dropdown__email">{auth?.user?.email}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <User className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold profile-dropdown__text">
+                            {auth?.user?.username || auth?.user?.email || 'User'}
+                          </p>
+                          <p className="text-xs font-medium opacity-60 profile-dropdown__email">{auth?.user?.email}</p>
+                        </div>
+                      </div>
                     </div>
                     <button
                       type="button"
@@ -143,15 +166,17 @@ const Navbar = () => {
                         setProfilePinned(false);
                         navigate('/dashboard');
                       }}
-                      className={`w-full text-left px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${popupHover}`}
+                      className={`w-full text-left px-4 py-3 text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-3 ${popupHover}`}
                     >
+                      <LayoutDashboard className="w-4 h-4 opacity-70" />
                       {t.nav.profile}
                     </button>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className={`w-full text-left px-4 py-2 text-sm font-bold whitespace-nowrap transition-colors ${logoutHover}`}
+                      className={`w-full text-left px-4 py-3 text-sm font-black whitespace-nowrap transition-colors flex items-center gap-3 border-t border-app-border/50 ${logoutHover}`}
                     >
+                      <LogOut className="w-4 h-4 text-red-500" />
                       {t.nav.logout}
                     </button>
                   </div>
@@ -163,27 +188,32 @@ const Navbar = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 hover:text-primary focus:outline-none"
+              className="p-2 rounded-xl text-app-text-sub hover:bg-app-bg-alt hover:text-primary transition-all active:scale-90"
               aria-label="Toggle menu"
             >
-              {isOpen ? '✕' : '☰'}
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
         {isOpen && (
-          <div className="md:hidden pb-4">
-            <div className="flex flex-col space-y-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="text-gray-700 hover:text-primary transition-colors duration-200"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+          <div className="md:hidden pb-6 animate-in slide-in-from-top-4 duration-300">
+            <div className="flex flex-col space-y-1 mt-2">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className="flex items-center gap-4 px-4 py-4 text-app-text-main font-bold hover:bg-app-bg-alt hover:text-primary rounded-2xl transition-all group"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Icon className="w-5 h-5 text-app-text-muted group-hover:text-primary transition-colors" />
+                    <span className="flex-1">{link.label}</span>
+                    <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Link>
+                );
+              })}
               {!isAuthenticated ? (
                 <Link
                   to="/login"
