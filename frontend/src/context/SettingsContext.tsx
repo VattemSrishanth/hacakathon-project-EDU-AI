@@ -251,6 +251,29 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
   useEffect(() => {
     applyAllEffects(settings);
     saveSettingsToStorage(settings);
+    
+    // Sync with backend if logged in
+    const syncToBackend = async () => {
+      try {
+        const authData = localStorage.getItem('auth');
+        if (authData) {
+          const { user } = JSON.parse(authData);
+          if (user?.id) {
+            // We use the profile API to save accessibility and learning settings too
+            await userDataAPI.updateProfile(user.id, {
+              settings: settings 
+            });
+          }
+        }
+      } catch (e) {
+        // Silently fail if offline or error, will sync later
+        console.warn('Backend settings sync delayed');
+      }
+    };
+    
+    // Low frequency sync to avoid hitting API on every keystroke
+    const timer = setTimeout(syncToBackend, 5000);
+    return () => clearTimeout(timer);
   }, [settings]);
 
   // Get translations based on current language

@@ -1,10 +1,11 @@
 export interface User {
-  id?: string | number;
+  id?: string;
   username?: string;
   email?: string;
   name?: string;
   avatarUrl?: string;
   initials?: string;
+  role?: 'user' | 'admin';
 }
 
 export interface Lesson {

@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useSettings } from '../context/SettingsContext';
+<<<<<<< Updated upstream
 import { 
   LifeBuoy, 
   BookText, 
@@ -7,9 +9,42 @@ import {
   Mail, 
   Phone 
 } from 'lucide-react';
+=======
+import { Mail, Phone, LifeBuoy, BookOpen, ExternalLink, MessageCircle, Send, Star } from 'lucide-react';
+import { userDataAPI } from '../services/api';
+import Button from '../components/Button';
+>>>>>>> Stashed changes
 
 const Support = () => {
   const { t } = useSettings();
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmitFeedback = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (rating === 0) return;
+    
+    setSubmitting(true);
+    try {
+      const authData = localStorage.getItem('auth');
+      const userId = authData ? JSON.parse(authData).user.id : 'anonymous';
+      
+      await userDataAPI.submitFeedback({
+        user_id: userId,
+        rating,
+        comment,
+        category: 'general',
+        created_at: new Date().toISOString()
+      });
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Feedback submit failed', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
   
   return (
     <div className="min-h-screen bg-app-bg-alt py-12 px-4 transition-colors duration-300">
@@ -68,6 +103,74 @@ const Support = () => {
             </div>
           </div>
         </div>
+
+        {/* Feedback System */}
+        <section className="bg-app-bg rounded-3xl border border-app-border shadow-2xl p-8 mb-12">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 bg-yellow-400/10 rounded-xl flex items-center justify-center text-yellow-500">
+              <Star size={24} />
+            </div>
+            <h2 className="text-2xl font-black text-app-text-main tracking-tight">Share Your Feedback</h2>
+          </div>
+
+          {submitted ? (
+            <div className="text-center py-12 bg-green-50 rounded-2xl border border-green-100">
+              <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <Send size={24} />
+              </div>
+              <h3 className="text-xl font-black text-green-800 mb-2">Thank You!</h3>
+              <p className="text-green-700 font-medium">Your feedback helps us improve the learning experience.</p>
+              <button 
+                onClick={() => setSubmitted(false)}
+                className="mt-6 text-green-600 font-black uppercase tracking-widest text-xs"
+              >
+                Send Another
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmitFeedback} className="space-y-6">
+              <div>
+                <label className="block text-xs font-black uppercase tracking-widest text-app-text-muted mb-4 text-center sm:text-left">
+                  How would you rate your experience?
+                </label>
+                <div className="flex justify-center sm:justify-start gap-4">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                        rating >= star ? 'bg-yellow-400 text-white scale-110' : 'bg-app-bg-alt text-app-text-muted hover:bg-yellow-400/20'
+                      }`}
+                    >
+                      <Star fill={rating >= star ? 'currentColor' : 'none'} size={24} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black uppercase tracking-widest text-app-text-muted mb-2">
+                  Tell us more (optional)
+                </label>
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="What did you like? What can we improve?"
+                  className="w-full bg-app-bg border border-app-border rounded-2xl p-4 text-app-text-main font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all min-h-[120px]"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={rating === 0 || submitting}
+                className="w-full sm:w-auto px-10 py-4 font-black uppercase tracking-widest text-[10px]"
+              >
+                {submitting ? 'Submitting...' : 'Submit Feedback'}
+              </Button>
+            </form>
+          )}
+        </section>
 
         {/* Footer Note */}
         <div className="text-center p-8 bg-primary/3 rounded-3xl border border-primary/10">

@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
+import { userDataAPI } from '../services/api';
 import { 
   Home,
   LayoutDashboard,
@@ -12,9 +13,14 @@ import {
   Settings,
   User,
   LogOut,
+<<<<<<< Updated upstream
   Menu,
   X,
   ArrowRight
+=======
+  ChevronRight,
+  Bell
+>>>>>>> Stashed changes
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -22,9 +28,32 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [profilePinned, setProfilePinned] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(() => !!document.fullscreenElement);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifOpen, setNotifOpen] = useState(false);
   const { auth, isAuthenticated, isGuest, logout } = useAuth();
   const { t, isDark } = useSettings();
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  useEffect(() => {
+    const fetchNotifs = async () => {
+      if (auth?.user?.id) {
+        try {
+          const res = await userDataAPI.getNotifications(auth.user.id);
+          if (res.success) setNotifications(res.notifications);
+        } catch (e) {
+          console.error('Failed to fetch notifs');
+        }
+      }
+    };
+    fetchNotifs();
+    const interval = setInterval(fetchNotifs, 10000); // 10s polling for demo
+    return () => clearInterval(interval);
+  }, [auth]);
 
   useEffect(() => {
     const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
@@ -32,11 +61,7 @@ const Navbar = () => {
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    setProfileOpen(false);
-    navigate('/login');
-  };
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   const navLinks = [
     { to: '/', label: t.nav.home, icon: Home },
@@ -47,6 +72,10 @@ const Navbar = () => {
     { to: '/support', label: t.nav.support, icon: Headset },
     { to: '/settings', label: t.nav.settings, icon: Settings },
   ];
+
+  if (auth?.user?.role === 'admin') {
+    navLinks.push({ to: '/admin', label: 'Admin', icon: User });
+  }
 
   const popupBg = isDark ? 'bg-gray-800 border-gray-700 text-gray-100' : 'bg-white border-gray-200 text-gray-900';
   const popupHeaderBg = isDark ? 'bg-gray-900/60 border-gray-700 text-gray-100' : 'bg-gray-50 border-gray-100 text-gray-900';
@@ -124,9 +153,47 @@ const Navbar = () => {
                 {t.nav.login}
               </Link>
             ) : isAuthenticated && (
-              <div
-                className="relative"
-                onMouseEnter={() => setProfileOpen(true)}
+              <div className="flex items-center gap-6">
+                {/* Notifications Bell */}
+                <div className="relative">
+                  <button 
+                    onClick={() => setNotifOpen(!notifOpen)}
+                    className="p-2 rounded-xl bg-app-bg-alt text-app-text-muted hover:text-primary transition-all relative"
+                  >
+                    <Bell size={20} />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-app-bg">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {notifOpen && (
+                    <div className={`absolute right-0 mt-3 w-80 rounded-2xl border shadow-2xl z-50 overflow-hidden ${popupBg}`}>
+                      <div className={`px-4 py-3 border-b ${popupHeaderBg}`}>
+                        <h3 className="font-black text-xs uppercase tracking-widest">Notifications</h3>
+                      </div>
+                      <div className="max-h-96 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <div className="p-8 text-center text-app-text-muted italic text-sm font-medium">
+                            No notifications yet
+                          </div>
+                        ) : (
+                          notifications.map((n, i) => (
+                            <div key={i} className={`p-4 border-b border-app-border/50 hover:bg-app-bg-alt transition-colors ${!n.is_read ? 'bg-primary/5' : ''}`}>
+                              <p className="text-sm font-bold text-app-text-main mb-1">{n.title}</p>
+                              <p className="text-xs text-app-text-sub leading-relaxed">{n.message}</p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  className="relative"
+                  onMouseEnter={() => setProfileOpen(true)}
                 onMouseLeave={() => {
                   if (!profilePinned) setProfileOpen(false);
                 }}
@@ -195,6 +262,7 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
+<<<<<<< Updated upstream
             )}
           </div>
 
@@ -207,7 +275,22 @@ const Navbar = () => {
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
+=======
+            </div>
+          )}
+>>>>>>> Stashed changes
         </div>
+
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 rounded-xl text-app-text-sub hover:bg-app-bg-alt hover:text-primary transition-all active:scale-90"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+      </div>
 
         {isOpen && (
           <div className="md:hidden pb-6 animate-in slide-in-from-top-4 duration-300">

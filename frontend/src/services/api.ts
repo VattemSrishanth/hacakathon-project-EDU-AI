@@ -98,26 +98,11 @@ export const aiAPI = {
 // Lessons API
 export const lessonsAPI = {
   getAll: async (category?: string, level?: string) => {
-    const params = new URLSearchParams();
-    if (category) params.append('category', category);
-    if (level) params.append('level', level);
-    
-    try {
-      const response = await api.get(`/lessons${params.toString() ? '?' + params.toString() : ''}`);
-      if (response.data) {
-        localStorage.setItem(`cached_lessons_${level || 'all'}_${category || 'all'}`, JSON.stringify(response.data));
-      }
-      return response.data;
-    } catch (error) {
-      if (!navigator.onLine) {
-        const cached = localStorage.getItem(`cached_lessons_${level || 'all'}_${category || 'all'}`);
-        if (cached) return JSON.parse(cached);
-      }
-      throw error;
-    }
+    const response = await api.get('/lessons', { params: { category, level } });
+    return response.data;
   },
-  
-  getById: async (id: string) => {
+
+  getOne: async (id: string) => {
     const response = await api.get(`/lessons/${id}`);
     return response.data;
   },
@@ -126,19 +111,59 @@ export const lessonsAPI = {
     const response = await api.get(`/lessons/${id}/content`);
     return response.data;
   },
-  
+
   getCategories: async () => {
     const response = await api.get('/categories');
     return response.data;
   },
 };
 
-// Progress API
-export const progressAPI = {
-  get: async () => {
-    const response = await api.get('/progress');
+// User Data API
+export const userDataAPI = {
+  getProfile: async (userId: string) => {
+    const response = await api.get('/profile', { params: { user_id: userId } });
     return response.data;
   },
+  updateProfile: async (id: string, data: any) => {
+    const response = await api.post('/profile', { id, ...data });
+    return response.data;
+  },
+  getProgress: async (userId: string) => {
+    const response = await api.get('/progress', { params: { user_id: userId } });
+    return response.data;
+  },
+  updateProgress: async (userId: string, data: any) => {
+    const response = await api.post('/progress', data, { params: { user_id: userId } });
+    return response.data;
+  },
+  saveChatHistory: async (userId: string, messages: any[]) => {
+    const response = await api.post('/history', { messages }, { params: { user_id: userId } });
+    return response.data;
+  },
+  getChatHistory: async (userId: string) => {
+    const response = await api.get('/history', { params: { user_id: userId } });
+    return response.data;
+  },
+  submitFeedback: async (feedback: any) => {
+    const response = await api.post('/feedback', feedback);
+    return response.data;
+  },
+  getNotifications: async (userId: string) => {
+    const response = await api.get('/notifications', { params: { user_id: userId } });
+    return response.data;
+  },
+  getAssignments: async () => {
+    const response = await api.get('/assignments');
+    return response.data;
+  }
+};
+
+// Admin API
+export const adminAPI = {
+  getStats: async (adminId: string) => {
+    const response = await api.get(`/admin/${adminId}/stats`);
+    return response.data;
+  }
 };
 
 // Health check

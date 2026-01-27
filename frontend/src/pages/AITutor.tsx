@@ -3,8 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import type { ChatMessage } from '../types';
-import { aiAPI } from '../services/api';
+import { aiAPI, userDataAPI } from '../services/api';
 import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
 import { 
   Plus, 
   Mic, 
@@ -81,6 +82,7 @@ const DeleteConfirmModal = ({
 
 const AITutor = () => {
   const { settings, t, updateLearning, updateThemeAccessibility } = useSettings();
+  const { auth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { enabled, answerStyle, showChatHistory } = settings.aiTutor;
@@ -187,70 +189,82 @@ const AITutor = () => {
     recognition.start();
   };
 
-  // Load chat history from localStorage
+  // Load chat history from MongoDB
   useEffect(() => {
-    if (showChatHistory) {
+    const loadHistory = async () => {
+      if (!auth?.user?.id) return;
       try {
-        // Load sessions
-        const storedSessions = window.localStorage.getItem(CHAT_SESSIONS_KEY);
-        if (storedSessions) {
-          const parsed = JSON.parse(storedSessions) as ChatSession[];
-          const sessionsWithDates = parsed.map(s => ({
-            ...s,
-            timestamp: new Date(s.timestamp),
-            messages: s.messages.map(m => ({ ...m, timestamp: new Date(m.timestamp) }))
+        const data = await userDataAPI.getChatHistory(auth.user.id);
+        if (data.success && data.history.length > 0) {
+          const sessions: ChatSession[] = data.history.map((h: any) => ({
+            id: h.id,
+            title: h.messages?.[1]?.content.substring(0, 30) + '...' || 'AI Conversation',
+            messages: h.messages,
+            timestamp: new Date(h.created_at)
           }));
-          const filteredSessions = sessionsWithDates.filter(s => s.messages.some(m => m.role === 'user'));
-          setChatSessions(filteredSessions);
+          setChatSessions(sessions);
+          if (sessions.length > 0) {
+            setCurrentSessionId(sessions[0].id);
+            setMessages(sessions[0].messages);
+            return;
+          }
         }
-      } catch {
-        // Ignore parse errors
+      } catch (err) {
+        console.error('Failed to load history', err);
       }
-    }
-    
-    // Create new session with initial greeting
-    const newSessionId = Date.now().toString();
-    setCurrentSessionId(newSessionId);
-    setMessages([
-      {
-        id: '1',
-        role: 'assistant',
-        content: t.aiTutor.greeting,
-        timestamp: new Date(),
-      },
-    ]);
-  }, [showChatHistory, t.aiTutor.greeting]);
 
-  // Save chat history to localStorage
+      // Fallback: Create new session if none found
+      const newSessionId = Date.now().toString();
+      setCurrentSessionId(newSessionId);
+      setMessages([
+        {
+          id: '1',
+          role: 'assistant',
+          content: t.aiTutor.greeting,
+          timestamp: new Date(),
+        },
+      ]);
+    };
+    
+    loadHistory();
+  }, [auth, t.aiTutor.greeting]);
+
+  // Save chat history to MongoDB
   useEffect(() => {
     const hasUserMessage = messages.some(m => m.role === 'user');
-    if (showChatHistory && messages.length > 0 && currentSessionId && hasUserMessage) {
-      try {
-        // Generate session title from first user message
-        const firstUserMsg = messages.find(m => m.role === 'user');
-        const title = firstUserMsg 
-          ? firstUserMsg.content.slice(0, 40) + (firstUserMsg.content.length > 40 ? '...' : '')
-          : 'New Chat';
+    if (messages.length > 0 && currentSessionId && hasUserMessage && auth?.user?.id) {
+      const syncChat = async () => {
+        try {
+          // Generate session title from first user message
+          const firstUserMsg = messages.find(m => m.role === 'user');
+          const title = firstUserMsg 
+            ? firstUserMsg.content.slice(0, 40) + (firstUserMsg.content.length > 40 ? '...' : '')
+            : 'New Chat';
 
-        const currentSession: ChatSession = {
-          id: currentSessionId,
-          title,
-          messages,
-          timestamp: new Date(),
-        };
+          const currentSession: ChatSession = {
+            id: currentSessionId,
+            title,
+            messages,
+            timestamp: new Date(),
+          };
 
-        // Update or add current session
-        setChatSessions(prev => {
-          const filtered = prev.filter(s => s.id !== currentSessionId);
-          const updated = [currentSession, ...filtered].slice(0, 50); // Keep max 50 sessions
-          window.localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(updated));
-          return updated;
-        });
-      } catch {
-        // Ignore storage errors
-      }
+          // Update local state first for responsiveness
+          setChatSessions(prev => {
+            const filtered = prev.filter(s => s.id !== currentSessionId);
+            return [currentSession, ...filtered].slice(0, 50);
+          });
+
+          // Sync to DB
+          await userDataAPI.saveChatHistory(auth.user.id, messages);
+        } catch (e) {
+          console.error('DB Sync Error', e);
+        }
+      };
+      
+      const timer = setTimeout(syncChat, 2000);
+      return () => clearTimeout(timer);
     }
-  }, [messages, showChatHistory, currentSessionId]);
+  }, [messages, currentSessionId, auth]);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -391,21 +405,44 @@ const AITutor = () => {
                  }
              }
              
-             // Update text to show clean explanation from JSON
-             if (parsed.explanation) {
-                 aiContent = parsed.explanation;
-             } else if (parsed.answer && typeof parsed.answer === 'string') {
-                 aiContent = parsed.answer;
-             } else if (typeof aiContent === 'object') {
-                 // Fallback if it's still an object and we have no explanation field
-                 aiContent = "Action performed successfully.";
-             }
-        }
-      } catch (e) {
-          console.log("Not a command JSON or error parsing", e);
+      // Update text to show clean explanation from JSON
+      if (parsed.explanation) {
+          aiContent = parsed.explanation;
+      } else if (parsed.answer && typeof parsed.answer === 'string') {
+          aiContent = parsed.answer;
+      } else if (typeof aiContent === 'object') {
+          // Fallback if it's still an object and we have no explanation field
+          aiContent = "Action performed successfully.";
       }
+    }
+  } catch (e) {
+      console.log("Not a command JSON or error parsing", e);
+  }
 
-      const assistantMessage: ChatMessage = {
+  // Increment questions asked count in progress
+  if (auth?.user?.id) {
+    try {
+      const progRes = await userDataAPI.getProgress(auth.user.id);
+      if (progRes.success) {
+        const currentProg = progRes.progress;
+        const updatedActivities = [
+          { type: 'ai', text: `Asked AI: ${activeInput.slice(0, 30)}...`, timestamp: new Date().toISOString() },
+          ...(currentProg.activities || [])
+        ].slice(0, 20);
+
+        await userDataAPI.updateProgress(auth.user.id, {
+          ...currentProg,
+          questionsAsked: (currentProg.questionsAsked || 0) + 1,
+          activities: updatedActivities,
+          lastActivity: new Date().toISOString().split('T')[0]
+        });
+      }
+    } catch (e) {
+      console.error('Failed to update questions count', e);
+    }
+  }
+
+  const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: String(aiContent), // Ensure it's a string for rendering

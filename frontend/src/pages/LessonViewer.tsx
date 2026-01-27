@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
+<<<<<<< Updated upstream
 import { 
   ChevronLeft, 
   FileText, 
@@ -9,11 +10,16 @@ import {
   Sparkles,
   BookOpen
 } from 'lucide-react';
+=======
+import { lessonsAPI } from '../services/api';
+import { ArrowLeft, Upload, Volume2, FileText, BookOpen, Loader2 } from 'lucide-react';
+>>>>>>> Stashed changes
 import Button from '../components/Button';
 
 interface LessonData {
   id: string;
   title: string;
+  description: string;
   pdfUrl?: string;
   aiSummary: string;
   textVersion: string;
@@ -21,35 +27,52 @@ interface LessonData {
 
 export default function LessonViewer() {
   const { lessonId } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { settings } = useSettings();
   const [lesson, setLesson] = useState<LessonData | null>(null);
-  const [uploadedPdf, setUploadedPdf] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [uploadedPdf, setUploadedPdf] = useState<string | null>(location.state?.pdfUrl || null);
   const [isReading, setIsReading] = useState(false);
 
   useEffect(() => {
-    // Load lesson data
-    const lessonData: LessonData = {
-      id: lessonId || '1',
-      title: 'Introduction to Algebra',
-      pdfUrl: '', // Can be set to a default PDF URL
-      aiSummary: 'This lesson covers fundamental algebraic concepts including variables, expressions, and basic equations. You will learn how to solve simple linear equations and understand the relationship between variables.',
-      textVersion: 'Introduction to Algebra\n\nAlgebra is a branch of mathematics that uses symbols and letters to represent numbers and quantities in formulas and equations.\n\nKey Concepts:\n1. Variables: Letters that represent unknown values (e.g., x, y, z)\n2. Expressions: Combinations of variables and numbers (e.g., 2x + 5)\n3. Equations: Mathematical statements showing equality (e.g., 2x + 5 = 15)\n\nSolving Basic Equations:\nTo solve an equation, isolate the variable on one side.\n\nExample: 2x + 5 = 15\nStep 1: Subtract 5 from both sides: 2x = 10\nStep 2: Divide both sides by 2: x = 5'
+    const fetchLesson = async () => {
+      if (!lessonId) return;
+      if (lessonId === 'uploaded') {
+        const state = location.state;
+        if (state) {
+          setLesson({
+            id: 'uploaded',
+            title: state.pdfName || 'Uploaded PDF',
+            description: 'Custom learning material',
+            pdfUrl: state.pdfUrl,
+            aiSummary: 'Analyzing your custom document...',
+            textVersion: 'Extracting text for accessibility...'
+          });
+        }
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await lessonsAPI.getOne(lessonId);
+        if (res.success) {
+          setLesson(res.lesson);
+        }
+      } catch (e) {
+        console.error('Failed to fetch lesson', e);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    // Check for uploaded PDF in localStorage
-    const storedPdf = localStorage.getItem(`lesson-pdf-${lessonId}`);
-    if (storedPdf) {
-      setUploadedPdf(storedPdf);
-    }
-
-    setLesson(lessonData);
+    fetchLesson();
 
     // Announce lesson loaded for screen readers
-    if (settings.themeAccessibility.accessibilityMode === 'Blind') {
-      announceText(`Lesson ${lessonData.title} loaded`);
+    if (settings.themeAccessibility.accessibilityMode === 'Blind' && lesson) {
+      announceText(`Lesson ${lesson.title} loaded`);
     }
-  }, [lessonId, settings.themeAccessibility.accessibilityMode]);
+  }, [lessonId, location.state, settings.themeAccessibility.accessibilityMode]);
 
   const handlePdfUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -99,6 +122,18 @@ export default function LessonViewer() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-app-bg flex items-center justify-center p-4">
+        <div className="text-center animate-pulse">
+          <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
+          <h2 className="text-xl font-black text-app-text-main">Opening Lesson...</h2>
+          <p className="text-app-text-sub text-sm font-bold uppercase tracking-widest mt-2">Connecting to Knowledge Base</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!lesson) {
     return (
       <div className="min-h-screen bg-app-bg flex items-center justify-center p-4">
@@ -106,7 +141,7 @@ export default function LessonViewer() {
           <div className="w-24 h-24 rounded-3xl bg-primary/10 flex items-center justify-center mx-auto mb-6 animate-pulse text-primary">
             <BookOpen size={48} />
           </div>
-          <p className="text-app-text-main font-black text-xl uppercase tracking-widest">Loading lesson...</p>
+          <p className="text-app-text-main font-black text-xl uppercase tracking-widest">Lesson Not Found</p>
         </div>
       </div>
     );

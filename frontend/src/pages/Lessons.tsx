@@ -48,6 +48,7 @@ const Lessons = () => {
     }
   }, [settings.learning.board]);
 
+<<<<<<< Updated upstream
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
@@ -84,6 +85,114 @@ const Lessons = () => {
     setCompletedLessons(newCompleted);
     localStorage.setItem('lesson_completion_tracker', JSON.stringify(newCompleted));
   };
+=======
+  // Load lessons and progress from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const lessonRes = await lessonsAPI.getAll();
+        if (lessonRes.success && lessonRes.lessons) {
+          setLessons(lessonRes.lessons);
+        }
+
+        const authData = localStorage.getItem('auth');
+        if (authData) {
+          const { user } = JSON.parse(authData);
+          const progressRes = await userDataAPI.getProgress(user.id);
+          if (progressRes.success && progressRes.progress.lessonData) {
+             setProgress(progressRes.progress.lessonData);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Filter lessons
+  const filteredLessons = lessons.filter(lesson => {
+    const matchesCategory = filter === 'All' || lesson.category === filter;
+    const matchesSearch = lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          lesson.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const categories = ['All', ...Array.from(new Set(lessons.map(l => l.category)))];
+
+  const handleStartLearning = (lessonId: string) => {
+    navigate(`/lessons/${lessonId}`);
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const pdfData = reader.result as string; // base64 data URL
+      const pdfUrl = URL.createObjectURL(file);
+      navigate('/lessons/uploaded', { state: { pdfUrl, pdfName: file.name, pdfData } });
+    };
+    reader.readAsDataURL(file);
+
+    // Reset input so the same file can be selected again
+    event.target.value = '';
+  };
+
+  const handleMarkProgress = async (lessonId: string) => {
+    const currentProgress = progress[lessonId] || 0;
+    const newProgress = currentProgress >= 100 ? 0 : Math.min(currentProgress + 25, 100);
+    
+    const updatedProgress = {
+      ...progress,
+      [lessonId]: newProgress
+    };
+    
+    setProgress(updatedProgress);
+
+    // Sync with MongoDB
+    try {
+      const authData = localStorage.getItem('auth');
+      if (authData) {
+        const { user } = JSON.parse(authData);
+        // Get current full progress data first to avoid overwriting other stats
+        const currentData = await userDataAPI.getProgress(user.id);
+        const completedCount = Object.values(updatedProgress).filter(p => p === 100).length;
+        
+        // Add activity if lesson was just completed
+        const updatedActivities = [...(currentData.progress.activities || [])];
+        if (newProgress === 100 && currentProgress < 100) {
+          const lesson = lessons.find(l => l.id === lessonId);
+          updatedActivities.unshift({
+            type: 'lesson',
+            text: `Completed lesson: ${lesson?.title || lessonId}`,
+            timestamp: new Date().toISOString()
+          });
+        }
+
+        await userDataAPI.updateProgress(user.id, {
+          id: currentData.progress.id,
+          user_id: user.id,
+          lessonData: updatedProgress,
+          lessonsCompleted: completedCount,
+          activities: updatedActivities.slice(0, 20),
+          lastActivity: new Date().toISOString().split('T')[0]
+        });
+      }
+    } catch (e) {
+      console.error('Failed to sync progress to DB', e);
+      // Fallback
+      localStorage.setItem('lesson_progress', JSON.stringify(updatedProgress));
+    }
+>>>>>>> Stashed changes
 
   // Reset logic
   const resetToClass = () => {
