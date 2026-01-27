@@ -286,7 +286,7 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
   }, [settings.learning.language]);
 
   const isDark = useMemo(() => {
-    return ['Midnight Void', 'Forest Depths', 'Aurora Borealis'].includes(settings.themeAccessibility.theme);
+    return ['Midnight Void', 'Forest Depths', 'Aurora Borealis', 'Wizards Academy'].includes(settings.themeAccessibility.theme);
   }, [settings.themeAccessibility.theme]);
 
   const updateProfile = useCallback((profile: Partial<ProfileSettings>) => {
