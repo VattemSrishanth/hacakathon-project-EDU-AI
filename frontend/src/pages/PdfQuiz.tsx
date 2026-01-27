@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { 
+  ClipboardList, 
+  XCircle, 
+  Zap,
+  Loader2
+} from 'lucide-react';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import { quizAPI } from '../services/api';
@@ -147,10 +153,17 @@ const PdfQuiz = () => {
     <div className="min-h-screen bg-app-bg-alt py-12 px-4">
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-widest text-app-text-muted">Exam Mode</p>
-            <h1 className="text-3xl font-black text-app-text-main">Quiz on {pdfName}</h1>
-            <p className="text-app-text-sub font-medium">15 questions generated from your PDF. Stay in full screen until you submit.</p>
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <ClipboardList size={32} className="text-primary" />
+            </div>
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest text-primary mb-1 flex items-center gap-2">
+                <Zap size={14} /> Exam Mode
+              </p>
+              <h1 className="text-3xl font-black text-app-text-main tracking-tight">Quiz on {pdfName}</h1>
+              <p className="text-app-text-sub font-medium">Auto-generated from your PDF content. Accuracy varies based on document quality.</p>
+            </div>
           </div>
             {!submitted && !isFullscreen && !loading && !error && (
               <Button
@@ -190,9 +203,20 @@ const PdfQuiz = () => {
           </div>
 
           {loading ? (
-            <div className="flex items-center justify-center py-10 text-app-text-sub font-bold">Generating exam-grade quiz from your PDF...</div>
+            <div className="flex flex-col items-center justify-center py-20 text-app-text-sub font-black uppercase tracking-widest gap-4">
+              <div className="animate-spin text-primary">
+                <Loader2 size={48} />
+              </div>
+              <span className="animate-pulse">Generating exam-grade quiz...</span>
+            </div>
           ) : error ? (
-            <div className="p-4 rounded-xl border border-red-300 bg-red-50 text-red-700 font-bold">{error}</div>
+            <div className="p-8 rounded-3xl border-2 border-red-500/20 bg-red-500/10 text-red-600 font-bold flex items-center gap-4">
+              <XCircle size={32} />
+              <div>
+                <p className="text-lg">Quiz Generation Failed</p>
+                <p className="text-sm opacity-80">{error}</p>
+              </div>
+            </div>
           ) : (
             <div className="space-y-6">
               {questions.map((q) => (

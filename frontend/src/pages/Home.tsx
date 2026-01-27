@@ -3,6 +3,14 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
+import { 
+  Bot, 
+  BookOpen, 
+  Globe, 
+  Cpu,
+  Sparkles,
+  ShieldCheck
+} from 'lucide-react';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -79,8 +87,8 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Card hover className="p-8 border-none shadow-lg bg-app-bg">
               <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-inner ring-1 ring-blue-100 dark:ring-blue-800">
-                  🤖
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 shadow-inner ring-1 ring-primary/20 text-primary">
+                  <Bot size={40} />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-app-text-main">{t.home.aiTutorTitle}</h3>
                 <p className="text-app-text-sub leading-relaxed font-medium">
@@ -91,8 +99,8 @@ const Home = () => {
 
             <Card hover className="p-8 border-none shadow-lg bg-app-bg">
               <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-inner ring-1 ring-indigo-100 dark:ring-indigo-800">
-                  📚
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 shadow-inner ring-1 ring-primary/20 text-primary">
+                  <BookOpen size={40} />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-app-text-main">{t.home.richContentTitle}</h3>
                 <p className="text-app-text-sub leading-relaxed font-medium">
@@ -103,8 +111,8 @@ const Home = () => {
 
             <Card hover className="p-8 border-none shadow-lg bg-app-bg">
               <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-cyan-50 dark:bg-cyan-900/20 rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-inner ring-1 ring-cyan-100 dark:ring-cyan-800">
-                  🌐
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 shadow-inner ring-1 ring-primary/20 text-primary">
+                  <Globe size={40} />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-app-text-main">{t.home.offlineTitle}</h3>
                 <p className="text-app-text-sub leading-relaxed font-medium">
@@ -115,8 +123,8 @@ const Home = () => {
 
             <Card hover className="p-8 border-none shadow-lg bg-app-bg">
               <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-inner ring-1 ring-purple-100 dark:ring-purple-800">
-                  ♿
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 shadow-inner ring-1 ring-primary/20 text-primary">
+                  <ShieldCheck size={40} />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-app-text-main">{t.home.accessibleTitle}</h3>
                 <p className="text-app-text-sub leading-relaxed font-medium">
@@ -127,8 +135,8 @@ const Home = () => {
 
             <Card hover className="p-8 border-none shadow-lg bg-app-bg">
               <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-rose-50 dark:bg-rose-900/20 rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-inner ring-1 ring-rose-100 dark:ring-rose-800">
-                  🎯
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 shadow-inner ring-1 ring-primary/20 text-primary">
+                  <Sparkles size={40} />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-app-text-main">{t.home.personalizedTitle}</h3>
                 <p className="text-app-text-sub leading-relaxed font-medium">
@@ -139,8 +147,8 @@ const Home = () => {
 
             <Card hover className="p-8 border-none shadow-lg bg-app-bg">
               <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-amber-50 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-inner ring-1 ring-amber-100 dark:ring-amber-800">
-                  📱
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 shadow-inner ring-1 ring-primary/20 text-primary">
+                  <Cpu size={40} />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-app-text-main">{t.home.mobileFirstTitle}</h3>
                 <p className="text-app-text-sub leading-relaxed font-medium">

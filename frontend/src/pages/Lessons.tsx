@@ -1,267 +1,277 @@
-import { useState, useEffect, useRef, type ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
 import { useSettings } from '../context/SettingsContext';
-import Button from '../components/Button';
-import { lessonsAPI } from '../services/api';
+
+// Import all board syllabi
+import ncertSyllabus from '../data/ncert_syllabus.json';
+import telanganaSyllabus from '../data/telangana_syllabus.json';
+import apSyllabus from '../data/andhra_pradesh_syllabus.json';
+
 import { 
-  Search, 
-  Filter, 
-  GraduationCap,
-  UploadCloud
+  BookOpen, 
+  ArrowLeft,
+  Layout,
+  Sparkles,
+  Info,
+  Globe
 } from 'lucide-react';
 
-interface Lesson {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  level: string;
-  category: string;
-  topics: string[];
-  pdf_path?: string;
-  progress?: number;
+// Modular Components
+import ClassList from '../components/Syllabus/ClassList';
+import SubjectList from '../components/Syllabus/SubjectList';
+import UnitAccordion from '../components/Syllabus/UnitAccordion';
+import LessonViewer from '../components/Syllabus/LessonViewer';
+
+interface Syllabus {
+  board: string;
+  classes: {
+    [grade: string]: {
+      subjects: {
+        [subject: string]: {
+          unit: string;
+          topics: string[];
+        }[];
+      };
+    };
+  };
 }
 
 const Lessons = () => {
-  const navigate = useNavigate();
   const { t, settings } = useSettings();
-  const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<string>('All');
-  const [progress, setProgress] = useState<Record<string, number>>({});
-  const [searchQuery, setSearchQuery] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Select syllabus based on board setting
+  const activeSyllabus = useMemo(() => {
+    switch (settings.learning.board) {
+      case 'Telangana': return telanganaSyllabus as unknown as Syllabus;
+      case 'Andhra Pradesh': return apSyllabus as unknown as Syllabus;
+      case 'NCERT':
+      default: return ncertSyllabus as unknown as Syllabus;
+    }
+  }, [settings.learning.board]);
 
-  // Load lessons from API
+  const [selectedClass, setSelectedClass] = useState<string | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+
+  // Reset selection if board changes
   useEffect(() => {
-    const fetchLessons = async () => {
-      try {
-        const response = await lessonsAPI.getAll();
-        if (response.success && response.lessons) {
-          setLessons(response.lessons);
-        }
-      } catch (error) {
-        console.error('Failed to fetch lessons:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setSelectedClass(null);
+    setSelectedSubject(null);
+    setSelectedUnit(null);
+    setSelectedTopic(null);
+    setExplanation(null);
+  }, [settings.learning.board]);
 
-    fetchLessons();
-
-    const savedProgress = localStorage.getItem('lesson_progress');
-    if (savedProgress) {
-      setProgress(JSON.parse(savedProgress));
+  // Load completed lessons
+  useEffect(() => {
+    const stored = localStorage.getItem('lesson_completion_tracker');
+    if (stored) {
+      setCompletedLessons(JSON.parse(stored));
     }
   }, []);
 
-  // Filter lessons
-  const filteredLessons = lessons.filter(lesson => {
-    const matchesCategory = filter === 'All' || lesson.category === filter;
-    const matchesSearch = lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          lesson.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const categories = ['All', ...Array.from(new Set(lessons.map(l => l.category)))];
-
-  const handleStartLearning = (lessonId: string) => {
-    navigate(`/lessons/${lessonId}`);
-  };
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const pdfData = reader.result as string; // base64 data URL
-      const pdfUrl = URL.createObjectURL(file);
-      navigate('/lessons/uploaded', { state: { pdfUrl, pdfName: file.name, pdfData } });
-    };
-    reader.readAsDataURL(file);
-
-    // Reset input so the same file can be selected again
-    event.target.value = '';
-  };
-
-  const handleMarkProgress = (lessonId: string) => {
-    const currentProgress = progress[lessonId] || 0;
-    const newProgress = currentProgress >= 100 ? 0 : Math.min(currentProgress + 25, 100);
+  const handleMarkComplete = () => {
+    if (!selectedTopic) return;
+    const lessonId = `${selectedClass}-${selectedSubject}-${selectedTopic}`;
+    const newCompleted = completedLessons.includes(lessonId)
+      ? completedLessons.filter(id => id !== lessonId)
+      : [...completedLessons, lessonId];
     
-    const updatedProgress = {
-      ...progress,
-      [lessonId]: newProgress
-    };
-    
-    setProgress(updatedProgress);
-    localStorage.setItem('lesson_progress', JSON.stringify(updatedProgress));
+    setCompletedLessons(newCompleted);
+    localStorage.setItem('lesson_completion_tracker', JSON.stringify(newCompleted));
+  };
 
-    if (settings.themeAccessibility.accessibilityMode === 'Blind' && 'speechSynthesis' in window) {
-      const lesson = lessons.find(l => l.id === lessonId);
-      const utterance = new SpeechSynthesisUtterance(
-        `${lesson?.title} progress updated to ${newProgress} percent`
-      );
-      utterance.lang = settings.themeAccessibility.voiceLanguage === 'English' ? 'en-US' : 'hi-IN';
-      window.speechSynthesis.speak(utterance);
+  // Reset logic
+  const resetToClass = () => {
+    setSelectedClass(null);
+    setSelectedSubject(null);
+    setSelectedTopic(null);
+    setExplanation(null);
+  };
+
+  const resetToSubject = () => {
+    setSelectedSubject(null);
+    setSelectedTopic(null);
+    setExplanation(null);
+  };
+
+  // Generate AI Explanation
+  useEffect(() => {
+    if (selectedTopic && selectedClass && selectedSubject) {
+      handleExplain('detailed');
     }
+  }, [selectedTopic, selectedClass, selectedSubject]);
+
+  const handleExplain = async (mode: 'simple' | 'detailed' = 'detailed') => {
+    setGenerating(true);
+    // In a real app, this would be a prompt to an LLM
+    setTimeout(() => {
+      const accessibility = settings.themeAccessibility.accessibilityMode || 'Regular';
+      const text = `[Mode: ${mode.toUpperCase()}] \n\nWelcome to your AI lesson on ${selectedTopic}! \n\nAs a Class ${selectedClass} student studying ${selectedSubject}, it's important to understand this concept. \n\nIn terms of ${selectedTopic}: Imagine you are exploring this in real life. It's about how these fundamentals help us understand the world around us. \n\nThis explanation is optimized for ${accessibility} mode and tailored to your Grade ${selectedClass} curriculum.`;
+      setExplanation(text);
+      setGenerating(false);
+    }, 1000);
   };
 
-  const getProgressColor = (percent: number) => {
-    if (percent === 0) return 'bg-app-border';
-    if (percent < 50) return 'bg-secondary';
-    if (percent < 100) return 'bg-primary';
-    return 'bg-green-500';
+  const handleTranslate = () => {
+    setGenerating(true);
+    setTimeout(() => {
+      setExplanation(`[Translated to ${settings.learning.language}] \n\n${explanation}`);
+      setGenerating(false);
+    }, 800);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-app-bg flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-app-text-sub font-bold animate-pulse">Loading Lessons...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleListen = () => {
+    if (!explanation) return;
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(explanation);
+    const langMap: Record<string, string> = {
+      'English': 'en-US',
+      'Hindi': 'hi-IN',
+      'Telugu': 'te-IN'
+    };
+    utterance.lang = langMap[settings.learning.language] || 'en-US';
+    utterance.onend = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const currentSubjects = selectedClass ? activeSyllabus.classes[selectedClass]?.subjects || {} : {};
+  const subjectsList = Object.keys(currentSubjects);
+  const currentUnits = (selectedClass && selectedSubject) ? currentSubjects[selectedSubject] || [] : [];
 
   return (
-    <div className="min-h-screen bg-app-bg-alt py-12 px-4 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-app-bg-alt py-12 px-4 transition-colors duration-300 font-sans">
+      <div className="max-w-7xl mx-auto space-y-12">
         
         {/* Header Section */}
-        <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4">
-            <GraduationCap size={14} />
-            Learning Catalog
-          </div>
-          <h1 className="text-5xl font-black text-app-text-main tracking-tight sm:text-6xl">
-            {t.lessons.title}
-          </h1>
-          <p className="text-xl text-app-text-sub max-w-2xl mx-auto font-medium">
-            {t.lessons.subtitle}
-          </p>
-        </div>
-
-        {/* Controls Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
-          <div className="lg:col-span-4 flex flex-wrap gap-3 justify-center lg:justify-start">
-            <Button
-              variant="primary"
-              onClick={handleUploadClick}
-              className="inline-flex items-center gap-2 rounded-xl px-5 py-3 font-black uppercase tracking-widest text-[10px]"
-            >
-              <UploadCloud size={16} />
-              Upload PDF
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="application/pdf"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-          </div>
-
-          {/* Search */}
-          <div className="lg:col-span-2 relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted group-focus-within:text-primary transition-colors" size={20} />
-            <input 
-              type="text"
-              placeholder="Search lessons..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-app-bg border border-app-border rounded-2xl py-4 pl-12 pr-4 text-app-text-main font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
-            />
-          </div>
-
-          {/* Categories */}
-          <div className="lg:col-span-2 flex flex-wrap gap-2 items-center justify-center lg:justify-end">
-            <Filter size={18} className="text-app-text-muted mr-2" />
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setFilter(category)}
-                className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${
-                  filter === category
-                    ? 'bg-primary text-white shadow-lg shadow-primary/25 scale-105'
-                    : 'bg-app-bg text-app-text-main hover:bg-primary/5 hover:text-primary border border-app-border'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Lessons Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredLessons.map((lesson) => (
-            <div key={lesson.id} className="bg-app-bg border border-app-border rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group">
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-6">
-                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider">
-                    {lesson.category}
-                  </span>
-                  <span className="text-app-text-muted text-xs font-bold">{lesson.duration}</span>
-                </div>
-                
-                <h3 className="text-2xl font-black text-app-text-main mb-3 group-hover:text-primary transition-colors">
-                  {lesson.title}
-                </h3>
-                <p className="text-app-text-sub font-medium mb-8 line-clamp-2">
-                  {lesson.description}
-                </p>
-
-                {/* Progress Bar */}
-                <div className="mb-8">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-black uppercase tracking-widest text-app-text-muted">Progress</span>
-                    <span className="text-xs font-black text-app-text-main">
-                      {progress[lesson.id] || 0}%
-                    </span>
-                  </div>
-                  <div className="h-2 bg-app-bg-alt rounded-full overflow-hidden border border-app-border/50">
-                    <div 
-                      className={`h-full transition-all duration-500 ease-out ${getProgressColor(progress[lesson.id] || 0)}`}
-                      style={{ width: `${progress[lesson.id] || 0}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <Button 
-                    variant="primary" 
-                    onClick={() => handleStartLearning(lesson.id)}
-                    className="w-full rounded-xl py-3 font-black uppercase tracking-widest text-[10px]"
-                  >
-                    Start Lesson
-                  </Button>
-                  <button 
-                    onClick={() => handleMarkProgress(lesson.id)}
-                    className="flex items-center justify-center w-12 h-12 rounded-xl bg-app-bg-alt border border-app-border text-app-text-main hover:bg-primary/10 hover:text-primary transition-colors"
-                  >
-                    <div className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center p-0.5">
-                      {(progress[lesson.id] || 0) >= 100 && <div className="w-full h-full bg-current rounded-full" />}
-                    </div>
-                  </button>
-                </div>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-app-border pb-10">
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em] border border-primary/20">
+                <Sparkles size={14} />
+                AI-Powered Learning
+              </div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 text-secondary text-[10px] font-black uppercase tracking-[0.2em] border border-secondary/20">
+                <Globe size={14} />
+                {settings.learning.board} Syllabus
               </div>
             </div>
-          ))}
+            <h1 className="text-5xl md:text-7xl font-black text-app-text-main tracking-tighter leading-none italic uppercase">
+              {t.lessons.title}
+            </h1>
+            <p className="text-app-text-sub font-black uppercase text-xs tracking-[0.3em] opacity-60">
+              Full Grades 1–10 Digital Syllabus Hub
+            </p>
+          </div>
+
+          {selectedClass && (
+            <button 
+              onClick={resetToClass}
+              className="flex items-center gap-3 px-6 py-3 rounded-full bg-app-bg border-2 border-app-border text-app-text-main font-black uppercase text-[10px] tracking-widest hover:border-primary transition-all active:scale-95 shadow-sm"
+            >
+              <ArrowLeft size={16} />
+              Change Class
+            </button>
+          )}
         </div>
 
-        {filteredLessons.length === 0 && (
-          <div className="py-16 px-8 bg-app-bg border border-app-border rounded-3xl text-center shadow-sm">
-            <div className="w-20 h-20 bg-app-bg-alt rounded-3xl flex items-center justify-center mx-auto mb-6 text-app-text-muted">
-              <Search size={40} />
+        {/* Dynamic Content Area */}
+        {!selectedClass ? (
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Select Your Grade</h2>
+              <p className="text-app-text-sub font-bold uppercase text-[10px] tracking-widest">Choose a class to explore the full curriculum</p>
             </div>
-            <h3 className="text-2xl font-black text-app-text-main mb-3">No lessons found</h3>
-            <p className="text-app-text-sub font-medium">Try adjusting your search or filter to find what you're looking for.</p>
+            <ClassList 
+              onSelectClass={setSelectedClass} 
+              selectedGrade={selectedClass} 
+            />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            {/* Sidebar Navigation */}
+            <div className="lg:col-span-4 space-y-8 h-fit lg:sticky lg:top-8">
+              {!selectedSubject ? (
+                <div className="space-y-6 animate-in fade-in slide-in-from-left-6 duration-500">
+                  <div className="flex items-center gap-3 text-primary">
+                    <Layout size={24} />
+                    <h2 className="text-xl font-black uppercase tracking-tight">Select Subject</h2>
+                  </div>
+                  <SubjectList 
+                    subjects={subjectsList} 
+                    onSelectSubject={setSelectedSubject} 
+                    selectedSubject={selectedSubject} 
+                  />
+                </div>
+              ) : (
+                <div className="space-y-6 animate-in fade-in slide-in-from-left-6 duration-500">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-secondary">
+                      <BookOpen size={24} />
+                      <h2 className="text-xl font-black uppercase tracking-tight">{selectedSubject} Units</h2>
+                    </div>
+                    <button 
+                      onClick={resetToSubject}
+                      className="p-2 rounded-xl bg-app-bg hover:bg-app-bg-alt text-app-text-sub border border-app-border transition-colors"
+                    >
+                      <ArrowLeft size={18} />
+                    </button>
+                  </div>
+                  <UnitAccordion 
+                    units={currentUnits} 
+                    onSelectTopic={(unit, topic) => {
+                      setSelectedUnit(unit);
+                      setSelectedTopic(topic);
+                    }} 
+                    selectedTopic={selectedTopic} 
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Main Content Viewer */}
+            <div className="lg:col-span-8">
+              {selectedTopic ? (
+                <LessonViewer 
+                  lesson={{
+                    title: selectedTopic,
+                    class: selectedClass,
+                    subject: selectedSubject!,
+                    unit: selectedUnit!,
+                    explanation: explanation || ""
+                  }}
+                  generating={generating}
+                  isSpeaking={isSpeaking}
+                  onListen={handleListen}
+                  onRefresh={() => handleExplain()}
+                  onTranslate={handleTranslate}
+                  onExplainMode={handleExplain}
+                  onMarkComplete={handleMarkComplete}
+                  isCompleted={completedLessons.includes(`${selectedClass}-${selectedSubject}-${selectedTopic}`)}
+                />
+              ) : (
+                <div className="h-full min-h-125 rounded-[3rem] border-4 border-dashed border-app-border flex flex-col items-center justify-center text-center p-12 space-y-6 opacity-60">
+                  <div className="w-24 h-24 rounded-full bg-app-bg-alt flex items-center justify-center text-app-text-muted">
+                    <Info size={48} />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-black text-app-text-main uppercase tracking-tight">No Topic Selected</h3>
+                    <p className="text-app-text-sub font-bold max-w-xs mx-auto text-sm">Pick a subject and topic from the left to start your AI-powered learning journey.</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -270,3 +280,4 @@ const Lessons = () => {
 };
 
 export default Lessons;
+

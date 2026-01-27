@@ -1,6 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { UserPlus, Mail, Lock, User, ShieldCheck, AlertCircle } from 'lucide-react';
+import { 
+  UserPlus, 
+  Mail, 
+  Lock, 
+  CheckCircle, 
+  AlertCircle,
+  ChevronDown
+} from 'lucide-react';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { authAPI } from '../services/api';
@@ -58,8 +65,8 @@ const Register = () => {
     <div className="min-h-screen bg-app-bg text-app-text-main flex items-center justify-center py-12 px-4 transition-colors duration-300">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-indigo-500/10 text-indigo-600 mb-6 shadow-sm ring-1 ring-indigo-500/20">
-            <UserPlus className="w-10 h-10" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary/10 mb-6 shadow-sm ring-1 ring-primary/20">
+            <UserPlus size={40} className="text-primary" />
           </div>
           <h1 className="text-4xl font-black text-app-text-main tracking-tight uppercase">Create Account</h1>
           <p className="text-app-text-sub mt-3 font-bold uppercase text-xs tracking-widest">Join the LearnBridge community today</p>
@@ -68,14 +75,14 @@ const Register = () => {
         <Card className="shadow-2xl border-app-border bg-app-bg-alt rounded-3xl overflow-hidden p-8">
           {errorMessage && (
             <div className="mb-6 rounded-2xl border-2 border-red-500/20 bg-red-500/10 px-5 py-4 text-sm text-red-600 font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-              <AlertCircle className="w-5 h-5 shrink-0" />
+              <div className="shrink-0"><AlertCircle size={20} /></div>
               <span>{errorMessage}</span>
             </div>
           )}
 
           {successMessage && (
             <div className="mb-6 rounded-2xl border-2 border-emerald-500/20 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-600 font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-              <ShieldCheck className="w-5 h-5 shrink-0" />
+              <div className="shrink-0"><CheckCircle size={20} /></div>
               <span>{successMessage}</span>
             </div>
           )}
@@ -99,7 +106,7 @@ const Register = () => {
                   ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-app-text-muted">
-                  ▼
+                  <ChevronDown size={18} />
                 </div>
               </div>
             </div>
@@ -107,8 +114,8 @@ const Register = () => {
             <div className="space-y-2">
               <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Full Name</label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-app-text-muted group-focus-within:text-indigo-500 transition-colors">
-                  <User className="w-5 h-5" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <UserPlus size={20} className="text-primary group-focus-within:text-indigo-600 transition-colors" />
                 </div>
                 <input
                   type="text"
@@ -124,8 +131,8 @@ const Register = () => {
             <div className="space-y-2">
               <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Email Address</label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-app-text-muted group-focus-within:text-indigo-500 transition-colors">
-                  <Mail className="w-5 h-5" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail size={20} className="text-primary group-focus-within:text-indigo-600 transition-colors" />
                 </div>
                 <input
                   type="email"
@@ -141,8 +148,8 @@ const Register = () => {
             <div className="space-y-2">
               <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Password</label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-app-text-muted group-focus-within:text-indigo-500 transition-colors">
-                  <Lock className="w-5 h-5" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock size={20} className="text-primary group-focus-within:text-indigo-600 transition-colors" />
                 </div>
                 <input
                   type="password"

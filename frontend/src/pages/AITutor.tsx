@@ -7,18 +7,18 @@ import { aiAPI } from '../services/api';
 import { useSettings } from '../context/SettingsContext';
 import { 
   Plus, 
-  Send, 
   Mic, 
   Trash2, 
-  History, 
-  PanelLeftClose, 
-  PanelLeftOpen,
-  Image as ImageIcon,
+  Clock, 
+  ChevronLeft, 
+  ChevronRight,
+  ImagePlus,
   FileText,
   Youtube,
   MessageSquare,
-  Sparkles,
-  X
+  Zap,
+  X,
+  Send,
 } from 'lucide-react';
 
 const CHAT_SESSIONS_KEY = 'ai_chat_sessions';
@@ -108,6 +108,7 @@ const AITutor = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
+  const isSpeakingRef = useRef(false);
 
   // Speech Recognition Setup
   const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -413,12 +414,15 @@ const AITutor = () => {
       setMessages((prev) => [...prev, assistantMessage]);
 
       // BLIND MODE ONLY - Auto-speak responses
-      if (accessibilityMode === 'Blind') {
+      if (accessibilityMode === 'Blind' && !isSpeakingRef.current) {
+        isSpeakingRef.current = true;
         const speech = new SpeechSynthesisUtterance(assistantMessage.content);
         const langMap: Record<string, string> = {
           'English': 'en-US', 'Hindi': 'hi-IN', 'Telugu': 'te-IN', 'Spanish': 'es-ES', 'French': 'fr-FR'
         };
         speech.lang = langMap[settings.learning.language] || 'en-US';
+        speech.onend = () => { isSpeakingRef.current = false; };
+        speech.onerror = () => { isSpeakingRef.current = false; };
         window.speechSynthesis.speak(speech);
       }
     } catch (error) {
@@ -545,7 +549,7 @@ const AITutor = () => {
           <Card className="p-12 text-center border-2 border-app-border bg-app-bg shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-primary to-secondary" />
             <div className="w-24 h-24 bg-app-bg-alt rounded-3xl flex items-center justify-center mx-auto mb-8 text-app-text-muted group-hover:scale-110 transition-transform duration-500">
-              <Sparkles size={48} className="opacity-20" />
+              <Zap size={48} className="text-primary" />
             </div>
             <h1 className="text-3xl font-black text-app-text-main mb-4 tracking-tight">
               {t.aiTutor.disabled}
@@ -596,8 +600,8 @@ const AITutor = () => {
             <div className="p-6 flex flex-col h-full">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                    <History size={18} />
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Clock size={20} className="text-primary" />
                   </div>
                   <h2 className="text-xl font-black text-app-text-main tracking-tight">History</h2>
                 </div>
@@ -605,7 +609,7 @@ const AITutor = () => {
                   onClick={() => setSidebarOpen(false)}
                   className="p-2 hover:bg-app-bg-alt rounded-xl text-app-text-muted transition-colors lg:block hidden"
                 >
-                  <PanelLeftClose size={20} />
+                  <ChevronLeft size={20} />
                 </button>
               </div>
 
@@ -613,14 +617,14 @@ const AITutor = () => {
                 onClick={createNewChat}
                 className="w-full mb-8 px-6 py-4 bg-primary text-white rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/25"
               >
-                <Plus size={18} />
+                <Plus size={20} />
                 New Conversation
               </button>
 
               <div className="flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar">
                 {chatSessions.length === 0 ? (
                   <div className="text-center py-12 px-4 flex flex-col items-center gap-4 border-2 border-dashed border-app-border rounded-2xl">
-                    <MessageSquare size={32} className="text-app-text-muted/30" />
+                    <MessageSquare size={32} className="text-app-text-muted" />
                     <p className="text-sm font-bold text-app-text-muted">No conversations yet</p>
                   </div>
                 ) : (
@@ -652,7 +656,7 @@ const AITutor = () => {
                           }}
                           className={`${session.id === currentSessionId ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 p-1.5 hover:bg-red-500/10 rounded-lg text-red-500 transition-all`}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </div>
@@ -673,12 +677,12 @@ const AITutor = () => {
                     onClick={() => setSidebarOpen(true)}
                     className="p-2 bg-app-bg-alt rounded-xl hover:bg-app-border transition-colors text-app-text-muted"
                   >
-                    <PanelLeftOpen size={20} />
+                    <ChevronRight size={20} />
                   </button>
                 )}
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center text-white shadow-lg">
-                    <Sparkles size={20} />
+                    <Zap size={24} />
                   </div>
                   <div>
                     <h1 className="text-lg md:text-xl font-black text-app-text-main tracking-tight leading-none">
@@ -733,7 +737,7 @@ const AITutor = () => {
                       )}
                       {message.attachmentType === 'pdf' && (
                         <div className="flex items-center gap-3 mb-4 p-3 bg-black/10 rounded-2xl border border-white/5">
-                          <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center text-red-500">
+                          <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
                             <FileText size={18} />
                           </div>
                           <span className="text-xs font-black truncate">{message.attachmentTitle}</span>
@@ -775,10 +779,10 @@ const AITutor = () => {
             <div className="p-4 md:p-6 bg-app-bg border-t border-app-border">
               {/* File Context Indicator */}
               {fileContext && (
-                <div className="mb-4 p-3 bg-primary/5 rounded-2xl flex items-center justify-between border border-primary/10 animate-in slide-in-from-bottom-2">
+                <div className="mb-4 p-3 bg-primary/10 rounded-2xl flex items-center justify-between border border-primary/20 animate-in slide-in-from-bottom-2">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
-                      {fileContext.type === 'image' ? <ImageIcon size={16} /> : <FileText size={16} />}
+                      {fileContext.type === 'image' ? <ImagePlus size={18} /> : <FileText size={18} />}
                     </div>
                     <div>
                       <p className="text-[10px] font-black text-primary uppercase tracking-widest">Active Context</p>
@@ -787,9 +791,9 @@ const AITutor = () => {
                   </div>
                   <button 
                     onClick={() => setFileContext(null)}
-                    className="p-1.5 hover:bg-primary/10 rounded-lg text-primary transition-colors"
+                    className="p-1.5 hover:bg-red-500/10 rounded-lg text-primary transition-colors"
                   >
-                    <X size={16} />
+                    <X size={18} />
                   </button>
                 </div>
               )}
@@ -804,7 +808,7 @@ const AITutor = () => {
                       ${plusMenuOpen ? 'bg-primary text-white rotate-45' : 'bg-app-bg-alt text-app-text-muted hover:text-primary border border-app-border'}
                     `}
                   >
-                    <Plus size={20} />
+                    <Plus size={24} />
                   </button>
 
                   {plusMenuOpen && (
@@ -813,21 +817,21 @@ const AITutor = () => {
                         onClick={() => { fileInputRef.current?.click(); setPlusMenuOpen(false); }}
                         className="w-full text-left px-4 py-3 text-sm font-bold text-app-text-main hover:bg-app-bg-alt flex items-center gap-3 transition-colors"
                       >
-                        <ImageIcon size={18} className="text-primary" />
+                        <ImagePlus size={20} className="text-primary" />
                         Analyze Image
                       </button>
                       <button
                         onClick={() => { pdfInputRef.current?.click(); setPlusMenuOpen(false); }}
                         className="w-full text-left px-4 py-3 text-sm font-bold text-app-text-main hover:bg-app-bg-alt flex items-center gap-3 transition-colors"
                       >
-                        <FileText size={18} className="text-red-500" />
+                        <FileText size={20} className="text-primary" />
                         Read PDF Document
                       </button>
                       <div className="h-px bg-app-border mx-3 my-2" />
                       <button
                         className="w-full text-left px-4 py-3 text-sm font-bold text-app-text-main hover:bg-app-bg-alt flex items-center gap-3 transition-colors opacity-50 cursor-not-allowed"
                       >
-                        <Youtube size={18} className="text-red-600" />
+                        <Youtube size={20} className="text-primary" />
                         Video Analysis
                       </button>
                     </div>
@@ -858,7 +862,7 @@ const AITutor = () => {
                       ${isRecording ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/20' : 'text-app-text-muted hover:text-primary'}
                     `}
                   >
-                    <Mic size={18} />
+                    <Mic size={24} />
                   </button>
                 </div>
 
@@ -874,7 +878,7 @@ const AITutor = () => {
                     }
                   `}
                 >
-                  <Send size={20} />
+                  <Send size={24} />
                 </button>
               </div>
             </div>

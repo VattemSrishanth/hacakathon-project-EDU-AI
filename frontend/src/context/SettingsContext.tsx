@@ -4,6 +4,7 @@ import type { SupportedLanguage, TranslationKeys } from '../i18n/translations';
 
 // ==================== Types ====================
 export type LearningLevel = 'Beginner' | 'Intermediate' | 'Advanced';
+export type EducationBoard = 'NCERT' | 'Telangana' | 'Andhra Pradesh';
 export type ContentPreference = 'Text' | 'Video' | 'Both';
 export type AnswerStyle = 'Short' | 'Detailed';
 export type ReminderFrequency = 'Daily' | 'Weekly' | 'Off';
@@ -20,6 +21,7 @@ export interface ProfileSettings {
 export interface LearningPreferences {
   language: SupportedLanguage;
   level: LearningLevel;
+  board: EducationBoard;
   contentPreference: ContentPreference;
 }
 
@@ -68,6 +70,7 @@ export const defaultSettings: SettingsState = {
   learning: {
     language: 'English',
     level: 'Beginner',
+    board: 'NCERT',
     contentPreference: 'Both',
   },
   aiTutor: {

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { Zap } from 'lucide-react';
 import Card from './Card';
 import { useAuth } from '../context/AuthContext';
 
@@ -152,14 +153,19 @@ const LoginTracker = () => {
     <Card className="bg-app-bg text-app-text-main shadow-2xl">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-xl font-bold flex items-center gap-2">
-            Login Progress
+          <h3 className="text-xl font-bold flex items-center gap-2 tracking-tight">
+            Learning Consistency
           </h3>
-          <p className="text-app-text-sub text-xs mt-1">Started {new Date(data.joinDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+          <p className="text-app-text-sub text-xs mt-1">Journey started {new Date(data.joinDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
         </div>
-        <div className="flex flex-col items-end">
-          <div className="text-2xl font-bold text-primary leading-none">{data.currentStreak}</div>
-          <p className="text-app-text-sub text-[10px] uppercase tracking-tighter mt-1">Day Streak</p>
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col items-end">
+            <div className="text-2xl font-black text-primary leading-none">{data.currentStreak}</div>
+            <p className="text-app-text-sub text-[10px] uppercase tracking-widest mt-1 font-bold">Day Streak</p>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+            <Zap size={24} className="text-primary fill-primary/20" />
+          </div>
         </div>
       </div>
 

@@ -1,7 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
-import { ArrowLeft, Upload, Volume2, FileText, BookOpen } from 'lucide-react';
+import { 
+  ChevronLeft, 
+  FileText, 
+  Volume2, 
+  Upload,
+  Sparkles,
+  BookOpen
+} from 'lucide-react';
 import Button from '../components/Button';
 
 interface LessonData {
@@ -96,8 +103,8 @@ export default function LessonViewer() {
     return (
       <div className="min-h-screen bg-app-bg flex items-center justify-center p-4">
         <div className="text-center animate-in fade-in duration-500">
-          <div className="w-24 h-24 rounded-3xl bg-blue-500/10 flex items-center justify-center text-blue-600 mx-auto mb-6 animate-pulse">
-            <BookOpen className="w-12 h-12" />
+          <div className="w-24 h-24 rounded-3xl bg-primary/10 flex items-center justify-center mx-auto mb-6 animate-pulse text-primary">
+            <BookOpen size={48} />
           </div>
           <p className="text-app-text-main font-black text-xl uppercase tracking-widest">Loading lesson...</p>
         </div>
@@ -114,17 +121,17 @@ export default function LessonViewer() {
         <div className="space-y-6">
           <button
             onClick={() => navigate('/lessons')}
-            className="group flex items-center gap-3 text-app-text-sub hover:text-blue-500 transition-all font-black text-xs uppercase tracking-[0.2em]"
+            className="group flex items-center gap-3 text-app-text-sub hover:text-primary transition-all font-black text-xs uppercase tracking-[0.2em]"
           >
-            <div className="p-2 rounded-xl bg-app-bg-alt border border-app-border group-hover:bg-blue-500/10 group-hover:border-blue-500/20 transition-all">
-              <ArrowLeft className="w-4 h-4" />
+            <div className="p-2 rounded-xl bg-app-bg-alt border border-app-border group-hover:bg-primary/10 group-hover:border-primary/20 transition-all text-primary">
+              <ChevronLeft size={16} />
             </div>
             Back to Learning Area
           </button>
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
-              <h1 className="text-5xl font-black text-app-text-main tracking-tight uppercase leading-[0.9]">{lesson.title}</h1>
+              <h1 className="text-5xl font-black tracking-tight uppercase leading-[0.9] text-primary">{lesson.title}</h1>
               <p className="text-app-text-sub font-bold text-sm uppercase tracking-[0.15em] opacity-70">Lesson Overview & Content</p>
             </div>
             
@@ -138,9 +145,9 @@ export default function LessonViewer() {
                 />
                 <Button 
                   variant="primary" 
-                  className="flex items-center gap-3 px-6 py-4 rounded-2xl shadow-lg shadow-blue-500/20 text-xs font-black uppercase tracking-widest"
+                  className="flex items-center gap-3 px-6 py-4 rounded-2xl shadow-lg shadow-primary/20 text-xs font-black uppercase tracking-widest"
                 >
-                  <Upload className="w-5 h-5" />
+                  <Upload size={20} />
                   Update Lesson PDF
                 </Button>
               </label>
@@ -151,7 +158,9 @@ export default function LessonViewer() {
                   onClick={() => handleReadAloud(lesson.textVersion)}
                   className="flex items-center gap-3 px-6 py-4 rounded-2xl shadow-lg shadow-emerald-500/20 text-xs font-black uppercase tracking-widest"
                 >
-                  <Volume2 className={`w-5 h-5 ${isReading ? 'animate-pulse' : ''}`} />
+                  <div className={isReading ? 'animate-pulse' : ''}>
+                    <Volume2 size={24} />
+                  </div>
                   {isReading ? 'Stop Narrator' : 'Start Narrator'}
                 </Button>
               )}
@@ -161,18 +170,18 @@ export default function LessonViewer() {
 
         {/* AI Summary */}
         <div className="bg-app-bg-alt rounded-[2.5rem] p-4 border border-app-border shadow-sm group">
-          <div className="bg-app-bg rounded-4xl p-8 space-y-4 border border-app-border group-hover:border-indigo-500/20 transition-all">
+          <div className="bg-app-bg rounded-4xl p-8 space-y-4 border border-app-border group-hover:border-primary/20 transition-all">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-indigo-500/10 rounded-2xl text-indigo-600">
-                <FileText className="w-6 h-6" />
+              <div className="p-3 bg-primary/10 rounded-2xl text-primary">
+                <Sparkles size={24} />
               </div>
               <h2 className="text-xl font-black text-app-text-main tracking-tight uppercase">AI Key Summary</h2>
               {settings.themeAccessibility.accessibilityMode === 'Blind' && (
                 <button
                   onClick={() => handleReadAloud(lesson.aiSummary)}
-                  className="ml-auto p-3 rounded-2xl bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500 hover:text-white transition-all"
+                  className="ml-auto p-3 rounded-2xl bg-indigo-500/10 hover:bg-indigo-500/20 transition-all text-indigo-600"
                 >
-                  <Volume2 className="w-5 h-5" />
+                  <Volume2 size={24} />
                 </button>
               )}
             </div>
@@ -205,8 +214,8 @@ export default function LessonViewer() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-32 px-4 text-center bg-app-bg rounded-4xl">
-                <div className="w-24 h-24 rounded-3xl bg-app-bg-alt border border-app-border flex items-center justify-center text-app-text-muted mb-8 group-hover:scale-110 transition-transform">
-                  <Upload className="w-10 h-10" />
+                <div className="w-24 h-24 rounded-3xl bg-app-bg-alt border border-app-border flex items-center justify-center mb-8 group-hover:scale-110 transition-transform text-primary/60">
+                  <FileText size={40} />
                 </div>
                 <h3 className="text-2xl font-black text-app-text-main mb-3 uppercase tracking-tight">
                   No PDF Content Available
@@ -221,8 +230,8 @@ export default function LessonViewer() {
                     onChange={handlePdfUpload}
                     className="hidden"
                   />
-                  <Button variant="primary" className="flex items-center gap-4 px-10 py-5 rounded-4xl shadow-2xl shadow-blue-500/30 text-sm font-black uppercase tracking-[0.2em] transform active:scale-95 transition-all">
-                    <Upload className="w-6 h-6" />
+                  <Button variant="primary" className="flex items-center gap-4 px-10 py-5 rounded-4xl shadow-2xl shadow-primary/30 text-sm font-black uppercase tracking-[0.2em] transform active:scale-95 transition-all">
+                    <Upload size={28} />
                     Upload PDF Now
                   </Button>
                 </label>

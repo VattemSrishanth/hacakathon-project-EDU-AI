@@ -1,0 +1,1577 @@
+{
+  "board": "Telangana",
+  "classes": {
+    "1": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Shapes and Space",
+            "topics": [
+              "Basic concepts of Shapes and Space",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Shapes and Space"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Numbers from 1 to 9",
+            "topics": [
+              "Basic concepts of Numbers from 1 to 9",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers from 1 to 9"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Addition",
+            "topics": [
+              "Basic concepts of Addition",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Addition"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Subtraction",
+            "topics": [
+              "Basic concepts of Subtraction",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Subtraction"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Measurement",
+            "topics": [
+              "Basic concepts of Measurement",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Measurement"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Grammar and Syntax",
+            "topics": [
+              "Sentence Structure",
+              "Tenses",
+              "Direct/Indirect Speech",
+              "Active/Passive"
+            ]
+          },
+          {
+            "unit": "Literature Appreciation",
+            "topics": [
+              "Reading Classics",
+              "Poetic Devices",
+              "Thematic Analysis",
+              "Character Sketches"
+            ]
+          },
+          {
+            "unit": "Creative Writing",
+            "topics": [
+              "Letter Writing",
+              "Essay Composition",
+              "Story Telling",
+              "Debate Skills"
+            ]
+          },
+          {
+            "unit": "Vocabulary and Usage",
+            "topics": [
+              "Idioms and Phrases",
+              "Synonyms/Antonyms",
+              "Etymology",
+              "Contextual Meaning"
+            ]
+          }
+        ],
+        "EVS": [
+          {
+            "unit": "Our Body and Health",
+            "topics": [
+              "Sense Organs",
+              "Personal Hygiene",
+              "Healthy Food"
+            ]
+          },
+          {
+            "unit": "Plants and Animals",
+            "topics": [
+              "What do they eat?",
+              "Where do they live?",
+              "Life cycles"
+            ]
+          },
+          {
+            "unit": "Water and Air",
+            "topics": [
+              "Uses of Water",
+              "Saving Water",
+              "Clean Air Habits"
+            ]
+          },
+          {
+            "unit": "Transport and Safety",
+            "topics": [
+              "Means of Travel",
+              "Road Safety Rules",
+              "Emergency Contacts"
+            ]
+          },
+          {
+            "unit": "Telangana Culture",
+            "topics": [
+              "Bonalu",
+              "Bathukamma",
+              "Pochampally Weaving",
+              "Local Temples"
+            ]
+          }
+        ]
+      }
+    },
+    "2": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Numbers in Groups",
+            "topics": [
+              "Basic concepts of Numbers in Groups",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers in Groups"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Add Our Points",
+            "topics": [
+              "Basic concepts of Add Our Points",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Add Our Points"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Lines and Lines",
+            "topics": [
+              "Basic concepts of Lines and Lines",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Lines and Lines"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Give and Take",
+            "topics": [
+              "Basic concepts of Give and Take",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Give and Take"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Patterns",
+            "topics": [
+              "Basic concepts of Patterns",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Patterns"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Grammar and Syntax",
+            "topics": [
+              "Sentence Structure",
+              "Tenses",
+              "Direct/Indirect Speech",
+              "Active/Passive"
+            ]
+          },
+          {
+            "unit": "Literature Appreciation",
+            "topics": [
+              "Reading Classics",
+              "Poetic Devices",
+              "Thematic Analysis",
+              "Character Sketches"
+            ]
+          },
+          {
+            "unit": "Creative Writing",
+            "topics": [
+              "Letter Writing",
+              "Essay Composition",
+              "Story Telling",
+              "Debate Skills"
+            ]
+          },
+          {
+            "unit": "Vocabulary and Usage",
+            "topics": [
+              "Idioms and Phrases",
+              "Synonyms/Antonyms",
+              "Etymology",
+              "Contextual Meaning"
+            ]
+          }
+        ],
+        "EVS": [
+          {
+            "unit": "Our Body and Health",
+            "topics": [
+              "Sense Organs",
+              "Personal Hygiene",
+              "Healthy Food"
+            ]
+          },
+          {
+            "unit": "Plants and Animals",
+            "topics": [
+              "What do they eat?",
+              "Where do they live?",
+              "Life cycles"
+            ]
+          },
+          {
+            "unit": "Water and Air",
+            "topics": [
+              "Uses of Water",
+              "Saving Water",
+              "Clean Air Habits"
+            ]
+          },
+          {
+            "unit": "Transport and Safety",
+            "topics": [
+              "Means of Travel",
+              "Road Safety Rules",
+              "Emergency Contacts"
+            ]
+          },
+          {
+            "unit": "Telangana Culture",
+            "topics": [
+              "Bonalu",
+              "Bathukamma",
+              "Pochampally Weaving",
+              "Local Temples"
+            ]
+          }
+        ]
+      }
+    },
+    "3": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Where to Look From",
+            "topics": [
+              "Basic concepts of Where to Look From",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Where to Look From"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Fun with Numbers",
+            "topics": [
+              "Basic concepts of Fun with Numbers",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Fun with Numbers"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Give and Take",
+            "topics": [
+              "Basic concepts of Give and Take",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Give and Take"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Long and Short",
+            "topics": [
+              "Basic concepts of Long and Short",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Long and Short"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Shapes and Designs",
+            "topics": [
+              "Basic concepts of Shapes and Designs",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Shapes and Designs"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Grammar and Syntax",
+            "topics": [
+              "Sentence Structure",
+              "Tenses",
+              "Direct/Indirect Speech",
+              "Active/Passive"
+            ]
+          },
+          {
+            "unit": "Literature Appreciation",
+            "topics": [
+              "Reading Classics",
+              "Poetic Devices",
+              "Thematic Analysis",
+              "Character Sketches"
+            ]
+          },
+          {
+            "unit": "Creative Writing",
+            "topics": [
+              "Letter Writing",
+              "Essay Composition",
+              "Story Telling",
+              "Debate Skills"
+            ]
+          },
+          {
+            "unit": "Vocabulary and Usage",
+            "topics": [
+              "Idioms and Phrases",
+              "Synonyms/Antonyms",
+              "Etymology",
+              "Contextual Meaning"
+            ]
+          }
+        ],
+        "EVS": [
+          {
+            "unit": "Our Body and Health",
+            "topics": [
+              "Sense Organs",
+              "Personal Hygiene",
+              "Healthy Food"
+            ]
+          },
+          {
+            "unit": "Plants and Animals",
+            "topics": [
+              "What do they eat?",
+              "Where do they live?",
+              "Life cycles"
+            ]
+          },
+          {
+            "unit": "Water and Air",
+            "topics": [
+              "Uses of Water",
+              "Saving Water",
+              "Clean Air Habits"
+            ]
+          },
+          {
+            "unit": "Transport and Safety",
+            "topics": [
+              "Means of Travel",
+              "Road Safety Rules",
+              "Emergency Contacts"
+            ]
+          },
+          {
+            "unit": "Telangana Culture",
+            "topics": [
+              "Bonalu",
+              "Bathukamma",
+              "Pochampally Weaving",
+              "Local Temples"
+            ]
+          }
+        ]
+      }
+    },
+    "4": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Building with Bricks",
+            "topics": [
+              "Basic concepts of Building with Bricks",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Building with Bricks"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Long and Short",
+            "topics": [
+              "Basic concepts of Long and Short",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Long and Short"
+            ]
+          },
+          {
+            "unit": "Chapter 3: A Trip to Bhopal",
+            "topics": [
+              "Basic concepts of A Trip to Bhopal",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of A Trip to Bhopal"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Tick-Tick-Tick",
+            "topics": [
+              "Basic concepts of Tick-Tick-Tick",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Tick-Tick-Tick"
+            ]
+          },
+          {
+            "unit": "Chapter 5: The Way the World Looks",
+            "topics": [
+              "Basic concepts of The Way the World Looks",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of The Way the World Looks"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Grammar and Syntax",
+            "topics": [
+              "Sentence Structure",
+              "Tenses",
+              "Direct/Indirect Speech",
+              "Active/Passive"
+            ]
+          },
+          {
+            "unit": "Literature Appreciation",
+            "topics": [
+              "Reading Classics",
+              "Poetic Devices",
+              "Thematic Analysis",
+              "Character Sketches"
+            ]
+          },
+          {
+            "unit": "Creative Writing",
+            "topics": [
+              "Letter Writing",
+              "Essay Composition",
+              "Story Telling",
+              "Debate Skills"
+            ]
+          },
+          {
+            "unit": "Vocabulary and Usage",
+            "topics": [
+              "Idioms and Phrases",
+              "Synonyms/Antonyms",
+              "Etymology",
+              "Contextual Meaning"
+            ]
+          }
+        ],
+        "EVS": [
+          {
+            "unit": "Our Body and Health",
+            "topics": [
+              "Sense Organs",
+              "Personal Hygiene",
+              "Healthy Food"
+            ]
+          },
+          {
+            "unit": "Plants and Animals",
+            "topics": [
+              "What do they eat?",
+              "Where do they live?",
+              "Life cycles"
+            ]
+          },
+          {
+            "unit": "Water and Air",
+            "topics": [
+              "Uses of Water",
+              "Saving Water",
+              "Clean Air Habits"
+            ]
+          },
+          {
+            "unit": "Transport and Safety",
+            "topics": [
+              "Means of Travel",
+              "Road Safety Rules",
+              "Emergency Contacts"
+            ]
+          },
+          {
+            "unit": "Telangana Culture",
+            "topics": [
+              "Bonalu",
+              "Bathukamma",
+              "Pochampally Weaving",
+              "Local Temples"
+            ]
+          }
+        ]
+      }
+    },
+    "5": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: The Fish Tale",
+            "topics": [
+              "Basic concepts of The Fish Tale",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of The Fish Tale"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Shapes and Angles",
+            "topics": [
+              "Basic concepts of Shapes and Angles",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Shapes and Angles"
+            ]
+          },
+          {
+            "unit": "Chapter 3: How Many Squares?",
+            "topics": [
+              "Basic concepts of How Many Squares?",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of How Many Squares?"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Parts and Wholes",
+            "topics": [
+              "Basic concepts of Parts and Wholes",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Parts and Wholes"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Does it Look the Same?",
+            "topics": [
+              "Basic concepts of Does it Look the Same?",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Does it Look the Same?"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Grammar and Syntax",
+            "topics": [
+              "Sentence Structure",
+              "Tenses",
+              "Direct/Indirect Speech",
+              "Active/Passive"
+            ]
+          },
+          {
+            "unit": "Literature Appreciation",
+            "topics": [
+              "Reading Classics",
+              "Poetic Devices",
+              "Thematic Analysis",
+              "Character Sketches"
+            ]
+          },
+          {
+            "unit": "Creative Writing",
+            "topics": [
+              "Letter Writing",
+              "Essay Composition",
+              "Story Telling",
+              "Debate Skills"
+            ]
+          },
+          {
+            "unit": "Vocabulary and Usage",
+            "topics": [
+              "Idioms and Phrases",
+              "Synonyms/Antonyms",
+              "Etymology",
+              "Contextual Meaning"
+            ]
+          }
+        ],
+        "EVS": [
+          {
+            "unit": "Our Body and Health",
+            "topics": [
+              "Sense Organs",
+              "Personal Hygiene",
+              "Healthy Food"
+            ]
+          },
+          {
+            "unit": "Plants and Animals",
+            "topics": [
+              "What do they eat?",
+              "Where do they live?",
+              "Life cycles"
+            ]
+          },
+          {
+            "unit": "Water and Air",
+            "topics": [
+              "Uses of Water",
+              "Saving Water",
+              "Clean Air Habits"
+            ]
+          },
+          {
+            "unit": "Transport and Safety",
+            "topics": [
+              "Means of Travel",
+              "Road Safety Rules",
+              "Emergency Contacts"
+            ]
+          },
+          {
+            "unit": "Telangana Culture",
+            "topics": [
+              "Bonalu",
+              "Bathukamma",
+              "Pochampally Weaving",
+              "Local Temples"
+            ]
+          }
+        ]
+      }
+    },
+    "6": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Knowing Our Numbers",
+            "topics": [
+              "Comparing Numbers",
+              "Large Numbers",
+              "Estimation",
+              "Brackets"
+            ]
+          },
+          {
+            "unit": "Whole Numbers",
+            "topics": [
+              "Predecessor and Successor",
+              "Number Line",
+              "Properties"
+            ]
+          },
+          {
+            "unit": "Playing with Numbers",
+            "topics": [
+              "Factors and Multiples",
+              "Prime/Composite",
+              "HCF and LCM"
+            ]
+          },
+          {
+            "unit": "Basic Geometrical Ideas",
+            "topics": [
+              "Points",
+              "Lines",
+              "Angles",
+              "Polygons"
+            ]
+          },
+          {
+            "unit": "Integers",
+            "topics": [
+              "Negative Numbers",
+              "Number Line Operations"
+            ]
+          },
+          {
+            "unit": "Fractions",
+            "topics": [
+              "Proper/Improper",
+              "Comparison of Fractions"
+            ]
+          },
+          {
+            "unit": "Decimals",
+            "topics": [
+              "Place Value",
+              "Addition/Subtraction of Decimals"
+            ]
+          }
+        ],
+        "Science": [
+          {
+            "unit": "Food and Components",
+            "topics": [
+              "Carbohydrates",
+              "Proteins",
+              "Vitamins",
+              "Balanced Diet"
+            ]
+          },
+          {
+            "unit": "Fibre to Fabric",
+            "topics": [
+              "Natural Fibres",
+              "Spinning",
+              "Weaving"
+            ]
+          },
+          {
+            "unit": "Sorting Materials",
+            "topics": [
+              "Transparency",
+              "Hardness",
+              "Solubility"
+            ]
+          },
+          {
+            "unit": "Body Movements",
+            "topics": [
+              "Skeletal System",
+              "Joints",
+              "Gait of Animals"
+            ]
+          },
+          {
+            "unit": "The Living Organisms",
+            "topics": [
+              "Habitats",
+              "Adaptations",
+              "Surroundings"
+            ]
+          },
+          {
+            "unit": "Electricity and Circuits",
+            "topics": [
+              "Electric Cell",
+              "Switch",
+              "Insulators"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Grammar and Syntax",
+            "topics": [
+              "Sentence Structure",
+              "Tenses",
+              "Direct/Indirect Speech",
+              "Active/Passive"
+            ]
+          },
+          {
+            "unit": "Literature Appreciation",
+            "topics": [
+              "Reading Classics",
+              "Poetic Devices",
+              "Thematic Analysis",
+              "Character Sketches"
+            ]
+          },
+          {
+            "unit": "Creative Writing",
+            "topics": [
+              "Letter Writing",
+              "Essay Composition",
+              "Story Telling",
+              "Debate Skills"
+            ]
+          },
+          {
+            "unit": "Vocabulary and Usage",
+            "topics": [
+              "Idioms and Phrases",
+              "Synonyms/Antonyms",
+              "Etymology",
+              "Contextual Meaning"
+            ]
+          }
+        ],
+        "Social Science": [
+          {
+            "unit": "Understanding Our Society",
+            "topics": [
+              "Diversity",
+              "Inequality",
+              "Social Reforms"
+            ]
+          },
+          {
+            "unit": "Earth and Environment",
+            "topics": [
+              "Continents",
+              "Oceans",
+              "Global Warming"
+            ]
+          },
+          {
+            "unit": "Life in Localities",
+            "topics": [
+              "Rural Life",
+              "Urban Settlements",
+              "Market Systems"
+            ]
+          },
+          {
+            "unit": "Governing the Country",
+            "topics": [
+              "Elections",
+              "Judiciary",
+              "Parliament Basics"
+            ]
+          }
+        ]
+      }
+    },
+    "7": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Integers and Algebra",
+            "topics": [
+              "Negative numbers",
+              "Equations",
+              "Variables"
+            ]
+          },
+          {
+            "unit": "Geometry and Mensuration",
+            "topics": [
+              "Triangles",
+              "Quadrilaterals",
+              "Area and Perimeter"
+            ]
+          },
+          {
+            "unit": "Rational Numbers",
+            "topics": [
+              "Standard form",
+              "Operations",
+              "Comparison"
+            ]
+          },
+          {
+            "unit": "Data Handling",
+            "topics": [
+              "Bar graphs",
+              "Probability basics",
+              "Pie charts"
+            ]
+          }
+        ],
+        "Science": [
+          {
+            "unit": "Food and Components",
+            "topics": [
+              "Carbohydrates",
+              "Proteins",
+              "Vitamins",
+              "Balanced Diet"
+            ]
+          },
+          {
+            "unit": "Fibre to Fabric",
+            "topics": [
+              "Natural Fibres",
+              "Spinning",
+              "Weaving"
+            ]
+          },
+          {
+            "unit": "Sorting Materials",
+            "topics": [
+              "Transparency",
+              "Hardness",
+              "Solubility"
+            ]
+          },
+          {
+            "unit": "Body Movements",
+            "topics": [
+              "Skeletal System",
+              "Joints",
+              "Gait of Animals"
+            ]
+          },
+          {
+            "unit": "The Living Organisms",
+            "topics": [
+              "Habitats",
+              "Adaptations",
+              "Surroundings"
+            ]
+          },
+          {
+            "unit": "Electricity and Circuits",
+            "topics": [
+              "Electric Cell",
+              "Switch",
+              "Insulators"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Grammar and Syntax",
+            "topics": [
+              "Sentence Structure",
+              "Tenses",
+              "Direct/Indirect Speech",
+              "Active/Passive"
+            ]
+          },
+          {
+            "unit": "Literature Appreciation",
+            "topics": [
+              "Reading Classics",
+              "Poetic Devices",
+              "Thematic Analysis",
+              "Character Sketches"
+            ]
+          },
+          {
+            "unit": "Creative Writing",
+            "topics": [
+              "Letter Writing",
+              "Essay Composition",
+              "Story Telling",
+              "Debate Skills"
+            ]
+          },
+          {
+            "unit": "Vocabulary and Usage",
+            "topics": [
+              "Idioms and Phrases",
+              "Synonyms/Antonyms",
+              "Etymology",
+              "Contextual Meaning"
+            ]
+          }
+        ],
+        "Social Science": [
+          {
+            "unit": "Understanding Our Society",
+            "topics": [
+              "Diversity",
+              "Inequality",
+              "Social Reforms"
+            ]
+          },
+          {
+            "unit": "Earth and Environment",
+            "topics": [
+              "Continents",
+              "Oceans",
+              "Global Warming"
+            ]
+          },
+          {
+            "unit": "Life in Localities",
+            "topics": [
+              "Rural Life",
+              "Urban Settlements",
+              "Market Systems"
+            ]
+          },
+          {
+            "unit": "Governing the Country",
+            "topics": [
+              "Elections",
+              "Judiciary",
+              "Parliament Basics"
+            ]
+          }
+        ]
+      }
+    },
+    "8": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Integers and Algebra",
+            "topics": [
+              "Negative numbers",
+              "Equations",
+              "Variables"
+            ]
+          },
+          {
+            "unit": "Geometry and Mensuration",
+            "topics": [
+              "Triangles",
+              "Quadrilaterals",
+              "Area and Perimeter"
+            ]
+          },
+          {
+            "unit": "Rational Numbers",
+            "topics": [
+              "Standard form",
+              "Operations",
+              "Comparison"
+            ]
+          },
+          {
+            "unit": "Data Handling",
+            "topics": [
+              "Bar graphs",
+              "Probability basics",
+              "Pie charts"
+            ]
+          }
+        ],
+        "Science": [
+          {
+            "unit": "Food and Components",
+            "topics": [
+              "Carbohydrates",
+              "Proteins",
+              "Vitamins",
+              "Balanced Diet"
+            ]
+          },
+          {
+            "unit": "Fibre to Fabric",
+            "topics": [
+              "Natural Fibres",
+              "Spinning",
+              "Weaving"
+            ]
+          },
+          {
+            "unit": "Sorting Materials",
+            "topics": [
+              "Transparency",
+              "Hardness",
+              "Solubility"
+            ]
+          },
+          {
+            "unit": "Body Movements",
+            "topics": [
+              "Skeletal System",
+              "Joints",
+              "Gait of Animals"
+            ]
+          },
+          {
+            "unit": "The Living Organisms",
+            "topics": [
+              "Habitats",
+              "Adaptations",
+              "Surroundings"
+            ]
+          },
+          {
+            "unit": "Electricity and Circuits",
+            "topics": [
+              "Electric Cell",
+              "Switch",
+              "Insulators"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Grammar and Syntax",
+            "topics": [
+              "Sentence Structure",
+              "Tenses",
+              "Direct/Indirect Speech",
+              "Active/Passive"
+            ]
+          },
+          {
+            "unit": "Literature Appreciation",
+            "topics": [
+              "Reading Classics",
+              "Poetic Devices",
+              "Thematic Analysis",
+              "Character Sketches"
+            ]
+          },
+          {
+            "unit": "Creative Writing",
+            "topics": [
+              "Letter Writing",
+              "Essay Composition",
+              "Story Telling",
+              "Debate Skills"
+            ]
+          },
+          {
+            "unit": "Vocabulary and Usage",
+            "topics": [
+              "Idioms and Phrases",
+              "Synonyms/Antonyms",
+              "Etymology",
+              "Contextual Meaning"
+            ]
+          }
+        ],
+        "Social Science": [
+          {
+            "unit": "Understanding Our Society",
+            "topics": [
+              "Diversity",
+              "Inequality",
+              "Social Reforms"
+            ]
+          },
+          {
+            "unit": "Earth and Environment",
+            "topics": [
+              "Continents",
+              "Oceans",
+              "Global Warming"
+            ]
+          },
+          {
+            "unit": "Life in Localities",
+            "topics": [
+              "Rural Life",
+              "Urban Settlements",
+              "Market Systems"
+            ]
+          },
+          {
+            "unit": "Governing the Country",
+            "topics": [
+              "Elections",
+              "Judiciary",
+              "Parliament Basics"
+            ]
+          }
+        ]
+      }
+    },
+    "9": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Integers and Algebra",
+            "topics": [
+              "Negative numbers",
+              "Equations",
+              "Variables"
+            ]
+          },
+          {
+            "unit": "Geometry and Mensuration",
+            "topics": [
+              "Triangles",
+              "Quadrilaterals",
+              "Area and Perimeter"
+            ]
+          },
+          {
+            "unit": "Rational Numbers",
+            "topics": [
+              "Standard form",
+              "Operations",
+              "Comparison"
+            ]
+          },
+          {
+            "unit": "Data Handling",
+            "topics": [
+              "Bar graphs",
+              "Probability basics",
+              "Pie charts"
+            ]
+          }
+        ],
+        "Science": [
+          {
+            "unit": "Matter in Our Surroundings",
+            "topics": [
+              "States of Matter",
+              "Latent Heat",
+              "Evaporation"
+            ]
+          },
+          {
+            "unit": "Is Matter Around Us Pure?",
+            "topics": [
+              "Mixtures",
+              "Solutions",
+              "Colloids",
+              "Physical/Chemical Changes"
+            ]
+          },
+          {
+            "unit": "Atoms and Molecules",
+            "topics": [
+              "Atomic Mass",
+              "Valency",
+              "Chemical Formulae"
+            ]
+          },
+          {
+            "unit": "The Fundamental Unit of Life",
+            "topics": [
+              "Nucleus",
+              "Cytoplasm",
+              "Mitochondria",
+              "Cell Wall"
+            ]
+          },
+          {
+            "unit": "Tissues",
+            "topics": [
+              "Meristematic Tissue",
+              "Epithelial Tissue",
+              "Connective Tissue"
+            ]
+          },
+          {
+            "unit": "Motion",
+            "topics": [
+              "Uniform Motion",
+              "Velocity-Time Graphs",
+              "Circular Motion"
+            ]
+          },
+          {
+            "unit": "Force and Laws of Motion",
+            "topics": [
+              "Inertia",
+              "Newton's Second Law",
+              "Momentum Conservation"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Grammar and Syntax",
+            "topics": [
+              "Sentence Structure",
+              "Tenses",
+              "Direct/Indirect Speech",
+              "Active/Passive"
+            ]
+          },
+          {
+            "unit": "Literature Appreciation",
+            "topics": [
+              "Reading Classics",
+              "Poetic Devices",
+              "Thematic Analysis",
+              "Character Sketches"
+            ]
+          },
+          {
+            "unit": "Creative Writing",
+            "topics": [
+              "Letter Writing",
+              "Essay Composition",
+              "Story Telling",
+              "Debate Skills"
+            ]
+          },
+          {
+            "unit": "Vocabulary and Usage",
+            "topics": [
+              "Idioms and Phrases",
+              "Synonyms/Antonyms",
+              "Etymology",
+              "Contextual Meaning"
+            ]
+          }
+        ],
+        "Social Science": [
+          {
+            "unit": "Understanding Our Society",
+            "topics": [
+              "Diversity",
+              "Inequality",
+              "Social Reforms"
+            ]
+          },
+          {
+            "unit": "Earth and Environment",
+            "topics": [
+              "Continents",
+              "Oceans",
+              "Global Warming"
+            ]
+          },
+          {
+            "unit": "Life in Localities",
+            "topics": [
+              "Rural Life",
+              "Urban Settlements",
+              "Market Systems"
+            ]
+          },
+          {
+            "unit": "Governing the Country",
+            "topics": [
+              "Elections",
+              "Judiciary",
+              "Parliament Basics"
+            ]
+          }
+        ]
+      }
+    },
+    "10": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Real Numbers",
+            "topics": [
+              "Euclid's Division Lemma",
+              "Fundamental Theorem of Arithmetic",
+              "Rational/Irrational Numbers",
+              "Decimal Expansions"
+            ]
+          },
+          {
+            "unit": "Polynomials",
+            "topics": [
+              "Zeroes of Polynomial",
+              "Geometrical Meaning",
+              "Relationship between Zeroes and Coefficients"
+            ]
+          },
+          {
+            "unit": "Pair of Linear Equations",
+            "topics": [
+              "Graphical Solution",
+              "Substitution Method",
+              "Elimination Method",
+              "Word Problems"
+            ]
+          },
+          {
+            "unit": "Quadratic Equations",
+            "topics": [
+              "Standard Form",
+              "Solutions by Factorization",
+              "Completing the Square",
+              "Nature of Roots"
+            ]
+          },
+          {
+            "unit": "Arithmetic Progressions",
+            "topics": [
+              "nth Term",
+              "Sum of First n Terms",
+              "Daily Life Applications"
+            ]
+          },
+          {
+            "unit": "Triangles",
+            "topics": [
+              "Similar Figures",
+              "Thales Theorem",
+              "Pythagoras Theorem",
+              "Area of Similar Triangles"
+            ]
+          },
+          {
+            "unit": "Coordinate Geometry",
+            "topics": [
+              "Distance Formula",
+              "Section Formula",
+              "Area of a Triangle"
+            ]
+          },
+          {
+            "unit": "Trigonometry",
+            "topics": [
+              "Trigonometric Ratios",
+              "Specific Angles",
+              "Identities",
+              "Heights and Distances"
+            ]
+          },
+          {
+            "unit": "Statistics",
+            "topics": [
+              "Mean of Grouped Data",
+              "Median and Mode",
+              "Cumulative Frequency Map"
+            ]
+          },
+          {
+            "unit": "Probability",
+            "topics": [
+              "Theoretical Probability",
+              "Events",
+              "Complementary Events"
+            ]
+          }
+        ],
+        "Science": [
+          {
+            "unit": "Chemical Reactions and Equations",
+            "topics": [
+              "Combination Reaction",
+              "Decomposition",
+              "Displacement",
+              "Oxidation/Reduction"
+            ]
+          },
+          {
+            "unit": "Acids, Bases and Salts",
+            "topics": [
+              "Indicators",
+              "pH Scale",
+              "Common Salt",
+              "Plaster of Paris"
+            ]
+          },
+          {
+            "unit": "Metals and Non-metals",
+            "topics": [
+              "Physical Properties",
+              "Chemical Properties",
+              "Reactivity Series",
+              "Extraction"
+            ]
+          },
+          {
+            "unit": "Life Processes",
+            "topics": [
+              "Nutrition in Humans",
+              "Respiration in Plants",
+              "Transportation in Animals",
+              "Excretion in Plants"
+            ]
+          },
+          {
+            "unit": "Control and Coordination",
+            "topics": [
+              "Nervous System",
+              "Reflex Action",
+              "Hormones in Animals"
+            ]
+          },
+          {
+            "unit": "Light - Reflection and Refraction",
+            "topics": [
+              "Ray Diagrams",
+              "Lens Formula",
+              "Refractive Index"
+            ]
+          },
+          {
+            "unit": "Human Eye and Colourful World",
+            "topics": [
+              "Defects of Vision",
+              "Atmospheric Refraction",
+              "Scattering of Light"
+            ]
+          },
+          {
+            "unit": "Electricity",
+            "topics": [
+              "Ohm's Law",
+              "Resistors in Circuit",
+              "Heating effect of current"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Grammar and Syntax",
+            "topics": [
+              "Sentence Structure",
+              "Tenses",
+              "Direct/Indirect Speech",
+              "Active/Passive"
+            ]
+          },
+          {
+            "unit": "Literature Appreciation",
+            "topics": [
+              "Reading Classics",
+              "Poetic Devices",
+              "Thematic Analysis",
+              "Character Sketches"
+            ]
+          },
+          {
+            "unit": "Creative Writing",
+            "topics": [
+              "Letter Writing",
+              "Essay Composition",
+              "Story Telling",
+              "Debate Skills"
+            ]
+          },
+          {
+            "unit": "Vocabulary and Usage",
+            "topics": [
+              "Idioms and Phrases",
+              "Synonyms/Antonyms",
+              "Etymology",
+              "Contextual Meaning"
+            ]
+          }
+        ],
+        "Social Science": [
+          {
+            "unit": "History: The Movement for Telangana",
+            "topics": [
+              "1969 Agitation",
+              "Gentlemen's Agreement",
+              "JAC",
+              "Final Formation 2014"
+            ]
+          },
+          {
+            "unit": "Geography: Physical Features of Telangana",
+            "topics": [
+              "Deccan Plateau",
+              "Godavari and Krishna Rivers",
+              "Mission Kakatiya",
+              "Forests and Wildlife"
+            ]
+          },
+          {
+            "unit": "Civics: Welfare State",
+            "topics": [
+              "Arogyasri",
+              "Kalyana Lakshmi",
+              "Mission Bhagiratha",
+              "Rythu Bandhu"
+            ]
+          },
+          {
+            "unit": "Economics: Telangana Economy",
+            "topics": [
+              "Agriculture in TS",
+              "IT Sector in Hyderabad",
+              "Handicrafts"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

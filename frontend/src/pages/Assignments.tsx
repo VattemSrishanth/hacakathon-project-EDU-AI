@@ -1,7 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import Card from '../components/Card';
 import Button from '../components/Button';
-import { ClipboardList, Clock, CheckCircle2, AlertCircle, ArrowLeft, Calendar, FileText } from 'lucide-react';
+import { 
+  ListTodo, 
+  Clock, 
+  CheckCircle2, 
+  Layout, 
+  ArrowLeft, 
+  Calendar, 
+  FileText 
+} from 'lucide-react';
 
 const Assignments = () => {
   const navigate = useNavigate();
@@ -38,8 +46,8 @@ const Assignments = () => {
       <div className="max-w-7xl mx-auto">
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-lg shadow-primary/5">
-              <ClipboardList size={32} />
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center shadow-lg shadow-primary/5">
+              <ListTodo size={32} className="text-primary" />
             </div>
             <div>
               <h1 className="text-4xl font-black text-app-text-main tracking-tight">Assignments</h1>
@@ -60,9 +68,11 @@ const Assignments = () => {
                     {assignment.category}
                   </span>
                   {assignment.status === 'Submitted' ? (
-                    <CheckCircle2 size={20} className="text-emerald-500" />
+                    <CheckCircle2 size={24} className="text-emerald-500" />
                   ) : (
-                    <Clock size={20} className="text-amber-500 animate-pulse" />
+                    <div className="animate-pulse text-amber-500">
+                      <Clock size={24} />
+                    </div>
                   )}
                 </div>
                 
@@ -71,7 +81,9 @@ const Assignments = () => {
                 </h3>
                 
                 <div className="flex items-start gap-3 p-4 bg-app-bg-alt rounded-2xl border border-app-border mb-6">
-                  <FileText size={18} className="text-app-text-muted shrink-0 mt-1" />
+                  <div className="shrink-0 mt-1 text-primary">
+                    <FileText size={24} />
+                  </div>
                   <p className="text-sm font-medium text-app-text-muted leading-relaxed">
                     {assignment.description}
                   </p>
@@ -88,7 +100,7 @@ const Assignments = () => {
 
                 <div className="flex justify-between items-center px-2">
                   <div className="flex items-center gap-2 text-app-text-muted font-black uppercase tracking-widest text-[10px]">
-                    <AlertCircle size={14} /> Status
+                    <Layout size={14} /> Status
                   </div>
                   <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm ${
                     assignment.status === 'Submitted' 

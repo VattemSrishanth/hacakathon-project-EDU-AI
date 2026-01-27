@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { FileText, ClipboardList, BookOpen } from 'lucide-react';
 import Button from '../components/Button';
 
 interface LocationState {
@@ -49,26 +50,31 @@ const UploadedPdf = () => {
 
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <p className="text-xs font-black uppercase tracking-widest text-app-text-muted">Previewing</p>
-            <h1 className="text-2xl font-black text-app-text-main">{pdfName}</h1>
+        <div className="flex items-center justify-between gap-3 flex-wrap bg-white p-6 rounded-3xl shadow-sm border border-app-border">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <FileText size={32} className="text-primary" />
+            </div>
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest text-app-text-muted">Document Preview</p>
+              <h1 className="text-2xl font-black text-app-text-main">{pdfName}</h1>
+            </div>
           </div>
           <div className="flex gap-3">
             <Button
               variant="secondary"
               onClick={() => navigate('/lessons')}
-              className="rounded-xl font-black uppercase tracking-widest text-[10px]"
+              className="rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2"
             >
-              Back to Lessons
+              <BookOpen size={16} /> Back to Lessons
             </Button>
             {pdfUrl && (
               <Button
                 variant="primary"
                 onClick={() => navigate('/lessons/quiz', { state: { pdfUrl, pdfName, pdfData }, replace: true })}
-                className="rounded-xl font-black uppercase tracking-widest text-[10px]"
+                className="rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 shadow-xl shadow-indigo-500/20"
               >
-                Generate Quiz
+                <ClipboardList size={16} /> Start Smart Quiz
               </Button>
             )}
           </div>

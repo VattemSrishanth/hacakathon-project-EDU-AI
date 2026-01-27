@@ -1,28 +1,26 @@
+import { 
+  User, 
+  Ear, 
+  MessageSquare, 
+  Eye, 
+  Accessibility as AccessibilityIcon, 
+  CheckCircle2, 
+  Lightbulb, 
+  Globe, 
+  MessageCircle 
+} from 'lucide-react';
 import Card from '../components/Card';
 import { useSettings } from '../context/SettingsContext';
 import type { AccessibilityMode } from '../context/SettingsContext';
-import { 
-  Check, 
-  Eye, 
-  EyeOff, 
-  VolumeX, 
-  MicOff, 
-  ShieldCheck, 
-  Zap, 
-  Globe, 
-  MessageSquare,
-  Accessibility as AccessibilityIcon,
-  CheckCircle2
-} from 'lucide-react';
 
 const Accessibility = () => {
   const { settings, updateThemeAccessibility } = useSettings();
 
   const modes: { id: AccessibilityMode; label: string; desc: string; icon: any; color: string }[] = [
-    { id: 'Normal', label: 'Normal Mode', desc: 'Standard interface for all users.', icon: ShieldCheck, color: 'primary' },
-    { id: 'Deaf', label: 'Deaf Mode', desc: 'Enhanced visual indicators and captions.', icon: VolumeX, color: 'blue' },
-    { id: 'Dumb', label: 'Dumb Mode', desc: 'Communication tools for non-verbal users.', icon: MicOff, color: 'emerald' },
-    { id: 'Blind', label: 'Blind Mode', desc: 'Screen reader and voice-guided optimization.', icon: EyeOff, color: 'amber' }
+    { id: 'Normal', label: 'Normal Mode', desc: 'Standard interface for all users.', icon: User, color: 'primary' },
+    { id: 'Deaf', label: 'Deaf Mode', desc: 'Enhanced visual indicators and captions.', icon: Ear, color: 'blue' },
+    { id: 'Dumb', label: 'Dumb Mode', desc: 'Communication tools for non-verbal users.', icon: MessageSquare, color: 'emerald' },
+    { id: 'Blind', label: 'Blind Mode', desc: 'Screen reader and voice-guided optimization.', icon: Eye, color: 'amber' }
   ];
 
   return (
@@ -30,8 +28,8 @@ const Accessibility = () => {
       <div className="max-w-7xl mx-auto">
         <header className="mb-12">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-              <AccessibilityIcon size={28} />
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <AccessibilityIcon size={32} className="text-primary" />
             </div>
             <div>
               <h1 className="text-4xl font-black text-app-text-main tracking-tight">Accessibility</h1>
@@ -55,9 +53,9 @@ const Accessibility = () => {
             >
               <div className={`
                 w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-colors
-                ${settings.themeAccessibility.accessibilityMode === mode.id ? 'bg-primary text-white' : 'bg-app-bg-alt text-app-text-muted group-hover:bg-primary/10 group-hover:text-primary'}
+                ${settings.themeAccessibility.accessibilityMode === mode.id ? 'bg-primary text-white' : 'bg-app-bg-alt text-app-text-muted group-hover:bg-primary/10'}
               `}>
-                <mode.icon size={24} />
+                <mode.icon size={28} />
               </div>
               
               <h3 className={`text-xl font-black tracking-tight mb-2 ${
@@ -70,8 +68,8 @@ const Accessibility = () => {
               </p>
 
               {settings.themeAccessibility.accessibilityMode === mode.id && (
-                <div className="absolute top-4 right-4 text-primary animate-in fade-in zoom-in">
-                  <CheckCircle2 size={24} fill="currentColor" className="text-primary bg-white rounded-full border-2 border-primary" />
+                <div className="absolute top-4 right-4 animate-in fade-in zoom-in text-primary">
+                  <CheckCircle2 size={24} />
                 </div>
               )}
             </button>
@@ -81,15 +79,15 @@ const Accessibility = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <Card className="p-8 bg-app-bg border border-app-border shadow-xl rounded-3xl">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-blue-500/10 text-blue-500 rounded-xl">
-                <Eye size={20} />
+              <div className="p-3 bg-blue-500/10 rounded-xl text-blue-600">
+                <Eye size={24} />
               </div>
               <h2 className="text-lg font-black text-app-text-main tracking-tight">Visual Support</h2>
             </div>
             <ul className="space-y-4">
               {['High contrast themes', 'Adjustable text sizes', 'Screen reader support', 'Focus indicators'].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-app-text-sub font-bold text-sm">
-                  <Check size={16} className="text-emerald-500" />
+                  <CheckCircle2 size={16} className="text-primary" />
                   {item}
                 </li>
               ))}
@@ -98,15 +96,15 @@ const Accessibility = () => {
 
           <Card className="p-8 bg-app-bg border border-app-border shadow-xl rounded-3xl">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl">
-                <Zap size={20} />
+              <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-600">
+                <Lightbulb size={24} />
               </div>
               <h2 className="text-lg font-black text-app-text-main tracking-tight">Performance</h2>
             </div>
             <ul className="space-y-4">
               {['Reduced motion', 'Low bandwidth optimization', 'Fast loading times', 'Resource conservation'].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-app-text-sub font-bold text-sm">
-                  <Check size={16} className="text-emerald-500" />
+                  <CheckCircle2 size={16} className="text-primary" />
                   {item}
                 </li>
               ))}
@@ -115,15 +113,15 @@ const Accessibility = () => {
 
           <Card className="p-8 bg-app-bg border border-app-border shadow-xl rounded-3xl">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-amber-500/10 text-amber-500 rounded-xl">
-                <Globe size={20} />
+              <div className="p-3 bg-amber-500/10 rounded-xl text-amber-600">
+                <Globe size={24} />
               </div>
               <h2 className="text-lg font-black text-app-text-main tracking-tight">Localization</h2>
             </div>
             <ul className="space-y-4">
               {['Multiple languages', 'Regional formats', 'Cultural relevance', 'Translatable content'].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-app-text-sub font-bold text-sm">
-                  <Check size={16} className="text-emerald-500" />
+                  <CheckCircle2 size={16} className="text-primary" />
                   {item}
                 </li>
               ))}
@@ -132,8 +130,8 @@ const Accessibility = () => {
 
           <Card className="p-8 bg-app-bg border border-app-border shadow-xl rounded-3xl">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-primary/10 text-primary rounded-xl">
-                <MessageSquare size={20} />
+              <div className="p-3 bg-primary/10 rounded-xl text-primary">
+                <MessageCircle size={24} />
               </div>
               <h2 className="text-lg font-black text-app-text-main tracking-tight">Feedback</h2>
             </div>

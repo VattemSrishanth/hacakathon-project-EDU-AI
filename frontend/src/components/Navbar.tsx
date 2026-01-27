@@ -1,20 +1,20 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { 
-  Home, 
-  LayoutDashboard, 
-  BookOpen, 
-  Sparkles, 
-  Accessibility, 
-  LifeBuoy, 
+  Home,
+  LayoutDashboard,
+  BookOpen,
+  Sparkles,
+  Accessibility,
+  Headset,
   Settings,
-  Menu,
-  X,
   User,
   LogOut,
-  ChevronRight
+  Menu,
+  X,
+  ArrowRight
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -44,7 +44,7 @@ const Navbar = () => {
     { to: '/lessons', label: t.nav.lessons, icon: BookOpen },
     { to: '/ai-tutor', label: t.nav.aiTutor, icon: Sparkles },
     { to: '/accessibility', label: t.nav.accessibility, icon: Accessibility },
-    { to: '/support', label: t.nav.support, icon: LifeBuoy },
+    { to: '/support', label: t.nav.support, icon: Headset },
     { to: '/settings', label: t.nav.settings, icon: Settings },
   ];
 
@@ -67,14 +67,14 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-10">
+          <div className="hidden md:flex items-center space-x-2">
             {navLinks.map((link) => {
               const isRestricted = !['/', '/accessibility', '/support'].includes(link.to);
               const isDisabled = isGuest && isRestricted;
               const Icon = link.icon;
               
               return (
-                <Link
+                <NavLink
                   key={link.to}
                   to={isDisabled ? '#' : link.to}
                   onClick={(e) => {
@@ -85,13 +85,22 @@ const Navbar = () => {
                       }
                     }
                   }}
-                  className={`flex items-center gap-2 text-app-text-sub font-black text-xs uppercase tracking-widest hover:text-primary transition-all duration-300 group ${
-                    isDisabled ? 'opacity-40 cursor-not-allowed' : ''
-                  }`}
+                  className={({ isActive }) => `
+                    flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 group
+                    ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}
+                    ${isActive && !isDisabled 
+                      ? 'bg-primary/10 text-primary active-link shadow-sm' 
+                      : 'text-app-text-sub hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary'}
+                  `}
                 >
-                  <Icon className="w-4 h-4 text-app-text-muted group-hover:text-primary transition-colors" />
-                  <span>{link.label}</span>
-                </Link>
+                  <Icon 
+                    size={20} 
+                    className={`transition-colors duration-300 ${
+                      isDisabled ? 'text-gray-400' : 'group-hover:text-primary'
+                    }`}
+                  />
+                  <span className="text-sm font-bold tracking-tight">{link.label}</span>
+                </NavLink>
               );
             })}
             {isGuest && (
@@ -148,8 +157,12 @@ const Navbar = () => {
                   >
                     <div className={`px-4 py-3 border-b profile-dropdown__header ${popupHeaderBg}`}>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <User className="w-4 h-4 text-primary" />
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                          {auth?.user?.avatarUrl ? (
+                            <img src={auth.user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <User className="text-primary" size={24} />
+                          )}
                         </div>
                         <div>
                           <p className="text-sm font-bold profile-dropdown__text">
@@ -168,15 +181,15 @@ const Navbar = () => {
                       }}
                       className={`w-full text-left px-4 py-3 text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-3 ${popupHover}`}
                     >
-                      <LayoutDashboard className="w-4 h-4 opacity-70" />
+                      <User className="text-primary" size={20} />
                       {t.nav.profile}
                     </button>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className={`w-full text-left px-4 py-3 text-sm font-black whitespace-nowrap transition-colors flex items-center gap-3 border-t border-app-border/50 ${logoutHover}`}
+                      className={`w-full text-left px-4 py-3 text-sm font-black whitespace-nowrap transition-colors flex items-center gap-3 border-t border-app-border/50 text-red-600 ${logoutHover}`}
                     >
-                      <LogOut className="w-4 h-4 text-red-500" />
+                      <LogOut className="text-red-500" size={20} />
                       {t.nav.logout}
                     </button>
                   </div>
@@ -191,7 +204,7 @@ const Navbar = () => {
               className="p-2 rounded-xl text-app-text-sub hover:bg-app-bg-alt hover:text-primary transition-all active:scale-90"
               aria-label="Toggle menu"
             >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
@@ -208,9 +221,11 @@ const Navbar = () => {
                     className="flex items-center gap-4 px-4 py-4 text-app-text-main font-bold hover:bg-app-bg-alt hover:text-primary rounded-2xl transition-all group"
                     onClick={() => setIsOpen(false)}
                   >
-                    <Icon className="w-5 h-5 text-app-text-muted group-hover:text-primary transition-colors" />
+                    <Icon size={24} className="text-primary" />
                     <span className="flex-1">{link.label}</span>
-                    <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowRight size={16} />
+                    </div>
                   </Link>
                 );
               })}

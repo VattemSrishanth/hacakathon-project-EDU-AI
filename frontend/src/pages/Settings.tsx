@@ -2,23 +2,22 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   User, 
-  BookOpen, 
-  Bell, 
-  Camera,
-  Trash2,
-  CheckCircle2,
+  Bookmark, 
+  Images,
+  Check,
   ChevronRight,
   Lock,
-  Eye,
-  Shield,
   Layout,
-  Sparkles,
+  MessageSquare,
+  Trash2,
+  Zap,
+  Globe,
+  Home,
   Moon,
-  Sun,
-  Trees,
-  Sunrise,
-  Accessibility,
-  MessageSquare
+  Bell,
+  Palette,
+  Eye,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -143,25 +142,27 @@ const Settings = () => {
           
           {/* Sidebar - Matching Image 2 */}
           <aside className="w-full md:w-72 shrink-0 space-y-1">
-            <SidebarItem id="account" label="Account preferences" icon={User} colorClass="text-emerald-500" />
-            <SidebarItem id="security" label="Sign in & security" icon={Lock} colorClass="text-slate-500" />
-            <SidebarItem id="visibility" label="Visibility" icon={Eye} colorClass="text-slate-500" />
-            <SidebarItem id="privacy" label="Data privacy" icon={Shield} colorClass="text-slate-500" />
-            <SidebarItem id="advertising" label="Advertising data" icon={Layout} colorClass="text-slate-500" />
-            <SidebarItem id="notifications" label="Notifications" icon={Bell} colorClass="text-slate-500" />
-            <SidebarItem id="aitutor" label="AI Tutor Settings" icon={MessageSquare} colorClass="text-purple-500" />
-            <SidebarItem id="appearance" label="Appearance & Theme" icon={Sparkles} colorClass="text-blue-500" />
+            <SidebarItem id="account" label="Account preferences" icon={User} colorClass="text-primary" />
+            <SidebarItem id="security" label="Sign in & security" icon={Shield} colorClass="text-primary" />
+            <SidebarItem id="visibility" label="Visibility" icon={Eye} colorClass="text-primary" />
+            <SidebarItem id="privacy" label="Data privacy" icon={Lock} colorClass="text-primary" />
+            <SidebarItem id="advertising" label="Advertising data" icon={Images} colorClass="text-primary" />
+            <SidebarItem id="notifications" label="Notifications" icon={Bell} colorClass="text-primary" />
+            <SidebarItem id="aitutor" label="AI Tutor Settings" icon={MessageSquare} colorClass="text-primary" />
+            <SidebarItem id="appearance" label="Appearance & Theme" icon={Palette} colorClass="text-primary" />
             
             <div className="pt-8 mt-8 border-t border-app-border">
               <button
                 onClick={() => navigate('/accessibility')}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-app-text-sub hover:bg-red-500/5 hover:text-red-500 transition-all font-bold group"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-app-text-sub hover:bg-primary/5 hover:text-primary transition-all font-bold group"
               >
                 <div className="flex items-center gap-4">
-                  <Accessibility className="w-5 h-5 opacity-60 group-hover:opacity-100" />
+                  <div className="w-5 h-5 flex items-center justify-center opacity-60 group-hover:opacity-100">
+                    <Layout size={20} />
+                  </div>
                   <span className="text-sm">Accessibility Center</span>
                 </div>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight size={16} />
               </button>
             </div>
           </aside>
@@ -170,7 +171,7 @@ const Settings = () => {
           <main className="flex-1 min-w-0">
             {saveMessage && (
               <div className="mb-6 flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-600 rounded-2xl border border-emerald-500/20 animate-in fade-in slide-in-from-top-4 w-fit">
-                <CheckCircle2 className="w-4 h-4" />
+                <Check size={16} />
                 <span className="text-xs font-black uppercase tracking-wider">{saveMessage}</span>
               </div>
             )}
@@ -202,7 +203,7 @@ const Settings = () => {
                   {/* Learning Preferences */}
                   <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-8">
                     <div className="flex items-center gap-3">
-                      <BookOpen className="w-5 h-5 text-indigo-500" />
+                      <Bookmark size={20} className="text-primary" />
                       <h4 className="font-black uppercase tracking-widest text-sm">Learning Controls</h4>
                     </div>
                     
@@ -240,6 +241,22 @@ const Settings = () => {
                           <option value="Advanced">{t.lessons.advanced}</option>
                         </select>
                       </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">Education Board</label>
+                        <select
+                          value={settings.learning.board}
+                          onChange={(e) => {
+                            updateLearning({ board: e.target.value as any });
+                            showSaveMessage(t.settings.changesSaved);
+                          }}
+                          className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-primary/20 font-bold text-sm"
+                        >
+                          <option value="NCERT">NCERT (National)</option>
+                          <option value="Telangana">TS Board (Telangana)</option>
+                          <option value="Andhra Pradesh">AP Board (Andhra Pradesh)</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -269,7 +286,7 @@ const Settings = () => {
                             onClick={() => fileInputRef.current?.click()}
                             className="absolute inset-0 bg-app-text-main/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-full text-app-bg pointer-events-auto"
                           >
-                            <Camera className="w-8 h-8" />
+                            <Images size={32} />
                           </button>
                         </div>
                       </div>
@@ -327,8 +344,8 @@ const Settings = () => {
                   <div className="p-6 bg-app-bg rounded-2xl border border-app-border group transition-all hover:border-primary/50 shadow-sm">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                       <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-app-bg-alt border border-app-border text-blue-600 shadow-sm transition-transform group-hover:scale-110">
-                          <Sparkles className="w-6 h-6" />
+                        <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-sm transition-transform group-hover:scale-110">
+                          <Zap size={24} />
                         </div>
                         <div>
                           <p className="text-sm font-black text-app-text-main uppercase tracking-tight">{t.settings.aiTutorSettings.answerStyle}</p>
@@ -359,8 +376,8 @@ const Settings = () => {
 
                   <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer group transition-all hover:border-primary/50 shadow-sm">
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-app-bg-alt border border-app-border text-purple-600 shadow-sm transition-transform group-hover:scale-110">
-                        <Eye className="w-6 h-6" />
+                      <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-sm transition-transform group-hover:scale-110">
+                        <Eye size={24} />
                       </div>
                       <div>
                         <p className="text-sm font-black text-app-text-main uppercase tracking-tight">{t.settings.aiTutorSettings.showChatHistory}</p>
@@ -377,7 +394,7 @@ const Settings = () => {
                           showSaveMessage(t.settings.changesSaved);
                         }}
                       />
-<div className="w-14 h-8 bg-app-bg-alt border border-app-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-1 after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+                      <div className="w-14 h-8 bg-app-bg-alt border border-app-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-1 after:bg-white after:border-gray-200 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
                     </div>
                   </label>
                   
@@ -408,7 +425,7 @@ const Settings = () => {
                       onClick={handleClearChatHistory}
                       className="flex items-center gap-3 px-6 py-4 rounded-xl bg-red-500/10 text-red-600 font-bold text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-sm"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 size={18} />
                       Clear Chat History
                     </button>
                     
@@ -416,7 +433,7 @@ const Settings = () => {
                       onClick={() => showSaveMessage('Data export started...')}
                       className="flex items-center gap-3 px-6 py-4 rounded-xl bg-app-bg border border-app-border text-app-text-main font-bold text-xs uppercase tracking-widest hover:bg-app-bg-alt transition-all shadow-sm"
                     >
-                      <Shield className="w-4 h-4" />
+                      <Lock size={18} />
                       Download My Data
                     </button>
                   </div>
@@ -433,7 +450,9 @@ const Settings = () => {
 
                 <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-6">
                   <div className="p-8 bg-blue-500/5 rounded-2xl border border-blue-500/10 text-center">
-                    <Layout className="w-12 h-12 text-blue-500 mx-auto mb-4 opacity-40" />
+                    <div className="flex items-center justify-center mb-4 text-blue-500 opacity-40">
+                      <Layout size={48} />
+                    </div>
                     <h3 className="font-black uppercase tracking-tighter text-xl mb-2">Clean Experience Guaranteed</h3>
                     <p className="text-sm text-app-text-sub font-medium max-w-md mx-auto">
                       LearnBridge AI is an educational platform. We do not sell your data or serve third-party advertisements in our app.
@@ -519,8 +538,8 @@ const Settings = () => {
                 <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-8">
                   <label className="flex items-center justify-between p-6 bg-app-bg rounded-2xl border border-app-border cursor-pointer hover:border-primary/50 transition-all shadow-sm group">
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 shadow-sm transition-transform group-hover:scale-110">
-                        <MessageSquare className="w-6 h-6" />
+                      <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-purple-500/10 shadow-sm transition-transform group-hover:scale-110 text-purple-600">
+                        <MessageSquare size={24} />
                       </div>
                       <div>
                         <p className="text-sm font-black text-app-text-main uppercase tracking-tight">Enable AI Tutor</p>
@@ -575,9 +594,9 @@ const Settings = () => {
 
                 {/* Theme Selection - Matching Image 1 */}
                 <section className="space-y-6">
-                  <div className="flex items-center gap-3 ml-1 mb-6">
-                    <Sparkles className="w-5 h-5 text-blue-500" />
-                    <h3 className="font-black uppercase tracking-widest text-sm">Select Your Theme</h3>
+                  <div className="flex items-center gap-3 ml-1 mb-6 text-primary">
+                    <Palette size={20} />
+                    <h3 className="font-black uppercase tracking-widest text-sm text-app-text-main">Select Your Theme</h3>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -595,7 +614,7 @@ const Settings = () => {
                       id={"Crystal Light" as ThemeMode} 
                       title="Crystal Light" 
                       desc="Clean, bright theme with soft blue accents" 
-                      icon={Sun} 
+                      icon={Layout} 
                       current={settings.themeAccessibility.theme}
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
                       previewClass="gradient-crystal border border-app-border"
@@ -605,7 +624,7 @@ const Settings = () => {
                       id={"Forest Depths" as ThemeMode} 
                       title="Forest Depths" 
                       desc="Nature-inspired dark theme with emerald greens" 
-                      icon={Trees} 
+                      icon={Globe} 
                       current={settings.themeAccessibility.theme}
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
                       previewClass="gradient-forest"
@@ -615,7 +634,7 @@ const Settings = () => {
                       id={"Aurora Borealis" as ThemeMode} 
                       title="Aurora Borealis" 
                       desc="Mystical theme with purple and cyan gradients" 
-                      icon={Sparkles} 
+                      icon={Zap} 
                       current={settings.themeAccessibility.theme}
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
                       previewClass="gradient-aurora"
@@ -625,7 +644,7 @@ const Settings = () => {
                       id={"Sunset Ember" as ThemeMode} 
                       title="Sunset Ember" 
                       desc="Warm, cozy theme with orange and amber tones" 
-                      icon={Sunrise} 
+                      icon={Home} 
                       current={settings.themeAccessibility.theme}
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
                       previewClass="gradient-sunset"
@@ -636,9 +655,9 @@ const Settings = () => {
 
                 {/* Extra Accessibility Controls */}
                 <section className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-8">
-                  <div className="flex items-center gap-3">
-                    <Accessibility className="w-5 h-5 text-teal-500" />
-                    <h3 className="font-black uppercase tracking-widest text-sm">Accessibility Controls</h3>
+                  <div className="flex items-center gap-3 text-primary">
+                    <Lock size={20} />
+                    <h3 className="font-black uppercase tracking-widest text-sm text-app-text-main">Accessibility Controls</h3>
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
@@ -781,16 +800,16 @@ const ThemeCard = ({
         </div>
         
         {isSelected && (
-          <div className="absolute top-3 right-3 h-7 w-7 bg-blue-500 rounded-full flex items-center justify-center border-4 border-app-bg shadow-lg scale-110 animate-in zoom-in duration-300">
-            <CheckCircle2 className="w-4 h-4 text-white" />
+          <div className="absolute top-3 right-3 h-7 w-7 bg-blue-500 rounded-full flex items-center justify-center border-4 border-app-bg shadow-lg scale-110 animate-in zoom-in duration-300 text-white">
+            <Check size={16} />
           </div>
         )}
       </div>
 
       <div className="px-6 pb-6 space-y-1">
-        <div className="flex items-center gap-2">
-          <Icon className={`w-5 h-5 ${isSelected ? 'text-primary' : 'text-app-text-sub'}`} />
-          <h4 className="font-black text-lg tracking-tight uppercase">{title}</h4>
+        <div className="flex items-center gap-2 text-primary">
+          <Icon size={20} />
+          <h4 className="font-black text-lg tracking-tight uppercase text-app-text-main">{title}</h4>
         </div>
         <p className="text-xs text-app-text-sub font-bold leading-relaxed uppercase tracking-tight opacity-60">
           {desc}
