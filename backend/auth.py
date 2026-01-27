@@ -1,8 +1,7 @@
 import re
 
 from flask import Blueprint, jsonify, request, session
-
-from models import db, User
+from models import User
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -36,27 +35,28 @@ def signup():
         if preferred_language not in {"en", "es", "fr", "sw", "ar", "hi"}:
             preferred_language = "en"
 
-        if User.query.filter((User.username == username) | (User.email == email)).first():
+        if User.find_one({"$or": [{"username": username}, {"email": email}]}):
             return jsonify({"error": "Username or email already exists.", "status": "error"}), 409
 
-        user = User(
-            username=username,
-            email=email,
-            accessibility_mode=accessibility_mode,
-            preferred_language=preferred_language
-        )
-        user.set_password(password)
+        password_hash = User.set_password(password)
+        user_data = {
+            "username": username,
+            "email": email,
+            "password_hash": password_hash,
+            "accessibility_mode": accessibility_mode,
+            "preferred_language": preferred_language,
+            "role": "user" # Default role
+        }
+        user_id = User.create(user_data)
+        user_doc = User.find_by_id(user_id)
 
-        db.session.add(user)
-        db.session.commit()
+        session["user_id"] = str(user_id)
+        session["username"] = username
 
-        session["user_id"] = user.id
-        session["username"] = user.username
-
-        return jsonify({"status": "ok", "user": user.to_public_dict()})
-    except Exception:
-        db.session.rollback()
-        return jsonify({"error": "Signup failed. Please try again.", "status": "error"}), 500
+        return jsonify({"status": "ok", "user": User.to_public_dict(user_doc)})
+    except Exception as e:
+        print(f"Signup error: {e}")
+        return jsonify({"error": f"Signup failed: {str(e)}", "status": "error"}), 500
 
 
 @auth_bp.route("/login", methods=["POST"])
@@ -69,18 +69,19 @@ def login():
         if not identifier or not password:
             return jsonify({"error": "Email or username and password required.", "status": "error"}), 400
 
-        user = User.query.filter(
-            (User.email == identifier) | (User.username == identifier)
-        ).first()
+        user = User.find_one({
+            "$or": [{"email": identifier}, {"username": identifier}]
+        })
 
-        if not user or not user.check_password(password):
+        if not user or not User.check_password(user.get("password_hash"), password):
             return jsonify({"error": "Invalid credentials.", "status": "error"}), 401
 
-        session["user_id"] = user.id
-        session["username"] = user.username
+        session["user_id"] = str(user["_id"])
+        session["username"] = user["username"]
 
-        return jsonify({"status": "ok", "user": user.to_public_dict()})
-    except Exception:
+        return jsonify({"status": "ok", "user": User.to_public_dict(user)})
+    except Exception as e:
+        print(f"Login error: {e}")
         return jsonify({"error": "Login failed. Please try again.", "status": "error"}), 500
 
 
@@ -96,9 +97,9 @@ def me():
     if not user_id:
         return jsonify({"status": "unauthenticated"}), 401
 
-    user = User.query.get(user_id)
+    user = User.find_by_id(user_id)
     if not user:
         session.clear()
         return jsonify({"status": "unauthenticated"}), 401
 
-    return jsonify({"status": "ok", "user": user.to_public_dict()})
+    return jsonify({"status": "ok", "user": User.to_public_dict(user)})

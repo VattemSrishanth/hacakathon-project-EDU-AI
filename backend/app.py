@@ -9,17 +9,19 @@ import io
 import base64
 import json
 import time
+from functools import wraps
 from urllib.parse import urlparse, parse_qs
 from xml.etree.ElementTree import ParseError
 
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
+from flask_pymongo import PyMongo
 
 from ai_engine import get_ai_response, generate_video_explanation, get_ai_response_payload, analyze_image
 import unified_llm as llm_service
 from auth import auth_bp
 import quiz_pipeline
-from models import db, User
+from models import init_mongo_models, User, Profile, Course, Progress, ChatHistory, Assignment, Notification, Feedback
 
 try:
     from youtube_transcript_api import YouTubeTranscriptApi
@@ -46,6 +48,30 @@ try:
     import PyPDF2
 except ImportError:
     PyPDF2 = None
+
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth_header = request.headers.get("Authorization", "")
+        token = ""
+        if auth_header.startswith("Bearer "):
+            token = auth_header.replace("Bearer ", "", 1).strip()
+
+        if not token or not token.startswith("mock_token_"):
+            return jsonify({"error": "Token is missing or invalid", "success": False}), 401
+
+        try:
+            user_id = token.split("mock_token_")[-1]
+            current_user = User.find_by_id(user_id)
+            if not current_user:
+                return jsonify({"error": "User not found", "success": False}), 401
+        except Exception as e:
+            return jsonify({"error": str(e), "success": False}), 401
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
 
 
 def _decode_pdf_base64(pdf_base64: str):
@@ -200,11 +226,7 @@ app = Flask(__name__)
 
 # Configuration
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "change-me-in-production")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-    "DATABASE_URL",
-    f"sqlite:///{os.path.join(BASE_DIR, 'edu_ai.db')}"
-)
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/edu_ai")
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
@@ -229,15 +251,14 @@ CORS(
     supports_credentials=True
 )
 
-# Initialize database
-db.init_app(app)
+# Initialize MongoDB
+mongo = PyMongo(app)
+init_mongo_models(mongo)
 
 
 def init_db():
-    """Initialize the database and create tables."""
-    with app.app_context():
-        db.create_all()
-        print("[OK] Database initialized successfully!")
+    """Initialize the database and collections."""
+    print("[OK] MongoDB connected and models initialized.")
 
 
 init_db()
@@ -311,31 +332,28 @@ def register():
             accessibility_mode = "regular"
 
         # Create user
-        user = User(
-            username=username,
-            email=email,
-            accessibility_mode=accessibility_mode,
-            preferred_language=preferred_language
-        )
-        user.set_password(password)
-
-        db.session.add(user)
-        db.session.commit()
+        password_hash = User.set_password(password)
+        user_data = {
+            "username": username,
+            "email": email,
+            "password_hash": password_hash,
+            "accessibility_mode": accessibility_mode,
+            "preferred_language": preferred_language,
+            "role": "user"
+        }
+        user_id = User.create(user_data)
+        user_doc = User.find_by_id(user_id)
+        public_user = User.to_public_dict(user_doc)
 
         return jsonify({
             "success": True,
             "message": "Registration successful!",
-            "user": {
-                "id": user.id,
-                "name": name,
-                "email": user.email,
-                "username": user.username
-            }
+            "user": public_user,
+            "token": f"mock_token_{public_user['id']}"
         })
     except Exception as e:
-        db.session.rollback()
         print(f"Registration error: {e}")
-        return jsonify({"error": "Registration failed. Please try again.", "success": False}), 500
+        return jsonify({"error": f"Registration failed: {str(e)}", "success": False}), 500
 
 
 @app.route("/api/auth/login", methods=["POST"])
@@ -349,18 +367,19 @@ def login():
         if not email or not password:
             return jsonify({"error": "Email and password required.", "success": False}), 400
 
-        user = User.query.filter(
-            (User.email == email) | (User.username == email)
-        ).first()
+        user = User.find_one({
+            "$or": [{"email": email}, {"username": email}]
+        })
 
-        if not user or not user.check_password(password):
+        if not user or not User.check_password(user.get("password_hash"), password):
             return jsonify({"error": "Invalid email or password.", "success": False}), 401
 
+        public_user = User.to_public_dict(user)
         return jsonify({
             "success": True,
             "message": "Login successful!",
-            "user": user.to_public_dict(),
-            "token": f"mock_token_{user.id}"  # In production, use JWT
+            "user": public_user,
+            "token": f"mock_token_{public_user['id']}"  # In production, use JWT
         })
     except Exception as e:
         print(f"Login error: {e}")
@@ -377,11 +396,12 @@ def get_current_user():
 
     if token.startswith("mock_token_"):
         try:
-            user_id = int(token.split("mock_token_")[-1])
-            user = User.query.get(user_id)
+            user_id = token.split("mock_token_")[-1]
+            user = User.find_by_id(user_id)
             if user:
-                return jsonify({"authenticated": True, "user": user.to_public_dict()})
-        except Exception:
+                return jsonify({"authenticated": True, "user": User.to_public_dict(user)})
+        except Exception as e:
+            print(f"Error in me endpoint: {e}")
             pass
 
     return jsonify({"authenticated": False, "user": None})
@@ -758,53 +778,54 @@ LESSONS = [
 
 @app.route("/api/lessons", methods=["GET"])
 def get_lessons():
-    """Get all available lessons."""
+    """Get all available lessons from MongoDB."""
     category = request.args.get("category", "").strip()
     level = request.args.get("level", "").strip()
     
-    filtered = LESSONS
-    
+    query = {}
     if category:
-        filtered = [l for l in filtered if l["category"].lower() == category.lower()]
+        query["category"] = {"$regex": f"^{category}$", "$options": "i"}
     if level:
-        filtered = [l for l in filtered if l["level"].lower() == level.lower()]
+        query["level"] = {"$regex": f"^{level}$", "$options": "i"}
+    
+    docs = Course.find_all(query)
+    lessons = Course.format_list(docs)
     
     return jsonify({
         "success": True,
-        "lessons": filtered,
-        "total": len(filtered)
+        "lessons": lessons,
+        "total": len(lessons)
     })
 
 
 @app.route("/api/lessons/<lesson_id>", methods=["GET"])
 def get_lesson(lesson_id):
-    """Get a specific lesson by ID."""
-    lesson = next((l for l in LESSONS if l["id"] == lesson_id), None)
-    
-    if not lesson:
+    """Get a specific lesson by ID from MongoDB."""
+    doc = Course.find_by_id(lesson_id)
+    if not doc:
         return jsonify({"error": "Lesson not found", "success": False}), 404
     
     return jsonify({
         "success": True,
-        "lesson": lesson
+        "lesson": Course.format_doc(doc)
     })
 
 
 @app.route("/api/lessons/<lesson_id>/content", methods=["GET"])
 def get_lesson_content(lesson_id):
     """Extract and return text content from a lesson's PDF."""
-    lesson = next((l for l in LESSONS if l["id"] == lesson_id), None)
-    if not lesson or "pdf_path" not in lesson:
+    doc = Course.find_by_id(lesson_id)
+    if not doc or "pdf_path" not in doc:
         return jsonify({"error": "Lesson or PDF not found", "success": False}), 404
         
-    pdf_filename = lesson["pdf_path"]
+    pdf_filename = doc["pdf_path"]
     pdf_path = os.path.join(BASE_DIR, "..", "frontend", "public", "lessons", pdf_filename)
     
     if not os.path.exists(pdf_path):
         # Return dummy content for demo if file doesn't exist
         return jsonify({
             "success": True,
-            "content": f"This is placeholder content for {lesson['title']}. In a real scenario, this text would be extracted from {pdf_filename} and summarized for students.",
+            "content": f"This is placeholder content for {doc['title']}. In a real scenario, this text would be extracted from {pdf_filename} and summarized for students.",
             "is_dummy": True
         })
         
@@ -814,9 +835,8 @@ def get_lesson_content(lesson_id):
             with open(pdf_path, "rb") as f:
                 reader = PyPDF2.PdfReader(f)
                 for page in reader.pages:
-                    text += page.extract_text() + "\n"
+                    text += (page.extract_text() or "") + "\n"
         else:
-            # Fallback for generic text files or if PyPDF2 is missing
             with open(pdf_path, "r", encoding="utf-8", errors="ignore") as f:
                 text = f.read()
                 
@@ -831,30 +851,199 @@ def get_lesson_content(lesson_id):
 
 @app.route("/api/categories", methods=["GET"])
 def get_categories():
-    """Get all lesson categories."""
-    categories = list(set(l["category"] for l in LESSONS))
+    """Get all lesson categories from MongoDB."""
+    categories = mongo.db.courses.distinct("category")
     return jsonify({
         "success": True,
         "categories": sorted(categories)
     })
 
 
-# ==================== User Progress Routes ====================
+# ==================== User Management & Profiles ====================
 
-@app.route("/api/progress", methods=["GET"])
-def get_progress():
-    """Get user learning progress (placeholder)."""
-    # In production, this would fetch from database based on user session
-    return jsonify({
-        "success": True,
-        "progress": {
-            "lessonsCompleted": 3,
-            "totalLessons": len(LESSONS),
-            "questionsAsked": 15,
-            "streakDays": 5,
-            "lastActivity": "2026-01-23"
-        }
+@app.route("/api/profile", methods=["GET", "POST"])
+def manage_profile():
+    """Get or update user profile."""
+    # Simulation: In production use session or JWT
+    user_id = request.args.get("user_id") 
+    if not user_id:
+        return jsonify({"error": "Auth required", "success": False}), 401
+
+    if request.method == "GET":
+        profile = Profile.find_one({"user_id": user_id})
+        if not profile:
+            # Create default profile
+            user = User.find_by_id(user_id)
+            profile_data = {
+                "user_id": user_id,
+                "full_name": user.get("username", "Student"),
+                "bio": "Keep learning and growing with AI.",
+                "interests": [],
+                "stats": {"completed": 0, "quizzes": 0}
+            }
+            Profile.create(profile_data)
+            profile = profile_data
+        
+        return jsonify({"success": True, "profile": Profile.format_doc(profile)})
+
+    else:
+        data = request.get_json()
+        Profile.update(data.get("id"), data)
+        return jsonify({"success": True, "message": "Profile updated"})
+
+
+# ==================== AI Chat History ====================
+
+@app.route("/api/history", methods=["GET", "POST"])
+def chat_history():
+    """Get or save AI chat history."""
+    user_id = request.args.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Auth required", "success": False}), 401
+
+    if request.method == "GET":
+        history = ChatHistory.find_all({"user_id": user_id}, sort=[("created_at", -1)])
+        return jsonify({"success": True, "history": ChatHistory.format_list(history)})
+    
+    else:
+        data = request.get_json()
+        data["user_id"] = user_id
+        ChatHistory.create(data)
+        return jsonify({"success": True})
+
+
+# ==================== Progress Tracking ====================
+
+@app.route("/api/progress", methods=["GET", "POST"])
+def track_progress():
+    """Get or update user learning progress."""
+    user_id = request.args.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Auth required", "success": False}), 401
+
+    if request.method == "GET":
+        progress = Progress.find_one({"user_id": user_id})
+        if not progress:
+            progress = {
+                "user_id": user_id,
+                "lessonsCompleted": 0,
+                "totalLessons": 8,
+                "questionsAsked": 0,
+                "streakDays": 1,
+                "lastActivity": datetime.utcnow().strftime("%Y-%m-%d"),
+                "quiz_scores": [],
+                "activities": []
+            }
+        return jsonify({"success": True, "progress": Progress.format_doc(progress) if "_id" in progress else progress})
+    
+    else:
+        data = request.get_json()
+        progress_id = data.pop("id", None)
+        
+        if progress_id:
+            Progress.update(progress_id, data)
+        else:
+            # Try to find by user_id if id not provided or null
+            existing = Progress.find_one({"user_id": user_id})
+            if existing:
+                Progress.update(existing["_id"], data)
+            else:
+                Progress.create({**data, "user_id": user_id})
+        
+        return jsonify({"success": True})
+
+
+# ==================== Assignments & Feedback ====================
+
+@app.route("/api/assignments", methods=["GET", "POST"])
+def manage_assignments():
+    """Get all assignments or submit a new one."""
+    if request.method == "GET":
+        assignments = Assignment.find_all()
+        return jsonify({"success": True, "assignments": Assignment.format_list(assignments)})
+    else:
+        data = request.get_json()
+        Assignment.create(data)
+        return jsonify({"success": True})
+
+@app.route("/api/feedback", methods=["POST"])
+def submit_feedback():
+    """Submit feedback about AI or course."""
+    data = request.get_json()
+    Feedback.create(data)
+    return jsonify({"success": True, "message": "Feedback submitted"})
+
+@app.route("/api/notifications", methods=["GET"])
+def get_notifications():
+    """Get notifications for a user."""
+    user_id = request.args.get("user_id")
+    notifs = Notification.find_all({"user_id": user_id}, sort=[("created_at", -1)])
+    return jsonify({"success": True, "notifications": Notification.format_list(notifs)})
+
+@app.route("/api/sync", methods=["POST"])
+def sync_offline_data():
+    """Sync offline progress and actions when user is back online."""
+    user_id = request.args.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Auth required", "success": False}), 401
+    
+    data = request.get_json()
+    actions = data.get("actions", [])
+    
+    for action in actions:
+        action_type = action.get("type")
+        payload = action.get("payload")
+        
+        try:
+            if action_type == "PROGRESS_UPDATE":
+                # Find progress for user or create new
+                prog = Progress.find_one({"user_id": user_id})
+                if prog:
+                    Progress.update(prog["_id"], payload)
+                else:
+                    Progress.create({**payload, "user_id": user_id})
+                    
+            elif action_type == "CHAT_HISTORY":
+                ChatHistory.create({"user_id": user_id, "messages": payload, "created_at": datetime.utcnow()})
+                
+            elif action_type == "FEEDBACK":
+                Feedback.create({**payload, "user_id": user_id})
+        except Exception as e:
+            print(f"Error syncing action {action_type}: {e}")
+            
+    # Record sync event
+    OfflineSync.create({
+        "user_id": user_id,
+        "actions_synced": len(actions),
+        "timestamp": datetime.utcnow()
     })
+    
+    return jsonify({"success": True, "message": f"Synced {len(actions)} actions"})
+    
+    return jsonify({"success": True, "message": f"Synced {len(actions)} actions"})
+
+
+# ==================== ADMIN DASHBOARD ====================
+
+@app.route("/api/admin/<user_id>/stats", methods=["GET"])
+@token_required
+def get_admin_stats(current_user, user_id):
+    """Get overview of all system data (Admin only)."""
+    if current_user.get("role") != "admin":
+        return jsonify({"error": "Admin access denied", "success": False}), 403
+
+    stats = {
+        "total_users": mongo.db.users.count_documents({}),
+        "total_lessons": mongo.db.courses.count_documents({}),
+        "total_chats": mongo.db.chat_history.count_documents({}),
+        "total_assignments": mongo.db.assignments.count_documents({}),
+        "total_feedback": mongo.db.feedback.count_documents({}),
+        "recent_feedback": Feedback.format_list(Feedback.find_all(limit=10, sort=[("created_at", -1)])),
+        "user_list": User.format_list(User.find_all(limit=50)),
+        "all_progress": Progress.format_list(Progress.find_all(limit=50)),
+        "all_notifications": Notification.format_list(Notification.find_all(limit=20))
+    }
+    return jsonify({"success": True, "stats": stats})
 
 
 # ==================== Helper Functions ====================
@@ -921,7 +1110,7 @@ if __name__ == "__main__":
     print("\n" + "="*50)
     print("RuralAccess AI Backend Server")
     print("="*50)
-    print(f"Database: {app.config['SQLALCHEMY_DATABASE_URI']}")
+    print(f"MongoDB URI: {app.config['MONGO_URI']}")
     print(f"Server: http://127.0.0.1:5000")
     print(f"API Docs: http://127.0.0.1:5000/")
     print("="*50 + "\n")
