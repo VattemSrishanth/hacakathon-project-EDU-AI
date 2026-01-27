@@ -661,6 +661,16 @@ const Settings = () => {
                       previewClass="gradient-hogwarts"
                       accentClass="bg-red-700"
                     />
+                    <ThemeCard 
+                      id={"HARRY POTTER" as ThemeMode} 
+                      title="HARRY POTTER" 
+                      desc="Dark cinematic wizarding vibe with gold + bronze glow (original)" 
+                      icon={Sparkles} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="gradient-harry-potter"
+                      accentClass="bg-amber-500"
+                    />
                   </div>
                 </section>
 

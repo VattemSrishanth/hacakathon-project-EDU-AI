@@ -1,5 +1,8 @@
 ﻿@import "tailwindcss";
 
+/* Wizarding fonts (original theme styling) */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&family=Lora:wght@400;500;600&display=swap');
+
 /* ==================== Tailwind v4 Theme Configuration ==================== */
 @theme {
   --color-primary: #2563eb;
@@ -31,6 +34,33 @@
   
   /* Transitions */
   --transition-speed: 200ms;
+
+  /* ==================== Wizarding Academy (Theme Tokens) ==================== */
+  /* These are used by the HARRY POTTER theme but are ORIGINAL and generic. */
+  --wa-font-heading: "Cinzel", "Cormorant Garamond", "Playfair Display", serif;
+  --wa-font-body: "Inter", "Lora", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+  --wa-bg-0: #0b0c10;
+  --wa-bg-1: #111217;
+  --wa-bg-2: #171a22;
+
+  --wa-ink-0: #f3efe6;
+  --wa-ink-1: #d7d0c4;
+  --wa-ink-2: #b7b0a2;
+  --wa-line: rgba(243, 239, 230, 0.12);
+
+  --wa-gold: #d9b25f;
+  --wa-bronze: #b98747;
+  --wa-amber: #f0c36a;
+  --wa-crimson: #b24a4a;
+  --wa-emerald: #3f9a79;
+  --wa-sapphire: #4a78c8;
+
+  --wa-glow-gold: rgba(217, 178, 95, 0.26);
+  --wa-glow-amber: rgba(240, 195, 106, 0.22);
+  --wa-glow-crimson: rgba(178, 74, 74, 0.18);
+  --wa-glow-emerald: rgba(63, 154, 121, 0.18);
+  --wa-glow-sapphire: rgba(74, 120, 200, 0.18);
 }
 
 /* ==================== Dark Theme (Slate 950/50 base) ==================== */
@@ -123,6 +153,535 @@
   --color-secondary: #ffd700;
 }
 
+/* ==================== HARRY POTTER Theme (Cinematic Wizarding Academy - ORIGINAL) ==================== */
+/* Label kept per request; visuals are ORIGINAL and generic. */
+.theme-harry-potter {
+  /* Map into app semantic variables */
+  --bg-primary: var(--wa-bg-0);
+  --bg-secondary: var(--wa-bg-1);
+  --bg-card: rgba(17, 18, 23, 0.88);
+  --text-primary: var(--wa-ink-0);
+  --text-secondary: var(--wa-ink-1);
+  --text-muted: var(--wa-ink-2);
+  --border-color: rgba(243, 239, 230, 0.12);
+  --color-primary: var(--wa-gold);
+  --color-primary-hover: var(--wa-amber);
+  --color-secondary: var(--wa-bronze);
+
+  --wa-radius: 14px;
+  --wa-radius-lg: 18px;
+  --wa-ease: cubic-bezier(0.2, 0.9, 0.2, 1);
+  --wa-shadow-1: 0 12px 26px rgba(0, 0, 0, 0.46);
+  --wa-shadow-2: 0 20px 55px rgba(0, 0, 0, 0.62);
+  --wa-shadow-3: 0 26px 85px rgba(0, 0, 0, 0.70);
+}
+
+/* ==================== Global Cinematic Backdrop + Particles ==================== */
+.theme-harry-potter body {
+  position: relative;
+  font-family: var(--wa-font-body);
+  color: var(--wa-ink-1);
+  background:
+    radial-gradient(1100px 720px at 12% 8%, rgba(217, 178, 95, 0.12), transparent 62%),
+    radial-gradient(900px 680px at 82% 18%, rgba(74, 120, 200, 0.10), transparent 64%),
+    radial-gradient(820px 720px at 70% 88%, rgba(63, 154, 121, 0.09), transparent 62%),
+    radial-gradient(760px 560px at 18% 86%, rgba(178, 74, 74, 0.08), transparent 62%),
+    linear-gradient(180deg, var(--wa-bg-0), var(--wa-bg-1) 45%, var(--wa-bg-0));
+}
+
+/* Ambient magical dust (soft grain) */
+.theme-harry-potter body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.20;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(2px 2px at 15% 30%, rgba(240, 195, 106, 0.28), transparent 60%),
+    radial-gradient(2px 2px at 55% 12%, rgba(217, 178, 95, 0.22), transparent 60%),
+    radial-gradient(2px 2px at 78% 62%, rgba(74, 120, 200, 0.18), transparent 60%),
+    radial-gradient(2px 2px at 28% 82%, rgba(63, 154, 121, 0.18), transparent 60%),
+    radial-gradient(2px 2px at 88% 84%, rgba(178, 74, 74, 0.16), transparent 60%),
+    radial-gradient(1px 1px at 42% 48%, rgba(243, 239, 230, 0.10), transparent 60%);
+  filter: blur(0.3px);
+  animation: emberDrift 18s linear infinite;
+}
+
+/* Floating embers (bigger, warmer, slower) */
+.theme-harry-potter body::after {
+  content: "";
+  position: fixed;
+  inset: -10% -10% -10% -10%;
+  pointer-events: none;
+  opacity: 0.22;
+  background:
+    radial-gradient(6px 6px at 12% 84%, rgba(240, 195, 106, 0.18), transparent 62%),
+    radial-gradient(5px 5px at 25% 55%, rgba(217, 178, 95, 0.16), transparent 62%),
+    radial-gradient(4px 4px at 66% 70%, rgba(185, 135, 71, 0.14), transparent 62%),
+    radial-gradient(4px 4px at 82% 36%, rgba(240, 195, 106, 0.14), transparent 62%),
+    radial-gradient(3px 3px at 58% 22%, rgba(217, 178, 95, 0.12), transparent 62%);
+  filter: blur(0.7px);
+  animation: emberDrift 28s linear infinite;
+}
+
+/* ==================== Typography ==================== */
+.theme-harry-potter h1,
+.theme-harry-potter h2,
+.theme-harry-potter h3,
+.theme-harry-potter h4,
+.theme-harry-potter h5,
+.theme-harry-potter h6 {
+  font-family: var(--wa-font-heading);
+  color: var(--wa-ink-0);
+  letter-spacing: 0.06em;
+  text-shadow:
+    0 0 22px rgba(217, 178, 95, 0.10),
+    0 0 38px rgba(0, 0, 0, 0.55);
+}
+
+.theme-harry-potter h1 {
+  letter-spacing: 0.10em;
+  text-shadow:
+    0 0 18px rgba(240, 195, 106, 0.18),
+    0 0 44px rgba(217, 178, 95, 0.10),
+    0 18px 60px rgba(0, 0, 0, 0.65);
+}
+
+/* ==================== Layout ==================== */
+.theme-harry-potter .dashboard-container {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.5rem 0 2.5rem;
+}
+
+/* ==================== Navbar (glass + glowing border) ==================== */
+.theme-harry-potter .navbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background:
+    linear-gradient(180deg, rgba(11, 12, 16, 0.92), rgba(11, 12, 16, 0.64));
+  border-bottom: 1px solid rgba(243, 239, 230, 0.10);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+
+.theme-harry-potter .navbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(217, 178, 95, 0.55) 24%,
+      rgba(185, 135, 71, 0.45) 52%,
+      rgba(240, 195, 106, 0.52) 76%,
+      transparent 100%);
+  opacity: 0.45;
+  animation: glowPulse 6.4s var(--wa-ease) infinite;
+  pointer-events: none;
+}
+
+/* ==================== Hero (animated background + vignette + glow) ==================== */
+.theme-harry-potter .hero-section {
+  position: relative;
+  border-radius: var(--wa-radius-lg);
+  border: 1px solid rgba(243, 239, 230, 0.12);
+  overflow: hidden;
+  box-shadow: var(--wa-shadow-3);
+  padding: clamp(1.6rem, 3.2vw, 2.4rem);
+  background:
+    radial-gradient(1100px 520px at 18% 15%, rgba(217, 178, 95, 0.18), transparent 64%),
+    radial-gradient(900px 520px at 82% 24%, rgba(74, 120, 200, 0.12), transparent 62%),
+    radial-gradient(820px 520px at 70% 86%, rgba(63, 154, 121, 0.10), transparent 62%),
+    linear-gradient(180deg, rgba(23, 26, 34, 0.96), rgba(11, 12, 16, 0.96));
+}
+
+.theme-harry-potter .hero-section::before {
+  /* Soft golden glow pulsing across the section */
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background:
+    conic-gradient(from 230deg,
+      transparent 0deg,
+      rgba(217, 178, 95, 0.22) 45deg,
+      rgba(185, 135, 71, 0.16) 90deg,
+      rgba(74, 120, 200, 0.14) 140deg,
+      rgba(63, 154, 121, 0.12) 200deg,
+      rgba(178, 74, 74, 0.12) 280deg,
+      transparent 360deg);
+  opacity: 0.22;
+  filter: blur(18px);
+  animation: glowPulse 8.2s var(--wa-ease) infinite;
+  pointer-events: none;
+}
+
+.theme-harry-potter .hero-section::after {
+  /* Vignette + candle flicker warmth */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(600px 240px at 22% 18%, rgba(240, 195, 106, 0.18), transparent 66%),
+    radial-gradient(800px 520px at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
+  opacity: 0.78;
+  animation: candleFlicker 4.3s var(--wa-ease) infinite;
+  pointer-events: none;
+}
+
+/* Glow the hero title if you add .magic-text */
+.theme-harry-potter .hero-section .magic-text {
+  text-shadow: 0 0 22px rgba(240, 195, 106, 0.12), 0 0 48px rgba(217, 178, 95, 0.10);
+}
+
+/* ==================== Cards (depth + hover overlay reveal) ==================== */
+.theme-harry-potter .card {
+  position: relative;
+  border-radius: var(--wa-radius);
+  border: 1px solid rgba(243, 239, 230, 0.12);
+  background:
+    linear-gradient(180deg, rgba(23, 26, 34, 0.92), rgba(11, 12, 16, 0.92));
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.58),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  padding: 1rem;
+  overflow: hidden;
+  transition: transform 260ms var(--wa-ease), box-shadow 260ms var(--wa-ease), border-color 260ms var(--wa-ease);
+}
+
+.theme-harry-potter .card::after {
+  /* Subtle gradient overlay revealed on hover */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg,
+      rgba(217, 178, 95, 0.12) 0%,
+      rgba(74, 120, 200, 0.08) 45%,
+      rgba(63, 154, 121, 0.07) 70%,
+      transparent 100%);
+  opacity: 0;
+  transition: opacity 260ms var(--wa-ease);
+  pointer-events: none;
+}
+
+.theme-harry-potter .card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(240, 195, 106, 0.22);
+  box-shadow:
+    0 22px 70px rgba(0, 0, 0, 0.70),
+    0 0 0 1px rgba(217, 178, 95, 0.10) inset,
+    0 0 40px rgba(217, 178, 95, 0.12);
+}
+
+.theme-harry-potter .card:hover::after {
+  opacity: 1;
+}
+
+/* ==================== Magic Card (strong glow + border shimmer) ==================== */
+.theme-harry-potter .magic-card {
+  position: relative;
+  border-radius: var(--wa-radius-lg);
+  border: 1px solid rgba(240, 195, 106, 0.28);
+  background:
+    radial-gradient(900px 300px at 18% 0%, rgba(217, 178, 95, 0.22), transparent 64%),
+    radial-gradient(820px 360px at 100% 68%, rgba(74, 120, 200, 0.14), transparent 66%),
+    radial-gradient(760px 340px at 70% 92%, rgba(63, 154, 121, 0.12), transparent 68%),
+    linear-gradient(180deg, rgba(23, 26, 34, 0.96), rgba(11, 12, 16, 0.96));
+  box-shadow:
+    var(--wa-shadow-3),
+    0 0 0 1px rgba(240, 195, 106, 0.10) inset,
+    0 0 70px rgba(217, 178, 95, 0.16),
+    0 0 34px rgba(185, 135, 71, 0.10);
+  padding: 1.2rem;
+  overflow: hidden;
+  animation: floatSlow 7.2s var(--wa-ease) infinite;
+}
+
+.theme-harry-potter .magic-card::before {
+  /* Animated border shimmer sweep */
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background:
+    linear-gradient(115deg,
+      transparent 0%,
+      rgba(240, 195, 106, 0.14) 30%,
+      rgba(243, 239, 230, 0.08) 50%,
+      rgba(74, 120, 200, 0.10) 70%,
+      transparent 100%);
+  opacity: 0.55;
+  filter: blur(0.6px);
+  transform: translateX(-50%) skewX(-12deg);
+  animation: shimmerSweep 4.9s var(--wa-ease) infinite;
+  pointer-events: none;
+}
+
+.theme-harry-potter .magic-card::after {
+  /* Candle warmth + vignette */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(560px 210px at 34% 12%, rgba(240, 195, 106, 0.20), transparent 66%),
+    radial-gradient(900px 620px at 50% 55%, transparent 45%, rgba(0, 0, 0, 0.55) 100%);
+  opacity: 0.72;
+  animation: candleFlicker 4.6s var(--wa-ease) infinite;
+  pointer-events: none;
+}
+
+.theme-harry-potter .magic-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 30px 95px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(240, 195, 106, 0.14) inset,
+    0 0 90px rgba(217, 178, 95, 0.20),
+    0 0 38px rgba(185, 135, 71, 0.14);
+}
+
+/* ==================== Buttons (spell-like) ==================== */
+.theme-harry-potter .button-primary,
+.theme-harry-potter .button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.05rem;
+  border-radius: 14px;
+  font-weight: 700;
+  font-family: var(--wa-font-body);
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  transition: transform 160ms var(--wa-ease), box-shadow 260ms var(--wa-ease), background 260ms var(--wa-ease), border-color 260ms var(--wa-ease);
+  text-decoration: none;
+}
+
+.theme-harry-potter .button-primary {
+  color: #0b0c10;
+  background:
+    linear-gradient(180deg, rgba(240, 195, 106, 1), rgba(217, 178, 95, 1));
+  border-color: rgba(240, 195, 106, 0.55);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.10) inset,
+    0 0 44px rgba(217, 178, 95, 0.14);
+}
+
+.theme-harry-potter .button-primary::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(115deg, transparent 0%, rgba(255, 255, 255, 0.18) 45%, transparent 70%);
+  transform: translateX(-55%) skewX(-14deg);
+  opacity: 0.55;
+  animation: shimmerSweep 5.4s var(--wa-ease) infinite;
+  pointer-events: none;
+}
+
+.theme-harry-potter .button-primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 20px 56px rgba(0, 0, 0, 0.72),
+    0 0 0 1px rgba(240, 195, 106, 0.18) inset,
+    0 0 70px rgba(217, 178, 95, 0.22);
+  animation: glowPulse 2.8s var(--wa-ease) infinite;
+}
+
+.theme-harry-potter .button-secondary {
+  color: var(--wa-ink-0);
+  background:
+    linear-gradient(180deg, rgba(23, 26, 34, 0.92), rgba(11, 12, 16, 0.92));
+  border-color: rgba(243, 239, 230, 0.14);
+  box-shadow: var(--wa-shadow-1), 0 0 0 1px rgba(217, 178, 95, 0.07) inset;
+}
+
+.theme-harry-potter .button-secondary::after {
+  /* subtle rune glow underline */
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 10px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(217, 178, 95, 0.55), transparent);
+  opacity: 0.0;
+  filter: blur(0.1px);
+  transition: opacity 220ms var(--wa-ease);
+  pointer-events: none;
+}
+
+.theme-harry-potter .button-secondary:hover {
+  transform: translateY(-1px);
+  border-color: rgba(240, 195, 106, 0.22);
+  box-shadow: var(--wa-shadow-2), 0 0 34px rgba(185, 135, 71, 0.14);
+}
+
+.theme-harry-potter .button-secondary:hover::after {
+  opacity: 1;
+}
+
+/* ==================== Sidebar (vertical glow + hover reveal) ==================== */
+.theme-harry-potter .sidebar {
+  position: relative;
+  background: linear-gradient(180deg, rgba(23, 26, 34, 0.92), rgba(11, 12, 16, 0.92));
+  border: 1px solid rgba(243, 239, 230, 0.12);
+  border-radius: var(--wa-radius-lg);
+  box-shadow: var(--wa-shadow-2);
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.theme-harry-potter .sidebar::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 10px;
+  width: 2px;
+  background:
+    linear-gradient(180deg,
+      transparent,
+      rgba(240, 195, 106, 0.35),
+      rgba(217, 178, 95, 0.20),
+      transparent);
+  opacity: 0.55;
+  filter: blur(0.2px);
+  animation: glowPulse 7.2s var(--wa-ease) infinite;
+  pointer-events: none;
+}
+
+.theme-harry-potter .sidebar a {
+  position: relative;
+  display: block;
+  padding: 0.65rem 0.85rem 0.65rem 1.1rem;
+  border-radius: 12px;
+  color: var(--wa-ink-1);
+  transition: background 260ms var(--wa-ease), box-shadow 260ms var(--wa-ease), color 260ms var(--wa-ease);
+}
+
+.theme-harry-potter .sidebar a::after {
+  /* Rune-like underline */
+  content: "";
+  position: absolute;
+  left: 1.1rem;
+  right: 1.0rem;
+  bottom: 0.45rem;
+  height: 2px;
+  background:
+    linear-gradient(90deg, transparent, rgba(240, 195, 106, 0.55), rgba(74, 120, 200, 0.28), transparent);
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 240ms var(--wa-ease), transform 240ms var(--wa-ease);
+  pointer-events: none;
+}
+
+.theme-harry-potter .sidebar a:hover {
+  color: var(--wa-ink-0);
+  background: rgba(217, 178, 95, 0.08);
+  box-shadow: 0 0 0 1px rgba(240, 195, 106, 0.10) inset, 0 0 40px rgba(217, 178, 95, 0.10);
+}
+
+.theme-harry-potter .sidebar a:hover::after {
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+/* ==================== Footer (dim candlelight fade) ==================== */
+.theme-harry-potter .footer {
+  position: relative;
+  border-top: 1px solid rgba(243, 239, 230, 0.12);
+  background: linear-gradient(180deg, rgba(11, 12, 16, 0.35), rgba(11, 12, 16, 0.92));
+  padding: 1.6rem 0;
+  color: var(--wa-ink-2);
+  overflow: hidden;
+}
+
+.theme-harry-potter .footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(520px 220px at 18% 30%, rgba(240, 195, 106, 0.14), transparent 68%);
+  opacity: 0.65;
+  animation: candleFlicker 5.3s var(--wa-ease) infinite;
+  pointer-events: none;
+}
+
+/* ==================== Hooks into existing app classes ==================== */
+.theme-harry-potter .card-float {
+  animation: floatSlow 7.2s var(--wa-ease) infinite;
+}
+
+.theme-harry-potter .btn-magic:hover {
+  box-shadow: 0 0 26px rgba(217, 178, 95, 0.18), 0 0 44px rgba(240, 195, 106, 0.14);
+}
+
+.theme-harry-potter .magic-text {
+  background: linear-gradient(90deg, rgba(217, 178, 95, 0.98), rgba(240, 195, 106, 0.98), rgba(185, 135, 71, 0.98));
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(217, 178, 95, 0.12);
+  animation: shimmerSweep 6.2s var(--wa-ease) infinite;
+}
+
+/* ==================== Required Animations ==================== */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { filter: saturate(1); opacity: 0.70; }
+  50% { filter: saturate(1.12); opacity: 1; }
+}
+
+@keyframes emberDrift {
+  0% { transform: translate3d(-1%, 1%, 0); }
+  100% { transform: translate3d(3%, -3%, 0); }
+}
+
+@keyframes shimmerSweep {
+  0% { transform: translateX(-55%) skewX(-12deg); opacity: 0.35; }
+  45% { opacity: 0.60; }
+  100% { transform: translateX(55%) skewX(-12deg); opacity: 0.35; }
+}
+
+@keyframes candleFlicker {
+  0%, 100% { opacity: 0.62; filter: blur(0px); }
+  18% { opacity: 0.74; filter: blur(0.2px); }
+  36% { opacity: 0.58; filter: blur(0.4px); }
+  54% { opacity: 0.78; filter: blur(0.15px); }
+  72% { opacity: 0.60; filter: blur(0.3px); }
+  88% { opacity: 0.76; filter: blur(0.1px); }
+}
+
+/* Reduced motion friendliness */
+@media (prefers-reduced-motion: reduce) {
+  .theme-harry-potter body::before,
+  .theme-harry-potter body::after,
+  .theme-harry-potter .hero-section::before,
+  .theme-harry-potter .hero-section::after,
+  .theme-harry-potter .magic-card,
+  .theme-harry-potter .magic-card::before,
+  .theme-harry-potter .magic-card::after,
+  .theme-harry-potter .navbar::after,
+  .theme-harry-potter .footer::before,
+  .theme-harry-potter .card-float,
+  .theme-harry-potter .magic-text {
+    animation: none !important;
+  }
+}
+
 /* Theme Gradient Utility Classes for Settings Preview */
 .gradient-midnight { background: linear-gradient(135deg, #020617 0%, #1e293b 100%); }
 .gradient-crystal { background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); }
@@ -130,6 +689,7 @@
 .gradient-aurora { background: linear-gradient(135deg, #4c1d95 0%, #06b6d4 100%); }
 .gradient-sunset { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); }
 .gradient-hogwarts { background: linear-gradient(135deg, #740001 0%, #ffd700 100%); }
+.gradient-harry-potter { background: linear-gradient(135deg, #0b0c10 0%, #d9b25f 52%, #4a78c8 76%, #171a22 100%); }
 
 /* Global Body Styling */
 body {

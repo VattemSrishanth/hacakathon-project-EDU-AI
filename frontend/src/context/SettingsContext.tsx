@@ -9,7 +9,7 @@ export type EducationBoard = 'NCERT' | 'Telangana' | 'Andhra Pradesh';
 export type ContentPreference = 'Text' | 'Video' | 'Both';
 export type AnswerStyle = 'Short' | 'Detailed';
 export type ReminderFrequency = 'Daily' | 'Weekly' | 'Off';
-export type ThemeMode = 'Midnight Void' | 'Crystal Light' | 'Forest Depths' | 'Aurora Borealis' | 'Sunset Ember' | 'Wizards Academy';
+export type ThemeMode = 'Midnight Void' | 'Crystal Light' | 'Forest Depths' | 'Aurora Borealis' | 'Sunset Ember' | 'Wizards Academy' | 'HARRY POTTER';
 export type FontSize = 'Small' | 'Medium' | 'Large';
 export type AccessibilityMode = 'Normal' | 'Deaf' | 'Dumb' | 'Blind';
 
@@ -147,7 +147,7 @@ const loadSettingsFromStorage = (): SettingsState => {
         ...defaultSettings.themeAccessibility,
         ...(storedSettings?.themeAccessibility || {}),
         // migration/fallback for old theme values
-        theme: (['Midnight Void', 'Crystal Light', 'Forest Depths', 'Aurora Borealis', 'Sunset Ember', 'Wizards Academy'].includes(storedSettings?.themeAccessibility?.theme as any)
+        theme: (['Midnight Void', 'Crystal Light', 'Forest Depths', 'Aurora Borealis', 'Sunset Ember', 'Wizards Academy', 'HARRY POTTER'].includes(storedSettings?.themeAccessibility?.theme as any)
           ? storedSettings?.themeAccessibility?.theme 
           : defaultSettings.themeAccessibility.theme) as ThemeMode,
       },
@@ -170,11 +170,11 @@ const applyTheme = (theme: ThemeMode): void => {
   const root = document.documentElement;
   
   // Remove all potential theme classes
-  const themeClasses = ['theme-midnight', 'theme-crystal', 'theme-forest', 'theme-aurora', 'theme-sunset', 'theme-hogwarts', 'dark'];
+  const themeClasses = ['theme-midnight', 'theme-crystal', 'theme-forest', 'theme-aurora', 'theme-sunset', 'theme-hogwarts', 'theme-harry-potter', 'dark'];
   root.classList.remove(...themeClasses);
 
   // Set base variables first (default to Crystal Light if needed)
-  if (theme === 'Midnight Void' || theme === 'Forest Depths' || theme === 'Aurora Borealis' || theme === 'Wizards Academy') {
+  if (theme === 'Midnight Void' || theme === 'Forest Depths' || theme === 'Aurora Borealis' || theme === 'Wizards Academy' || theme === 'HARRY POTTER') {
     root.classList.add('dark');
   }
 
@@ -197,6 +197,9 @@ const applyTheme = (theme: ThemeMode): void => {
       break;
     case 'Wizards Academy':
       root.classList.add('theme-hogwarts');
+      break;
+    case 'HARRY POTTER':
+      root.classList.add('theme-harry-potter');
       break;
   }
 };
@@ -286,7 +289,7 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
   }, [settings.learning.language]);
 
   const isDark = useMemo(() => {
-    return ['Midnight Void', 'Forest Depths', 'Aurora Borealis', 'Wizards Academy'].includes(settings.themeAccessibility.theme);
+    return ['Midnight Void', 'Forest Depths', 'Aurora Borealis', 'Wizards Academy', 'HARRY POTTER'].includes(settings.themeAccessibility.theme);
   }, [settings.themeAccessibility.theme]);
 
   const updateProfile = useCallback((profile: Partial<ProfileSettings>) => {
