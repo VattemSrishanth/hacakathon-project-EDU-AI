@@ -17,7 +17,8 @@ import {
   Bell,
   Palette,
   Eye,
-  Shield
+  Shield,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -649,6 +650,16 @@ const Settings = () => {
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
                       previewClass="gradient-sunset"
                       accentClass="bg-orange-500"
+                    />
+                    <ThemeCard 
+                      id={"Wizards Academy" as ThemeMode} 
+                      title="Wizards Academy" 
+                      desc="Magical theme inspired by Hogwarts with scarlet and gold" 
+                      icon={Sparkles} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="gradient-hogwarts"
+                      accentClass="bg-red-700"
                     />
                   </div>
                 </section>
