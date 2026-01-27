@@ -9,6 +9,7 @@ import io
 import base64
 import json
 import time
+from datetime import datetime
 from functools import wraps
 from urllib.parse import urlparse, parse_qs
 from xml.etree.ElementTree import ParseError
@@ -21,7 +22,7 @@ from ai_engine import get_ai_response, generate_video_explanation, get_ai_respon
 import unified_llm as llm_service
 from auth import auth_bp
 import quiz_pipeline
-from models import init_mongo_models, User, Profile, Course, Progress, ChatHistory, Assignment, Notification, Feedback
+from models import init_mongo_models, User, Profile, Course, Progress, ChatHistory, Assignment, Notification, Feedback, OfflineSync
 
 try:
     from youtube_transcript_api import YouTubeTranscriptApi
@@ -252,16 +253,43 @@ CORS(
 )
 
 # Initialize MongoDB
-mongo = PyMongo(app)
-init_mongo_models(mongo)
-
-
-def init_db():
-    """Initialize the database and collections."""
+try:
+    print(f"Connecting to MongoDB at: {app.config['MONGO_URI']}")
+    
+    # Try to verify connection with a short timeout
+    from pymongo import MongoClient
+    from pymongo.errors import ServerSelectionTimeoutError
+    
+    client = MongoClient(app.config["MONGO_URI"], serverSelectionTimeoutMS=2000)
+    client.admin.command('ping')
+    
+    mongo = PyMongo(app)
+    init_mongo_models(mongo)
     print("[OK] MongoDB connected and models initialized.")
-
-
-init_db()
+except (ServerSelectionTimeoutError, Exception) as e:
+    print(f"[WARN] MongoDB connection failed: {e}")
+    print("[INFO] Falling back to in-memory database for development.")
+    import mongomock
+    mock_db = mongomock.MongoClient().edu_ai
+    
+    class MockMongo:
+        def __init__(self, db):
+            self.db = db
+    
+    mongo = MockMongo(mock_db)
+    init_mongo_models(mongo)
+    
+    from models import User
+    if not User.find_one({"username": "admin"}):
+        User.create({
+            "username": "admin",
+            "email": "admin@eduai.com",
+            "password_hash": User.set_password("admin123"),
+            "role": "admin",
+            "accessibility_mode": "regular",
+            "preferred_language": "en"
+        })
+        print("[OK] Temporary admin created in mock database: admin@eduai.com / admin123")
 
 
 # ==================== API Routes ====================

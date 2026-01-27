@@ -1,19 +1,17 @@
 import { useState } from 'react';
 import { useSettings } from '../context/SettingsContext';
-<<<<<<< Updated upstream
 import { 
   LifeBuoy, 
   BookText, 
   ArrowUpRight, 
   MessageCircle, 
   Mail, 
-  Phone 
+  Phone,
+  Send,
+  Star
 } from 'lucide-react';
-=======
-import { Mail, Phone, LifeBuoy, BookOpen, ExternalLink, MessageCircle, Send, Star } from 'lucide-react';
 import { userDataAPI } from '../services/api';
 import Button from '../components/Button';
->>>>>>> Stashed changes
 
 const Support = () => {
   const { t } = useSettings();
@@ -157,7 +155,7 @@ const Support = () => {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="What did you like? What can we improve?"
-                  className="w-full bg-app-bg border border-app-border rounded-2xl p-4 text-app-text-main font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all min-h-[120px]"
+                  className="w-full bg-app-bg border border-app-border rounded-2xl p-4 text-app-text-main font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all min-h-30"
                 />
               </div>
 

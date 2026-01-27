@@ -41,7 +41,7 @@ const Admin: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-900 text-white flex flex-col">
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="grow container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8 text-indigo-400">Admin Command Center</h1>
         
         {error && (
@@ -103,7 +103,7 @@ const Admin: React.FC = () => {
                         </td>
                         <td className="p-4 text-slate-400">{user.accessibility_mode}</td>
                         <td className="p-4">
-                          <div className="w-full bg-slate-900 rounded-full h-1.5 max-w-[80px]">
+                          <div className="w-full bg-slate-900 rounded-full h-1.5 max-w-20">
                             <div 
                               className="bg-primary h-1.5 rounded-full" 
                               style={{ width: `${(progress?.lessons_completed?.length || 0) * 12.5}%` }}
@@ -131,7 +131,7 @@ const Admin: React.FC = () => {
                 {stats?.recent_feedback.length === 0 ? (
                   <p className="text-slate-500 text-center py-8">No feedback submitted yet.</p>
                 ) : (
-                  <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                  <div className="space-y-4 max-h-100 overflow-y-auto">
                     {stats?.recent_feedback.map((f: any) => (
                       <div key={f.id} className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
                         <div className="flex justify-between items-start mb-2">

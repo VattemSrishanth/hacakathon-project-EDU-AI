@@ -13,7 +13,7 @@ def create_admin():
     admin_data = {
         "username": "admin",
         "email": "admin@eduai.com",
-        "password_hash": generate_password_hash("admin123"),
+        "password_hash": generate_password_hash("admin@eduai123"),
         "role": "admin",
         "accessibility_mode": "regular",
         "preferred_language": "en"

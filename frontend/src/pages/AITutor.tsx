@@ -85,7 +85,7 @@ const AITutor = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { enabled, answerStyle, showChatHistory } = settings.aiTutor;
+  const { enabled, answerStyle } = settings.aiTutor;
   const { accessibilityMode } = settings.themeAccessibility;
   
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -194,7 +194,7 @@ const AITutor = () => {
     const loadHistory = async () => {
       if (!auth?.user?.id) return;
       try {
-        const data = await userDataAPI.getChatHistory(auth.user.id);
+        const data = await userDataAPI.getChatHistory(auth.user.id.toString());
         if (data.success && data.history.length > 0) {
           const sessions: ChatSession[] = data.history.map((h: any) => ({
             id: h.id,
@@ -255,7 +255,9 @@ const AITutor = () => {
           });
 
           // Sync to DB
-          await userDataAPI.saveChatHistory(auth.user.id, messages);
+          if (auth?.user?.id) {
+            await userDataAPI.saveChatHistory(auth.user.id.toString(), messages);
+          }
         } catch (e) {
           console.error('DB Sync Error', e);
         }
@@ -422,7 +424,7 @@ const AITutor = () => {
   // Increment questions asked count in progress
   if (auth?.user?.id) {
     try {
-      const progRes = await userDataAPI.getProgress(auth.user.id);
+      const progRes = await userDataAPI.getProgress(auth.user.id.toString());
       if (progRes.success) {
         const currentProg = progRes.progress;
         const updatedActivities = [
@@ -430,7 +432,7 @@ const AITutor = () => {
           ...(currentProg.activities || [])
         ].slice(0, 20);
 
-        await userDataAPI.updateProgress(auth.user.id, {
+        await userDataAPI.updateProgress(auth.user.id.toString(), {
           ...currentProg,
           questionsAsked: (currentProg.questionsAsked || 0) + 1,
           activities: updatedActivities,

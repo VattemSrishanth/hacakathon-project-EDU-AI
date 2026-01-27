@@ -8,6 +8,7 @@ export interface AuthUser {
   name?: string;
   avatarUrl?: string;
   initials?: string;
+  role?: 'user' | 'admin';
 }
 
 export type AuthStatus = 'logged_in' | 'guest' | 'logged_out';

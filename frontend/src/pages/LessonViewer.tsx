@@ -1,19 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
-<<<<<<< Updated upstream
 import { 
   ChevronLeft, 
   FileText, 
   Volume2, 
   Upload,
   Sparkles,
-  BookOpen
+  BookOpen,
+  Loader2
 } from 'lucide-react';
-=======
 import { lessonsAPI } from '../services/api';
-import { ArrowLeft, Upload, Volume2, FileText, BookOpen, Loader2 } from 'lucide-react';
->>>>>>> Stashed changes
 import Button from '../components/Button';
 
 interface LessonData {

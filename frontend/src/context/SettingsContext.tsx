@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useCallback, useState } from 'react';
 import translations from '../i18n/translations';
 import type { SupportedLanguage, TranslationKeys } from '../i18n/translations';
+import { userDataAPI } from '../services/api';
 
 // ==================== Types ====================
 export type LearningLevel = 'Beginner' | 'Intermediate' | 'Advanced';

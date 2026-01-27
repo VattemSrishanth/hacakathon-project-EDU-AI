@@ -2,17 +2,14 @@ import { useEffect, useState, useMemo } from 'react';
 import Card from '../components/Card';
 import LoginTracker from '../components/LoginTracker';
 import { useSettings } from '../context/SettingsContext';
-<<<<<<< Updated upstream
+import { useAuth } from '../context/AuthContext';
+import { userDataAPI } from '../services/api';
 
 // Import all board syllabi for metrics
 import ncertSyllabus from '../data/ncert_syllabus.json';
 import telanganaSyllabus from '../data/telangana_syllabus.json';
 import apSyllabus from '../data/andhra_pradesh_syllabus.json';
 
-=======
-import { useAuth } from '../context/AuthContext';
-import { userDataAPI } from '../services/api';
->>>>>>> Stashed changes
 import { 
   BookOpen, 
   ShieldCheck, 
@@ -26,7 +23,7 @@ import {
 
 const Dashboard = () => {
   const { settings, t } = useSettings();
-<<<<<<< Updated upstream
+  const { auth } = useAuth();
 
   // Select syllabus based on board setting
   const activeSyllabus = useMemo(() => {
@@ -37,13 +34,10 @@ const Dashboard = () => {
       default: return ncertSyllabus;
     }
   }, [settings.learning.board]);
-=======
-  const { auth } = useAuth();
->>>>>>> Stashed changes
   
   const [lessonMetrics, setLessonMetrics] = useState({
     completed: 0,
-    total: 10, // Default fallback
+    total: 10, 
     percentage: 0,
     certificates: 0,
     questionsAsked: 0,
@@ -60,7 +54,6 @@ const Dashboard = () => {
   });
   
   useEffect(() => {
-<<<<<<< Updated upstream
     // Calculate total lessons from active syllabus
     let totalTopics = 0;
     try {
@@ -74,87 +67,68 @@ const Dashboard = () => {
         });
       });
     } catch (e) {
-      totalTopics = 50; // Fallback
+      totalTopics = 50; 
     }
 
-    try {
-      const stored = localStorage.getItem('lesson_completion_tracker');
-      if (stored) {
-        const completedIds = JSON.parse(stored) as string[];
-        const count = completedIds.length;
-        const percentage = Math.round((count / totalTopics) * 100);
-        setLessonMetrics({
-          completed: count,
-          total: totalTopics,
-          percentage: percentage,
-          certificates: Math.floor(count / 5) // Certificate every 5 lessons
-        });
-        setGoalsProgress(prev => ({ ...prev, lessons: Math.min(percentage * 5, 100) })); // Scaling for goal visibility
-      } else {
-        setLessonMetrics(prev => ({ ...prev, total: totalTopics }));
-      }
-    } catch (e) {
-      console.error('Failed to load lesson metrics', e);
-    }
-
-    try {
-      const quizRaw = localStorage.getItem('quiz_results');
-      if (quizRaw) {
-        const quizzes = JSON.parse(quizRaw) as { pdfName: string; score: number; total: number; submittedAt: string }[];
-        if (quizzes.length > 0) {
-          setLastQuiz(quizzes[0]);
-          const bestScore = Math.max(...quizzes.map(q => (q.score / q.total) * 100));
-          setGoalsProgress(prev => ({ ...prev, quiz: Math.round(bestScore) }));
-=======
     const fetchProgress = async () => {
       if (!auth?.user?.id) return;
       try {
-        const data = await userDataAPI.getProgress(auth.user.id);
+        const data = await userDataAPI.getProgress(auth.user.id.toString());
         if (data.success) {
           const count = data.progress.lessonsCompleted || 0;
-          const total = data.progress.totalLessons || 8;
+          const percentage = Math.round((count / totalTopics) * 100);
           setLessonMetrics({
             completed: count,
-            total: total,
-            percentage: Math.round((count / total) * 100),
-            certificates: Math.floor(count / 3),
+            total: totalTopics,
+            percentage: percentage,
+            certificates: Math.floor(count / 5),
             questionsAsked: data.progress.questionsAsked || 0,
             streakDays: data.progress.streakDays || 1
           });
 
           if (data.progress.quiz_scores && data.progress.quiz_scores.length > 0) {
             setLastQuiz(data.progress.quiz_scores[0]);
+            const bestScore = Math.max(...data.progress.quiz_scores.map((q: any) => (q.score / q.total) * 100));
+            setGoalsProgress(prev => ({ ...prev, quiz: Math.round(bestScore) }));
           }
 
           if (data.progress.activities) {
             setActivities(data.progress.activities.slice(0, 5));
           }
->>>>>>> Stashed changes
+
+          setGoalsProgress(prev => ({ 
+            ...prev, 
+            lessons: Math.min(percentage, 100),
+            ai: Math.min((data.progress.questionsAsked || 0) * 10, 100)
+          }));
         }
       } catch (e) {
         console.error('Failed to fetch progress from API', e);
+        
+        // Fallback to local storage if API fails or user is offline
+        try {
+          const stored = localStorage.getItem('lesson_completion_tracker');
+          if (stored) {
+            const completedIds = JSON.parse(stored) as string[];
+            const count = completedIds.length;
+            const percentage = Math.round((count / totalTopics) * 100);
+            setLessonMetrics(prev => ({
+              ...prev,
+              completed: count,
+              total: totalTopics,
+              percentage: percentage,
+              certificates: Math.floor(count / 5)
+            }));
+            setGoalsProgress(prev => ({ ...prev, lessons: percentage }));
+          }
+        } catch (localErr) {
+          console.error('Local fallback failed', localErr);
+        }
       }
-<<<<<<< Updated upstream
-    } catch (e) {
-      console.error('Failed to load quiz results', e);
-    }
-
-    try {
-      const chatSessionsRaw = localStorage.getItem('ai_chat_sessions');
-      if (chatSessionsRaw) {
-        const sessions = JSON.parse(chatSessionsRaw) as any[];
-        const aiProg = Math.min(sessions.length * 33, 100); // 3 sessions for 100%
-        setGoalsProgress(prev => ({ ...prev, ai: aiProg }));
-      }
-    } catch (e) {
-      console.error('Failed to load AI sessions', e);
-    }
-  }, [activeSyllabus]);
-=======
     };
+
     fetchProgress();
-  }, [auth]);
->>>>>>> Stashed changes
+  }, [activeSyllabus, auth]);
 
   const { level, contentPreference } = settings.learning;
   
@@ -249,21 +223,9 @@ const Dashboard = () => {
                   </h2>
                 </div>
                 <div className="space-y-6">
-<<<<<<< Updated upstream
-                  {[
-                    { text: t.dashboard.activities.completedMath, icon: <CheckCircle2 size={20} className="text-green-500" /> },
-                    { text: t.dashboard.activities.earnedBadge, icon: <Zap size={20} className="text-amber-500" /> },
-                    { text: t.dashboard.activities.startedEnglish, icon: <BookOpen size={20} className="text-primary" /> },
-                  ].map((activity, index) => (
-                    <div key={index} className="flex items-center space-x-4 p-3 rounded-xl hover:bg-app-bg-alt transition-colors group">
-                      <div className="shrink-0">{activity.icon}</div>
-                      <p className="text-app-text-main font-bold text-sm grow">{activity.text}</p>
-                      <div className="w-1.5 h-1.5 rounded-full bg-app-border group-hover:bg-primary transition-colors" />
-=======
                   {activities.length === 0 ? (
                     <div className="text-center py-6 text-app-text-sub italic text-sm">
                       No recent activity recorded
->>>>>>> Stashed changes
                     </div>
                   ) : (
                     activities.map((activity, index) => (
@@ -296,15 +258,9 @@ const Dashboard = () => {
                 </div>
                 <div className="space-y-6">
                   {[
-<<<<<<< Updated upstream
                     { goal: t.dashboard.goals.completeLessons, progress: goalsProgress.lessons, color: 'bg-primary' },
                     { goal: t.dashboard.goals.practiceAI, progress: goalsProgress.ai, color: 'bg-secondary' },
                     { goal: t.dashboard.goals.achieveScore, progress: goalsProgress.quiz, color: 'bg-primary' },
-=======
-                    { goal: t.dashboard.goals.completeLessons, progress: lessonMetrics.percentage, color: 'bg-primary' },
-                    { goal: "Questions Asked", progress: Math.min(lessonMetrics.questionsAsked * 5, 100), color: 'bg-secondary' },
-                    { goal: "Learning Streak", progress: Math.min(lessonMetrics.streakDays * 10, 100), color: 'bg-primary' },
->>>>>>> Stashed changes
                   ].map((item, index) => (
                     <div key={index} className="space-y-3">
                       <div className="flex justify-between items-center text-sm">

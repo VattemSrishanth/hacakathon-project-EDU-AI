@@ -13,14 +13,10 @@ import {
   Settings,
   User,
   LogOut,
-<<<<<<< Updated upstream
   Menu,
   X,
-  ArrowRight
-=======
-  ChevronRight,
+  ArrowRight,
   Bell
->>>>>>> Stashed changes
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -43,7 +39,7 @@ const Navbar = () => {
     const fetchNotifs = async () => {
       if (auth?.user?.id) {
         try {
-          const res = await userDataAPI.getNotifications(auth.user.id);
+          const res = await userDataAPI.getNotifications(auth.user.id.toString());
           if (res.success) setNotifications(res.notifications);
         } catch (e) {
           console.error('Failed to fetch notifs');
@@ -145,6 +141,7 @@ const Navbar = () => {
                 </Link>
               </div>
             )}
+
             {!isAuthenticated && !isGuest ? (
               <Link
                 to="/login"
@@ -152,7 +149,7 @@ const Navbar = () => {
               >
                 {t.nav.login}
               </Link>
-            ) : isAuthenticated && (
+            ) : isAuthenticated ? (
               <div className="flex items-center gap-6">
                 {/* Notifications Bell */}
                 <div className="relative">
@@ -194,76 +191,76 @@ const Navbar = () => {
                 <div
                   className="relative"
                   onMouseEnter={() => setProfileOpen(true)}
-                onMouseLeave={() => {
-                  if (!profilePinned) setProfileOpen(false);
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setProfileOpen((prev) => !prev);
-                    setProfilePinned((prev) => !prev);
+                  onMouseLeave={() => {
+                    if (!profilePinned) setProfileOpen(false);
                   }}
-                  className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold"
-                  aria-label="User menu"
                 >
-                  {auth?.user?.avatarUrl ? (
-                    <img
-                      src={auth.user.avatarUrl}
-                      alt="Profile"
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
-                  ) : (
-                    auth?.user?.initials || 'U'
-                  )}
-                </button>
-
-                {profileOpen && (
-                  <div
-                    className={`absolute right-0 mt-2 rounded-lg border shadow-lg z-50 popup-interactive profile-dropdown ${popupBg}`}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfileOpen((prev) => !prev);
+                      setProfilePinned((prev) => !prev);
+                    }}
+                    className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold"
+                    aria-label="User menu"
                   >
-                    <div className={`px-4 py-3 border-b profile-dropdown__header ${popupHeaderBg}`}>
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                          {auth?.user?.avatarUrl ? (
-                            <img src={auth.user.avatarUrl} alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            <User className="text-primary" size={24} />
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold profile-dropdown__text">
-                            {auth?.user?.username || auth?.user?.email || 'User'}
-                          </p>
-                          <p className="text-xs font-medium opacity-60 profile-dropdown__email">{auth?.user?.email}</p>
+                    {auth?.user?.avatarUrl ? (
+                      <img
+                        src={auth.user.avatarUrl}
+                        alt="Profile"
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      auth?.user?.initials || 'U'
+                    )}
+                  </button>
+
+                  {profileOpen && (
+                    <div
+                      className={`absolute right-0 mt-2 rounded-lg border shadow-lg z-50 popup-interactive profile-dropdown ${popupBg}`}
+                    >
+                      <div className={`px-4 py-3 border-b profile-dropdown__header ${popupHeaderBg}`}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                            {auth?.user?.avatarUrl ? (
+                              <img src={auth.user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <User className="text-primary" size={24} />
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold profile-dropdown__text">
+                              {auth?.user?.username || auth?.user?.email || 'User'}
+                            </p>
+                            <p className="text-xs font-medium opacity-60 profile-dropdown__email">{auth?.user?.email}</p>
+                          </div>
                         </div>
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileOpen(false);
+                          setProfilePinned(false);
+                          navigate('/dashboard');
+                        }}
+                        className={`w-full text-left px-4 py-3 text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-3 ${popupHover}`}
+                      >
+                        <User className="text-primary" size={20} />
+                        {t.nav.profile}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className={`w-full text-left px-4 py-3 text-sm font-black whitespace-nowrap transition-colors flex items-center gap-3 border-t border-app-border/50 text-red-600 ${logoutHover}`}
+                      >
+                        <LogOut className="text-red-500" size={20} />
+                        {t.nav.logout}
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setProfileOpen(false);
-                        setProfilePinned(false);
-                        navigate('/dashboard');
-                      }}
-                      className={`w-full text-left px-4 py-3 text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-3 ${popupHover}`}
-                    >
-                      <User className="text-primary" size={20} />
-                      {t.nav.profile}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className={`w-full text-left px-4 py-3 text-sm font-black whitespace-nowrap transition-colors flex items-center gap-3 border-t border-app-border/50 text-red-600 ${logoutHover}`}
-                    >
-                      <LogOut className="text-red-500" size={20} />
-                      {t.nav.logout}
-                    </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-<<<<<<< Updated upstream
-            )}
+            ) : null}
           </div>
 
           <div className="md:hidden flex items-center">
@@ -275,22 +272,7 @@ const Navbar = () => {
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
-=======
-            </div>
-          )}
->>>>>>> Stashed changes
         </div>
-
-        <div className="md:hidden flex items-center">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-xl text-app-text-sub hover:bg-app-bg-alt hover:text-primary transition-all active:scale-90"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
 
         {isOpen && (
           <div className="md:hidden pb-6 animate-in slide-in-from-top-4 duration-300">

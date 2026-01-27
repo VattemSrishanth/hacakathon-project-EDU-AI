@@ -2,20 +2,16 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Card from '../components/Card';
 import Button from '../components/Button';
-<<<<<<< Updated upstream
 import { 
   ListTodo, 
   Clock, 
   CheckCircle2, 
-  Layout, 
   ArrowLeft, 
   Calendar, 
-  FileText 
+  FileText,
+  AlertCircle 
 } from 'lucide-react';
-=======
-import { ClipboardList, Clock, CheckCircle2, AlertCircle, ArrowLeft, Calendar, FileText } from 'lucide-react';
 import { userDataAPI } from '../services/api';
->>>>>>> Stashed changes
 
 const Assignments = () => {
   const navigate = useNavigate();
@@ -43,17 +39,8 @@ const Assignments = () => {
     try {
       const authData = localStorage.getItem('auth');
       if (!authData) return;
-      const { user } = JSON.parse(authData);
-
-      // In a real app, this might open a file uploader or text area
-      // For this demo, we mark it as submitted in the DB
-      // Note: We need a backend route for this or just update the assignment object
-      // Let's assume the user can submit and we update local state + send to server
-      
-      // For now, let's just show a success message
-      alert('Assignment submitted successfully!');
-      
-      // Refresh list
+      // In a real app, this would send the update to the backend
+      alert(`Assignment ${assignmentId} submitted successfully!`);
       fetchAssignments();
     } catch (e) {
       console.error('Submission failed', e);
@@ -78,37 +65,6 @@ const Assignments = () => {
           </Button>
         </header>
 
-<<<<<<< Updated upstream
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sampleAssignments.map((assignment) => (
-            <Card key={assignment.id} className="group relative flex flex-col h-full bg-app-bg border border-app-border rounded-3xl p-8 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-              <div className="flex-1">
-                <div className="flex justify-between items-start mb-6">
-                  <span className="px-3 py-1 bg-app-bg-alt rounded-lg text-[10px] font-black uppercase tracking-widest text-primary border border-primary/10">
-                    {assignment.category}
-                  </span>
-                  {assignment.status === 'Submitted' ? (
-                    <CheckCircle2 size={24} className="text-emerald-500" />
-                  ) : (
-                    <div className="animate-pulse text-amber-500">
-                      <Clock size={24} />
-                    </div>
-                  )}
-                </div>
-                
-                <h3 className="text-xl font-black text-app-text-main tracking-tight mb-4 group-hover:text-primary transition-colors">
-                  {assignment.title}
-                </h3>
-                
-                <div className="flex items-start gap-3 p-4 bg-app-bg-alt rounded-2xl border border-app-border mb-6">
-                  <div className="shrink-0 mt-1 text-primary">
-                    <FileText size={24} />
-                  </div>
-                  <p className="text-sm font-medium text-app-text-muted leading-relaxed">
-                    {assignment.description}
-                  </p>
-                </div>
-=======
         {loading ? (
           <div className="text-center py-20 text-app-text-sub font-black uppercase tracking-widest">Loading assignments...</div>
         ) : (
@@ -116,7 +72,6 @@ const Assignments = () => {
             {assignments.length === 0 ? (
               <div className="col-span-full text-center py-20 bg-app-bg border border-app-border rounded-3xl text-app-text-sub font-bold italic">
                 No assignments found. Great job!
->>>>>>> Stashed changes
               </div>
             ) : (
               assignments.map((assignment) => (
@@ -127,9 +82,11 @@ const Assignments = () => {
                         {assignment.category}
                       </span>
                       {assignment.status === 'Submitted' ? (
-                        <CheckCircle2 size={20} className="text-emerald-500" />
+                        <CheckCircle2 size={24} className="text-emerald-500" />
                       ) : (
-                        <Clock size={20} className="text-amber-500 animate-pulse" />
+                        <div className="animate-pulse text-amber-500">
+                          <Clock size={24} />
+                        </div>
                       )}
                     </div>
                     
@@ -138,7 +95,9 @@ const Assignments = () => {
                     </h3>
                     
                     <div className="flex items-start gap-3 p-4 bg-app-bg-alt rounded-2xl border border-app-border mb-6">
-                      <FileText size={18} className="text-app-text-muted shrink-0 mt-1" />
+                      <div className="shrink-0 mt-1 text-primary">
+                        <FileText size={20} />
+                      </div>
                       <p className="text-sm font-medium text-app-text-muted leading-relaxed">
                         {assignment.description}
                       </p>
@@ -153,20 +112,6 @@ const Assignments = () => {
                       <span className="text-sm font-black text-app-text-main">{assignment.dueDate}</span>
                     </div>
 
-<<<<<<< Updated upstream
-                <div className="flex justify-between items-center px-2">
-                  <div className="flex items-center gap-2 text-app-text-muted font-black uppercase tracking-widest text-[10px]">
-                    <Layout size={14} /> Status
-                  </div>
-                  <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm ${
-                    assignment.status === 'Submitted' 
-                      ? 'bg-emerald-500 text-white shadow-emerald-500/20' 
-                      : 'bg-amber-500 text-white shadow-amber-500/20'
-                  }`}>
-                    {assignment.status}
-                  </span>
-                </div>
-=======
                     <div className="flex justify-between items-center px-2">
                       <div className="flex items-center gap-2 text-app-text-muted font-black uppercase tracking-widest text-[10px]">
                         <AlertCircle size={14} /> Status
@@ -179,10 +124,13 @@ const Assignments = () => {
                         {assignment.status}
                       </span>
                     </div>
->>>>>>> Stashed changes
 
                     {assignment.status === 'Pending' ? (
-                      <Button variant="primary" className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/25 mt-4">
+                      <Button 
+                        variant="primary" 
+                        onClick={() => handleSubmit(assignment.id)}
+                        className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/25 mt-4"
+                      >
                         Submit Project
                       </Button>
                     ) : (

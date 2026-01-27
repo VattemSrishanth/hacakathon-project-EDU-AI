@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import Button from '../components/Button';
 import Card from '../components/Card';
-import { quizAPI } from '../services/api';
+import { quizAPI, userDataAPI } from '../services/api';
 
 interface LocationState {
   pdfUrl?: string;
