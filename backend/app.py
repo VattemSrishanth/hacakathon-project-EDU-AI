@@ -415,6 +415,10 @@ def login():
 
         if not user or not User.check_password(user.get("password_hash"), password):
             return jsonify({"error": "Invalid email or password.", "success": False}), 401
+        
+        # Check if account is active
+        if user.get("is_active") is False:
+            return jsonify({"error": "Account is disabled. Please contact admin.", "success": False}), 403
 
         public_user = User.to_public_dict(user)
         return jsonify({
@@ -1143,10 +1147,12 @@ def get_admin_stats(current_user, user_id):
         "total_feedback": mongo.db.feedback.count_documents({}),
         "recent_feedback": Feedback.format_list(Feedback.find_all(limit=10, sort=[("created_at", -1)])),
         "user_list": User.format_list(User.find_all(limit=50)),
+        "lesson_list": Course.format_list(Course.find_all(limit=100)),
         "all_progress": Progress.format_list(Progress.find_all(limit=50)),
         "all_notifications": Notification.format_list(Notification.find_all(limit=20))
     }
     return jsonify({"success": True, "stats": stats})
+
 
 
 @app.route("/api/streak/ping", methods=["POST"])
@@ -1165,6 +1171,140 @@ def update_streak():
     streak = LoginStreak.touch(user_id)
 
     return jsonify({"success": True, "streak": streak})
+
+# ==================== CONTENT MANAGEMENT (Admin Only) ====================
+
+@app.route("/api/admin/lessons", methods=["POST"])
+@token_required
+def admin_create_lesson(current_user):
+    """Create a new lesson (Admin only)."""
+    if current_user.get("role") != "admin":
+        return jsonify({"error": "Admin access denied", "success": False}), 403
+    
+    data = request.json
+    if not data or not data.get("title"):
+        return jsonify({"error": "Lesson title is required", "success": False}), 400
+    
+    lesson_id = Course.create(data)
+    return jsonify({
+        "success": True, 
+        "message": "Lesson created successfully", 
+        "lesson_id": str(lesson_id)
+    }), 201
+
+
+@app.route("/api/admin/lessons/<lesson_id>", methods=["PUT"])
+@token_required
+def admin_update_lesson(current_user, lesson_id):
+    """Update an existing lesson (Admin only)."""
+    if current_user.get("role") != "admin":
+        return jsonify({"error": "Admin access denied", "success": False}), 403
+    
+    data = request.json
+    # Ensure lesson exists
+    if not Course.find_by_id(lesson_id):
+        return jsonify({"error": "Lesson not found", "success": False}), 404
+        
+    result = Course.update(lesson_id, data)
+    if result and result.modified_count > 0:
+        return jsonify({"success": True, "message": "Lesson updated successfully"})
+    else:
+        return jsonify({"success": True, "message": "No changes made to the lesson"})
+
+
+@app.route("/api/admin/lessons/<lesson_id>", methods=["DELETE"])
+@token_required
+def admin_delete_lesson(current_user, lesson_id):
+    """Delete a lesson (Admin only)."""
+    if current_user.get("role") != "admin":
+        return jsonify({"error": "Admin access denied", "success": False}), 403
+        
+    # Ensure lesson exists
+    if not Course.find_by_id(lesson_id):
+        return jsonify({"error": "Lesson not found", "success": False}), 404
+        
+    Course.delete(lesson_id)
+    return jsonify({"success": True, "message": "Lesson deleted successfully"})
+
+
+# ==================== USER MANAGEMENT (Admin Only) ====================
+
+@app.route("/api/admin/users", methods=["POST"])
+@token_required
+def admin_create_user(current_user):
+    """Create a new user (Admin only)."""
+    if current_user.get("role") != "admin":
+        return jsonify({"error": "Admin access denied", "success": False}), 403
+    
+    data = request.json
+    if not data or not data.get("username") or not data.get("email") or not data.get("password"):
+        return jsonify({"error": "Username, email and password are required", "success": False}), 400
+    
+    if User.find_one({"$or": [{"username": data["username"]}, {"email": data["email"]}]}):
+        return jsonify({"error": "Username or email already exists", "success": False}), 409
+        
+    user_data = {
+        "username": data["username"],
+        "email": data["email"],
+        "password_hash": User.set_password(data["password"]),
+        "role": data.get("role", "user"),
+        "accessibility_mode": data.get("accessibility_mode", "regular"),
+        "preferred_language": data.get("preferred_language", "en"),
+        "is_active": True
+    }
+    
+    user_id = User.create(user_data)
+    return jsonify({
+        "success": True, 
+        "message": "User created successfully", 
+        "user_id": str(user_id)
+    }), 201
+
+
+@app.route("/api/admin/users/<user_id>", methods=["PUT"])
+@token_required
+def admin_update_user(current_user, user_id):
+    """Update user details or status (Admin only)."""
+    if current_user.get("role") != "admin":
+        return jsonify({"error": "Admin access denied", "success": False}), 403
+    
+    data = request.json
+    if not User.find_by_id(user_id):
+        return jsonify({"error": "User not found", "success": False}), 404
+        
+    # We don't allow updating password here, use the special reset endpoint
+    if "password" in data:
+        del data["password"]
+        
+    result = User.update(user_id, data)
+    if result is None:
+        return jsonify({"error": "Failed to update user. Invalid ID format.", "success": False}), 400
+        
+    return jsonify({
+        "success": True, 
+        "message": "User updated successfully",
+        "modified_count": result.modified_count if hasattr(result, 'modified_count') else 0
+    })
+
+
+@app.route("/api/admin/users/<user_id>/reset-password", methods=["POST"])
+@token_required
+def admin_reset_password(current_user, user_id):
+    """Force reset a user's password (Admin only)."""
+    if current_user.get("role") != "admin":
+        return jsonify({"error": "Admin access denied", "success": False}), 403
+        
+    data = request.json
+    new_password = data.get("password")
+    if not new_password:
+        return jsonify({"error": "New password is required", "success": False}), 400
+        
+    if not User.find_by_id(user_id):
+        return jsonify({"error": "User not found", "success": False}), 404
+        
+    User.update(user_id, {"password_hash": User.set_password(new_password)})
+    return jsonify({"success": True, "message": "Password reset successfully"})
+
 
 
 # ==================== Helper Functions ====================

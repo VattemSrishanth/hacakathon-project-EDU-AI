@@ -147,7 +147,7 @@ const PdfQuiz = () => {
         const authData = localStorage.getItem('auth');
         if (authData) {
           const { user } = JSON.parse(authData);
-          const progRes = await userDataAPI.getProgress(user.id);
+          const progRes = await userDataAPI.getProgress(String(user.id));
           if (progRes.success) {
             const currentProg = progRes.progress;
             const updatedScores = [result, ...(currentProg.quiz_scores || [])].slice(0, 10);
@@ -156,7 +156,7 @@ const PdfQuiz = () => {
               ...(currentProg.activities || [])
             ].slice(0, 20);
 
-            await userDataAPI.updateProgress(user.id, {
+            await userDataAPI.updateProgress(String(user.id), {
               ...currentProg,
               quiz_scores: updatedScores,
               activities: updatedActivities,

@@ -76,6 +76,9 @@ def login():
         if not user or not User.check_password(user.get("password_hash"), password):
             return jsonify({"error": "Invalid credentials.", "status": "error"}), 401
 
+        if user.get("is_active") is False:
+            return jsonify({"error": "Account is disabled. Please contact admin.", "status": "error"}), 403
+
         session["user_id"] = str(user["_id"])
         session["username"] = user["username"]
 

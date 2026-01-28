@@ -39,7 +39,7 @@ const Navbar = () => {
     const fetchNotifs = async () => {
       if (auth?.user?.id) {
         try {
-          const res = await userDataAPI.getNotifications(auth.user.id.toString());
+          const res = await userDataAPI.getNotifications(String(auth.user.id));
           if (res.success) setNotifications(res.notifications);
         } catch (e) {
           console.error('Failed to fetch notifs');
@@ -128,6 +128,7 @@ const Navbar = () => {
                 </NavLink>
               );
             })}
+            
             {isGuest && (
               <div className="flex items-center gap-4">
                 <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
@@ -141,7 +142,7 @@ const Navbar = () => {
                 </Link>
               </div>
             )}
-
+            
             {!isAuthenticated && !isGuest ? (
               <Link
                 to="/login"
@@ -151,7 +152,6 @@ const Navbar = () => {
               </Link>
             ) : isAuthenticated ? (
               <div className="flex items-center gap-6">
-                {/* Notifications Bell */}
                 <div className="relative">
                   <button 
                     onClick={() => setNotifOpen(!notifOpen)}
@@ -276,50 +276,50 @@ const Navbar = () => {
 
         {isOpen && (
           <div className="md:hidden pb-6 animate-in slide-in-from-top-4 duration-300">
-            <div className="flex flex-col space-y-1 mt-2">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                return (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    className="flex items-center gap-4 px-4 py-4 text-app-text-main font-bold hover:bg-app-bg-alt hover:text-primary rounded-2xl transition-all group"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Icon size={24} className="text-primary" />
-                    <span className="flex-1">{link.label}</span>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ArrowRight size={16} />
-                    </div>
-                  </Link>
-                );
-              })}
-              {!isAuthenticated ? (
+          <div className="flex flex-col space-y-1 mt-2">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              return (
                 <Link
-                  to="/login"
-                  className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200 inline-block w-fit"
+                  key={link.to}
+                  to={link.to}
+                  className="flex items-center gap-4 px-4 py-4 text-app-text-main font-bold hover:bg-app-bg-alt hover:text-primary rounded-2xl transition-all group"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t.nav.login}
+                  <Icon size={24} className="text-primary" />
+                  <span className="flex-1">{link.label}</span>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ArrowRight size={16} />
+                  </div>
                 </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsOpen(false);
-                    handleLogout();
-                  }}
-                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors duration-200 inline-block w-fit"
-                >
-                  {t.nav.logout}
-                </button>
-              )}
-            </div>
+              );
+            })}
+            {!isAuthenticated ? (
+              <Link
+                to="/login"
+                className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200 inline-block w-fit"
+                onClick={() => setIsOpen(false)}
+              >
+                {t.nav.login}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  handleLogout();
+                }}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors duration-200 inline-block w-fit"
+              >
+                {t.nav.logout}
+              </button>
+            )}
           </div>
-        )}
-      </div>
-    </nav>
-  );
+        </div>
+      )}
+    </div>
+  </nav>
+);
 };
 
 export default Navbar;

@@ -194,7 +194,7 @@ const AITutor = () => {
     const loadHistory = async () => {
       if (!auth?.user?.id) return;
       try {
-        const data = await userDataAPI.getChatHistory(auth.user.id.toString());
+        const data = await userDataAPI.getChatHistory(String(auth.user.id));
         if (data.success && data.history.length > 0) {
           const sessions: ChatSession[] = data.history.map((h: any) => ({
             id: h.id,
@@ -256,7 +256,7 @@ const AITutor = () => {
 
           // Sync to DB
           if (auth?.user?.id) {
-            await userDataAPI.saveChatHistory(auth.user.id.toString(), messages);
+            await userDataAPI.saveChatHistory(String(auth.user.id), messages);
           }
         } catch (e) {
           console.error('DB Sync Error', e);
@@ -424,7 +424,7 @@ const AITutor = () => {
   // Increment questions asked count in progress
   if (auth?.user?.id) {
     try {
-      const progRes = await userDataAPI.getProgress(auth.user.id.toString());
+      const progRes = await userDataAPI.getProgress(String(auth.user.id));
       if (progRes.success) {
         const currentProg = progRes.progress;
         const updatedActivities = [
@@ -432,7 +432,7 @@ const AITutor = () => {
           ...(currentProg.activities || [])
         ].slice(0, 20);
 
-        await userDataAPI.updateProgress(auth.user.id.toString(), {
+        await userDataAPI.updateProgress(String(auth.user.id), {
           ...currentProg,
           questionsAsked: (currentProg.questionsAsked || 0) + 1,
           activities: updatedActivities,

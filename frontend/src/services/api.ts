@@ -178,6 +178,36 @@ export const adminAPI = {
   getStats: async (adminId: string) => {
     const response = await api.get(`/admin/${adminId}/stats`);
     return response.data;
+  },
+
+  createLesson: async (lessonData: any) => {
+    const response = await api.post('/admin/lessons', lessonData);
+    return response.data;
+  },
+
+  updateLesson: async (lessonId: string, lessonData: any) => {
+    const response = await api.put(`/admin/lessons/${lessonId}`, lessonData);
+    return response.data;
+  },
+
+  deleteLesson: async (lessonId: string) => {
+    const response = await api.delete(`/admin/lessons/${lessonId}`);
+    return response.data;
+  },
+
+  createUser: async (userData: any) => {
+    const response = await api.post('/admin/users', userData);
+    return response.data;
+  },
+
+  updateUser: async (userId: string, userData: any) => {
+    const response = await api.put(`/admin/users/${userId}`, userData);
+    return response.data;
+  },
+
+  resetUserPassword: async (userId: string, password: any) => {
+    const response = await api.post(`/admin/users/${userId}/reset-password`, { password });
+    return response.data;
   }
 };
 

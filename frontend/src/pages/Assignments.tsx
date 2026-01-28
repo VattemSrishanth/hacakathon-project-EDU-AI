@@ -9,7 +9,7 @@ import {
   ArrowLeft, 
   Calendar, 
   FileText,
-  AlertCircle 
+  Layout
 } from 'lucide-react';
 import { userDataAPI } from '../services/api';
 
@@ -39,8 +39,11 @@ const Assignments = () => {
     try {
       const authData = localStorage.getItem('auth');
       if (!authData) return;
+      
       // In a real app, this would send the update to the backend
       alert(`Assignment ${assignmentId} submitted successfully!`);
+      
+      // Refresh list
       fetchAssignments();
     } catch (e) {
       console.error('Submission failed', e);
@@ -96,7 +99,7 @@ const Assignments = () => {
                     
                     <div className="flex items-start gap-3 p-4 bg-app-bg-alt rounded-2xl border border-app-border mb-6">
                       <div className="shrink-0 mt-1 text-primary">
-                        <FileText size={20} />
+                        <FileText size={24} />
                       </div>
                       <p className="text-sm font-medium text-app-text-muted leading-relaxed">
                         {assignment.description}
@@ -114,7 +117,7 @@ const Assignments = () => {
 
                     <div className="flex justify-between items-center px-2">
                       <div className="flex items-center gap-2 text-app-text-muted font-black uppercase tracking-widest text-[10px]">
-                        <AlertCircle size={14} /> Status
+                        <Layout size={14} /> Status
                       </div>
                       <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm ${
                         assignment.status === 'Submitted' 

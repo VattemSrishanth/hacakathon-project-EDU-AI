@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
+import { userDataAPI } from '../services/api';
 
 // Import all board syllabi
 import ncertSyllabus from '../data/ncert_syllabus.json';
@@ -49,6 +51,7 @@ const Lessons = () => {
     }
   }, [settings.learning.board]);
 
+  const { auth } = useAuth();
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
@@ -67,23 +70,52 @@ const Lessons = () => {
     setExplanation(null);
   }, [settings.learning.board]);
 
-  // Load completed lessons
+  // Load completed lessons from API/Storage
   useEffect(() => {
-    const stored = localStorage.getItem('lesson_completion_tracker');
-    if (stored) {
-      setCompletedLessons(JSON.parse(stored));
-    }
-  }, []);
+    const fetchProgress = async () => {
+      if (auth?.user?.id) {
+        try {
+          const res = await userDataAPI.getProgress(String(auth.user.id));
+          if (res.success && res.progress.completedLessonIds) {
+            setCompletedLessons(res.progress.completedLessonIds);
+            return;
+          }
+        } catch (e) {
+          console.error('Failed to load progress', e);
+        }
+      }
+      const stored = localStorage.getItem('lesson_completion_tracker');
+      if (stored) {
+        setCompletedLessons(JSON.parse(stored));
+      }
+    };
+    fetchProgress();
+  }, [auth]);
 
-  const handleMarkComplete = () => {
+  const handleMarkComplete = async () => {
     if (!selectedTopic) return;
     const lessonId = `${selectedClass}-${selectedSubject}-${selectedTopic}`;
-    const newCompleted = completedLessons.includes(lessonId)
-      ? completedLessons.filter(id => id !== lessonId)
-      : [...completedLessons, lessonId];
+    const isNowCompleted = !completedLessons.includes(lessonId);
+    const newCompleted = isNowCompleted
+      ? [...completedLessons, lessonId]
+      : completedLessons.filter(id => id !== lessonId);
     
     setCompletedLessons(newCompleted);
     localStorage.setItem('lesson_completion_tracker', JSON.stringify(newCompleted));
+
+    if (auth?.user?.id) {
+      try {
+        await userDataAPI.updateProgress(String(auth.user.id), {
+          lessonId,
+          completed: isNowCompleted,
+          topic: selectedTopic,
+          subject: selectedSubject,
+          grade: selectedClass
+        });
+      } catch (e) {
+        console.error('Failed to sync progress', e);
+      }
+    }
   };
 
   // Reset logic

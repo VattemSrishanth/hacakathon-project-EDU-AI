@@ -267,7 +267,7 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
           const { user } = JSON.parse(authData);
           if (user?.id) {
             // We use the profile API to save accessibility and learning settings too
-            await userDataAPI.updateProfile(user.id, {
+            await userDataAPI.updateProfile(String(user.id), {
               settings: settings 
             });
           }

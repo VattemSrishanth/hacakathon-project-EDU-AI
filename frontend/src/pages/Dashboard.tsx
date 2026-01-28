@@ -62,7 +62,7 @@ const Dashboard = () => {
         const subjects = classes[grade].subjects;
         Object.keys(subjects).forEach(sub => {
           subjects[sub].forEach((unit: any) => {
-            totalTopics += unit.topics.length;
+            totalTopics += (unit.topics || []).length;
           });
         });
       });
@@ -71,19 +71,49 @@ const Dashboard = () => {
     }
 
     const fetchProgress = async () => {
-      if (!auth?.user?.id) return;
+      if (!auth?.user?.id) {
+        // Fallback to localStorage if no user
+        try {
+          const stored = localStorage.getItem('lesson_completion_tracker');
+          if (stored) {
+            const completedIds = JSON.parse(stored) as string[];
+            const count = completedIds.length;
+            const percentage = Math.round((count / totalTopics) * 100);
+            setLessonMetrics(prev => ({
+              ...prev,
+              completed: count,
+              total: totalTopics,
+              percentage: percentage,
+              certificates: Math.floor(count / 5)
+            }));
+            setGoalsProgress(prev => ({ ...prev, lessons: percentage }));
+          }
+        } catch (e) {
+          console.error('Failed to load local metrics', e);
+        }
+        return;
+      }
+
       try {
-        const data = await userDataAPI.getProgress(auth.user.id.toString());
+        const data = await userDataAPI.getProgress(String(auth.user.id));
         if (data.success) {
           const count = data.progress.lessonsCompleted || 0;
-          const percentage = Math.round((count / totalTopics) * 100);
+          const total = totalTopics || data.progress.totalLessons || 50;
+          const percentage = Math.round((count / total) * 100);
+          
           setLessonMetrics({
             completed: count,
-            total: totalTopics,
+            total: total,
             percentage: percentage,
-            certificates: Math.floor(count / 5),
+            certificates: Math.floor(count / 3),
             questionsAsked: data.progress.questionsAsked || 0,
             streakDays: data.progress.streakDays || 1
+          });
+
+          setGoalsProgress({
+            lessons: percentage,
+            ai: Math.min((data.progress.questionsAsked || 0) * 10, 100),
+            quiz: data.progress.quiz_scores?.length > 0 ? 100 : 0
           });
 
           if (data.progress.quiz_scores && data.progress.quiz_scores.length > 0) {
@@ -95,12 +125,6 @@ const Dashboard = () => {
           if (data.progress.activities) {
             setActivities(data.progress.activities.slice(0, 5));
           }
-
-          setGoalsProgress(prev => ({ 
-            ...prev, 
-            lessons: Math.min(percentage, 100),
-            ai: Math.min((data.progress.questionsAsked || 0) * 10, 100)
-          }));
         }
       } catch (e) {
         console.error('Failed to fetch progress from API', e);
@@ -128,7 +152,7 @@ const Dashboard = () => {
     };
 
     fetchProgress();
-  }, [activeSyllabus, auth]);
+  }, [auth, activeSyllabus]);
 
   const { level, contentPreference } = settings.learning;
   

@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { 
-  LifeBuoy, 
-  BookText, 
-  ArrowUpRight, 
-  MessageCircle, 
   Mail, 
-  Phone,
-  Send,
-  Star
+  Phone, 
+  LifeBuoy, 
+  MessageCircle, 
+  Send, 
+  Star,
+  BookText,
+  ArrowUpRight 
 } from 'lucide-react';
 import { userDataAPI } from '../services/api';
 import Button from '../components/Button';
