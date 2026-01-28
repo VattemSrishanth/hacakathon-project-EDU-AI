@@ -356,14 +356,14 @@ def register():
             return jsonify({"error": "Password must be at least 6 characters.", "success": False}), 400
 
         # Check if user exists
-        if User.query.filter_by(email=email).first():
+        if User.find_one({"email": email}):
             return jsonify({"error": "Email already registered.", "success": False}), 409
 
         # Create username from name
         username = name.lower().replace(" ", "_")
         base_username = username
         counter = 1
-        while User.query.filter_by(username=username).first():
+        while User.find_one({"username": username}):
             username = f"{base_username}_{counter}"
             counter += 1
 
@@ -1139,19 +1139,23 @@ def get_admin_stats(current_user, user_id):
     if current_user.get("role") != "admin":
         return jsonify({"error": "Admin access denied", "success": False}), 403
 
-    stats = {
-        "total_users": mongo.db.users.count_documents({}),
-        "total_lessons": mongo.db.courses.count_documents({}),
-        "total_chats": mongo.db.chat_history.count_documents({}),
-        "total_assignments": mongo.db.assignments.count_documents({}),
-        "total_feedback": mongo.db.feedback.count_documents({}),
-        "recent_feedback": Feedback.format_list(Feedback.find_all(limit=10, sort=[("created_at", -1)])),
-        "user_list": User.format_list(User.find_all(limit=50)),
-        "lesson_list": Course.format_list(Course.find_all(limit=100)),
-        "all_progress": Progress.format_list(Progress.find_all(limit=50)),
-        "all_notifications": Notification.format_list(Notification.find_all(limit=20))
-    }
-    return jsonify({"success": True, "stats": stats})
+    try:
+        stats = {
+            "total_users": mongo.db.users.count_documents({}),
+            "total_lessons": mongo.db.courses.count_documents({}),
+            "total_chats": mongo.db.chat_history.count_documents({}),
+            "total_assignments": mongo.db.assignments.count_documents({}),
+            "total_feedback": mongo.db.feedback.count_documents({}),
+            "recent_feedback": Feedback.format_list(Feedback.find_all(limit=10, sort=[("created_at", -1)])),
+            "user_list": User.format_list(User.find_all(limit=50)),
+            "lesson_list": Course.format_list(Course.find_all(limit=100)),
+            "all_progress": Progress.format_list(Progress.find_all(limit=50)),
+            "all_notifications": Notification.format_list(Notification.find_all(limit=20))
+        }
+        return jsonify({"success": True, "stats": stats})
+    except Exception as e:
+        print(f"Stats error: {e}")
+        return jsonify({"error": f"Internal error fetching stats: {str(e)}", "success": False}), 500
 
 
 

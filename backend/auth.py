@@ -82,7 +82,12 @@ def login():
         session["user_id"] = str(user["_id"])
         session["username"] = user["username"]
 
-        return jsonify({"status": "ok", "user": User.to_public_dict(user)})
+        return jsonify({
+            "success": True, 
+            "status": "ok", 
+            "token": f"mock_token_{str(user['_id'])}",
+            "user": User.to_public_dict(user)
+        })
     except Exception as e:
         print(f"Login error: {e}")
         return jsonify({"error": "Login failed. Please try again.", "status": "error"}), 500
