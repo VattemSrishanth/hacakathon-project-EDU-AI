@@ -9,8 +9,9 @@ import io
 import base64
 import json
 import time
-from datetime import datetime
+from datetime import datetime, date
 from functools import wraps
+import requests
 from urllib.parse import urlparse, parse_qs
 from xml.etree.ElementTree import ParseError
 
@@ -22,7 +23,19 @@ from ai_engine import get_ai_response, generate_video_explanation, get_ai_respon
 import unified_llm as llm_service
 from auth import auth_bp
 import quiz_pipeline
-from models import init_mongo_models, User, Profile, Course, Progress, ChatHistory, Assignment, Notification, Feedback, OfflineSync
+from models import (
+    init_mongo_models,
+    User,
+    Profile,
+    Course,
+    Progress,
+    ChatHistory,
+    Assignment,
+    Notification,
+    Feedback,
+    OfflineSync,
+    LoginStreak,
+)
 
 try:
     from youtube_transcript_api import YouTubeTranscriptApi
@@ -231,6 +244,7 @@ app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/edu_
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
+BLACKBOX_API_KEY = os.getenv("BLACKBOX_API_KEY", "")
 
 # CORS configuration for React frontend
 CORS(
@@ -826,6 +840,67 @@ def get_lessons():
     })
 
 
+@app.route("/api/lessons/generate", methods=["POST"])
+def generate_lesson_explanation():
+    """Generate lesson explanation using Blackbox AI with server-side API key."""
+    if not BLACKBOX_API_KEY:
+        return jsonify({"success": False, "error": "Blackbox API key missing on server"}), 500
+
+    payload = request.get_json(silent=True) or {}
+    topic = payload.get("topic")
+    subject = payload.get("subject")
+    unit = payload.get("unit")
+    grade = payload.get("grade") or payload.get("class")
+    mode = payload.get("mode", "detailed")
+    language = payload.get("language", "English")
+
+    if not topic or not subject:
+        return jsonify({"success": False, "error": "topic and subject are required"}), 400
+
+    prompt = (
+        f"You are an expert teacher. Prepare a {mode} explanation for the topic '{topic}' in subject '{subject}'. "
+        f"Unit: '{unit}'. Grade/Class: {grade}. Language: {language}. "
+        "Keep it concise, clear, and student-friendly."
+    )
+
+    try:
+        resp = requests.post(
+            "https://api.blackbox.ai/api/v1/chat/completions",
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {BLACKBOX_API_KEY}",
+            },
+            json={
+                "model": "blackbox",
+                "messages": [
+                    {"role": "system", "content": "You are a helpful teaching assistant."},
+                    {"role": "user", "content": prompt},
+                ],
+                "temperature": 0.4,
+                "max_tokens": 600,
+            },
+            timeout=20,
+        )
+        if not resp.ok:
+            return jsonify({"success": False, "error": f"Blackbox request failed: {resp.status_code}"}), 502
+
+        data = resp.json()
+        text = (
+            data.get("choices", [{}])[0]
+            .get("message", {})
+            .get("content", "")
+            .strip()
+        )
+        if not text:
+            return jsonify({"success": False, "error": "Empty response from Blackbox"}), 502
+
+        return jsonify({"success": True, "explanation": text})
+    except requests.Timeout:
+        return jsonify({"success": False, "error": "Blackbox request timed out"}), 504
+    except Exception as exc:
+        return jsonify({"success": False, "error": f"Blackbox error: {exc}"}), 502
+
+
 @app.route("/api/lessons/<lesson_id>", methods=["GET"])
 def get_lesson(lesson_id):
     """Get a specific lesson by ID from MongoDB."""
@@ -1072,6 +1147,24 @@ def get_admin_stats(current_user, user_id):
         "all_notifications": Notification.format_list(Notification.find_all(limit=20))
     }
     return jsonify({"success": True, "stats": stats})
+
+
+@app.route("/api/streak/ping", methods=["POST"])
+def update_streak():
+    """Record today's login and return the user's streak data."""
+    payload = request.get_json(silent=True) or {}
+    user_id = payload.get("userId") or payload.get("user_id")
+
+    if not user_id:
+        return jsonify({"success": False, "error": "userId is required"}), 400
+
+    user = User.find_by_id(user_id)
+    if not user:
+        return jsonify({"success": False, "error": "User not found"}), 404
+
+    streak = LoginStreak.touch(user_id)
+
+    return jsonify({"success": True, "streak": streak})
 
 
 # ==================== Helper Functions ====================

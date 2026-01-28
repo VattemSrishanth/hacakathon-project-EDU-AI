@@ -20,6 +20,7 @@ import ClassList from '../components/Syllabus/ClassList';
 import SubjectList from '../components/Syllabus/SubjectList';
 import UnitAccordion from '../components/Syllabus/UnitAccordion';
 import LessonViewer from '../components/Syllabus/LessonViewer';
+import { lessonGeneratorAPI } from '../services/api';
 
 interface Syllabus {
   board: string;
@@ -107,14 +108,29 @@ const Lessons = () => {
   }, [selectedTopic, selectedClass, selectedSubject]);
 
   const handleExplain = async (mode: 'simple' | 'detailed' = 'detailed') => {
+    if (!selectedTopic || !selectedSubject || !selectedClass) return;
     setGenerating(true);
-    // In a real app, this would be a prompt to an LLM
-    setTimeout(() => {
-      const accessibility = settings.themeAccessibility.accessibilityMode || 'Regular';
-      const text = `[Mode: ${mode.toUpperCase()}] \n\nWelcome to your AI lesson on ${selectedTopic}! \n\nAs a Class ${selectedClass} student studying ${selectedSubject}, it's important to understand this concept. \n\nIn terms of ${selectedTopic}: Imagine you are exploring this in real life. It's about how these fundamentals help us understand the world around us. \n\nThis explanation is optimized for ${accessibility} mode and tailored to your Grade ${selectedClass} curriculum.`;
-      setExplanation(text);
+    try {
+      const res = await lessonGeneratorAPI.generate({
+        topic: selectedTopic,
+        subject: selectedSubject,
+        unit: selectedUnit || undefined,
+        grade: selectedClass,
+        mode,
+        language: settings.learning.language,
+      });
+
+      if (res?.success && res?.explanation) {
+        setExplanation(res.explanation);
+      } else {
+        setExplanation('Unable to generate content right now. Please try again.');
+      }
+    } catch (e) {
+      console.error('Lesson generation failed', e);
+      setExplanation('Unable to generate content right now. Please try again.');
+    } finally {
       setGenerating(false);
-    }, 1000);
+    }
   };
 
   const handleTranslate = () => {

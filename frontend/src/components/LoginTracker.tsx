@@ -3,6 +3,8 @@ import { Zap } from 'lucide-react';
 import Card from './Card';
 import { useAuth } from '../context/AuthContext';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 interface TrackerData {
   joinDate: string;
   loginDates: string[];
@@ -21,10 +23,19 @@ const LoginTracker = () => {
   const { auth } = useAuth();
   const [data, setData] = useState<TrackerData | null>(null);
 
-  useEffect(() => {
-    // Ensure we have a user to track
+  const buildStorageKey = () => {
     const userId = auth?.user?.id || auth?.user?.username || 'guest';
-    const STORAGE_KEY = `user_login_tracker_${userId}`;
+    return `user_login_tracker_${userId}`;
+  };
+
+  const writeLocalTracker = (key: string, tracker: TrackerData) => {
+    localStorage.setItem(key, JSON.stringify(tracker));
+    setData(tracker);
+  };
+
+  useEffect(() => {
+    const userId = auth?.user?.id || auth?.user?.username || 'guest';
+    const STORAGE_KEY = buildStorageKey();
     
     // Get today's date in YYYY-MM-DD format
     // Using UTC to ensure consistent days across timezones
@@ -32,12 +43,11 @@ const LoginTracker = () => {
     const today = now.toISOString().split('T')[0];
     
     const stored = localStorage.getItem(STORAGE_KEY);
-    
-    let tracker: TrackerData;
 
-    try {
+    const buildLocalTracker = (): TrackerData => {
+      let tracker: TrackerData;
+
       if (!stored) {
-        // First time user
         tracker = {
           joinDate: today,
           loginDates: [today],
@@ -47,66 +57,72 @@ const LoginTracker = () => {
         };
       } else {
         tracker = JSON.parse(stored);
-        
-        // Handle migration or corrupted data
         if (!tracker.loginDates) tracker.loginDates = [];
         if (!tracker.joinDate) tracker.joinDate = today;
 
         if (tracker.lastLoginDate !== today) {
-          // Calculate if the streak continues
-          // lastLoginDate + 1 day should equal today for streak confirmation
-          
           let isConsecutive = false;
           if (tracker.lastLoginDate) {
-              const last = new Date(tracker.lastLoginDate);
-              // Set to noon to avoid DST/timezone edge cases when adding days
-              // But since we use UTC strings (YYYY-MM-DD), straight comparison is better.
-              // Logic: Create date from string, add 1 day, format back to string.
-              
-              const nextDayDate = new Date(last);
-              nextDayDate.setUTCDate(nextDayDate.getUTCDate() + 1);
-              const nextDay = nextDayDate.toISOString().split('T')[0];
-              
-              if (nextDay === today) {
-                  isConsecutive = true;
-              }
+            const last = new Date(tracker.lastLoginDate);
+            const nextDayDate = new Date(last);
+            nextDayDate.setUTCDate(nextDayDate.getUTCDate() + 1);
+            const nextDay = nextDayDate.toISOString().split('T')[0];
+
+            if (nextDay === today) {
+              isConsecutive = true;
+            }
           }
 
           if (!tracker.loginDates.includes(today)) {
             tracker.loginDates.push(today);
           }
 
-          if (isConsecutive) {
-            // Continuous streak
-            tracker.currentStreak += 1;
-          } else if (tracker.lastLoginDate && tracker.lastLoginDate < today) {
-            // Streak broken (missed a day or more)
-            // But verify it's not simply re-login on same day (already handled by outer check)
-            // If today > lastLoginDate + 1, reset.
-            tracker.currentStreak = 1;
-          }
-          // If tracker.lastLoginDate > today (time travel?), do nothing or keep as is.
-
+          tracker.currentStreak = isConsecutive ? tracker.currentStreak + 1 : 1;
           tracker.longestStreak = Math.max(tracker.longestStreak, tracker.currentStreak);
           tracker.lastLoginDate = today;
         }
       }
+      return tracker;
+    };
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(tracker));
-      setData(tracker);
-    } catch (e) {
-      console.error("Error updating login tracker", e);
-      // Fallback reset if error
-      const fresh: TrackerData = {
-          joinDate: today,
-          loginDates: [today],
-          currentStreak: 1,
-          longestStreak: 1,
-          lastLoginDate: today,
+    const fallbackTracker = buildLocalTracker();
+    writeLocalTracker(STORAGE_KEY, fallbackTracker);
+
+    const mergeServerStreak = (server: any): TrackerData => {
+      const joinDate = server?.join_date || fallbackTracker.joinDate || today;
+      const lastLoginDate = server?.last_login_date || joinDate;
+      const loginDates = Array.from(new Set([...(server?.login_dates || []), today, joinDate, lastLoginDate]));
+
+      return {
+        joinDate,
+        loginDates,
+        currentStreak: server?.current_streak ?? fallbackTracker.currentStreak,
+        longestStreak: server?.longest_streak ?? fallbackTracker.longestStreak,
+        lastLoginDate,
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
-      setData(fresh);
-    }
+    };
+
+    const syncWithServer = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/streak/ping`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId }),
+        });
+
+        if (!res.ok) return;
+        const payload = await res.json();
+        if (!payload?.success || !payload?.streak) return;
+
+        const merged = mergeServerStreak(payload.streak);
+        writeLocalTracker(STORAGE_KEY, merged);
+      } catch (e) {
+        console.error('Unable to sync streak with server', e);
+      }
+    };
+
+    syncWithServer();
   }, [auth?.user?.id]); // Re-run if user changes
 
   const calendarDays = useMemo(() => {

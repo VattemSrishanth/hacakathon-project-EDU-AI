@@ -118,6 +118,21 @@ export const lessonsAPI = {
   },
 };
 
+// Lesson generation via Blackbox (proxied through backend to keep key secret)
+export const lessonGeneratorAPI = {
+  generate: async (params: {
+    topic: string;
+    subject: string;
+    unit?: string;
+    grade?: string | null;
+    mode?: 'simple' | 'detailed';
+    language?: string;
+  }) => {
+    const response = await api.post('/lessons/generate', params);
+    return response.data;
+  },
+};
+
 // User Data API
 export const userDataAPI = {
   getProfile: async (userId: string) => {
