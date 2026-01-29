@@ -1,5 +1,6 @@
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext, useMemo, useEffect } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
+import { api } from '../services/api';
 
 export interface AuthUser {
   id?: string | number;
@@ -44,6 +45,35 @@ const getInitials = (user?: AuthUser) => {
 
 export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [auth, setAuth] = useLocalStorage<AuthState | null>('auth', null);
+
+  // Sync user role and details from server on mount
+  useEffect(() => {
+    const syncUser = async () => {
+      if (auth?.status === 'logged_in' && auth.token) {
+        try {
+          const response = await api.get('/auth/me', {
+            headers: { Authorization: `Bearer ${auth.token}` }
+          });
+          if (response.data.authenticated && response.data.user) {
+            setAuth((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                user: {
+                  ...prev.user,
+                  ...response.data.user,
+                  initials: getInitials(response.data.user)
+                }
+              };
+            });
+          }
+        } catch (error) {
+          console.error("Auth sync failed", error);
+        }
+      }
+    };
+    syncUser();
+  }, []); // Run once on startup
 
   const value = useMemo<AuthContextValue>(() => {
     const normalizedAuth: AuthState | null = auth

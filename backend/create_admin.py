@@ -13,17 +13,19 @@ def create_admin(username, email, password):
     admin_data = {
         "username": username,
         "email": email,
-        "password_hash": generate_password_hash(password),
         "role": "admin",
         "accessibility_mode": "regular",
         "preferred_language": "en"
     }
     
     # Check if exists
-    if db.users.find_one({"username": username}):
-        print(f"Admin '{username}' already exists.")
+    existing = db.users.find_one({"username": username})
+    if existing:
+        db.users.update_one({"_id": existing["_id"]}, {"$set": {"role": "admin"}})
+        print(f"Updated '{username}' to admin role.")
         return
 
+    admin_data["password_hash"] = generate_password_hash(password)
     result = db.users.insert_one(admin_data)
     print(f"Admin '{username}' created with ID: {result.inserted_id}")
 
