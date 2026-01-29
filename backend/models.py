@@ -80,6 +80,7 @@ def init_mongo_models(mongo_db):
     Feedback.collection = db.feedback
     OfflineSync.collection = db.offline_sync
     LoginStreak.collection = db.login_streaks
+    SyllabusContent.collection = db.syllabus_content
 
 
 class User(MongoModel):
@@ -111,6 +112,11 @@ class User(MongoModel):
 class Profile(MongoModel):
     collection = None
     # user_id, full_name, disability_type, content_format, font_size, theme, voice_settings
+
+
+class SyllabusContent(MongoModel):
+    collection = None
+    # Fields: board, class_level, subject, unit, topic, description, pdf_data_url
 
 
 class Course(MongoModel):

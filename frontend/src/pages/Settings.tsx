@@ -34,7 +34,7 @@ import type {
 const Settings = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { updateUser: updateAuthUser } = useAuth();
+  const { auth, updateUser: updateAuthUser } = useAuth();
   const { 
     settings, 
     t, 
@@ -49,17 +49,22 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState<'account' | 'security' | 'visibility' | 'privacy' | 'advertising' | 'notifications' | 'aitutor' | 'appearance'>('account');
   const [saveMessage, setSaveMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(settings.profile.name);
-  const [editEmail, setEditEmail] = useState(settings.profile.email);
+
+  // Derived current values prioritizing auth for real-time accuracy
+  const currentName = auth?.user?.name || auth?.user?.username || settings.profile.name;
+  const currentEmail = auth?.user?.email || settings.profile.email;
+
+  const [editName, setEditName] = useState(currentName);
+  const [editEmail, setEditEmail] = useState(currentEmail);
   const [error, setError] = useState('');
 
   // Sync local state when settings change and we're not editing
   useEffect(() => {
     if (!isEditing) {
-      setEditName(settings.profile.name);
-      setEditEmail(settings.profile.email);
+      setEditName(currentName);
+      setEditEmail(currentEmail);
     }
-  }, [settings.profile.name, settings.profile.email, isEditing]);
+  }, [currentName, currentEmail, isEditing]);
 
   const showSaveMessage = (message: string) => {
     setSaveMessage(message);
@@ -84,7 +89,7 @@ const Settings = () => {
   };
 
   const initials = useMemo(() => {
-    const source = settings.profile.name || settings.profile.email;
+    const source = currentName || currentEmail;
     if (!source) return 'U';
     return source
       .split(/\s+|@/)
@@ -92,7 +97,7 @@ const Settings = () => {
       .slice(0, 2)
       .map((part) => part[0]?.toUpperCase())
       .join('') || 'U';
-  }, [settings.profile.name, settings.profile.email]);
+  }, [currentName, currentEmail]);
 
   const handleAvatarChange = (file?: File) => {
     if (!file) return;
@@ -195,8 +200,8 @@ const Settings = () => {
                       )}
                     </div>
                     <div>
-                      <h3 className="text-xl font-black truncate">{settings.profile.name}</h3>
-                      <p className="text-app-text-sub font-medium">{settings.profile.email}</p>
+                      <h3 className="text-xl font-black truncate">{currentName}</h3>
+                      <p className="text-app-text-sub font-medium">{currentEmail}</p>
                       <button onClick={() => setActiveTab('security')} className="text-xs font-black text-primary uppercase tracking-widest mt-2 hover:underline">Change</button>
                     </div>
                   </div>
@@ -299,7 +304,7 @@ const Settings = () => {
                         <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.profile.name}</label>
                         <input
                           type="text"
-                          value={isEditing ? editName : settings.profile.name}
+                          value={isEditing ? editName : currentName}
                           onChange={(e) => setEditName(e.target.value)}
                           disabled={!isEditing}
                           className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-primary/20 font-bold disabled:opacity-50"
@@ -310,7 +315,7 @@ const Settings = () => {
                         <label className="text-[10px] font-black text-app-text-sub uppercase tracking-widest ml-1">{t.settings.profile.email}</label>
                         <input
                           type="email"
-                          value={settings.profile.email}
+                          value={currentEmail}
                           disabled
                           className="w-full bg-app-bg/50 border border-app-border rounded-xl px-4 py-3 text-app-text-muted cursor-not-allowed font-bold"
                         />

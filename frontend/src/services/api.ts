@@ -208,7 +208,31 @@ export const adminAPI = {
   resetUserPassword: async (userId: string, password: any) => {
     const response = await api.post(`/admin/users/${userId}/reset-password`, { password });
     return response.data;
-  }
+  },
+
+  // New: Syllabus content management
+  saveSyllabusContent: async (data: any) => {
+    const response = await api.post('/admin/syllabus-content', data);
+    return response.data;
+  },
+  deleteSyllabusContent: async (id: string) => {
+    const response = await api.delete('/admin/syllabus-content', { params: { id } });
+    return response.data;
+  },
+};
+
+export const syllabusAPI = {
+  getContent: async (board: string, classLevel: string, subject: string, topic: string) => {
+    const response = await api.get('/syllabus-content', { 
+      params: { 
+        board, 
+        class_level: classLevel, 
+        subject, 
+        topic 
+      } 
+    });
+    return response.data;
+  },
 };
 
 // Health check

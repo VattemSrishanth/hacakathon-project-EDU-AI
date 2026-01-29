@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
-import { userDataAPI } from '../services/api';
+import { userDataAPI, syllabusAPI } from '../services/api';
 
 // Import all board syllabi
 import ncertSyllabus from '../data/ncert_syllabus.json';
@@ -57,6 +57,7 @@ const Lessons = () => {
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [explanation, setExplanation] = useState<string | null>(null);
+  const [topicPdf, setTopicPdf] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
@@ -142,7 +143,27 @@ const Lessons = () => {
   const handleExplain = async (mode: 'simple' | 'detailed' = 'detailed') => {
     if (!selectedTopic || !selectedSubject || !selectedClass) return;
     setGenerating(true);
+    setTopicPdf(null);
+    
     try {
+      // 1. Check if admin has provided custom content for this topic
+      const customContentRes = await syllabusAPI.getContent(
+        settings.learning.board,
+        selectedClass,
+        selectedSubject,
+        selectedTopic
+      );
+
+      if (customContentRes.success && customContentRes.content) {
+        setExplanation(customContentRes.content.description);
+        if (customContentRes.content.pdf_data_url) {
+          setTopicPdf(customContentRes.content.pdf_data_url);
+        }
+        setGenerating(false);
+        return;
+      }
+
+      // 2. Fallback to AI generation
       const res = await lessonGeneratorAPI.generate({
         topic: selectedTopic,
         subject: selectedSubject,
@@ -297,7 +318,8 @@ const Lessons = () => {
                     class: selectedClass,
                     subject: selectedSubject!,
                     unit: selectedUnit!,
-                    explanation: explanation || ""
+                    explanation: explanation || "",
+                    pdfUrl: topicPdf || undefined
                   }}
                   generating={generating}
                   isSpeaking={isSpeaking}

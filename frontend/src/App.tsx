@@ -21,6 +21,7 @@ import Admin from './pages/Admin';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SettingsProvider } from './context/SettingsContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import PublicRoute from './components/PublicRoute';
 
 // New component to handle the mandatory selection between Login/Guest
@@ -131,9 +132,9 @@ function AppContent() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <Admin />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           <Route
@@ -173,11 +174,11 @@ function AppContent() {
 
 function App() {
   return (
-    <SettingsProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <SettingsProvider>
         <AppContent />
-      </AuthProvider>
-    </SettingsProvider>
+      </SettingsProvider>
+    </AuthProvider>
   );
 }
 

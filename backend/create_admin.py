@@ -30,3 +30,5 @@ def create_admin(username, email, password):
 if __name__ == "__main__":
     create_admin("admin", "admin@eduai.com", "admin@eduai123")
     create_admin("admin2", "admin2@eduai.com", "admin2@eduai123")
+    create_admin("admin3", "admin3@eduai.com", "admin3@eduai123")
+    create_admin("admin4", "admin4@eduai.com", "admin4@eduai123")

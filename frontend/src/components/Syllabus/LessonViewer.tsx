@@ -17,6 +17,7 @@ interface LessonViewerProps {
     subject: string;
     unit: string;
     explanation: string | null;
+    pdfUrl?: string;
   };
   generating: boolean;
   isSpeaking: boolean;
@@ -85,6 +86,27 @@ const LessonViewer = ({
             </div>
           ) : (
             <div className="space-y-6">
+              {lesson.pdfUrl && (
+                <div className="mb-8 rounded-4xl border-2 border-primary/20 bg-primary/5 p-6 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
+                      <FileText size={24} />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-sm uppercase tracking-wider text-app-text-main">Official Study Material</h4>
+                      <p className="text-xs font-bold text-app-text-sub uppercase tracking-widest mt-1">Admin uploaded PDF available</p>
+                    </div>
+                  </div>
+                  <a 
+                    href={lesson.pdfUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg active:scale-95"
+                  >
+                    View PDF
+                  </a>
+                </div>
+              )}
               <p className="text-xl md:text-3xl text-app-text-main leading-relaxed font-medium bg-app-bg-alt/30 p-8 md:p-12 rounded-[3rem] border border-app-border/50 shadow-inner whitespace-pre-wrap">
                 {lesson.explanation}
               </p>

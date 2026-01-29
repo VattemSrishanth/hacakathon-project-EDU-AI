@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useCallback, useS
 import translations from '../i18n/translations';
 import type { SupportedLanguage, TranslationKeys } from '../i18n/translations';
 import { userDataAPI } from '../services/api';
+import { useAuth } from './AuthContext';
 
 // ==================== Types ====================
 export type LearningLevel = 'Beginner' | 'Intermediate' | 'Advanced';
@@ -127,9 +128,9 @@ const loadSettingsFromStorage = (): SettingsState => {
       profile: {
         ...defaultSettings.profile,
         ...storedSettings?.profile,
-        name: storedSettings?.profile?.name || fallbackName,
-        email: storedSettings?.profile?.email || fallbackEmail,
-        avatarDataUrl: storedSettings?.profile?.avatarDataUrl || fallbackAvatar,
+        name: fallbackName,
+        email: fallbackEmail,
+        avatarDataUrl: fallbackAvatar || storedSettings?.profile?.avatarDataUrl || '',
       },
       learning: {
         ...defaultSettings.learning,
@@ -252,7 +253,23 @@ const applyAllEffects = (settings: SettingsState): void => {
 
 // ==================== Provider Component ====================
 export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const { auth } = useAuth();
   const [settings, setSettings] = useState<SettingsState>(() => loadSettingsFromStorage());
+
+  // Keep profile in sync with Auth
+  useEffect(() => {
+    if (auth?.status === 'logged_in' && auth.user) {
+      setSettings(prev => ({
+        ...prev,
+        profile: {
+          ...prev.profile,
+          name: auth.user?.name || auth.user?.username || prev.profile.name,
+          email: auth.user?.email || prev.profile.email,
+          avatarDataUrl: auth.user?.avatarUrl || prev.profile.avatarDataUrl,
+        }
+      }));
+    }
+  }, [auth?.user, auth?.status]);
 
   // Apply effects on mount and settings change
   useEffect(() => {

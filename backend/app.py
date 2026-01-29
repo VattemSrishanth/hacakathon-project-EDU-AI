@@ -35,6 +35,7 @@ from models import (
     Feedback,
     OfflineSync,
     LoginStreak,
+    SyllabusContent,
 )
 
 try:
@@ -237,6 +238,8 @@ except ImportError:
 
 # Initialize Flask app
 app = Flask(__name__)
+# Allow up to 32MB payloads for base64 PDF uploads
+app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024 
 
 # Configuration
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "change-me-in-production")
@@ -1149,6 +1152,7 @@ def get_admin_stats(current_user, user_id):
             "recent_feedback": Feedback.format_list(Feedback.find_all(limit=10, sort=[("created_at", -1)])),
             "user_list": User.format_list(User.find_all(limit=50)),
             "lesson_list": Course.format_list(Course.find_all(limit=100)),
+            "syllabus_list": SyllabusContent.format_list(SyllabusContent.find_all(limit=100)),
             "all_progress": Progress.format_list(Progress.find_all(limit=50)),
             "all_notifications": Notification.format_list(Notification.find_all(limit=20))
         }
@@ -1177,6 +1181,120 @@ def update_streak():
     return jsonify({"success": True, "streak": streak})
 
 # ==================== CONTENT MANAGEMENT (Admin Only) ====================
+
+@app.route("/api/admin/syllabus-content", methods=["POST", "DELETE"])
+@token_required
+def admin_manage_syllabus_content(current_user):
+    """Save or update syllabus topic content (Admin only)."""
+    if current_user.get("role") != "admin":
+        return jsonify({"error": "Admin access denied", "success": False}), 403
+    
+    if request.method == "DELETE":
+        try:
+            content_id = request.args.get("id")
+            if not content_id:
+                return jsonify({"error": "Missing ID", "success": False}), 400
+            SyllabusContent.delete(content_id)
+            return jsonify({"success": True, "message": "Content deleted"})
+        except Exception as e:
+            return jsonify({"error": str(e), "success": False}), 500
+
+    try:
+        data = request.json
+        if not data:
+            return jsonify({"error": "No data provided", "success": False}), 400
+            
+        required_fields = ["board", "class_level", "subject", "topic"]
+        missing = [f for f in required_fields if not data.get(f)]
+        if missing:
+            return jsonify({"error": f"Missing required fields: {', '.join(missing)}", "success": False}), 400
+            
+        # Check payload size (16MB BSON limit)
+        if len(str(data)) > 15 * 1024 * 1024:
+            return jsonify({"error": "Payload too large. PDF might be too big for database (limit ~10MB).", "success": False}), 413
+
+        # Find existing or create new
+        query = {
+            "board": data["board"],
+            "class_level": str(data["class_level"]), # Ensure string consistency
+            "subject": data["subject"],
+            "topic": data["topic"]
+        }
+        
+        # Add metadata about who updated this
+        data["updated_by"] = current_user.get("username", "Admin")
+        
+        existing = SyllabusContent.find_one(query)
+        
+        # Remove _id from data if it exists to prevent immutable field error
+        if "_id" in data:
+            del data["_id"]
+        
+        if existing:
+            result = SyllabusContent.update(existing["_id"], data)
+            if result is None:
+                return jsonify({"error": "Database error during update", "success": False}), 500
+            return jsonify({"success": True, "message": "Syllabus content updated"})
+        else:
+            data["class_level"] = str(data["class_level"]) # normalize for storage
+            topic_id = SyllabusContent.create(data)
+            if topic_id is None:
+                return jsonify({"error": "Database error during creation", "success": False}), 500
+            return jsonify({"success": True, "message": "Syllabus content created", "id": str(topic_id)})
+    except Exception as e:
+        print(f"Syllabus content save error: {str(e)}")
+        return jsonify({"error": f"Internal server error: {str(e)}", "success": False}), 500
+
+
+@app.route("/api/syllabus-content", methods=["GET"])
+def get_syllabus_content():
+    """Fetch content for a specific syllabus topic."""
+    board = request.args.get("board")
+    class_level = request.args.get("class_level")
+    subject = request.args.get("subject")
+    topic = request.args.get("topic")
+    
+    if not all([board, class_level, subject, topic]):
+        return jsonify({"error": "Missing filter parameters", "success": False}), 400
+        
+    # Build case-insensitive regex for topic name to avoid apostrophe/whitespace issues
+    import re
+    topic_regex = re.compile(f"^{re.escape(topic)}$", re.IGNORECASE)
+        
+    query = {
+        "board": board,
+        "class_level": str(class_level),
+        "subject": subject,
+        "topic": topic_regex
+    }
+    
+    # 1. Check specialized SyllabusContent first
+    content = SyllabusContent.find_one(query)
+    if content:
+        return jsonify({"success": True, "content": SyllabusContent.format_doc(content)})
+    
+    # 2. Fallback: Check if there's a Course lesson that matches this topic
+    # Look for lessons where the title matches the topic OR the topic is in the list of topics
+    lesson_query = {
+        "class_level": str(class_level),
+        "$or": [
+            {"title": topic_regex},
+            {"topics": topic}
+        ]
+    }
+    lesson = Course.find_one(lesson_query)
+    if lesson:
+        return jsonify({
+            "success": True, 
+            "content": {
+                "description": lesson.get("description", ""),
+                "pdf_data_url": lesson.get("pdf_path", "") or lesson.get("pdf_url", ""),
+                "is_from_course": True
+            }
+        })
+        
+    return jsonify({"success": False, "message": "No custom content found"})
+
 
 @app.route("/api/admin/lessons", methods=["POST"])
 @token_required

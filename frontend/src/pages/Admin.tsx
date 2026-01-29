@@ -1,14 +1,99 @@
-import React, { useEffect, useState } from 'react';
-import { adminAPI } from '../services/api';
+import React, { useEffect, useState, useMemo } from 'react';
+import { RefreshCw } from 'lucide-react';
+import { adminAPI, syllabusAPI } from '../services/api';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+
+// Import all board syllabi
+import ncertSyllabus from '../data/ncert_syllabus.json';
+import telanganaSyllabus from '../data/telangana_syllabus.json';
+import apSyllabus from '../data/andhra_pradesh_syllabus.json';
+
+interface Syllabus {
+  board: string;
+  classes: {
+    [grade: string]: {
+      subjects: {
+        [subject: string]: {
+          unit: string;
+          topics: string[];
+        }[];
+      };
+    };
+  };
+}
 
 const Admin: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [activeTab, setActiveTab] = useState<'content' | 'users'>('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'users' | 'syllabus'>('content');
+  
+  // Syllabus form state
+  const [syllabusForm, setSyllabusForm] = useState({
+    board: 'NCERT',
+    class: '',
+    subject: '',
+    topic: '',
+    description: '',
+    pdf_base64: ''
+  });
+
+  const activeSyllabus = useMemo(() => {
+    switch (syllabusForm.board) {
+      case 'Telangana': return telanganaSyllabus as unknown as Syllabus;
+      case 'Andhra Pradesh': return apSyllabus as unknown as Syllabus;
+      case 'NCERT':
+      default: return ncertSyllabus as unknown as Syllabus;
+    }
+  }, [syllabusForm.board]);
+
+  const availableClasses = useMemo(() => Object.keys(activeSyllabus.classes), [activeSyllabus]);
+  const availableSubjects = useMemo(() => {
+    if (!syllabusForm.class) return [];
+    return Object.keys(activeSyllabus.classes[syllabusForm.class].subjects);
+  }, [syllabusForm.class, activeSyllabus]);
+
+  const availableTopics = useMemo(() => {
+    if (!syllabusForm.class || !syllabusForm.subject) return [];
+    const subjects = activeSyllabus.classes[syllabusForm.class].subjects[syllabusForm.subject];
+    return subjects.flatMap(s => s.topics);
+  }, [syllabusForm.class, syllabusForm.subject, activeSyllabus]);
+
+  // Fetch existing content when topic selection changes
+  useEffect(() => {
+    const fetchExisting = async () => {
+      if (syllabusForm.board && syllabusForm.class && syllabusForm.subject && syllabusForm.topic) {
+        try {
+          const res = await syllabusAPI.getContent(
+            syllabusForm.board,
+            syllabusForm.class,
+            syllabusForm.subject,
+            syllabusForm.topic
+          );
+          if (res.success && res.content) {
+            setSyllabusForm(prev => ({
+              ...prev,
+              description: res.content.description || '',
+              pdf_base64: res.content.pdf_data_url || ''
+            }));
+            setSuccess('Loaded existing content for this topic.');
+          } else {
+            // Reset description/pdf if no content found
+            setSyllabusForm(prev => ({
+              ...prev,
+              description: '',
+              pdf_base64: ''
+            }));
+          }
+        } catch (err) {
+          console.error('Failed to fetch existing syllabus content', err);
+        }
+      }
+    };
+    fetchExisting();
+  }, [syllabusForm.board, syllabusForm.class, syllabusForm.subject, syllabusForm.topic]);
   
   // Lesson form state
   const [isEditing, setIsEditing] = useState<string | null>(null);
@@ -137,6 +222,67 @@ const Admin: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSyllabusPdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      if (file.size > 12 * 1024 * 1024) {
+        setError('PDF file too large. Please use a file smaller than 12MB.');
+        e.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setSyllabusForm({ ...syllabusForm, pdf_base64: event.target?.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDeleteSyllabusContent = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this custom topic content?')) return;
+    setLoading(true);
+    try {
+      await adminAPI.deleteSyllabusContent(id);
+      setSuccess('Topic content deleted successfully');
+      await fetchStats();
+    } catch (err) {
+      setError('Failed to delete content');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSyllabusSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const payload = {
+        board: syllabusForm.board,
+        class_level: syllabusForm.class,
+        subject: syllabusForm.subject,
+        topic: syllabusForm.topic,
+        description: syllabusForm.description,
+        pdf_data_url: syllabusForm.pdf_base64
+      };
+
+      const res = await adminAPI.saveSyllabusContent(payload);
+      if (res.success) {
+        setSuccess('Syllabus content saved successfully!');
+        setSyllabusForm({ ...syllabusForm, description: '', pdf_base64: '' });
+        await fetchStats(); // Refresh stats to show new content
+      } else {
+        setError(res.error || 'Failed to save syllabus content');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || err.message || 'Failed to save syllabus content');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditUserClick = (user: any) => {
     setIsEditingUser(user.id);
     setActiveTab('users');
@@ -206,7 +352,16 @@ const Admin: React.FC = () => {
     <div className="min-h-screen bg-slate-900 text-white flex flex-col">
       <Navbar />
       <main className="grow container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 text-indigo-400">Admin Command Center</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-indigo-400">Admin Command Center</h1>
+          <button 
+            onClick={() => fetchStats()}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-bold border border-slate-700 transition-colors"
+          >
+            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+            Refresh Data
+          </button>
+        </div>
         
         {error && (
           <div className="bg-red-500/20 border border-red-500 text-red-500 p-4 rounded mb-6">
@@ -232,6 +387,12 @@ const Admin: React.FC = () => {
             className={`px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'users' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
           >
             User Management
+          </button>
+          <button 
+            onClick={() => setActiveTab('syllabus')}
+            className={`px-6 py-2 rounded-lg font-bold transition-all ${activeTab === 'syllabus' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+          >
+            Syllabus Topic Content
           </button>
         </div>
 
@@ -425,6 +586,131 @@ const Admin: React.FC = () => {
           </div>
         )}
 
+        {/* Syllabus Topic Management Form */}
+        {activeTab === 'syllabus' && (
+          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl mb-12 animate-in fade-in slide-in-from-bottom-4">
+            <h2 className="text-xl font-semibold mb-4 text-indigo-300">
+              Manage Syllabus Topic Content
+            </h2>
+            <p className="text-slate-400 text-sm mb-6 italic">
+              Use this section to add custom descriptions and PDF files to existing syllabus topics. 
+              This content will be shown to users instead of AI-generated content.
+            </p>
+            <form onSubmit={handleSyllabusSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm text-slate-400">Education Board</label>
+                <select 
+                  value={syllabusForm.board}
+                  onChange={e => setSyllabusForm({...syllabusForm, board: e.target.value, class: '', subject: '', topic: ''})}
+                  className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm focus:border-indigo-500 outline-none"
+                  required
+                >
+                  <option value="NCERT">NCERT (National)</option>
+                  <option value="Telangana">Telangana State</option>
+                  <option value="Andhra Pradesh">Andhra Pradesh State</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-slate-400">Class / Grade</label>
+                <select 
+                  value={syllabusForm.class}
+                  onChange={e => setSyllabusForm({...syllabusForm, class: e.target.value, subject: '', topic: ''})}
+                  className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm focus:border-indigo-500 outline-none"
+                  required
+                >
+                  <option value="">Select Class</option>
+                  {availableClasses.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-slate-400">Subject</label>
+                <select 
+                  value={syllabusForm.subject}
+                  onChange={e => setSyllabusForm({...syllabusForm, subject: e.target.value, topic: ''})}
+                  className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm focus:border-indigo-500 outline-none"
+                  required
+                  disabled={!syllabusForm.class}
+                >
+                  <option value="">Select Subject</option>
+                  {availableSubjects.map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-slate-400">Topic</label>
+                <select 
+                  value={syllabusForm.topic}
+                  onChange={e => setSyllabusForm({...syllabusForm, topic: e.target.value})}
+                  className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm focus:border-indigo-500 outline-none"
+                  required
+                  disabled={!syllabusForm.subject}
+                >
+                  <option value="">Select Topic</option>
+                  {availableTopics.map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm text-slate-400">Description / Topic Content</label>
+                <textarea 
+                  value={syllabusForm.description}
+                  onChange={e => setSyllabusForm({...syllabusForm, description: e.target.value})}
+                  className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm focus:border-indigo-500 outline-none h-48"
+                  placeholder="Paste the topic content here. Markdown is supported."
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm text-slate-400">Upload PDF for Topic (Optional)</label>
+                <div className="flex flex-col gap-2">
+                  <input 
+                    type="file" 
+                    id="syllabusPdfInput"
+                    accept="application/pdf"
+                    onChange={handleSyllabusPdfUpload}
+                    className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-slate-400 file:bg-indigo-600 file:text-white file:border-none file:px-4 file:py-1 file:rounded file:mr-4 file:cursor-pointer"
+                  />
+                  {syllabusForm.pdf_base64 && (
+                    <div className="flex items-center gap-4">
+                      <p className="text-xs text-emerald-400 font-medium">✓ PDF Attached</p>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          setSyllabusForm({...syllabusForm, pdf_base64: ''});
+                          const fileInput = document.getElementById('syllabusPdfInput') as HTMLInputElement;
+                          if (fileInput) fileInput.value = '';
+                        }}
+                        className="text-xs text-rose-400 hover:text-rose-300 font-bold underline px-2 py-1 bg-rose-500/10 rounded"
+                      >
+                        Remove PDF
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="md:col-span-2 flex gap-4 mt-2">
+                <button 
+                  type="submit" 
+                  disabled={loading || !syllabusForm.topic}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded transition-colors disabled:opacity-50"
+                >
+                  Save Topic Content
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setSyllabusForm({board: 'NCERT', class: '', subject: '', topic: '', description: '', pdf_base64: ''})}
+                  className="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded transition-colors"
+                >
+                  Reset Form
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
@@ -487,6 +773,54 @@ const Admin: React.FC = () => {
                     </td>
                   </tr>
                 ))}
+                {stats?.syllabus_list?.map((item: any) => (
+                  <tr key={item.id} className="hover:bg-slate-700/30 transition-colors text-sm border-l-4 border-indigo-500">
+                    <td className="p-4 font-semibold text-slate-200">
+                      <div className="flex flex-col">
+                        <span>{item.topic}</span>
+                        <span className="text-[10px] text-slate-500 uppercase tracking-tighter">Syllabus Topic: {item.board} - Class {item.class_level}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-indigo-300 italic">{item.subject}</td>
+                    <td className="p-4">
+                      <div className="flex flex-col gap-1">
+                        <span className="px-2 py-0.5 bg-indigo-900/50 rounded text-[10px] uppercase font-bold text-indigo-400 border border-indigo-500/30 w-fit">
+                          Custom Content
+                        </span>
+                        {item.updated_by && (
+                          <span className="text-[10px] text-slate-500 font-medium">
+                            By: <span className="text-white">{item.updated_by}</span>
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-4 flex gap-3">
+                       <button 
+                        onClick={() => {
+                          setActiveTab('syllabus');
+                          setSyllabusForm({
+                            board: item.board,
+                            class: item.class_level,
+                            subject: item.subject,
+                            topic: item.topic,
+                            description: item.description,
+                            pdf_base64: item.pdf_data_url || item.pdf_base64 // Handle both naming conventions
+                          });
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className="text-indigo-400 hover:text-indigo-300 font-bold"
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteSyllabusContent(item.id)}
+                        className="text-rose-500 hover:text-rose-400 font-bold"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -511,7 +845,6 @@ const Admin: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-700">
                   {stats?.user_list?.map((user: any) => {
-                    const progress = stats.all_progress?.find((p: any) => p.user_id === user.id);
                     const isActive = user.is_active !== false;
                     return (
                       <tr key={user.id} className="hover:bg-slate-700/30 transition-colors text-sm">

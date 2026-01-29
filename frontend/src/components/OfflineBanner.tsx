@@ -39,7 +39,7 @@ const OfflineBanner: React.FC = () => {
   if (!isOffline && !syncing) return null;
 
   return (
-    <div className="bg-amber-100/90 text-amber-800 border-b border-amber-200 px-4 py-2 text-sm text-center font-black uppercase tracking-widest sticky top-0 z-[100] animate-in slide-in-from-top duration-300 backdrop-blur-md">
+    <div className="bg-amber-100/90 text-amber-800 border-b border-amber-200 px-4 py-2 text-sm text-center font-black uppercase tracking-widest sticky top-0 z-100 animate-in slide-in-from-top duration-300 backdrop-blur-md">
       <div className="flex items-center justify-center gap-2">
         {syncing ? (
           <>
