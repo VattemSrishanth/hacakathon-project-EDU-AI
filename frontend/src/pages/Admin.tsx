@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { adminAPI, syllabusAPI } from '../services/api';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
 // Import all board syllabi
 import ncertSyllabus from '../data/ncert_syllabus.json';
@@ -350,7 +348,6 @@ const Admin: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white flex flex-col">
-      <Navbar />
       <main className="grow container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-indigo-400">Admin Command Center</h1>
@@ -947,7 +944,6 @@ const Admin: React.FC = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
