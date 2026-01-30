@@ -1,0 +1,15 @@
+[llm_service] Loading .env from: C:\Users\SHEELAM RAHUL REDDY\hacakathon-project-EDU-AI\backend\.env
+[llm_service] Failed to load google-generativeai: Metaclasses with custom tp_new are not supported.
+Connecting to MongoDB at: mongodb://localhost:27017/edu_ai
+[OK] MongoDB connected and models initialized.
+
+==================================================
+RuralAccess AI Backend Server
+==================================================
+MongoDB URI: mongodb://localhost:27017/edu_ai
+Server: http://127.0.0.1:5000
+API Docs: http://127.0.0.1:5000/
+==================================================
+
+ * Serving Flask app 'app'
+ * Debug mode: off

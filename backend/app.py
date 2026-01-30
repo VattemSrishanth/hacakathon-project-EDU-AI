@@ -281,7 +281,9 @@ try:
     client.admin.command('ping')
     
     mongo = PyMongo(app)
-    init_mongo_models(mongo)
+    # Move initialization out of before_first_request for Flask 3.0+
+    with app.app_context():
+        init_mongo_models(mongo)
     print("[OK] MongoDB connected and models initialized.")
 except (ServerSelectionTimeoutError, Exception) as e:
     print(f"[WARN] MongoDB connection failed: {e}")
@@ -295,21 +297,13 @@ except (ServerSelectionTimeoutError, Exception) as e:
     
     mongo = MockMongo(mock_db)
     init_mongo_models(mongo)
-    
-    from models import User
-    if not User.find_one({"username": "admin"}):
-        User.create({
-            "username": "admin",
-            "email": "admin@eduai.com",
-            "password_hash": User.set_password("admin123"),
-            "role": "admin",
-            "accessibility_mode": "regular",
-            "preferred_language": "en"
-        })
-        print("[OK] Temporary admin created in mock database: admin@eduai.com / admin123")
 
 
-# ==================== API Routes ====================
+# Remove the deprecated and non-functional setup_db
+# @app.before_first_request
+# def setup_db():
+#    ...
+
 
 @app.route("/", methods=["GET"])
 def root():
@@ -1146,6 +1140,7 @@ def get_admin_stats(current_user, user_id):
         stats = {
             "total_users": mongo.db.users.count_documents({}),
             "total_lessons": mongo.db.courses.count_documents({}),
+            "total_syllabi": mongo.db.syllabus_content.count_documents({}),
             "total_chats": mongo.db.chat_history.count_documents({}),
             "total_assignments": mongo.db.assignments.count_documents({}),
             "total_feedback": mongo.db.feedback.count_documents({}),
@@ -1249,36 +1244,46 @@ def admin_manage_syllabus_content(current_user):
 @app.route("/api/syllabus-content", methods=["GET"])
 def get_syllabus_content():
     """Fetch content for a specific syllabus topic."""
-    board = request.args.get("board")
-    class_level = request.args.get("class_level")
-    subject = request.args.get("subject")
-    topic = request.args.get("topic")
+    board = request.args.get("board", "").strip()
+    class_level = request.args.get("class_level", "").strip()
+    subject = request.args.get("subject", "").strip()
+    topic = request.args.get("topic", "").strip()
     
     if not all([board, class_level, subject, topic]):
         return jsonify({"error": "Missing filter parameters", "success": False}), 400
         
-    # Build case-insensitive regex for topic name to avoid apostrophe/whitespace issues
+    # Build case-insensitive regex for all fields to be ultra-flexible
     import re
-    topic_regex = re.compile(f"^{re.escape(topic)}$", re.IGNORECASE)
+    def get_regex(text):
+        return re.compile(f"^{re.escape(text)}$", re.IGNORECASE)
         
     query = {
-        "board": board,
-        "class_level": str(class_level),
-        "subject": subject,
-        "topic": topic_regex
+        "board": get_regex(board),
+        "class_level": get_regex(class_level), # Matches "10" vs "10 " or "1" vs "1"
+        "subject": get_regex(subject),
+        "topic": get_regex(topic)
     }
     
-    # 1. Check specialized SyllabusContent first
+    # Also support searching by string if regex fails in some mongo versions
     content = SyllabusContent.find_one(query)
+    if not content:
+        # Fallback to direct string match if regex fails
+        query_simple = {
+            "board": board,
+            "class_level": class_level,
+            "subject": subject,
+            "topic": topic
+        }
+        content = SyllabusContent.find_one(query_simple)
+    
     if content:
         return jsonify({"success": True, "content": SyllabusContent.format_doc(content)})
     
     # 2. Fallback: Check if there's a Course lesson that matches this topic
-    # Look for lessons where the title matches the topic OR the topic is in the list of topics
     lesson_query = {
-        "class_level": str(class_level),
+        "class_level": get_regex(class_level),
         "$or": [
-            {"title": topic_regex},
+            {"title": get_regex(topic)},
             {"topics": topic}
         ]
     }
@@ -1494,9 +1499,21 @@ if __name__ == "__main__":
     print("RuralAccess AI Backend Server")
     print("="*50)
     print(f"MongoDB URI: {app.config['MONGO_URI']}")
-    print(f"Server: http://127.0.0.1:5000")
-    print(f"API Docs: http://127.0.0.1:5000/")
+    host = os.getenv("HOST", "0.0.0.0").strip() or "0.0.0.0"
+    port_str = (os.getenv("PORT", "5000") or "5000").strip()
+    try:
+        port = int(port_str)
+    except ValueError:
+        port = 5000
+
+    debug_flag = (os.getenv("FLASK_DEBUG", "0") or "0").strip().lower()
+    debug = debug_flag in ("1", "true", "yes", "on")
+
+    # Display localhost URL for convenience
+    display_host = "127.0.0.1" if host in ("0.0.0.0", "::") else host
+    print(f"Server: http://{display_host}:{port}")
+    print(f"API Docs: http://{display_host}:{port}/")
     print("="*50 + "\n")
     
     # Run on all interfaces to avoid localhost resolution issues
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host=host, port=port, debug=debug)
