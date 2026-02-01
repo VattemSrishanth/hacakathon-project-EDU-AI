@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
           const response = await api.get('/auth/me', {
             headers: { Authorization: `Bearer ${auth.token}` }
           });
-          if (response.data.authenticated && response.data.user) {
+          if (response.data.status === 'ok' && response.data.user) {
             setAuth((prev) => {
               if (!prev) return prev;
               return {

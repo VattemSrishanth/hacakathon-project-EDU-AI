@@ -37,10 +37,10 @@ const Home = () => {
            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/20 rounded-full blur-[120px] animate-pulse" />
         </div>
 
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl font-extrabold text-app-text-main mb-8 leading-tight tracking-tight">
+        <div className="hero-section max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl md:text-7xl font-extrabold text-app-text-main mb-8 leading-tight tracking-tight magic-text">
             {t.home.welcome}{' '}
-            <span className="text-primary italic">
+            <span className="text-primary italic wa-title" data-text={t.home.brandName}>
               {t.home.brandName}
             </span>
           </h1>
@@ -162,10 +162,8 @@ const Home = () => {
 
       {/* CTA Section */}
       <section className="py-24 px-4 bg-app-bg-alt">
-        <div
-          className="max-w-6xl mx-auto rounded-[3rem] p-16 text-center relative overflow-hidden shadow-2xl border-2 bg-app-bg border-app-border"
-        >
-          <div className="relative z-10">
+        <div className="max-w-6xl mx-auto">
+          <Card variant="magic" className="p-16 text-center relative overflow-hidden">
             <h2 className="text-5xl md:text-8xl font-black mb-8 leading-tight m-0 text-app-text-main">
               {t.home.ctaTitle}
             </h2>
@@ -182,7 +180,7 @@ const Home = () => {
             >
               {t.home.startLearning}
             </Button>
-          </div>
+          </Card>
         </div>
       </section>
     </div>

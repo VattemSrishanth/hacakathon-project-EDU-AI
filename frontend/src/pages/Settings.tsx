@@ -676,6 +676,16 @@ const Settings = () => {
                       previewClass="gradient-harry-potter"
                       accentClass="bg-amber-500"
                     />
+                    <ThemeCard 
+                      id={"STRANGER THINGS" as ThemeMode} 
+                      title="STRANGER THINGS" 
+                      desc="Eerie, retro-horror 80s vibe with neon red and dark forest atmosphere" 
+                      icon={Zap} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="gradient-stranger-things"
+                      accentClass="bg-red-600"
+                    />
                   </div>
                 </section>
 

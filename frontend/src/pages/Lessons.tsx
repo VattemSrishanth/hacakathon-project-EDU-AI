@@ -271,42 +271,44 @@ const Lessons = () => {
             
             {/* Sidebar Navigation */}
             <div className="lg:col-span-4 space-y-8 h-fit lg:sticky lg:top-8">
-              {!selectedSubject ? (
-                <div className="space-y-6 animate-in fade-in slide-in-from-left-6 duration-500">
-                  <div className="flex items-center gap-3 text-primary">
-                    <Layout size={24} />
-                    <h2 className="text-xl font-black uppercase tracking-tight">Select Subject</h2>
-                  </div>
-                  <SubjectList 
-                    subjects={subjectsList} 
-                    onSelectSubject={setSelectedSubject} 
-                    selectedSubject={selectedSubject} 
-                  />
-                </div>
-              ) : (
-                <div className="space-y-6 animate-in fade-in slide-in-from-left-6 duration-500">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-secondary">
-                      <BookOpen size={24} />
-                      <h2 className="text-xl font-black uppercase tracking-tight">{selectedSubject} Units</h2>
+              <div className="sidebar">
+                {!selectedSubject ? (
+                  <div className="space-y-6 animate-in fade-in slide-in-from-left-6 duration-500">
+                    <div className="flex items-center gap-3 text-primary">
+                      <Layout size={24} />
+                      <h2 className="text-xl font-black uppercase tracking-tight">Select Subject</h2>
                     </div>
-                    <button 
-                      onClick={resetToSubject}
-                      className="p-2 rounded-xl bg-app-bg hover:bg-app-bg-alt text-app-text-sub border border-app-border transition-colors"
-                    >
-                      <ArrowLeft size={18} />
-                    </button>
+                    <SubjectList 
+                      subjects={subjectsList} 
+                      onSelectSubject={setSelectedSubject} 
+                      selectedSubject={selectedSubject} 
+                    />
                   </div>
-                  <UnitAccordion 
-                    units={currentUnits} 
-                    onSelectTopic={(unit, topic) => {
-                      setSelectedUnit(unit);
-                      setSelectedTopic(topic);
-                    }} 
-                    selectedTopic={selectedTopic} 
-                  />
-                </div>
-              )}
+                ) : (
+                  <div className="space-y-6 animate-in fade-in slide-in-from-left-6 duration-500">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 text-secondary">
+                        <BookOpen size={24} />
+                        <h2 className="text-xl font-black uppercase tracking-tight">{selectedSubject} Units</h2>
+                      </div>
+                      <button 
+                        onClick={resetToSubject}
+                        className="p-2 rounded-xl bg-app-bg hover:bg-app-bg-alt text-app-text-sub border border-app-border transition-colors"
+                      >
+                        <ArrowLeft size={18} />
+                      </button>
+                    </div>
+                    <UnitAccordion 
+                      units={currentUnits} 
+                      onSelectTopic={(unit, topic) => {
+                        setSelectedUnit(unit);
+                        setSelectedTopic(topic);
+                      }} 
+                      selectedTopic={selectedTopic} 
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Main Content Viewer */}

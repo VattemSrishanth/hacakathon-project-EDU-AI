@@ -709,7 +709,7 @@ const Admin: React.FC = () => {
         )}
 
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
             <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
               <h3 className="text-slate-400 text-sm font-medium">Total Users</h3>
               <p className="text-4xl font-bold mt-2 text-indigo-400">{stats.total_users}</p>
@@ -717,6 +717,10 @@ const Admin: React.FC = () => {
             <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
               <h3 className="text-slate-400 text-sm font-medium">Courses</h3>
               <p className="text-4xl font-bold mt-2 text-emerald-400">{stats.total_lessons}</p>
+            </div>
+            <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+              <h3 className="text-slate-400 text-sm font-medium">Syllabus Topics</h3>
+              <p className="text-4xl font-bold mt-2 text-indigo-300">{stats.total_syllabi || 0}</p>
             </div>
             <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
               <h3 className="text-slate-400 text-sm font-medium">AI Chats</h3>

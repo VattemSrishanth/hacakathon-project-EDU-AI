@@ -4,6 +4,18 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App.tsx';
 
+// If a Service Worker was previously installed (e.g., from a production preview),
+// it can interfere with Vite dev module requests. Ensure dev runs SW-free.
+if (import.meta.env.DEV && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((registration) => registration.unregister());
+  });
+
+  if ('caches' in window) {
+    caches.keys().then((keys) => keys.forEach((key) => caches.delete(key)));
+  }
+}
+
 // Register Service Worker for Offline Support (only in production builds)
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {

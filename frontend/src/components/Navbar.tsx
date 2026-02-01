@@ -16,7 +16,8 @@ import {
   Menu,
   X,
   ArrowRight,
-  Bell
+  Bell,
+  ShieldCheck
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -81,12 +82,15 @@ const Navbar = () => {
   if (isFullscreen) return null;
 
   return (
-    <nav className="bg-app-bg border-b border-app-border sticky top-0 z-50 transition-colors duration-200 shadow-sm">
+    <nav className="navbar bg-app-bg border-b border-app-border sticky top-0 z-50 transition-colors duration-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center group">
-              <span className="text-3xl font-black tracking-tighter text-primary">
+              <span
+                className="text-3xl font-black tracking-tighter text-primary wa-logo magic-text"
+                data-text="LearnBridge AI"
+              >
                 LearnBridge AI
               </span>
             </Link>
@@ -111,7 +115,7 @@ const Navbar = () => {
                     }
                   }}
                   className={({ isActive }) => `
-                    flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 group
+                    wa-navlink flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 group
                     ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}
                     ${isActive && !isDisabled 
                       ? 'bg-primary/10 text-primary active-link shadow-sm' 
@@ -248,6 +252,20 @@ const Navbar = () => {
                         <User className="text-primary" size={20} />
                         {t.nav.profile}
                       </button>
+                      {auth?.user?.role === 'admin' && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setProfileOpen(false);
+                            setProfilePinned(false);
+                            navigate('/admin');
+                          }}
+                          className={`w-full text-left px-4 py-3 text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-3 border-t border-app-border/30 bg-primary/5 ${popupHover}`}
+                        >
+                          <ShieldCheck className="text-primary" size={20} />
+                          Admin Dashboard
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={handleLogout}

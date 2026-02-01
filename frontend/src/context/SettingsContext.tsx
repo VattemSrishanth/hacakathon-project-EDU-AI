@@ -10,7 +10,7 @@ export type EducationBoard = 'NCERT' | 'Telangana' | 'Andhra Pradesh';
 export type ContentPreference = 'Text' | 'Video' | 'Both';
 export type AnswerStyle = 'Short' | 'Detailed';
 export type ReminderFrequency = 'Daily' | 'Weekly' | 'Off';
-export type ThemeMode = 'Midnight Void' | 'Crystal Light' | 'Forest Depths' | 'Aurora Borealis' | 'Sunset Ember' | 'Wizards Academy' | 'HARRY POTTER';
+export type ThemeMode = 'Midnight Void' | 'Crystal Light' | 'Forest Depths' | 'Aurora Borealis' | 'Sunset Ember' | 'Wizards Academy' | 'HARRY POTTER' | 'STRANGER THINGS';
 export type FontSize = 'Small' | 'Medium' | 'Large';
 export type AccessibilityMode = 'Normal' | 'Deaf' | 'Dumb' | 'Blind';
 
@@ -148,7 +148,7 @@ const loadSettingsFromStorage = (): SettingsState => {
         ...defaultSettings.themeAccessibility,
         ...(storedSettings?.themeAccessibility || {}),
         // migration/fallback for old theme values
-        theme: (['Midnight Void', 'Crystal Light', 'Forest Depths', 'Aurora Borealis', 'Sunset Ember', 'Wizards Academy', 'HARRY POTTER'].includes(storedSettings?.themeAccessibility?.theme as any)
+        theme: (['Midnight Void', 'Crystal Light', 'Forest Depths', 'Aurora Borealis', 'Sunset Ember', 'Wizards Academy', 'HARRY POTTER', 'STRANGER THINGS'].includes(storedSettings?.themeAccessibility?.theme as any)
           ? storedSettings?.themeAccessibility?.theme 
           : defaultSettings.themeAccessibility.theme) as ThemeMode,
       },
@@ -169,39 +169,51 @@ const saveSettingsToStorage = (settings: SettingsState): void => {
 // ==================== Apply Global Effects ====================
 const applyTheme = (theme: ThemeMode): void => {
   const root = document.documentElement;
+  const body = document.body;
   
-  // Remove all potential theme classes
-  const themeClasses = ['theme-midnight', 'theme-crystal', 'theme-forest', 'theme-aurora', 'theme-sunset', 'theme-hogwarts', 'theme-harry-potter', 'dark'];
+  // Remove all potential theme classes from BOTH root and body to ensure clean switch
+  const themeClasses = ['theme-midnight', 'theme-crystal', 'theme-forest', 'theme-aurora', 'theme-sunset', 'theme-hogwarts', 'theme-harry-potter', 'theme-stranger', 'dark'];
   root.classList.remove(...themeClasses);
+  body.classList.remove(...themeClasses);
 
   // Set base variables first (default to Crystal Light if needed)
-  if (theme === 'Midnight Void' || theme === 'Forest Depths' || theme === 'Aurora Borealis' || theme === 'Wizards Academy' || theme === 'HARRY POTTER') {
+  if (['Midnight Void', 'Forest Depths', 'Aurora Borealis', 'Wizards Academy', 'HARRY POTTER', 'STRANGER THINGS'].includes(theme)) {
     root.classList.add('dark');
   }
 
-  // Add specific theme class
+  // Add specific theme class to BODY (as requested) and ROOT (for tailwind/css variables consistency)
+  // Using both ensures maximum compatibility with existing CSS selectors (some might rely on root, user asks for body)
+  let themeClass = '';
   switch (theme) {
     case 'Midnight Void':
-      root.classList.add('theme-midnight');
+      themeClass = 'theme-midnight';
       break;
     case 'Crystal Light':
-      root.classList.add('theme-crystal');
+      themeClass = 'theme-crystal';
       break;
     case 'Forest Depths':
-      root.classList.add('theme-forest');
+      themeClass = 'theme-forest';
       break;
     case 'Aurora Borealis':
-      root.classList.add('theme-aurora');
+      themeClass = 'theme-aurora';
       break;
     case 'Sunset Ember':
-      root.classList.add('theme-sunset');
+      themeClass = 'theme-sunset';
       break;
     case 'Wizards Academy':
-      root.classList.add('theme-hogwarts');
+      themeClass = 'theme-hogwarts';
       break;
     case 'HARRY POTTER':
-      root.classList.add('theme-harry-potter');
+      themeClass = 'theme-harry-potter';
       break;
+    case 'STRANGER THINGS':
+      themeClass = 'theme-stranger';
+      break;
+  }
+
+  if (themeClass) {
+    root.classList.add(themeClass);
+    body.classList.add(themeClass);
   }
 };
 

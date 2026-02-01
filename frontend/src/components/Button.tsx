@@ -7,6 +7,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = ({ variant = 'primary', children, className = '', ...props }: ButtonProps) => {
   const baseStyles = 'px-6 py-3 rounded-xl font-black uppercase tracking-widest text-xs transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95 btn-magic';
+
+  // Theme hook classes (used by the cinematic wizarding theme)
+  const themeHookClass =
+    variant === 'primary' ? 'button-primary' :
+    (variant === 'secondary' || variant === 'outline') ? 'button-secondary' :
+    '';
   
   const variantStyles = {
     primary: 'bg-primary text-white hover:bg-primary-hover shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30',
@@ -17,7 +23,7 @@ const Button = ({ variant = 'primary', children, className = '', ...props }: But
 
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+      className={`${baseStyles} ${themeHookClass} ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}
