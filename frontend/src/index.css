@@ -942,6 +942,99 @@ body, nav, footer, .card, button, input, select {
   100% { transform: translate(0, 105vh) rotate(360deg); }
 }
 
+/* Gothic Atmosphere Extensions */
+.wednesday-web-corner {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.2;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0 0 L100 100 M0 0 L100 40 M0 0 L40 100 M20 8 Q 30 20 8 20 M40 15 Q 50 40 15 40 M60 25 Q 75 60 25 60 M80 35 Q 95 85 35 85' stroke='white' stroke-width='0.2' fill='none'/%3E%3C/svg%3E");
+  background-size: cover;
+}
+.web-tl { top: -20px; left: -20px; transform: rotate(0deg); }
+.web-tr { top: -20px; right: -20px; transform: rotate(90deg); }
+.web-bl { bottom: -20px; left: -20px; transform: rotate(-90deg); }
+
+.wednesday-spider-spawn {
+  position: fixed;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 10000;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.spider-body {
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 8c-3 0-5-2-5-2M12 10c-4 0-6-1-6-1M12 14c-4 0-6 1-6 1M12 16c-3 0-5 2-5 2M12 8c3 0 5-2 5-2M12 10c4 0 6-1 6-1M12 14c4 0 6 1 6 1M12 16c3 0 5 2 5 2' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.silk-thread {
+  position: absolute;
+  top: -1000px;
+  left: 50%;
+  width: 1px;
+  height: 1000px;
+  background: rgba(255,255,255,0.08);
+}
+
+.shadow-creature {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: multiply;
+}
+
+/* Spider Animations */
+@keyframes crawlOnEdge {
+  0% { transform: translateY(0) rotate(0deg); offset-distance: 0%; }
+  100% { transform: translateY(0) rotate(0deg); offset-distance: 100%; }
+}
+
+@keyframes spiderWiggle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1) rotate(2deg); }
+}
+
+@keyframes spiderDescend {
+  0% { transform: translateY(-100%); }
+  40%, 60% { transform: translateY(300px); }
+  100% { transform: translateY(-100%); }
+}
+
+@keyframes shadowPassHorizontal {
+  0% { transform: translate(-100%, 10%) rotate(5deg); opacity: 0; }
+  20% { opacity: 0.4; }
+  80% { opacity: 0.4; }
+  100% { transform: translate(150vw, 30%) rotate(-5deg); opacity: 0; }
+}
+
+/* Interactive Feed */
+.theme-wednesday button:hover::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: rgba(0,0,0,0.4);
+  filter: blur(4px);
+  border-radius: 50%;
+  animation: spiderScat 0.4s forwards;
+}
+
+@keyframes spiderScat {
+  0% { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(40px, -20px) scale(0); opacity: 0; }
+}
+
 /* Settings Preview */
 .gradient-wednesday {
   background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);

@@ -93,6 +93,8 @@ const WednesdayEffects = () => {
   const { settings } = useSettings();
   const isWednesday = settings.themeAccessibility.theme === 'WEDNESDAY';
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
+  const [spiders, setSpiders] = useState<{ id: number; style: any; type: string }[]>([]);
+  const nextSpiderId = useRef(0);
 
   useEffect(() => {
     if (!isWednesday) return;
@@ -101,9 +103,44 @@ const WednesdayEffects = () => {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
 
+    const spawnSpider = () => {
+      if (spiders.length >= 3) return; // Keep it elegant, max 3
+      
+      const id = nextSpiderId.current++;
+      const type = Math.random() > 0.5 ? 'descend' : 'crawl';
+      const duration = 10000 + Math.random() * 5000;
+      
+      const newSpider = {
+        id,
+        type,
+        style: type === 'descend' ? {
+          left: `${10 + Math.random() * 80}%`,
+          top: 0,
+          animation: `spiderDescend ${duration}ms linear forwards`,
+        } : {
+          left: '-50px',
+          top: `${20 + Math.random() * 60}%`,
+          animation: `crawlOnEdge ${duration}ms linear forwards`,
+          offsetPath: `path('M 0 0 L ${window.innerWidth + 100} ${Math.random() * 200 - 100}')`
+        }
+      };
+
+      setSpiders(prev => [...prev, newSpider]);
+      setTimeout(() => {
+        setSpiders(prev => prev.filter(s => s.id !== id));
+      }, duration);
+    };
+
+    const timer = setInterval(() => {
+      if (Math.random() > 0.6) spawnSpider();
+    }, 12000);
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [isWednesday]);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      clearInterval(timer);
+    };
+  }, [isWednesday, spiders.length]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -126,6 +163,11 @@ const WednesdayEffects = () => {
           transition={{ duration: 2 }}
           className="fixed inset-0 pointer-events-none z-9999 overflow-hidden"
         >
+          {/* Web Strands in Corners */}
+          <div className="wednesday-web-corner web-tl" />
+          <div className="wednesday-web-corner web-tr" />
+          <div className="wednesday-web-corner web-bl" />
+
           {/* Cinematic Overlay Layers */}
           <div className="wednesday-fog" />
           <div className="wednesday-rain" />
@@ -133,13 +175,25 @@ const WednesdayEffects = () => {
           <div className="wednesday-vignette" />
           <div className="wednesday-flicker" />
           
+          {/* Shadow Creatures passing by */}
+          <div className="shadow-creature" style={{ animation: 'shadowPassHorizontal 40s linear infinite' }} />
+          <div className="shadow-creature" style={{ animation: 'shadowPassHorizontal 60s linear infinite reverse', top: '40%' }} />
+
           {/* Spotlight that follows cursor */}
           <div 
             className="fixed inset-0 pointer-events-none z-12"
             style={{
-              background: `radial-gradient(circle 300px at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.04) 0%, transparent 100%)`
+              background: `radial-gradient(circle 350px at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.035) 0%, transparent 100%)`
             }}
           />
+
+          {/* Active Spiders */}
+          {spiders.map(spider => (
+            <div key={spider.id} className="wednesday-spider-spawn" style={spider.style}>
+              <div className="spider-body" style={{ animation: 'spiderWiggle 0.5s infinite' }} />
+              {spider.type === 'descend' && <div className="silk-thread" />}
+            </div>
+          ))}
 
           {/* Sparse Raven Feathers */}
           <div className="wednesday-feather" style={{ left: '15%', animationDelay: '0s' }} />
