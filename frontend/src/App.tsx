@@ -29,6 +29,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const SupernaturalEffects = () => {
   const { settings } = useSettings();
   const [isGlitching, setIsGlitching] = useState(false);
+  const [rifts, setRifts] = useState<{ id: number; left: string; top: string; scale: number }[]>([]);
   const isStranger = settings.themeAccessibility.theme === 'STRANGER THINGS';
   const timerRef = useRef<any>(null);
 
@@ -40,9 +41,21 @@ const SupernaturalEffects = () => {
 
     const triggerGlitch = () => {
       setIsGlitching(true);
-      setTimeout(() => setIsGlitching(false), 300 + Math.random() * 400);
+      setTimeout(() => setIsGlitching(false), 500 + Math.random() * 800);
       
-      const nextGlitch = 12000 + Math.random() * 10000; // 12-22 seconds
+      // Spawn a rift regularly
+      if (Math.random() > 0.35) {
+        const id = Date.now();
+        setRifts(prev => [...prev, { 
+          id, 
+          left: `${10 + Math.random() * 80}%`, 
+          top: `${10 + Math.random() * 80}%`,
+          scale: 0.8 + Math.random() * 2.0
+        }]);
+        setTimeout(() => setRifts(prev => prev.filter(r => r.id !== id)), 12000);
+      }
+
+      const nextGlitch = 6000 + Math.random() * 7000; 
       timerRef.current = setTimeout(triggerGlitch, nextGlitch);
     };
 
@@ -72,14 +85,36 @@ const SupernaturalEffects = () => {
           className="fixed inset-0 pointer-events-none z-9999 overflow-hidden"
         >
           {/* Cinematic Grain/Noise */}
-          <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+          <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')] will-change-[opacity]" />
+          
+          {/* VHS Noise Layer */}
+          <div className="st-vhs-noise" />
           
           {/* Floating Spores */}
           <div className="st-spores" />
           
           {/* Fog Layers */}
           <div className="st-fog-layer" />
+
+          {/* Creeping Tentacles & Veins */}
+          <div className="st-tentacle" style={{ bottom: '-150px', left: '-100px', transform: 'translateZ(0)' }} />
+          <div className="st-tentacle" style={{ top: '-150px', right: '-100px', animationDelay: '-8s', transform: 'translateZ(0)' }} />
+          <div className="st-tentacle" style={{ bottom: '-150px', right: '-100px', animationDelay: '-15s', transform: 'scaleX(-1) translateZ(0)' }} />
           
+          <div className="st-vein" style={{ top: '10%', animationDelay: '0s', transform: 'translateZ(0)' }} />
+          <div className="st-vein" style={{ top: '40%', animationDelay: '5s', transform: 'translateZ(0)' }} />
+          <div className="st-vein" style={{ top: '70%', animationDelay: '12s', transform: 'translateZ(0)' }} />
+          <div className="st-vein" style={{ top: '85%', animationDelay: '18s', transform: 'translateZ(0)' }} />
+          
+          {/* Random Rifts */}
+          {rifts.map(rift => (
+            <div 
+              key={rift.id} 
+              className="st-rift" 
+              style={{ left: rift.left, top: rift.top, transform: `scale(${rift.scale})` }} 
+            />
+          ))}
+
           {/* Moving Vignette */}
           <div className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.9)]" />
         </motion.div>

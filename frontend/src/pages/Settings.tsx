@@ -11,7 +11,6 @@ import {
   MessageSquare,
   Trash2,
   Zap,
-  Globe,
   Home,
   Moon,
   Bell,
