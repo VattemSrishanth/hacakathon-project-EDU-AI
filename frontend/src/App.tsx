@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import OfflineBanner from './components/OfflineBanner';
@@ -19,10 +19,136 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { SettingsProvider } from './context/SettingsContext';
+import { SettingsProvider, useSettings } from './context/SettingsContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import PublicRoute from './components/PublicRoute';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// --- Supernatural Effects Component for Stranger Things Theme ---
+const SupernaturalEffects = () => {
+  const { settings } = useSettings();
+  const [isGlitching, setIsGlitching] = useState(false);
+  const isStranger = settings.themeAccessibility.theme === 'STRANGER THINGS';
+  const timerRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!isStranger) {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      return;
+    }
+
+    const triggerGlitch = () => {
+      setIsGlitching(true);
+      setTimeout(() => setIsGlitching(false), 300 + Math.random() * 400);
+      
+      const nextGlitch = 12000 + Math.random() * 10000; // 12-22 seconds
+      timerRef.current = setTimeout(triggerGlitch, nextGlitch);
+    };
+
+    timerRef.current = setTimeout(triggerGlitch, 5000);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [isStranger]);
+
+  useEffect(() => {
+    if (isStranger && isGlitching) {
+      document.body.classList.add('glitch-active');
+    } else {
+      document.body.classList.remove('glitch-active');
+    }
+    return () => document.body.classList.remove('glitch-active');
+  }, [isGlitching, isStranger]);
+
+  return (
+    <AnimatePresence>
+      {isStranger && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.5 }}
+          className="fixed inset-0 pointer-events-none z-9999 overflow-hidden"
+        >
+          {/* Cinematic Grain/Noise */}
+          <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+          
+          {/* Floating Spores */}
+          <div className="st-spores" />
+          
+          {/* Fog Layers */}
+          <div className="st-fog-layer" />
+          
+          {/* Moving Vignette */}
+          <div className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.9)]" />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// --- Wednesday Addams Effects Component ---
+const WednesdayEffects = () => {
+  const { settings } = useSettings();
+  const isWednesday = settings.themeAccessibility.theme === 'WEDNESDAY';
+  const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
+
+  useEffect(() => {
+    if (!isWednesday) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [isWednesday]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isWednesday) {
+      root.classList.add('theme-wednesday');
+      document.body.classList.add('theme-wednesday');
+    } else {
+      root.classList.remove('theme-wednesday');
+      document.body.classList.remove('theme-wednesday');
+    }
+  }, [isWednesday]);
+
+  return (
+    <AnimatePresence>
+      {isWednesday && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 2 }}
+          className="fixed inset-0 pointer-events-none z-9999 overflow-hidden"
+        >
+          {/* Cinematic Overlay Layers */}
+          <div className="wednesday-fog" />
+          <div className="wednesday-rain" />
+          <div className="wednesday-grain" />
+          <div className="wednesday-vignette" />
+          <div className="wednesday-flicker" />
+          
+          {/* Spotlight that follows cursor */}
+          <div 
+            className="fixed inset-0 pointer-events-none z-12"
+            style={{
+              background: `radial-gradient(circle 300px at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.04) 0%, transparent 100%)`
+            }}
+          />
+
+          {/* Sparse Raven Feathers */}
+          <div className="wednesday-feather" style={{ left: '15%', animationDelay: '0s' }} />
+          <div className="wednesday-feather" style={{ left: '85%', animationDelay: '12s' }} />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
 
 // New component to handle the mandatory selection between Login/Guest
 const RequireSelection = ({ children }: { children: React.ReactElement }) => {
@@ -44,6 +170,8 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-app-bg transition-colors duration-300">
+      <SupernaturalEffects />
+      <WednesdayEffects />
       <OfflineBanner />
       {!isAuthPage && <Navbar />}
       <main className="flex-1">
@@ -158,8 +286,8 @@ function AppContent() {
             element={
               <div className="min-h-[60vh] flex items-center justify-center">
                 <div className="text-center">
-                  <h1 className="text-3xl font-bold text-gray-900">Page Not Found</h1>
-                  <p className="text-gray-600 mt-2">The page you are looking for does not exist.</p>
+                  <h1 className="text-3xl font-bold text-app-text-main">Page Not Found</h1>
+                  <p className="text-app-text-sub mt-2">The page you are looking for does not exist.</p>
                 </div>
               </div>
             }

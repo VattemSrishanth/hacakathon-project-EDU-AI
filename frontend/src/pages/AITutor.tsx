@@ -398,9 +398,9 @@ const AITutor = () => {
                      const t = cmd.value.toLowerCase();
                      if (t.includes('dark') || t.includes('void')) updateThemeAccessibility({ theme: 'Midnight Void' });
                      else if (t.includes('light') || t.includes('crystal')) updateThemeAccessibility({ theme: 'Crystal Light' });
-                     else if (t.includes('forest') || t.includes('green')) updateThemeAccessibility({ theme: 'Forest Depths' });
-                     else if (t.includes('aurora') || t.includes('purple')) updateThemeAccessibility({ theme: 'Aurora Borealis' });
-                     else if (t.includes('sunset') || t.includes('orange')) updateThemeAccessibility({ theme: 'Sunset Ember' });
+                     else if (t.includes('sunset') || t.includes('orange') || t.includes('ember')) updateThemeAccessibility({ theme: 'Sunset Ember' });
+                     else if (t.includes('potter') || t.includes('wizard') || t.includes('magic')) updateThemeAccessibility({ theme: 'HARRY POTTER' });
+                     else if (t.includes('stranger') || t.includes('horror') || t.includes('upside')) updateThemeAccessibility({ theme: 'STRANGER THINGS' });
                      
                      if (t.includes('low') || t.includes('power')) updateThemeAccessibility({ lowPowerMode: true });
                      if (t.includes('high') || t.includes('contrast')) updateThemeAccessibility({ highContrast: true });

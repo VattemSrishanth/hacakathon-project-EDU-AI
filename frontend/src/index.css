@@ -4,6 +4,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap');
 
+/* Wednesday Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&family=Metal+Mania&family=Pirata+One&display=swap');
+
 /* Wizarding fonts (safe, legally original styling) */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+SC:wght@400;600;700&family=Uncial+Antiqua&family=Inter:wght@400;500;600&family=Lora:wght@400;500;600&display=swap');
 
@@ -105,32 +108,6 @@
   --color-secondary: #22d3ee;
 }
 
-.theme-forest {
-  --bg-primary: #022c22;
-  --bg-secondary: #064e3b;
-  --bg-card: #065f46;
-  --text-primary: #ecfdf5;
-  --text-secondary: #a7f3d0;
-  --text-muted: #6ee7b7;
-  --border-color: #065f46;
-  --color-primary: #10b981;
-  --color-primary-hover: #34d399;
-  --color-secondary: #34d399;
-}
-
-.theme-aurora {
-  --bg-primary: #1e1b4b;
-  --bg-secondary: #312e81;
-  --bg-card: #3730a3;
-  --text-primary: #f5f3ff;
-  --text-secondary: #ddd6fe;
-  --text-muted: #a78bfa;
-  --border-color: #4338ca;
-  --color-primary: #8b5cf6;
-  --color-primary-hover: #a78bfa;
-  --color-secondary: #22d3ee;
-}
-
 .theme-sunset {
   --bg-primary: #fff7ed;
   --bg-secondary: #ffedd5;
@@ -143,20 +120,6 @@
   --color-primary-hover: #fb923c;
   --color-secondary: #fbbf24;
 }
-
-.theme-hogwarts {
-  --bg-primary: #1a0f00;
-  --bg-secondary: #2d1b00;
-  --bg-card: #3d2500;
-  --text-primary: #f3e5ab;
-  --text-secondary: #d4af37;
-  --text-muted: #8b4513;
-  --border-color: #740001;
-  --color-primary: #9c1203;
-  --color-primary-hover: #740001;
-  --color-secondary: #ffd700;
-}
-
 
 /* ==================== Cinematic Wizarding Theme (Authentic Realism) ==================== */
 /* Replaces previous generic gradients with texture-based cinematic overrides. */
@@ -477,355 +440,7 @@
 
 
 /* ==================== STRANGER THINGS Theme (Retro Horror) ==================== */
-.theme-stranger {
-  --bg-primary: #050510;
-  --bg-secondary: #0a0a14;
-  --bg-card: rgba(10, 10, 20, 0.85);
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0a0b0;
-  --text-muted: #606070;
-  --border-color: rgba(220, 20, 60, 0.3); /* Dim red */
-  
-  --color-primary: #ff0033; /* Neon Red */
-  --color-primary-hover: #ff3366;
-  --color-secondary: #4a5c6a; /* Fog grey/blue */
-  
-  --st-font-heading: "Cinzel", serif;
-  --st-shadow-red: 0 0 10px rgba(255, 0, 51, 0.5), 0 0 20px rgba(255, 0, 51, 0.3);
-  --st-ease: cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-/* ==================== Global Atmosphere ==================== */
-.theme-stranger body {
-  position: relative;
-  font-family: "Inter", sans-serif;
-  color: var(--text-primary);
-  background-color: #020205;
-  
-  /* Layered Background: Vignette + Red Light + Texture */
-  background-image: 
-    url('/assets/overlays/vignette.png'),
-    radial-gradient(circle at 50% 10%, rgba(200, 0, 0, 0.08), transparent 60%),
-    linear-gradient(to bottom, rgba(5, 5, 10, 0.8), rgba(0, 0, 0, 0.95)),
-    url('/assets/bg/forest.jpg');
-    
-  background-repeat: no-repeat, no-repeat, no-repeat, cover;
-  background-size: 100% 100%, 100% 100%, 100% 100%, cover;
-  background-attachment: fixed;
-}
-
-/* Fog Layer 1 */
-.theme-stranger body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url('/assets/overlays/fog.png');
-  background-size: 200% 100%;
-  opacity: 0.3;
-  mix-blend-mode: overlay;
-  animation: fogDrift 60s linear infinite alternate;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Floating Clean Particles (Dust/Ash) */
-.theme-stranger body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url('/assets/overlays/particles.png');
-  animation: particleFloat 20s linear infinite;
-  opacity: 0.4;
-  pointer-events: none;
-  z-index: 2;
-}
-
-
-
-/* ==================== Typography (Stranger Things Style) ==================== */
-/* 
-   PRIMARY FONT: 'Playfair Display SC' (Black 900)
-   This is the closest Google Font match to the iconic ITC Benguiat.
-   It has the high contrast, heavy serifs, and dramatic feel.
-*/
-/* Imported at top of file */
-
-/* 
-   SECONDARY FONT: 'IM Fell English SC'
-   Matches the 'SUSPICIOUS MINDS' vintage/distressed look.
-*/
-/* Imported at top of file */
-
-.theme-stranger h1, 
-.theme-stranger h2, 
-.theme-stranger h3,
-.theme-stranger .wa-title {
-  font-family: 'Playfair Display SC', serif;
-  text-transform: uppercase;
-  font-weight: 900 !important; /* Maximum weight for that blocky retro look */
-  letter-spacing: -0.02em; 
-  color: transparent;
-  
-  /* The Outline Effect */
-  -webkit-text-stroke: 1.5px #ff0033;
-  
-  /* Deep Neon Glow */
-  text-shadow: 
-    0 0 5px rgba(255, 0, 51, 0.5),
-    0 0 15px rgba(255, 0, 51, 0.3);
-    
-  position: relative;
-  display: inline-block;
-  animation: neonFlicker 6s infinite alternate;
-}
-
-/* ==================== THE TITULAR LOGO (H1) ==================== */
-.theme-stranger h1 {
-  font-size: clamp(3.5rem, 8vw, 6rem);
-  line-height: 1.1;
-  margin-bottom: 0.8em;
-  padding: 0.2em 0;
-  
-  /* Gradient Fill (Red to Dark Red) */
-  background: linear-gradient(to bottom, #ffe6e6 0%, #ff0033 40%, #590000 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 0; /* Gradient handles the shape */
-  
-  /* Complex Shadow for depth */
-  filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 10px rgba(255, 0, 51, 0.6));
-}
-
-/* Top Bar (The Bar above 'STRANGER') */
-.theme-stranger h1::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: #ff0033;
-  box-shadow: 
-    0 0 5px #ff0033,
-    0 0 15px #ff0033;
-  border-radius: 2px;
-}
-
-/* Bottom Bar (The Bar beside 'THINGS') */
-/* Note: In the real logo, the bar is usually aligned to the right or left of the second word in stacked layout.
-   Here we span somewhat to mimic the vibe. */
-.theme-stranger h1::after {
-  content: "";
-  position: absolute;
-  bottom: 0.15em;
-  left: 15%; /* Indented */
-  right: 15%;
-  height: 3px;
-  background: #ff0033;
-  box-shadow: 
-    0 0 5px #ff0033,
-    0 0 15px #ff0033;
-  border-radius: 2px;
-}
-
-/* ==================== WHITE DISTRESSED TEXT (Like 'SUSPICIOUS MINDS') ==================== */
-/* Use class 'text-distressed' or on H2s if preferred */
-.theme-stranger h2 {
-  font-family: 'IM Fell English SC', serif;
-  color: #e0e0e0;
-  font-weight: 400;
-  font-size: 2.5rem;
-  letter-spacing: 0.05em;
-  -webkit-text-stroke: 0;
-  text-shadow: 
-    0 2px 5px #000, 
-    0 0 20px rgba(0,0,0,0.8);
-  filter: contrast(1.2) brightness(1.1);
-  animation: none; /* Vintage text is stable, usually */
-}
-
-
-
-/* ==================== STRANGER THINGS THEME FIXES ==================== */
-
-/* 1. FORCE FONT on all potential brand elements (Navbar + Footer) */
-.theme-stranger .wa-logo,
-.theme-stranger .wa-title,
-.theme-stranger .navbar span[data-text],
-.theme-stranger h3.magic-text {
-  font-family: 'Playfair Display SC', serif !important;
-  font-weight: 900 !important;
-  white-space: nowrap !important; /* Force single line */
-}
-
-/* 2. Specific fix for Navbar brand "LearnBridge AI" */
-.theme-stranger .navbar span.wa-logo {
-  font-size: 2.2rem; /* Make it large enough to look good */
-  letter-spacing: -0.05em;
-  -webkit-text-stroke: 1px #ff0033;
-  text-shadow: 
-    0 0 5px rgba(255, 0, 51, 0.4),
-    0 0 10px rgba(255, 0, 51, 0.2);
-  display: inline-block;
-  white-space: nowrap; /* Single line */
-  animation: neonFlicker 6s infinite alternate;
-}
-
-/* 3. Specific fix for Footer brand "LearnBridge AI" */
-.theme-stranger .footer h3 {
-  font-family: 'Playfair Display SC', serif !important;
-  font-size: 2.5rem !important;
-  line-height: 1;
-  white-space: nowrap !important; /* Single line */
-  
-  background: linear-gradient(to bottom, #ffe6e6 0%, #ff0033 40%, #590000 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 0;
-  filter: drop-shadow(0 0 10px rgba(255, 0, 51, 0.5));
-}
-
-
-/* ==================== Components ==================== */
-
-/* Navbar */
-.theme-stranger .navbar {
-  background: rgba(5, 5, 10, 0.85);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 0, 51, 0.2);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
-}
-
-.theme-stranger .navbar .wa-navlink:hover {
-  color: #ff0033;
-  text-shadow: 0 0 10px rgba(255, 0, 51, 0.8);
-}
-
-/* Hero Section */
-.theme-stranger .hero-section {
-  position: relative;
-  background: transparent;
-  border: 1px solid rgba(255, 0, 51, 0.1);
-  box-shadow: inset 0 0 100px rgba(0,0,0,0.9);
-  overflow: hidden;
-}
-
-.theme-stranger .hero-section::after {
-  /* Heavy Vignette */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, transparent 40%, #000 120%);
-  pointer-events: none;
-}
-
-/* Cards */
-.theme-stranger .card {
-  background: rgba(10, 10, 15, 0.8);
-  border: 1px solid rgba(255, 0, 51, 0.15);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-  transition: all 0.3s var(--st-ease);
-}
-
-.theme-stranger .card:hover {
-  border-color: rgba(255, 0, 51, 0.6);
-  box-shadow: 0 0 20px rgba(255, 0, 51, 0.2), inset 0 0 20px rgba(255, 0, 51, 0.05);
-  transform: translateY(-2px);
-}
-
-/* Magic Card */
-.theme-stranger .magic-card {
-  background: linear-gradient(145deg, rgba(20, 10, 10, 0.9), rgba(5, 5, 5, 0.95));
-  border: 1px solid rgba(255, 0, 51, 0.4);
-  box-shadow: 0 0 15px rgba(255, 0, 51, 0.15);
-  animation: redGlowPulse 4s infinite alternate;
-}
-
-.theme-stranger .magic-card:hover {
-  box-shadow: 0 0 30px rgba(255, 0, 51, 0.4);
-}
-
-/* Buttons */
-.theme-stranger .button-primary {
-  background: rgba(20, 0, 0, 0.6);
-  border: 1px solid #ff0033;
-  color: #ff0033;
-  box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
-  font-family: var(--st-font-heading);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-.theme-stranger .button-primary:hover {
-  background: #ff0033;
-  color: #000;
-  box-shadow: 0 0 25px rgba(255, 0, 51, 0.8);
-}
-
-.theme-stranger .button-secondary {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #aaa;
-}
-
-.theme-stranger .button-secondary:hover {
-  border-color: #ff0033;
-  color: #fff;
-}
-
-/* Sidebar */
-.theme-stranger .sidebar {
-  background: rgba(5, 5, 8, 0.9);
-  border-right: 1px solid rgba(255, 0, 51, 0.1);
-}
-
-.theme-stranger .sidebar a.active,
-.theme-stranger .sidebar button:hover {
-  background: linear-gradient(90deg, rgba(255,0,51,0.1), transparent);
-  border-left: 3px solid #ff0033;
-  color: #fff;
-  text-shadow: 0 0 8px rgba(255, 0, 51, 0.6);
-}
-
-/* Footer (Fade out) */
-.theme-stranger .footer {
-  background: linear-gradient(to top, #000, rgba(5,5,10,0.9));
-  border-top: 1px solid rgba(255,0,51,0.1);
-}
-
-/* ==================== Animations ==================== */
-
-@keyframes neonFlicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-    text-shadow: 
-      0 0 5px rgba(255, 0, 51, 0.6),
-      0 0 10px rgba(255, 0, 51, 0.4), 
-      0 0 20px rgba(255, 0, 51, 0.2);
-    opacity: 1;
-  }
-  20%, 24%, 55% {
-    text-shadow: none;
-    opacity: 0.5;
-  }
-}
-
-@keyframes fogDrift {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 100% 0%; }
-}
-
-@keyframes particleFloat {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 20% 100%; }
-}
-
-@keyframes redGlowPulse {
-  0% { box-shadow: 0 0 10px rgba(255, 0, 51, 0.1); border-color: rgba(255, 0, 51, 0.3); }
-  100% { box-shadow: 0 0 25px rgba(255, 0, 51, 0.4); border-color: rgba(255, 0, 51, 0.8); }
-}
-
-/* Add gradient class for settings preview */
-.gradient-stranger-things { background: linear-gradient(135deg, #000000 0%, #4a0000 50%, #000000 100%); border: 1px solid #ff0033; }
+/* End of Stranger Things Theme */
 
 
 /* Global Body Styling */
@@ -948,27 +563,6 @@ body, nav, footer, .card, button, input, select {
   50% { opacity: 1; transform: scale(1.2); }
 }
 
-.theme-hogwarts .card-float {
-  animation: float-magic 8s ease-in-out infinite;
-}
-
-.theme-hogwarts .btn-magic:hover {
-  box-shadow: 0 0 15px var(--color-secondary);
-  transition: all 0.3s ease;
-}
-
-.theme-hogwarts .magic-text {
-  background: linear-gradient(to right, #ffd700, #f3e5ab, #ffd700);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shine-magic 4s linear infinite;
-}
-
-@keyframes shine-magic {
-  to { background-position: 200% center; }
-}
-
 
 /* ==================== High Contrast Mode ==================== */
 .high-contrast body { background-color: #000000 !important; color: #ffffff !important; }
@@ -1006,72 +600,350 @@ body, nav, footer, .card, button, input, select {
   54% { opacity: 0.8; }
 }
 
+/* ==================== CINEMATIC STRANGER THINGS UPGRADE ==================== */
 
+.theme-stranger {
+  --bg-primary: #050510;
+  --bg-secondary: #0a0a14;
+  --bg-card: rgba(10, 10, 20, 0.9);
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0b0;
+  --text-muted: #606070;
+  --border-color: rgba(220, 20, 60, 0.4);
+  --color-primary: #ff0033;
+  --color-primary-hover: #ff3366;
+  --color-secondary: #4a5c6a;
+}
 
-/* ==================== PERFECT STRANGER THINGS NAVBAR LOGO ==================== */
+.theme-stranger body {
+  background-color: #020205;
+  background-image: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.85) 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+  font-family: 'Cinzel', serif;
+}
 
-/* Target the logo specifically within the Stranger Things theme */
-.theme-stranger .navbar span.wa-logo {
-  /* 1. Positioning context for the bars */
-  position: relative !important;
-  display: inline-block !important; /* Needed for transform/width */
-  white-space: nowrap !important;
-  
-  /* 2. Sizing and Spacing */
-  padding-top: 0.2em !important;    /* Room for top bar */
-  padding-bottom: 0.2em !important; /* Room for bottom bar */
-  margin-top: 0.1em;
-  
-  /* 3. Typography Matching H1 */
+/* 1. TEXT EFFECTS (GLITCH & NEON) */
+.theme-stranger h1, .theme-stranger h2, .theme-stranger .wa-title {
+  position: relative;
   font-family: 'Playfair Display SC', serif !important;
+  text-transform: uppercase;
+  color: #ff0033;
+  animation: neonPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes neonPulse {
+  from { text-shadow: 0 0 5px rgba(255,0,51,0.5), 0 0 10px rgba(255,0,51,0.3); }
+  to { text-shadow: 0 0 15px rgba(255,0,51,0.8), 0 0 30px rgba(255,0,51,0.5); }
+}
+
+/* GLITCH STATE (Triggered via JS class on body) */
+.glitch-active.theme-stranger h1,
+.glitch-active.theme-stranger .wa-title {
+  animation: rgbSplit 0.15s steps(2) infinite;
+}
+
+.glitch-active.theme-stranger .card {
+  animation: glitchShake 0.2s ease-in-out infinite;
+}
+
+@keyframes rgbSplit {
+  0% { text-shadow: 3px 0 0 #ff0033, -3px 0 0 #00fff9; transform: translate(1px, 1px); }
+  50% { text-shadow: -3px 0 0 #ff0033, 3px 0 0 #00fff9; transform: translate(-1px, -1px); }
+  100% { text-shadow: 3px 0 0 #ff0033, -3px 0 0 #00fff9; transform: translate(0,0); }
+}
+
+@keyframes glitchShake {
+  0%, 100% { transform: translate(0,0); }
+  25% { transform: translate(1px, -1px); filter: hue-rotate(10deg); }
+  75% { transform: translate(-1px, 1px); filter: hue-rotate(-10deg); }
+}
+
+/* 2. OVERLAYS (FOG & SPORES) */
+.st-fog-layer {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(255, 0, 51, 0.08) 100%);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: color-dodge;
+  animation: fogShift 40s ease-in-out infinite;
+}
+
+.st-spores {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+  background-size: 80px 80px;
+  animation: sporeMove 80s linear infinite;
+  opacity: 0.15;
+}
+
+@keyframes fogShift {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.15) rotate(2deg); opacity: 0.8; }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes sporeMove {
+  from { background-position: 0 0; }
+  to { background-position: 1000px 1000px; }
+}
+
+/* 3. INTERACTIONS */
+.theme-stranger button {
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.theme-stranger .button-primary {
+  background-color: #ff0033 !important;
+  color: #000 !important;
   font-weight: 900 !important;
-  font-size: 2.5rem !important; /* Large enough to read */
-  letter-spacing: -0.03em !important;
-  
-  /* 4. The Iconic Gradient & Text Effect (Overrides previous simple stroke) */
-  background: linear-gradient(to bottom, #ffe6e6 0%, #ff0033 40%, #590000 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  -webkit-text-stroke: 0 !important;
-  
-  /* 5. Glow/Shadow */
-  filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 8px rgba(255, 0, 51, 0.8)) !important;
-  
-  /* Remove conflicting animations if any */
-  animation: none !important; 
+  border: none !important;
 }
 
-/* TOP BAR - The glowy line above */
-.theme-stranger .navbar span.wa-logo::before {
-  content: "";
+.theme-stranger .button-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 25px #ff0033, 0 0 50px rgba(255,0,51,0.3);
+  animation: flickerQuick 0.1s infinite;
+}
+
+@keyframes flickerQuick {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.9; filter: brightness(1.2); }
+}
+
+.theme-stranger .card {
+  background: rgba(5, 5, 12, 0.8) !important;
+  border: 1px solid rgba(255, 0, 51, 0.15) !important;
+  backdrop-filter: blur(5px);
+}
+
+.theme-stranger .card:hover {
+  border-color: #ff0033 !important;
+  box-shadow: inset 0 0 20px rgba(255, 0, 51, 0.15), 0 15px 40px rgba(0,0,0,0.6) !important;
+  transform: translateY(-5px);
+}
+
+/* Typography Scale */
+.theme-stranger h1 { font-size: clamp(2.5rem, 6vw, 4rem); letter-spacing: -0.02em; }
+.theme-stranger h2 { font-size: clamp(1rem, 2vw, 1.3rem); white-space: nowrap !important; }
+.theme-stranger h3 { font-size: clamp(0.9rem, 1.8vw, 1.15rem); white-space: nowrap !important; }
+
+/* Cinematic Fade-In for Cards */
+.theme-stranger .card {
+  animation: fadeRise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+@keyframes fadeRise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll Parallax Hint (via translateZ in future if needed) */
+.theme-stranger main {
+  perspective: 1000px;
+}
+
+/* Reduced Motion Safety */
+@media (prefers-reduced-motion: reduce) {
+  .theme-stranger *, .st-fog-layer, .st-spores,
+  .theme-wednesday *, .wednesday-fog, .wednesday-rain, .wednesday-feather, .wednesday-flicker {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* Add gradient class for settings preview */
+.gradient-stranger-things { 
+  background: linear-gradient(135deg, #020205 0%, #4a0000 50%, #020205 100%); 
+  border: 1px solid #ff0033; 
+}
+
+/* End of Stranger Things Theme */
+
+/* ==================== Wednesday Addams Theme (Gothic) ==================== */
+.theme-wednesday {
+  --bg-primary: #000000;
+  --bg-secondary: #050505;
+  --bg-card: #0a0a0a;
+  --text-primary: #f2f2f2;
+  --text-secondary: #a1a1a1;
+  --text-muted: #555555;
+  --border-color: #1a1a1a;
+  --color-primary: #444444;
+  --color-primary-hover: #ffffff;
+  --color-secondary: #1e293b;
+}
+
+.theme-wednesday body {
+  background-color: #000000 !important;
+  color: var(--text-primary) !important;
+  font-family: 'Almendra', serif !important;
+  background-image: 
+    url('https://www.transparenttextures.com/patterns/stardust.png'),
+    radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000000 100%) !important;
+  background-attachment: fixed !important;
+}
+
+/* Typography Gothic Overrides */
+.theme-wednesday h1, 
+.theme-wednesday h2, 
+.theme-wednesday h3, 
+.theme-wednesday h4, 
+.theme-wednesday h5, 
+.theme-wednesday h6 {
+  font-family: 'Metal Mania', serif !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+  color: #ffffff !important;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
+  animation: inkSpread 2s ease-out forwards !important;
+}
+
+.theme-wednesday p, 
+.theme-wednesday span, 
+.theme-wednesday label, 
+.theme-wednesday input, 
+.theme-wednesday select, 
+.theme-wednesday textarea {
+  font-family: 'Almendra', serif !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Wednesday Components */
+.theme-wednesday .card, 
+.theme-wednesday [class*='bg-app-bg-alt'] {
+  background: #0a0a0a !important;
+  border: 1px solid #1a1a1a !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9) !important;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease !important;
+}
+
+.theme-wednesday .card:hover {
+  transform: translateY(-8px) scale(1.01) !important;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 1), 0 0 20px rgba(255, 255, 255, 0.02) !important;
+  border-color: #333 !important;
+}
+
+.theme-wednesday button:not(.sr-only) {
+  font-family: 'Pirata One', serif !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.15em !important;
+  border: 1px solid #222 !important;
+  background: #000 !important;
+  transition: all 0.3s ease !important;
+}
+
+.theme-wednesday button:not(.sr-only):hover {
+  border-color: #f2f2f2 !important;
+  background: #111 !important;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+}
+
+/* Cinematic Effects Layers */
+.wednesday-fog {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px; /* Slightly thinner for navbar */
-  background: #ff0033;
-  box-shadow: 0 0 5px #ff0033, 0 0 10px #ff0033;
-  border-radius: 2px;
-  opacity: 0.9;
+  inset: 0;
+  background: url('https://www.transparenttextures.com/patterns/fog.png');
+  opacity: 0.15;
+  animation: fogMove 80s linear infinite;
 }
 
-/* BOTTOM BAR - The glowy line below */
-.theme-stranger .navbar span.wa-logo::after {
-  content: "";
+.wednesday-rain {
   position: absolute;
-  bottom: 0;
-  left: 0; /* Full width for single line look */
-  right: 0;
-  width: 100%;
-  height: 2px;
-  background: #ff0033;
-  box-shadow: 0 0 5px #ff0033, 0 0 10px #ff0033;
-  border-radius: 2px;
-  opacity: 0.9;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0.08;
 }
 
-/* Ensure container allows overflow if needed (though bars are inside) */
-.theme-stranger .navbar a {
-  overflow: visible !important;
+.wednesday-rain::after {
+  content: '';
+  position: absolute;
+  inset: -100%;
+  background: repeating-linear-gradient(0deg, transparent, transparent 98%, #fff 98.1%, transparent 100%);
+  background-size: 2px 100px;
+  animation: rainVertical 0.6s linear infinite;
 }
 
+.wednesday-grain {
+  position: absolute;
+  inset: 0;
+  background: url('https://grainy-gradients.vercel.app/noise.svg');
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+}
+
+.wednesday-vignette {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 200px 80px #000;
+  animation: vignettePulse 10s infinite alternate;
+}
+
+.wednesday-flicker {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.02), transparent),
+              radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.01), transparent);
+  animation: flickerBody 5s infinite;
+}
+
+.wednesday-feather {
+  position: absolute;
+  top: -50px;
+  width: 15px;
+  height: 30px;
+  background: #000;
+  clip-path: ellipse(30% 50% at 50% 50%);
+  opacity: 0.3;
+  animation: featherFloat 20s linear infinite;
+}
+
+/* Animations */
+@keyframes inkSpread {
+  0% { filter: blur(15px); opacity: 0; letter-spacing: 0.5em; }
+  100% { filter: blur(0); opacity: 1; letter-spacing: 0.2em; }
+}
+
+@keyframes fogMove {
+  from { background-position: 0 0; }
+  to { background-position: 1000px 1000px; }
+}
+
+@keyframes rainVertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(100px); }
+}
+
+@keyframes vignettePulse {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+@keyframes flickerBody {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+  55% { opacity: 0.4; }
+  60% { opacity: 0.7; }
+}
+
+@keyframes featherFloat {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(10vw, 25vh) rotate(90deg); }
+  50% { transform: translate(-5vw, 50vh) rotate(180deg); }
+  75% { transform: translate(10vw, 75vh) rotate(270deg); }
+  100% { transform: translate(0, 105vh) rotate(360deg); }
+}
+
+/* Settings Preview */
+.gradient-wednesday {
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  border: 1px solid #333;
+}

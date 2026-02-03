@@ -10,7 +10,7 @@ export type EducationBoard = 'NCERT' | 'Telangana' | 'Andhra Pradesh';
 export type ContentPreference = 'Text' | 'Video' | 'Both';
 export type AnswerStyle = 'Short' | 'Detailed';
 export type ReminderFrequency = 'Daily' | 'Weekly' | 'Off';
-export type ThemeMode = 'Midnight Void' | 'Crystal Light' | 'Forest Depths' | 'Aurora Borealis' | 'Sunset Ember' | 'Wizards Academy' | 'HARRY POTTER' | 'STRANGER THINGS';
+export type ThemeMode = 'Midnight Void' | 'Crystal Light' | 'Sunset Ember' | 'HARRY POTTER' | 'STRANGER THINGS' | 'WEDNESDAY';
 export type FontSize = 'Small' | 'Medium' | 'Large';
 export type AccessibilityMode = 'Normal' | 'Deaf' | 'Dumb' | 'Blind';
 
@@ -148,7 +148,7 @@ const loadSettingsFromStorage = (): SettingsState => {
         ...defaultSettings.themeAccessibility,
         ...(storedSettings?.themeAccessibility || {}),
         // migration/fallback for old theme values
-        theme: (['Midnight Void', 'Crystal Light', 'Forest Depths', 'Aurora Borealis', 'Sunset Ember', 'Wizards Academy', 'HARRY POTTER', 'STRANGER THINGS'].includes(storedSettings?.themeAccessibility?.theme as any)
+        theme: (['Midnight Void', 'Crystal Light', 'Sunset Ember', 'HARRY POTTER', 'STRANGER THINGS'].includes(storedSettings?.themeAccessibility?.theme as any)
           ? storedSettings?.themeAccessibility?.theme 
           : defaultSettings.themeAccessibility.theme) as ThemeMode,
       },
@@ -172,12 +172,12 @@ const applyTheme = (theme: ThemeMode): void => {
   const body = document.body;
   
   // Remove all potential theme classes from BOTH root and body to ensure clean switch
-  const themeClasses = ['theme-midnight', 'theme-crystal', 'theme-forest', 'theme-aurora', 'theme-sunset', 'theme-hogwarts', 'theme-harry-potter', 'theme-stranger', 'dark'];
+  const themeClasses = ['theme-midnight', 'theme-crystal', 'theme-sunset', 'theme-harry-potter', 'theme-stranger', 'theme-wednesday', 'dark'];
   root.classList.remove(...themeClasses);
   body.classList.remove(...themeClasses);
 
   // Set base variables first (default to Crystal Light if needed)
-  if (['Midnight Void', 'Forest Depths', 'Aurora Borealis', 'Wizards Academy', 'HARRY POTTER', 'STRANGER THINGS'].includes(theme)) {
+  if (['Midnight Void', 'HARRY POTTER', 'STRANGER THINGS', 'WEDNESDAY'].includes(theme)) {
     root.classList.add('dark');
   }
 
@@ -191,23 +191,17 @@ const applyTheme = (theme: ThemeMode): void => {
     case 'Crystal Light':
       themeClass = 'theme-crystal';
       break;
-    case 'Forest Depths':
-      themeClass = 'theme-forest';
-      break;
-    case 'Aurora Borealis':
-      themeClass = 'theme-aurora';
-      break;
     case 'Sunset Ember':
       themeClass = 'theme-sunset';
-      break;
-    case 'Wizards Academy':
-      themeClass = 'theme-hogwarts';
       break;
     case 'HARRY POTTER':
       themeClass = 'theme-harry-potter';
       break;
     case 'STRANGER THINGS':
       themeClass = 'theme-stranger';
+      break;
+    case 'WEDNESDAY':
+      themeClass = 'theme-wednesday';
       break;
   }
 
@@ -318,7 +312,7 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
   }, [settings.learning.language]);
 
   const isDark = useMemo(() => {
-    return ['Midnight Void', 'Forest Depths', 'Aurora Borealis', 'Wizards Academy', 'HARRY POTTER'].includes(settings.themeAccessibility.theme);
+    return ['Midnight Void', 'HARRY POTTER', 'STRANGER THINGS', 'WEDNESDAY'].includes(settings.themeAccessibility.theme);
   }, [settings.themeAccessibility.theme]);
 
   const updateProfile = useCallback((profile: Partial<ProfileSettings>) => {

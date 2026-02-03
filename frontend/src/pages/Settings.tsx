@@ -627,26 +627,6 @@ const Settings = () => {
                       accentClass="bg-blue-600"
                     />
                     <ThemeCard 
-                      id={"Forest Depths" as ThemeMode} 
-                      title="Forest Depths" 
-                      desc="Nature-inspired dark theme with emerald greens" 
-                      icon={Globe} 
-                      current={settings.themeAccessibility.theme}
-                      onClick={(id) => updateThemeAccessibility({ theme: id })}
-                      previewClass="gradient-forest"
-                      accentClass="bg-emerald-500"
-                    />
-                    <ThemeCard 
-                      id={"Aurora Borealis" as ThemeMode} 
-                      title="Aurora Borealis" 
-                      desc="Mystical theme with purple and cyan gradients" 
-                      icon={Zap} 
-                      current={settings.themeAccessibility.theme}
-                      onClick={(id) => updateThemeAccessibility({ theme: id })}
-                      previewClass="gradient-aurora"
-                      accentClass="bg-purple-500"
-                    />
-                    <ThemeCard 
                       id={"Sunset Ember" as ThemeMode} 
                       title="Sunset Ember" 
                       desc="Warm, cozy theme with orange and amber tones" 
@@ -655,16 +635,6 @@ const Settings = () => {
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
                       previewClass="gradient-sunset"
                       accentClass="bg-orange-500"
-                    />
-                    <ThemeCard 
-                      id={"Wizards Academy" as ThemeMode} 
-                      title="Wizards Academy" 
-                      desc="Magical theme inspired by Hogwarts with scarlet and gold" 
-                      icon={Sparkles} 
-                      current={settings.themeAccessibility.theme}
-                      onClick={(id) => updateThemeAccessibility({ theme: id })}
-                      previewClass="gradient-hogwarts"
-                      accentClass="bg-red-700"
                     />
                     <ThemeCard 
                       id={"HARRY POTTER" as ThemeMode} 
@@ -685,6 +655,16 @@ const Settings = () => {
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
                       previewClass="gradient-stranger-things"
                       accentClass="bg-red-600"
+                    />
+                    <ThemeCard 
+                      id={"WEDNESDAY" as ThemeMode} 
+                      title="WEDNESDAY" 
+                      desc="Gothic, cinematic monochrome vibe with ink-spread effects and heavy atmosphere" 
+                      icon={Shield} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="gradient-wednesday"
+                      accentClass="bg-white"
                     />
                   </div>
                 </section>
