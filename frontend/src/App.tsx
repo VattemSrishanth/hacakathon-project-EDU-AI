@@ -1,7 +1,5 @@
-import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import OfflineBanner from './components/OfflineBanner';
 import VoiceControl from './components/VoiceControl';
 import Home from './pages/Home';
@@ -18,11 +16,12 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import PublicRoute from './components/PublicRoute';
+import MainLayout from './components/Layout/MainLayout';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Supernatural Effects Component for Stranger Things Theme ---
@@ -239,15 +238,6 @@ const WednesdayEffects = () => {
   );
 };
 
-// New component to handle the mandatory selection between Login/Guest
-const RequireSelection = ({ children }: { children: React.ReactElement }) => {
-  const { auth } = useAuth();
-  if (!auth) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-};
-
 function AppContent() {
   const location = useLocation();
   const isAuthPage = ['/login', '/register'].includes(location.pathname);
@@ -257,133 +247,133 @@ function AppContent() {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [location.pathname]);
 
+  const renderRoutes = () => (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lessons"
+        element={
+          <ProtectedRoute>
+            <Lessons />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lessons/:id"
+        element={
+          <ProtectedRoute>
+            <LessonViewer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lessons/uploaded"
+        element={
+          <ProtectedRoute>
+            <UploadedPdf />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lessons/quiz"
+        element={
+          <ProtectedRoute>
+            <PdfQuiz />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assignments"
+        element={
+          <ProtectedRoute>
+            <Assignments />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ai-tutor"
+        element={
+          <ProtectedRoute>
+            <AITutor />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/accessibility"
+        element={<Accessibility />}
+      />
+      <Route
+        path="/support"
+        element={<Support />}
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <Admin />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <div className="min-h-[60vh] flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-app-text-main">Page Not Found</h1>
+              <p className="text-app-text-sub mt-2">The page you are looking for does not exist.</p>
+            </div>
+          </div>
+        }
+      />
+    </Routes>
+  );
+
   return (
-    <div className="min-h-screen flex flex-col bg-app-bg transition-colors duration-300">
+    <div className="min-h-screen bg-app-bg transition-colors duration-300">
       <SupernaturalEffects />
       <WednesdayEffects />
       <OfflineBanner />
-      {!isAuthPage && <Navbar />}
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<RequireSelection><Home /></RequireSelection>} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/lessons"
-            element={
-              <ProtectedRoute>
-                <Lessons />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/lessons/:id"
-            element={
-              <ProtectedRoute>
-                <LessonViewer />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/lessons/uploaded"
-            element={
-              <ProtectedRoute>
-                <UploadedPdf />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/lessons/quiz"
-            element={
-              <ProtectedRoute>
-                <PdfQuiz />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/assignments"
-            element={
-              <ProtectedRoute>
-                <Assignments />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/ai-tutor"
-            element={
-              <ProtectedRoute>
-                <AITutor />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/accessibility"
-            element={
-              <RequireSelection>
-                <Accessibility />
-              </RequireSelection>
-            }
-          />
-          <Route
-            path="/support"
-            element={
-              <RequireSelection>
-                <Support />
-              </RequireSelection>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <Admin />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="*"
-            element={
-              <div className="min-h-[60vh] flex items-center justify-center">
-                <div className="text-center">
-                  <h1 className="text-3xl font-bold text-app-text-main">Page Not Found</h1>
-                  <p className="text-app-text-sub mt-2">The page you are looking for does not exist.</p>
-                </div>
-              </div>
-            }
-          />
-        </Routes>
-      </main>
-      {!isAuthPage && <Footer />}
+      {isAuthPage ? (
+        <main className="flex-1">
+          {renderRoutes()}
+        </main>
+      ) : (
+        <MainLayout>
+          {renderRoutes()}
+        </MainLayout>
+      )}
       <VoiceControl />
     </div>
   );
