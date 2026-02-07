@@ -7,14 +7,27 @@ import {
   CheckCircle2, 
   Lightbulb, 
   Globe, 
-  MessageCircle 
+  MessageCircle,
+  Hand,
+  Captions,
+  Mic,
+  Monitor,
+  Type
 } from 'lucide-react';
 import Card from '../components/Card';
 import { useSettings } from '../context/SettingsContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 import type { AccessibilityMode } from '../context/SettingsContext';
 
 const Accessibility = () => {
   const { settings, updateThemeAccessibility } = useSettings();
+  const { 
+    signLanguageEnabled, toggleSignLanguage,
+    captionsEnabled, toggleCaptions,
+    speechAssistEnabled, toggleSpeechAssist,
+    highContrastEnabled, toggleHighContrast,
+    largeTextEnabled, toggleLargeText
+  } = useAccessibility();
 
   const modes: { id: AccessibilityMode; label: string; desc: string; icon: any; color: string }[] = [
     { id: 'Normal', label: 'Normal Mode', desc: 'Standard interface for all users.', icon: User, color: 'primary' },
@@ -74,6 +87,51 @@ const Accessibility = () => {
               )}
             </button>
           ))}
+        </div>
+
+        {/* Global Feature Toggles */}
+        <div className="mb-12 space-y-8">
+          <header>
+            <h2 className="text-2xl font-black text-app-text-main tracking-tight uppercase mb-2">Enhancement Controls</h2>
+            <p className="text-app-text-sub text-xs font-bold uppercase tracking-widest leading-none">Toggle specific assistive features across the platform</p>
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { label: 'Sign Language Mode', icon: Hand, enabled: signLanguageEnabled, toggle: toggleSignLanguage, color: 'bg-purple-500' },
+              { label: 'Live Captions', icon: Captions, enabled: captionsEnabled, toggle: toggleCaptions, color: 'bg-blue-500' },
+              { label: 'Speech Assist', icon: Mic, enabled: speechAssistEnabled, toggle: toggleSpeechAssist, color: 'bg-emerald-500' },
+              { label: 'High Contrast', icon: Monitor, enabled: highContrastEnabled, toggle: toggleHighContrast, color: 'bg-orange-600' },
+              { label: 'Large Text', icon: Type, enabled: largeTextEnabled, toggle: toggleLargeText, color: 'bg-indigo-600' },
+            ].map((feature, idx) => (
+              <button
+                key={idx}
+                onClick={feature.toggle}
+                className={`
+                  flex items-center gap-4 p-6 rounded-3xl border-2 transition-all group
+                  ${feature.enabled 
+                    ? `border-${feature.color.split('-')[1]}-500/20 bg-app-bg shadow-lg shadow-${feature.color.split('-')[1]}-500/5` 
+                    : 'border-app-border bg-app-bg/50 hover:border-app-text-muted/30 opacity-60 hover:opacity-100'}
+                `}
+              >
+                <div className={`p-3 rounded-2xl transition-colors ${feature.enabled ? `${feature.color} text-white` : 'bg-app-bg-alt text-app-text-muted group-hover:bg-app-bg-alt'}`}>
+                  <feature.icon size={24} />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-black text-app-text-main tracking-tight uppercase">{feature.label}</p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${feature.enabled ? 'bg-primary' : 'bg-app-text-muted'}`} />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-app-text-sub">
+                      {feature.enabled ? 'Enabled' : 'Disabled'}
+                    </span>
+                  </div>
+                </div>
+                <div className={`w-12 h-6 rounded-full relative transition-colors ${feature.enabled ? 'bg-primary' : 'bg-app-border'}`}>
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${feature.enabled ? 'left-7' : 'left-1'}`} />
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

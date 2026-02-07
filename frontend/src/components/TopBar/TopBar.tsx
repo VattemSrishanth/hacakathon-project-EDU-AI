@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
+import { useNavigate } from 'react-router-dom';
 import { 
   Search, 
   Globe, 
@@ -20,6 +21,7 @@ interface TopBarProps {
 const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu }) => {
   const { auth } = useAuth();
   const { settings, updateLearning, updateThemeAccessibility, isDark } = useSettings();
+  const navigate = useNavigate();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
@@ -114,7 +116,10 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu }) => {
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
           
-          <button className="p-2 hover:bg-app-accent/10 rounded-lg text-app-text-muted hover:text-app-primary transition-all relative">
+          <button 
+            onClick={() => navigate('/notifications')}
+            className="p-2 hover:bg-app-accent/10 rounded-lg text-app-text-muted hover:text-app-primary transition-all relative"
+          >
             <Bell className="w-5 h-5" />
             <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-app-primary rounded-full" />
           </button>
@@ -123,7 +128,10 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu }) => {
         <div className="h-6 w-px bg-app-border mx-1"></div>
 
         {/* User Profile */}
-        <button className="flex items-center gap-2 p-1.5 hover:bg-app-accent/10 rounded-full transition-all border border-transparent hover:border-app-border group">
+        <button 
+          onClick={() => navigate('/dashboard')}
+          className="flex items-center gap-2 p-1.5 hover:bg-app-accent/10 rounded-full transition-all border border-transparent hover:border-app-border group"
+        >
           <div className="w-8 h-8 rounded-full bg-app-primary/10 border-2 border-app-primary/20 flex items-center justify-center text-app-primary transition-transform group-hover:scale-110">
             <User className="w-5 h-5" />
           </div>

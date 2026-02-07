@@ -70,6 +70,28 @@
   --wa-glow-sapphire: rgba(74, 120, 200, 0.18);
 }
 
+/* ==================== GLOBAL ACCESSIBILITY HELPERS ==================== */
+.high-contrast {
+  --bg-primary: #000000 !important;
+  --bg-secondary: #000000 !important;
+  --bg-card: #000000 !important;
+  --text-primary: #ffffff !important;
+  --text-secondary: #ffff00 !important; /* High contrast yellow */
+  --text-muted: #ffffff !important;
+  --border-color: #ffffff !important;
+  --color-primary: #ffffff !important;
+  --color-primary-hover: #ffff00 !important;
+  border-width: 2px !important;
+}
+
+.large-text {
+  font-size: 1.25rem !important;
+}
+
+.large-text h1 { font-size: 3rem !important; }
+.large-text h2 { font-size: 2.5rem !important; }
+.large-text p, .large-text span, .large-text button { font-size: 1.25rem !important; }
+
 /* ==================== Dark Theme (Slate 950/50 base) ==================== */
 .dark {
   --bg-primary: #020617; /* Slate 950 */

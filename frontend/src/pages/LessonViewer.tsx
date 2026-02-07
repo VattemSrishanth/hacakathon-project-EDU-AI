@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
+import { useAccessibility } from '../context/AccessibilityContext';
+import { useOffline } from '../context/OfflineContext';
 import { lessonsAPI } from '../services/api';
+import { offlineContentService } from '../services/offlineContent';
+import SignLanguagePanel from '../components/Syllabus/SignLanguagePanel';
 import { 
   Upload, 
   Volume2, 
@@ -9,7 +13,10 @@ import {
   BookOpen, 
   Loader2,
   ChevronLeft,
-  Sparkles
+  Sparkles,
+  Download,
+  CheckCircle2,
+  WifiOff
 } from 'lucide-react';
 import Button from '../components/Button';
 
@@ -27,10 +34,20 @@ export default function LessonViewer() {
   const location = useLocation();
   const navigate = useNavigate();
   const { settings } = useSettings();
+  const { signLanguageEnabled, updateAccessibility } = useAccessibility();
+  const { isOffline, downloadLesson, removeLesson, downloadedLessons, downloadingIds } = useOffline();
   const [lesson, setLesson] = useState<LessonData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [uploadedPdf, setUploadedPdf] = useState<string | null>(location.state?.pdfUrl || null);
   const [isReading, setIsReading] = useState(false);
+
+  // Force captions when sign language is enabled
+  useEffect(() => {
+    if (signLanguageEnabled) {
+      updateAccessibility({ captionsEnabled: true });
+    }
+  }, [signLanguageEnabled]);
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -52,6 +69,26 @@ export default function LessonViewer() {
       }
 
       try {
+        // First check offline storage
+        const offlineLesson = await offlineContentService.getLesson(lessonId);
+        if (offlineLesson) {
+          setLesson({
+            id: offlineLesson.id,
+            title: offlineLesson.title,
+            description: 'Offline Content',
+            aiSummary: offlineLesson.content.aiSummary || offlineLesson.content.summary || 'This content is available offline.',
+            textVersion: offlineLesson.content.textVersion || offlineLesson.content.content || ''
+          });
+          setLoading(false);
+          return;
+        }
+
+        if (isOffline) {
+          setError('Connect to the internet to load this lesson');
+          setLoading(false);
+          return;
+        }
+
         const res = await lessonsAPI.getOne(lessonId);
         if (res.success) {
           setLesson(res.lesson);
@@ -131,6 +168,20 @@ export default function LessonViewer() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-app-bg flex items-center justify-center p-4">
+        <div className="text-center animate-in fade-in duration-500">
+          <div className="w-24 h-24 rounded-3xl bg-red-500/10 flex items-center justify-center mx-auto mb-6 text-red-500">
+            <WifiOff size={48} />
+          </div>
+          <p className="text-app-text-main font-black text-xl uppercase tracking-widest">{error}</p>
+          <Button variant="outline" className="mt-6" onClick={() => navigate('/lessons')}>Return to Lessons</Button>
+        </div>
+      </div>
+    );
+  }
+
   if (!lesson) {
     return (
       <div className="min-h-screen bg-app-bg flex items-center justify-center p-4">
@@ -144,11 +195,13 @@ export default function LessonViewer() {
     );
   }
 
-  const showTextVersion = settings.themeAccessibility.accessibilityMode === 'Blind' || settings.themeAccessibility.accessibilityMode === 'Deaf';
+  const showTextVersion = settings.themeAccessibility.accessibilityMode === 'Blind' || 
+                          settings.themeAccessibility.accessibilityMode === 'Deaf' || 
+                          (!lesson?.pdfUrl && !uploadedPdf);
 
   return (
-    <div className="min-h-screen bg-app-bg text-app-text-main py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="max-w-5xl mx-auto space-y-10">
+    <div className={`min-h-screen bg-app-bg text-app-text-main px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${signLanguageEnabled ? 'py-20' : 'py-12'}`}>
+      <div className={`max-auto ${signLanguageEnabled ? 'max-w-7xl' : 'max-w-5xl'} ${signLanguageEnabled ? 'space-y-16' : 'space-y-10'}`}>
         {/* Header */}
         <div className="space-y-6">
           <button
@@ -168,6 +221,37 @@ export default function LessonViewer() {
             </div>
             
             <div className="flex flex-wrap gap-3">
+              {lesson.id !== 'uploaded' && (
+                <>
+                  {downloadedLessons.includes(lesson.id) ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => removeLesson(lesson.id)}
+                      className="flex items-center gap-3 px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-emerald-600 hover:text-red-500 transition-colors"
+                    >
+                      <CheckCircle2 size={20} />
+                      Lesson Downloaded (Delete?)
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      onClick={() => downloadLesson(lesson.id)}
+                      disabled={isOffline || downloadingIds.includes(lesson.id)}
+                      className="flex items-center gap-3 px-6 py-4 rounded-2xl shadow-lg shadow-primary/20 text-xs font-black uppercase tracking-widest"
+                    >
+                      {downloadingIds.includes(lesson.id) ? (
+                        <Loader2 size={20} className="animate-spin" />
+                      ) : isOffline ? (
+                        <WifiOff size={20} />
+                      ) : (
+                        <Download size={20} />
+                      )}
+                      {downloadingIds.includes(lesson.id) ? 'Downloading...' : isOffline ? 'Offline' : 'Save Offline'}
+                    </Button>
+                  )}
+                </>
+              )}
+
               <label className="cursor-pointer">
                 <input
                   type="file"
@@ -222,7 +306,13 @@ export default function LessonViewer() {
         </div>
 
         {/* Content Area */}
-        {showTextVersion ? (
+        {signLanguageEnabled ? (
+          <SignLanguagePanel 
+            lessonTitle={lesson.title} 
+            transcript={lesson.textVersion}
+            // signVideoUrl={lesson.signVideoUrl} // Assuming this might exist in future backend schema
+          />
+        ) : showTextVersion ? (
           /* Text Version for Accessibility */
           <div className="bg-app-bg-alt rounded-[2.5rem] p-10 border border-app-border shadow-inner">
             <h2 className="text-2xl font-black text-app-text-main mb-8 uppercase tracking-tight">Lesson Content</h2>

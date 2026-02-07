@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { offlineSyncService } from './offlineSync';
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
@@ -140,6 +141,10 @@ export const userDataAPI = {
     return response.data;
   },
   updateProfile: async (id: string, data: any) => {
+    if (!navigator.onLine) {
+      offlineSyncService.queueAction('PROFILE_UPDATE', { id, ...data });
+      return { success: true, offline: true };
+    }
     const response = await api.post('/profile', { id, ...data });
     return response.data;
   },
@@ -148,10 +153,18 @@ export const userDataAPI = {
     return response.data;
   },
   updateProgress: async (userId: string, data: any) => {
+    if (!navigator.onLine) {
+      offlineSyncService.queueAction('PROGRESS_UPDATE', { userId, ...data });
+      return { success: true, offline: true };
+    }
     const response = await api.post('/progress', data, { params: { user_id: userId } });
     return response.data;
   },
   saveChatHistory: async (userId: string, messages: any[]) => {
+    if (!navigator.onLine) {
+      offlineSyncService.queueAction('CHAT_HISTORY', { userId, messages });
+      return { success: true, offline: true };
+    }
     const response = await api.post('/history', { messages }, { params: { user_id: userId } });
     return response.data;
   },
@@ -160,6 +173,10 @@ export const userDataAPI = {
     return response.data;
   },
   submitFeedback: async (feedback: any) => {
+    if (!navigator.onLine) {
+      offlineSyncService.queueAction('FEEDBACK', feedback);
+      return { success: true, offline: true };
+    }
     const response = await api.post('/feedback', feedback);
     return response.data;
   },

@@ -3,6 +3,7 @@ import Card from '../components/Card';
 import LoginTracker from '../components/LoginTracker';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { userDataAPI } from '../services/api';
 
 // Import all board syllabi for metrics
@@ -18,12 +19,16 @@ import {
   CheckCircle2, 
   Star, 
   Zap,
-  CircleHelp
+  CircleHelp,
+  FileText,
+  ClipboardCheck,
+  HelpCircle
 } from 'lucide-react';
 
 const Dashboard = () => {
   const { settings, t } = useSettings();
   const { auth } = useAuth();
+  const navigate = useNavigate();
 
   // Select syllabus based on board setting
   const activeSyllabus = useMemo(() => {
@@ -321,6 +326,54 @@ const Dashboard = () => {
               </Card>
             )}
             <LoginTracker />
+
+            {/* Additional Features Quick Access */}
+            <Card className="mt-8">
+              <div className="flex items-center gap-2 mb-4 text-primary">
+                <Zap size={24} />
+                <h2 className="text-xl font-black text-app-text-main tracking-tight">Quick Access</h2>
+              </div>
+              <div className="grid grid-cols-1 gap-3">
+                <button 
+                  onClick={() => navigate('/exams')}
+                  className="flex items-center gap-3 p-3 rounded-xl border border-app-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left group"
+                >
+                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
+                    <ClipboardCheck size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-app-text-main">Exams & Assessments</p>
+                    <p className="text-[10px] text-app-text-muted font-bold uppercase">Test your knowledge</p>
+                  </div>
+                </button>
+
+                <button 
+                  onClick={() => navigate('/reports')}
+                  className="flex items-center gap-3 p-3 rounded-xl border border-app-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left group"
+                >
+                  <div className="p-2 rounded-lg bg-green-500/10 text-green-500 group-hover:scale-110 transition-transform">
+                    <FileText size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-app-text-main">Usage Reports</p>
+                    <p className="text-[10px] text-app-text-muted font-bold uppercase">Download activity logs</p>
+                  </div>
+                </button>
+
+                <button 
+                  onClick={() => navigate('/onboarding')}
+                  className="flex items-center gap-3 p-3 rounded-xl border border-app-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left group"
+                >
+                  <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500 group-hover:scale-110 transition-transform">
+                    <HelpCircle size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-app-text-main">Getting Started</p>
+                    <p className="text-[10px] text-app-text-muted font-bold uppercase">View platform guide</p>
+                  </div>
+                </button>
+              </div>
+            </Card>
           </div>
         </div>
       </div>

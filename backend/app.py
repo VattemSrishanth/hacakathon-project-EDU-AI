@@ -1100,18 +1100,26 @@ def sync_offline_data():
         
         try:
             if action_type == "PROGRESS_UPDATE":
-                # Find progress for user or create new
-                prog = Progress.find_one({"user_id": user_id})
-                if prog:
-                    Progress.update(prog["_id"], payload)
-                else:
-                    Progress.create({**payload, "user_id": user_id})
-                    
+                Progress.update_one({"user_id": user_id}, payload, upsert=True)
+            
             elif action_type == "CHAT_HISTORY":
                 ChatHistory.create({"user_id": user_id, "messages": payload, "created_at": datetime.utcnow()})
                 
             elif action_type == "FEEDBACK":
                 Feedback.create({**payload, "user_id": user_id})
+
+            elif action_type == "PROFILE_UPDATE":
+                # payload has id and other fields
+                p_id = payload.pop("id", None)
+                if p_id:
+                    Profile.update(p_id, payload)
+                else:
+                    Profile.update_one({"user_id": user_id}, payload, upsert=True)
+
+            elif action_type == "SETTINGS":
+                # payload is the whole settings object
+                Profile.update_one({"user_id": user_id}, {"settings": payload}, upsert=True)
+
         except Exception as e:
             print(f"Error syncing action {action_type}: {e}")
             

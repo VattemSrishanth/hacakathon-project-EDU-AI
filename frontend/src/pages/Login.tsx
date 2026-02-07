@@ -14,6 +14,7 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../context/AuthContext";
 import { useSettings } from "../context/SettingsContext";
+import { useOffline } from "../context/OfflineContext";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import { authAPI } from "../services/api";
@@ -25,6 +26,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, continueAsGuest } = useAuth();
+  const { isOffline } = useOffline();
   const { settings, updateLearning, t } = useSettings();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,6 +46,11 @@ const Login = () => {
     setErrorMessage("");
 
     try {
+      if (isOffline) {
+        setErrorMessage("Internet connection required for login. Please check your connection.");
+        setLoading(false);
+        return;
+      }
       const response = await authAPI.login(email, password);
       if (response?.success) {
         login({ token: response?.token, user: response?.user });
@@ -196,8 +203,12 @@ const Login = () => {
               </div>
             </div>
 
-            <Button type="submit" className="w-full py-5 rounded-2xl shadow-xl shadow-blue-500/20 text-sm font-black uppercase tracking-widest" disabled={loading}>
-              {loading ? t.auth.signingIn : "Sign In Now"}
+            <Button 
+              type="submit" 
+              className="w-full py-5 rounded-2xl shadow-xl shadow-blue-500/20 text-sm font-black uppercase tracking-widest disabled:grayscale disabled:opacity-50" 
+              disabled={loading || isOffline}
+            >
+              {loading ? t.auth.signingIn : isOffline ? "Offline - Check Connection" : "Sign In Now"}
             </Button>
           </form>
 
@@ -205,8 +216,8 @@ const Login = () => {
             <button
               type="button"
               onClick={handleGoogleLogin}
-              disabled={loading}
-              className="col-span-2 px-6 py-4 bg-[#0a0f18] border border-white/5 rounded-full font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-[#111827] transition-all shadow-xl active:scale-95 text-white"
+              disabled={loading || isOffline}
+              className="col-span-2 px-6 py-4 bg-[#0a0f18] border border-white/5 rounded-full font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-[#111827] transition-all shadow-xl active:scale-95 text-white disabled:grayscale disabled:opacity-50"
             >
               <FcGoogle size={22} />
               Sign in with Google

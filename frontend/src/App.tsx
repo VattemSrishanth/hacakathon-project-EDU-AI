@@ -11,13 +11,28 @@ import PdfQuiz from './pages/PdfQuiz';
 import AITutor from './pages/AITutor';
 import Assignments from './pages/Assignments';
 import Accessibility from './pages/Accessibility';
+import SignLanguage from './pages/SignLanguage';
+import Captions from './pages/Captions';
+import SpeechAssist from './pages/SpeechAssist';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
+import ComingSoon from './pages/ComingSoon';
+// New Feature Pages
+import CommunityHome from './pages/community/CommunityHome';
+import Exams from './pages/assessments/Exams';
+import Certificates from './pages/certification/Certificates';
+import Notifications from './pages/notifications/Notifications';
+import Insights from './pages/analytics/Insights';
+import GettingStarted from './pages/onboarding/GettingStarted';
+import Reports from './pages/reports/Reports';
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
 import { AuthProvider } from './context/AuthContext';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
+import { AccessibilityProvider } from './context/AccessibilityContext';
+import { OfflineProvider } from './context/OfflineContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import PublicRoute from './components/PublicRoute';
@@ -322,6 +337,24 @@ function AppContent() {
           </ProtectedRoute>
         }
       />
+      <Route path="/sign-language" element={<ProtectedRoute><SignLanguage /></ProtectedRoute>} />
+      <Route path="/captions" element={<ProtectedRoute><Captions /></ProtectedRoute>} />
+      <Route path="/speech-assist" element={<ProtectedRoute><SpeechAssist /></ProtectedRoute>} />
+      <Route path="/downloads" element={<ProtectedRoute><UploadedPdf /></ProtectedRoute>} />
+      <Route path="/sync-status" element={<ComingSoon title="Sync Status" />} />
+      <Route path="/data-usage" element={<ComingSoon title="Data Usage" />} />
+      <Route path="/parent-view" element={<ComingSoon title="Parent View" />} />
+      
+      {/* New Feature Routes */}
+      <Route path="/community" element={<ProtectedRoute><CommunityHome /></ProtectedRoute>} />
+      <Route path="/community/ask" element={<ProtectedRoute><div className="p-8"><h1 className="text-2xl font-bold">Ask a Doubt</h1><ComingSoon title="Ask Doubt System" /></div></ProtectedRoute>} />
+      <Route path="/exams" element={<ProtectedRoute><Exams /></ProtectedRoute>} />
+      <Route path="/certificates" element={<ProtectedRoute><Certificates /></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+      <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
+      <Route path="/onboarding" element={<GettingStarted />} />
+      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+
       <Route
         path="/admin"
         element={
@@ -383,7 +416,11 @@ function App() {
   return (
     <AuthProvider>
       <SettingsProvider>
-        <AppContent />
+        <AccessibilityProvider>
+          <OfflineProvider>
+            <AppContent />
+          </OfflineProvider>
+        </AccessibilityProvider>
       </SettingsProvider>
     </AuthProvider>
   );

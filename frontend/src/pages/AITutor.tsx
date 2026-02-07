@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
+import { useOffline } from '../context/OfflineContext';
+import { aiAPI, userDataAPI } from '../services/api';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import type { ChatMessage } from '../types';
-import { aiAPI, userDataAPI } from '../services/api';
-import { useSettings } from '../context/SettingsContext';
-import { useAuth } from '../context/AuthContext';
 import { 
   Plus, 
   Mic, 
@@ -83,6 +84,7 @@ const DeleteConfirmModal = ({
 const AITutor = () => {
   const { settings, t, updateLearning, updateThemeAccessibility } = useSettings();
   const { auth } = useAuth();
+  const { isOffline } = useOffline();
   const navigate = useNavigate();
   const location = useLocation();
   const { enabled, answerStyle } = settings.aiTutor;
@@ -308,7 +310,7 @@ const AITutor = () => {
     const activeInput = queryToUse.trim() || (fileContext ? "Please summarize and explain this context for me." : "");
     if (!activeInput) return;
 
-    if (!navigator.onLine) {
+    if (isOffline) {
       const offlineMsg: ChatMessage = {
         id: Date.now().toString(),
         role: 'assistant',
@@ -483,7 +485,7 @@ const AITutor = () => {
     if (!file) return;
     setPlusMenuOpen(false);
 
-    if (!navigator.onLine) {
+    if (isOffline) {
       const offlineMsg: ChatMessage = {
         id: Date.now().toString(),
         role: 'assistant',
@@ -516,7 +518,7 @@ const AITutor = () => {
     if (!file) return;
     setPlusMenuOpen(false);
 
-    if (!navigator.onLine) {
+    if (isOffline) {
       const offlineMsg: ChatMessage = {
         id: Date.now().toString(),
         role: 'assistant',

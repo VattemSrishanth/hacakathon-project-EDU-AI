@@ -3,12 +3,13 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
   Menu, X, LayoutDashboard, BookOpen, Sparkles, Accessibility, 
   Hand, Captions, Mic, WifiOff, Download, RefreshCw, Zap, 
-  BarChart, Users, Headset, Settings, User, ShieldAlert,
-  ChevronLeft, ChevronRight, LogOut, Home
+  Headset, Settings, ShieldAlert,
+  ChevronLeft, ChevronRight, LogOut, Home, MessageSquare, Award, HelpCircle, BarChart, User
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
 import SidebarItem from './SidebarItem';
+import { useOffline } from '../../context/OfflineContext';
 
 const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }: { 
   isCollapsed: boolean, 
@@ -18,6 +19,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
 }) => {
   const { auth, isGuest, logout } = useAuth();
   const { t } = useSettings();
+  const { isOffline, syncInProgress } = useOffline();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -33,47 +35,54 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
 
   const navGroups = [
     {
-      title: 'Core Learning',
+      title: 'CORE LEARNING',
       items: [
-        { to: '/', label: 'Home', icon: Home },
-        { to: '/dashboard', label: t.nav.dashboard, icon: LayoutDashboard },
-        { to: '/lessons', label: t.nav.lessons, icon: BookOpen },
-        { to: '/ai-tutor', label: t.nav.aiTutor, icon: Sparkles },
+        { to: '/', label: 'Home', icon: Home, disabled: false },
+        { to: '/dashboard', label: t.nav.dashboard, icon: LayoutDashboard, disabled: false },
+        { to: '/lessons', label: t.nav.lessons, icon: BookOpen, disabled: false },
+        { to: '/ai-tutor', label: t.nav.aiTutor, icon: Sparkles, disabled: false },
       ]
     },
     {
-      title: 'Accessibility',
+      title: 'ACCESSIBILITY',
       isHighlight: true,
       items: [
-        { to: '/accessibility', label: 'Accessibility Hub', icon: Accessibility },
-        { to: '#', label: 'Sign Language', icon: Hand, disabled: true },
-        { to: '#', label: 'Captions', icon: Captions, disabled: true },
-        { to: '#', label: 'Speech Assist', icon: Mic, disabled: true },
+        { to: '/accessibility', label: 'Accessibility Hub', icon: Accessibility, disabled: false },
+        { to: '/sign-language', label: 'Sign Language', icon: Hand, disabled: false },
+        { to: '/captions', label: 'Captions', icon: Captions, disabled: false },
+        { to: '/speech-assist', label: 'Speech Assist', icon: Mic, disabled: false },
       ]
     },
     {
-      title: 'Offline & Low Data',
+      title: 'OFFLINE & LOW DATA',
       items: [
-        { to: '/lessons/uploaded', label: 'Offline Content', icon: WifiOff },
-        { to: '#', label: 'Downloads', icon: Download, disabled: true },
-        { to: '#', label: 'Sync Status', icon: RefreshCw, disabled: true },
-        { to: '#', label: 'Data Usage', icon: Zap, disabled: true },
+        { to: '/lessons/uploaded', label: 'Offline Content', icon: WifiOff, disabled: false },
+        { to: '/downloads', label: 'Downloads', icon: Download, disabled: false },
+        { to: '/sync-status', label: 'Sync Status', icon: RefreshCw, disabled: false },
+        { to: '/data-usage', label: 'Data Usage', icon: Zap, disabled: false },
       ]
     },
     {
-      title: 'Progress & Support',
+      title: 'COMMUNITY & SUPPORT',
       items: [
-        { to: '/dashboard', label: 'Progress', icon: BarChart },
-        { to: '#', label: 'Parent View', icon: Users, disabled: true },
-        { to: '/support', label: t.nav.support, icon: Headset },
+        { to: '/community', label: 'Community', icon: MessageSquare, disabled: false },
+        { to: '/community/ask', label: 'Ask Doubt', icon: HelpCircle, disabled: false },
+        { to: '/support', label: t.nav.support, icon: Headset, disabled: false },
       ]
     },
     {
-      title: 'System',
+      title: 'PROGRESS',
       items: [
-        { to: '/settings', label: t.nav.settings, icon: Settings },
-        { to: '/dashboard', label: t.nav.profile, icon: User },
-        ...(isAdmin ? [{ to: '/admin', label: 'Admin', icon: ShieldAlert }] : []),
+        { to: '/insights', label: 'Progress', icon: BarChart, disabled: false },
+        { to: '/certificates', label: 'Achievements', icon: Award, disabled: false },
+      ]
+    },
+    {
+      title: 'SYSTEM',
+      items: [
+        { to: '/settings', label: t.nav.settings, icon: Settings, disabled: false },
+        { to: '/dashboard', label: t.nav.profile, icon: User, disabled: false },
+        ...(isAdmin ? [{ to: '/admin', label: 'Admin', icon: ShieldAlert, disabled: false }] : []),
       ]
     }
   ];
@@ -161,8 +170,28 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
             </ul>
           </div>
 
-          {/* Footer - Logout/User info */}
-          <div className="p-3 border-t border-app-border">
+          {/* Footer - Logout/User info/Connectivity */}
+          <div className="p-3 border-t border-app-border space-y-2">
+            {(isOffline || syncInProgress) && (
+              <div 
+                className={`flex items-center gap-3 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors duration-500 ${
+                  syncInProgress 
+                    ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' 
+                    : 'bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400'
+                }`}
+                title={isOffline ? 'Working Offline' : 'Syncing Data...'}
+              >
+                {syncInProgress ? (
+                  <RefreshCw size={18} className="shrink-0 animate-spin" />
+                ) : (
+                  <WifiOff size={18} className="shrink-0" />
+                )}
+                {!isCollapsed && (
+                  <span>{syncInProgress ? 'Syncing...' : 'Offline'}</span>
+                )}
+              </div>
+            )}
+
             <button
               onClick={logout}
               className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group relative`}

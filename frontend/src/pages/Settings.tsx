@@ -17,10 +17,15 @@ import {
   Palette,
   Eye,
   Shield,
-  Sparkles
+  Sparkles,
+  WifiOff,
+  Cloud,
+  Database,
+  RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
+import { useOffline } from '../context/OfflineContext';
 import Button from '../components/Button';
 import type { 
   LearningLevel, 
@@ -44,8 +49,9 @@ const Settings = () => {
     updateThemeAccessibility,
     clearChatHistory 
   } = useSettings();
+  const { isOffline, syncInProgress, triggerSync } = useOffline();
   
-  const [activeTab, setActiveTab] = useState<'account' | 'security' | 'visibility' | 'privacy' | 'advertising' | 'notifications' | 'aitutor' | 'appearance'>('account');
+  const [activeTab, setActiveTab] = useState<'account' | 'security' | 'visibility' | 'privacy' | 'advertising' | 'notifications' | 'aitutor' | 'appearance' | 'offline'>('account');
   const [saveMessage, setSaveMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
@@ -155,6 +161,7 @@ const Settings = () => {
             <SidebarItem id="notifications" label="Notifications" icon={Bell} colorClass="text-primary" />
             <SidebarItem id="aitutor" label="AI Tutor Settings" icon={MessageSquare} colorClass="text-primary" />
             <SidebarItem id="appearance" label="Appearance & Theme" icon={Palette} colorClass="text-primary" />
+            <SidebarItem id="offline" label="Offline Data" icon={WifiOff} colorClass="text-primary" />
             
             <div className="pt-8 mt-8 border-t border-app-border">
               <button
@@ -748,6 +755,101 @@ const Settings = () => {
                     </div>
                   </div>
                 </section>
+              </div>
+            )}
+
+            {activeTab === 'offline' && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                <header>
+                  <h1 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Offline Data & Sync</h1>
+                  <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest mt-1">Manage your offline capabilities</p>
+                </header>
+
+                <div className="grid grid-cols-1 gap-8">
+                  {/* Sync Status Card */}
+                  <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors ${
+                          isOffline 
+                            ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-600' 
+                            : 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600'
+                        }`}>
+                          {isOffline ? <WifiOff size={32} /> : <Cloud size={32} />}
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-black text-app-text-main uppercase">
+                            {isOffline ? 'Currently Offline' : 'Connected to Cloud'}
+                          </h3>
+                          <p className="text-app-text-sub text-sm font-bold uppercase tracking-wider">
+                            {isOffline 
+                              ? 'Your changes are being saved locally' 
+                              : 'All data is synchronized and safe'}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        variant="primary" 
+                        disabled={isOffline || syncInProgress}
+                        onClick={() => triggerSync()}
+                        className="w-full md:w-auto min-w-40"
+                      >
+                        {syncInProgress ? (
+                          <>
+                            <RefreshCw size={18} className="mr-2 animate-spin" />
+                            SYNCING...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw size={18} className="mr-2" />
+                            SYNC NOW
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Cache Stats */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <section className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-4">
+                      <div className="flex items-center gap-3 text-primary mb-2">
+                        <Database size={24} />
+                        <h3 className="font-black text-lg uppercase tracking-tight">Offline Queue</h3>
+                      </div>
+                      <p className="text-sm text-app-text-sub font-bold uppercase leading-relaxed">
+                        Actions waiting to be synced once you regain connectivity.
+                      </p>
+                      <div className="flex items-end justify-between pt-4">
+                        <div>
+                          <span className="text-4xl font-black text-app-text-main tracking-tighter">
+                            {JSON.parse(localStorage.getItem('offline_sync_queue') || '[]').length}
+                          </span>
+                          <span className="text-xs font-black text-app-text-sub ml-2 uppercase tracking-widest">Pending Actions</span>
+                        </div>
+                      </div>
+                    </section>
+
+                    <section className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-4 opacity-50">
+                      <div className="flex items-center gap-3 text-primary mb-2">
+                        <Images size={24} />
+                        <h3 className="font-black text-lg uppercase tracking-tight">Local Storage</h3>
+                      </div>
+                      <p className="text-sm text-app-text-sub font-bold uppercase leading-relaxed">
+                        Pre-loaded lessons and video assets for offline viewing.
+                      </p>
+                      <div className="flex items-end justify-between pt-4">
+                        <div>
+                          <span className="text-4xl font-black text-app-text-main tracking-tighter">42MB</span>
+                          <span className="text-xs font-black text-app-text-sub ml-2 uppercase tracking-widest">Downloaded</span>
+                        </div>
+                        <Button variant="outline" disabled className="px-4 py-2 text-[10px] font-black uppercase">
+                          MANAGE STORAGE
+                        </Button>
+                      </div>
+                    </section>
+                  </div>
+                </div>
               </div>
             )}
           </main>

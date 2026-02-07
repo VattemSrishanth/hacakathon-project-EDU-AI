@@ -289,6 +289,11 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
         if (authData) {
           const { user } = JSON.parse(authData);
           if (user?.id) {
+            if (!navigator.onLine) {
+              const { offlineSyncService } = await import('../services/offlineSync');
+              offlineSyncService.queueAction('SETTINGS', settings);
+              return;
+            }
             // We use the profile API to save accessibility and learning settings too
             await userDataAPI.updateProfile(String(user.id), {
               settings: settings 
@@ -296,8 +301,13 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
           }
         }
       } catch (e) {
-        // Silently fail if offline or error, will sync later
-        console.warn('Backend settings sync delayed');
+        console.warn('Backend settings sync failed, queuing for retry...');
+        try {
+          const { offlineSyncService } = await import('../services/offlineSync');
+          offlineSyncService.queueAction('SETTINGS', settings);
+        } catch (err) {
+          console.error('Offline sync failed completely');
+        }
       }
     };
     

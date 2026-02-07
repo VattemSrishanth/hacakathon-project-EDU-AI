@@ -23,6 +23,7 @@ import SubjectList from '../components/Syllabus/SubjectList';
 import UnitAccordion from '../components/Syllabus/UnitAccordion';
 import LessonViewer from '../components/Syllabus/LessonViewer';
 import { lessonGeneratorAPI } from '../services/api';
+import { offlineContentService } from '../services/offlineContent';
 
 interface Syllabus {
   board: string;
@@ -146,13 +147,23 @@ const Lessons = () => {
     setTopicPdf(null);
     
     try {
+      // 0. Check Offline Storage first
+      const lessonId = `${selectedClass}-${selectedSubject}-${selectedTopic}`;
+      const offlineLesson = await offlineContentService.getLesson(lessonId);
+      if (offlineLesson) {
+        setExplanation(offlineLesson.content.content);
+        setGenerating(false);
+        return;
+      }
+
       // 1. Check if admin has provided custom content for this topic
-      const customContentRes = await syllabusAPI.getContent(
-        settings.learning.board,
-        selectedClass,
-        selectedSubject,
-        selectedTopic
-      );
+      // 1. Check if admin has provided custom content for this topic
+const customContentRes = await syllabusAPI.getContent(
+  settings.learning.board,
+  selectedClass,
+  selectedSubject,
+  selectedTopic
+);
 
       if (customContentRes.success && customContentRes.content) {
         setExplanation(customContentRes.content.description);
@@ -316,8 +327,9 @@ const Lessons = () => {
               {selectedTopic ? (
                 <LessonViewer 
                   lesson={{
+                    id: `${selectedClass}-${selectedSubject}-${selectedTopic}`,
                     title: selectedTopic,
-                    class: selectedClass,
+                    class: selectedClass || 'N/A',
                     subject: selectedSubject!,
                     unit: selectedUnit!,
                     explanation: explanation || "",

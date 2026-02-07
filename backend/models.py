@@ -46,6 +46,11 @@ class MongoModel:
             return None
 
     @classmethod
+    def update_one(cls, query, data, upsert=False):
+        data["updated_at"] = datetime.utcnow()
+        return cls.collection.update_one(query, {"$set": data}, upsert=upsert)
+
+    @classmethod
     def delete(cls, id):
         try:
             if isinstance(id, str):

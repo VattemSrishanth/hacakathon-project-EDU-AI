@@ -3,21 +3,38 @@
 
 const OFFLINE_QUEUE_KEY = 'offline_sync_queue';
 
+export type OfflineActionType = 'PROGRESS_UPDATE' | 'CHAT_HISTORY' | 'FEEDBACK' | 'SETTINGS' | 'PROFILE_UPDATE';
+
 export interface OfflineAction {
-  type: 'PROGRESS_UPDATE' | 'CHAT_HISTORY' | 'FEEDBACK' | 'SETTINGS';
+  type: OfflineActionType;
   payload: any;
   timestamp: number;
+  retryCount: number;
 }
 
 export const offlineSyncService = {
-  queueAction: (action: Omit<OfflineAction, 'timestamp'>) => {
-    const queue = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
-    queue.push({ ...action, timestamp: Date.now() });
-    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+  queueAction: (type: OfflineActionType, payload: any) => {
+    try {
+      const queue: OfflineAction[] = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+      queue.push({ 
+        type, 
+        payload, 
+        timestamp: Date.now(),
+        retryCount: 0
+      });
+      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+      console.log(`[OfflineSync] Queued ${type} action`);
+    } catch (e) {
+      console.error('[OfflineSync] Failed to queue action', e);
+    }
   },
 
   getQueue: (): OfflineAction[] => {
-    return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+    try {
+      return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+    } catch {
+      return [];
+    }
   },
 
   clearQueue: () => {
@@ -28,24 +45,37 @@ export const offlineSyncService = {
     const queue = offlineSyncService.getQueue();
     if (queue.length === 0) return true;
 
+    console.log(`[OfflineSync] Attempting to sync ${queue.length} actions...`);
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/sync?user_id=${userId}`, {
+      const authData = localStorage.getItem('auth');
+      const token = authData ? JSON.parse(authData).token : null;
+
+      if (!token) {
+        console.warn('[OfflineSync] No auth token found, skipping sync');
+        return false;
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/sync`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${JSON.parse(localStorage.getItem('auth') || '{}').token}`
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ actions: queue })
+        body: JSON.stringify({ userId, actions: queue })
       });
       
       const result = await response.json();
       if (result.success) {
+        console.log('[OfflineSync] Sync successful, clearing queue');
         offlineSyncService.clearQueue();
         return true;
       }
+      
+      console.warn('[OfflineSync] Sync failed on server:', result.message);
       return false;
     } catch (e) {
-      console.error('Sync failed', e);
+      console.error('[OfflineSync] Network error during sync', e);
       return false;
     }
   }
