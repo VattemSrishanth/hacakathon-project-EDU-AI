@@ -33,11 +33,13 @@ import { AuthProvider } from './context/AuthContext';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { OfflineProvider } from './context/OfflineContext';
+import { CommunityProvider } from './context/CommunityContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import PublicRoute from './components/PublicRoute';
 import MainLayout from './components/Layout/MainLayout';
 import { motion, AnimatePresence } from 'framer-motion';
+import AskDoubt from './pages/community/AskDoubt';
 
 // --- Supernatural Effects Component for Stranger Things Theme ---
 const SupernaturalEffects = () => {
@@ -347,7 +349,7 @@ function AppContent() {
       
       {/* New Feature Routes */}
       <Route path="/community" element={<ProtectedRoute><CommunityHome /></ProtectedRoute>} />
-      <Route path="/community/ask" element={<ProtectedRoute><div className="p-8"><h1 className="text-2xl font-bold">Ask a Doubt</h1><ComingSoon title="Ask Doubt System" /></div></ProtectedRoute>} />
+      <Route path="/community/ask" element={<ProtectedRoute><AskDoubt /></ProtectedRoute>} />
       <Route path="/exams" element={<ProtectedRoute><Exams /></ProtectedRoute>} />
       <Route path="/certificates" element={<ProtectedRoute><Certificates /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
@@ -418,7 +420,9 @@ function App() {
       <SettingsProvider>
         <AccessibilityProvider>
           <OfflineProvider>
-            <AppContent />
+            <CommunityProvider>
+              <AppContent />
+            </CommunityProvider>
           </OfflineProvider>
         </AccessibilityProvider>
       </SettingsProvider>

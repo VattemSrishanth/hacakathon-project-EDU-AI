@@ -1077,6 +1077,19 @@ def submit_feedback():
     Feedback.create(data)
     return jsonify({"success": True, "message": "Feedback submitted"})
 
+@app.route("/api/community/doubts", methods=["GET", "POST"])
+def manage_doubts():
+    """Get all doubts or post a new one."""
+    if request.method == "GET":
+        subject = request.args.get("subject")
+        query = {"subject": subject} if subject else {}
+        doubts = Doubt.find_all(query, sort=[("created_at", -1)])
+        return jsonify({"success": True, "doubts": Doubt.format_list(doubts)})
+    else:
+        data = request.get_json()
+        Doubt.create(data)
+        return jsonify({"success": True, "message": "Doubt posted successfully"})
+
 @app.route("/api/notifications", methods=["GET"])
 def get_notifications():
     """Get notifications for a user."""
@@ -1104,6 +1117,9 @@ def sync_offline_data():
             
             elif action_type == "CHAT_HISTORY":
                 ChatHistory.create({"user_id": user_id, "messages": payload, "created_at": datetime.utcnow()})
+            
+            elif action_type == "COMMUNITY_POST":
+                Doubt.create({**payload, "user_id": user_id, "created_at": datetime.utcnow()})
                 
             elif action_type == "FEEDBACK":
                 Feedback.create({**payload, "user_id": user_id})

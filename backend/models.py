@@ -86,6 +86,28 @@ def init_mongo_models(mongo_db):
     OfflineSync.collection = db.offline_sync
     LoginStreak.collection = db.login_streaks
     SyllabusContent.collection = db.syllabus_content
+    Doubt.collection = db.doubts
+
+
+class Doubt(MongoModel):
+    collection = None
+
+    @classmethod
+    def format_doc(cls, doc):
+        if not doc: return None
+        return {
+            "id": str(doc["_id"]),
+            "user_id": doc.get("user_id"),
+            "username": doc.get("username", "Anonymous"),
+            "question": doc.get("question"),
+            "subject": doc.get("subject", "General"),
+            "created_at": doc.get("created_at").isoformat() if doc.get("created_at") else None,
+            "status": doc.get("status", "open")
+        }
+
+    @classmethod
+    def format_list(cls, docs):
+        return [cls.format_doc(doc) for doc in docs]
 
 
 class User(MongoModel):

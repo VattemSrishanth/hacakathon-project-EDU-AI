@@ -3,7 +3,7 @@
 
 const OFFLINE_QUEUE_KEY = 'offline_sync_queue';
 
-export type OfflineActionType = 'PROGRESS_UPDATE' | 'CHAT_HISTORY' | 'FEEDBACK' | 'SETTINGS' | 'PROFILE_UPDATE';
+export type OfflineActionType = 'PROGRESS_UPDATE' | 'CHAT_HISTORY' | 'FEEDBACK' | 'SETTINGS' | 'PROFILE_UPDATE' | 'COMMUNITY_POST';
 
 export interface OfflineAction {
   type: OfflineActionType;
