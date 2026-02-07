@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { 
   ShieldCheck, 
@@ -9,15 +9,18 @@ import {
   ChevronDown, 
   Eye,
   EyeOff,
-  UserCircle
+  GraduationCap,
+  Users,
+  UserCheck,
+  ShieldAlert
 } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../context/AuthContext";
 import { useSettings } from "../context/SettingsContext";
 import { useOffline } from "../context/OfflineContext";
-import Card from "../components/Card";
 import Button from "../components/Button";
 import { authAPI } from "../services/api";
+import type { UserRole } from "../context/AuthContext";
 
 import { auth as firebaseAuth, googleProvider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
@@ -27,12 +30,21 @@ const Login = () => {
   const location = useLocation();
   const { login, continueAsGuest } = useAuth();
   const { isOffline } = useOffline();
-  const { settings, updateLearning, t } = useSettings();
+  const { settings, updateLearning } = useSettings();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<UserRole>("student");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const roles = [
+    { id: "student", label: "Student", icon: GraduationCap, color: "from-cyan-400 to-blue-500", shadow: "shadow-cyan-500/50" },
+    { id: "teacher", label: "Teacher", icon: Users, color: "from-purple-400 to-pink-500", shadow: "shadow-purple-500/50" },
+    { id: "parent", label: "Parent", icon: UserCheck, color: "from-emerald-400 to-teal-500", shadow: "shadow-emerald-500/50" },
+    { id: "admin", label: "Admin", icon: ShieldAlert, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/50" }
+  ];
 
   useEffect(() => {
     if (location.state?.message) {
@@ -52,8 +64,12 @@ const Login = () => {
         return;
       }
       const response = await authAPI.login(email, password);
+      // Backend should return role, or we use the selected one if backend doesn't support it yet
       if (response?.success) {
-        login({ token: response?.token, user: response?.user });
+        login({ 
+          token: response?.token, 
+          user: { ...response?.user, role: response?.user?.role || role } 
+        });
         navigate("/", { replace: true });
       } else {
         setErrorMessage(response?.error || "Login failed. Please try again.");
@@ -88,7 +104,8 @@ const Login = () => {
           name: user.displayName || "Google User", 
           email: user.email || "",
           avatarUrl: user.photoURL || "",
-          id: user.uid
+          id: user.uid,
+          role: role // Use the selected role for Google Login
         } 
       });
 
@@ -106,143 +123,172 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-app-bg text-app-text-main flex items-center justify-center py-12 px-4 transition-colors duration-300 font-sans">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary/10 mb-6 shadow-sm ring-1 ring-primary/20 shadow-primary/10 transition-transform hover:scale-105">
-            <ShieldCheck size={40} className="text-primary" />
+    <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center py-12 px-4 transition-colors duration-300 font-sans relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px] animate-pulse delay-1000" />
+      
+      <div className="w-full max-w-xl relative z-10">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-black border-2 border-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.5)] mb-8 transition-transform hover:scale-110">
+            <ShieldCheck size={48} className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
           </div>
-          <h1 className="text-4xl font-black text-app-text-main tracking-tight uppercase">
-            {t.auth.welcomeBack}
+          <h1 className="text-5xl font-black text-white tracking-tighter uppercase italic">
+            WELCOME BACK
           </h1>
-          <p className="text-app-text-sub mt-3 font-bold uppercase text-xs tracking-widest">
-            {t.auth.signInToAccount}
+          <p className="text-cyan-400 mt-3 font-black underline decoration-cyan-500/50 underline-offset-8 uppercase text-xs tracking-[0.3em]">
+            SIGN IN TO YOUR ACCOUNT
           </p>
         </div>
 
-        <Card className="shadow-2xl border-app-border bg-app-bg-alt rounded-3xl overflow-hidden p-8 animate-in fade-in zoom-in duration-500">
-          <div className="mb-6">
+        <div className="bg-[#111] border-2 border-white/5 rounded-[2.5rem] overflow-hidden p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative">
+          {/* Neon Border Effect */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-cyan-500 to-transparent opacity-50" />
+          
+          <div className="mb-8 overflow-x-auto pb-4 scrollbar-none">
+            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4 ml-1">Select Access Portal</p>
+            <div className="flex gap-4 min-w-max">
+              {roles.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => setRole(r.id as UserRole)}
+                  className={`
+                    flex flex-col items-center gap-3 px-6 py-5 rounded-3xl transition-all duration-300 border-2
+                    ${role === r.id 
+                      ? `bg-linear-to-br ${r.color} border-transparent text-white shadow-lg ${r.shadow} scale-105` 
+                      : 'bg-black/40 border-white/5 text-gray-500 hover:border-white/20 hover:text-gray-300'}
+                  `}
+                >
+                  <r.icon size={24} className={role === r.id ? 'animate-bounce' : ''} />
+                  <span className="text-[10px] font-black uppercase tracking-widest">{r.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-8">
             <div className="relative group">
               <select
                 value={settings.learning.language}
                 onChange={(e) => updateLearning({ language: e.target.value as any })}
-                className="w-full pl-10 pr-10 py-3 bg-app-bg border border-app-border text-[10px] font-bold uppercase tracking-widest rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer"
+                className="w-full pl-12 pr-10 py-4 bg-black border-2 border-white/5 text-[11px] font-black text-white uppercase tracking-widest rounded-2xl focus:outline-none focus:border-cyan-500/50 transition-all appearance-none cursor-pointer"
               >
                 <option value="English">English</option>
-                <option value="Telugu">?????? (Telugu)</option>
-                <option value="Hindi">?????? (Hindi)</option>
-                <option value="Spanish">Espa�ol (Spanish)</option>
-                <option value="French">Fran�ais (French)</option>
+                <option value="Telugu">Telugu</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
               </select>
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                <Globe size={18} className="text-primary" />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                <Globe size={18} className="text-cyan-500" />
               </div>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform group-focus-within:rotate-180">
-                <ChevronDown size={18} className="text-app-text-sub" />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-transform group-focus-within:rotate-180">
+                <ChevronDown size={18} className="text-gray-600" />
               </div>
             </div>
           </div>
 
           {errorMessage && (
-            <div className="mb-6 rounded-2xl border-2 border-red-500/20 bg-red-500/10 px-5 py-4 text-sm text-red-600 font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-              <div className="shrink-0">
-                <AlertCircle size={20} />
-              </div>
+            <div className="mb-8 rounded-2xl border-2 border-red-500/20 bg-red-500/10 px-6 py-4 text-xs text-red-500 font-black uppercase tracking-widest flex items-center gap-4 animate-shake">
+              <AlertCircle size={20} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">
-                {t.auth.email}
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-3">
+              <label className="block text-[10px] font-black text-gray-500 ml-1 uppercase tracking-[0.2em]">
+                Identity Handle (Email)
               </label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail size={20} className="text-primary transition-colors group-focus-within:text-blue-600" />
+                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                  <Mail size={20} className="text-cyan-500 group-focus-within:animate-pulse" />
                 </div>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@company.com"
-                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold shadow-sm placeholder:opacity-50"
+                  placeholder="name@nexus.ai"
+                  className="w-full pl-14 pr-6 py-5 bg-black border-2 border-white/5 text-white rounded-2xl focus:outline-none focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/5 transition-all font-bold placeholder:text-gray-700"
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex justify-between items-end mb-1">
-                <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">
-                  {t.auth.password}
+                <label className="block text-[10px] font-black text-gray-500 ml-1 uppercase tracking-[0.2em]">
+                  Security Protocol (Password)
                 </label>
-                <Link to="/forgot-password" className="text-[10px] font-black uppercase tracking-wider text-blue-600 hover:text-blue-700 decoration-2 underline-offset-4 hover:underline">
-                  Forgot Password?
-                </Link>
               </div>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock size={20} className="text-primary transition-colors group-focus-within:text-blue-600" />
+                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                  <Lock size={20} className="text-cyan-500 group-focus-within:animate-pulse" />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="��������"
-                  className="w-full pl-12 pr-12 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold shadow-sm placeholder:opacity-50"
+                  placeholder=""
+                  className="w-full pl-14 pr-14 py-5 bg-black border-2 border-white/5 text-white rounded-2xl focus:outline-none focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/5 transition-all font-bold placeholder:text-gray-700"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-app-text-muted hover:text-blue-500 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-5 flex items-center text-gray-600 hover:text-cyan-500 transition-colors"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
+              </div>
+              <div className="text-right">
+                <Link to="/forgot-password" virtual-link="true" className="text-[10px] font-black uppercase tracking-widest text-cyan-500/60 hover:text-cyan-400 transition-colors hover:underline">
+                  Reset Credentials
+                </Link>
               </div>
             </div>
 
             <Button 
               type="submit" 
-              className="w-full py-5 rounded-2xl shadow-xl shadow-blue-500/20 text-sm font-black uppercase tracking-widest disabled:grayscale disabled:opacity-50" 
+              className={`
+                w-full py-6 rounded-2xl text-xs font-black uppercase tracking-[0.3em] transition-all
+                bg-black border-2 border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-black hover:shadow-[0_0_30px_rgba(6,182,212,0.4)]
+                disabled:opacity-30 disabled:pointer-events-none
+              `} 
               disabled={loading || isOffline}
             >
-              {loading ? t.auth.signingIn : isOffline ? "Offline - Check Connection" : "Sign In Now"}
+              {loading ? "INITIALIZING..." : isOffline ? "NETWORK OFFLINE" : "AUTHORIZE ACCESS"}
             </Button>
           </form>
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="mt-8 pt-8 border-t-2 border-white/5 flex flex-col gap-4">
             <button
               type="button"
               onClick={handleGoogleLogin}
-              disabled={loading || isOffline}
-              className="col-span-2 px-6 py-4 bg-[#0a0f18] border border-white/5 rounded-full font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-[#111827] transition-all shadow-xl active:scale-95 text-white disabled:grayscale disabled:opacity-50"
+              className="w-full py-5 bg-black border-2 border-white/10 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-4 hover:border-white/20 transition-all text-white active:scale-95"
             >
-              <FcGoogle size={22} />
-              Sign in with Google
+              <FcGoogle size={20} />
+              Secure Sync with Google
             </button>
 
             <button
               type="button"
               onClick={handleGuestMode}
-              disabled={loading}
-              className="col-span-2 px-6 py-4 bg-app-bg border border-app-border rounded-full font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-app-bg-alt transition-all shadow-sm active:scale-95 text-app-text-main"
+              className="w-full py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:text-white transition-colors"
             >
-              <UserCircle size={20} className="text-primary" />
-              Continue as Guest
+              Proceed as Anonymous Guest
             </button>
           </div>
 
-          <div className="mt-10 pt-8 border-t border-app-border text-center">
-            <p className="text-app-text-sub text-xs font-bold uppercase tracking-widest">
-              {t.auth.noAccount}{" "}
-              <Link to="/register" className="text-blue-600 font-black hover:text-blue-700 transition-colors ml-1 underline decoration-2 underline-offset-4">
-                {t.auth.signUp}
+          <div className="mt-10 text-center">
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+              New to the Nexus?{" "}
+              <Link to="/register" className="text-cyan-500 font-black hover:underline ml-2">
+                Create Account
               </Link>
             </p>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

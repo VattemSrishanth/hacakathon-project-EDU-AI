@@ -2,6 +2,8 @@ import { createContext, useContext, useMemo, useEffect } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { api } from '../services/api';
 
+export type UserRole = 'student' | 'teacher' | 'parent' | 'admin' | 'user';
+
 export interface AuthUser {
   id?: string | number;
   username?: string;
@@ -9,7 +11,7 @@ export interface AuthUser {
   name?: string;
   avatarUrl?: string;
   initials?: string;
-  role?: 'user' | 'admin';
+  role?: UserRole;
 }
 
 export type AuthStatus = 'logged_in' | 'guest' | 'logged_out';

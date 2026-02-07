@@ -1,18 +1,25 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import type { UserRole } from '../context/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
+  allowedRoles?: UserRole[];
 }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated } = useAuth();
+const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
+  const { auth, isAuthenticated } = useAuth();
+  const location = useLocation();
 
-  // If not logged in (either logged_out or guest), redirect to login for restricted routes
   if (!isAuthenticated) {
-    // If it's a guest, they can remain on public pages, but restricted pages should send them to login
-    // or we can allow guests on some pages but App.tsx wraps restricted ones with ProtectedRoute.
-    return <Navigate to="/login" replace state={{ message: 'Please log in to access this feature' }} />;
+    return <Navigate to="/login" replace state={{ from: location, message: 'Please log in to access this feature' }} />;
+  }
+
+  const userRole = auth?.user?.role;
+
+  // If roles are specified and user's role isn't included, redirect to unauthorized/dashboard
+  if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

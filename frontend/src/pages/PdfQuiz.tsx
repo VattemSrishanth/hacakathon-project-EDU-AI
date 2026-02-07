@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import Button from '../components/Button';
 import Card from '../components/Card';
+import { useProgress } from '../context/ProgressContext';
 import { quizAPI, userDataAPI } from '../services/api';
 
 interface LocationState {
@@ -27,6 +28,7 @@ interface Question {
 
 const PdfQuiz = () => {
   const navigate = useNavigate();
+  const { recordQuizScore } = useProgress();
   const location = useLocation();
   const state = (location.state || {}) as LocationState;
   const [answers, setAnswers] = useState<Record<number, any>>({});
@@ -128,6 +130,9 @@ const PdfQuiz = () => {
 
     setScore(correctCount);
     setSubmitted(true);
+    
+    // Track learning progress
+    recordQuizScore(pdfName, correctCount, total, `Finished quiz for ${pdfName}`);
 
     if (document.fullscreenElement) {
       document.exitFullscreen?.().catch(() => undefined);

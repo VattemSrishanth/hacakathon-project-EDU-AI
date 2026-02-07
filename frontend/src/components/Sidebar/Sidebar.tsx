@@ -3,11 +3,12 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
   Menu, X, LayoutDashboard, BookOpen, Sparkles, Accessibility, 
   Hand, Captions, Mic, WifiOff, Download, RefreshCw, Zap, 
-  Headset, Settings, ShieldAlert,
-  ChevronLeft, ChevronRight, LogOut, Home, MessageSquare, Award, HelpCircle, BarChart, User
+  Settings, ShieldAlert,
+  ChevronLeft, ChevronRight, LogOut, Home, Award, BarChart, User
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
+import { useExam } from '../../context/ExamContext';
 import SidebarItem from './SidebarItem';
 import { useOffline } from '../../context/OfflineContext';
 
@@ -20,6 +21,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
   const { auth, isGuest, logout } = useAuth();
   const { t } = useSettings();
   const { isOffline, syncInProgress } = useOffline();
+  const { isExamActive } = useExam();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -31,58 +33,58 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
   const toggleMobile = () => setIsMobileOpen(!isMobileOpen);
 
-  const isAdmin = auth?.user?.role === 'admin';
+  const userRole = auth?.user?.role || 'user';
 
   const navGroups = [
     {
       title: 'CORE LEARNING',
       items: [
-        { to: '/', label: 'Home', icon: Home, disabled: false },
-        { to: '/dashboard', label: t.nav.dashboard, icon: LayoutDashboard, disabled: false },
-        { to: '/lessons', label: t.nav.lessons, icon: BookOpen, disabled: false },
-        { to: '/ai-tutor', label: t.nav.aiTutor, icon: Sparkles, disabled: false },
+        { to: '/', label: 'Home', icon: Home, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
+        { to: '/dashboard', label: t.nav.dashboard, icon: LayoutDashboard, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
+        { to: '/lessons', label: t.nav.lessons, icon: BookOpen, disabled: false, roles: ['student', 'teacher', 'admin'] },
+        { to: '/ai-tutor', label: t.nav.aiTutor, icon: Sparkles, disabled: false, roles: ['student', 'teacher', 'admin'] },
+        { to: '/exams', label: 'Exams', icon: Award, disabled: false, roles: ['student', 'teacher', 'admin'] },
+      ]
+    },
+    {
+      title: 'TEACHER TOOLS',
+      roles: ['teacher', 'admin'],
+      items: [
+        { to: '/assignments/create', label: 'Create Assignment', icon: Zap, disabled: false, roles: ['teacher', 'admin'] },
+        { to: '/class-management', label: 'Manage Classes', icon: User, disabled: false, roles: ['teacher', 'admin'] },
+      ]
+    },
+    {
+      title: 'PARENT PORTAL',
+      roles: ['parent', 'admin'],
+      items: [
+        { to: '/student-progress', label: 'Child Progress', icon: BarChart, disabled: false, roles: ['parent', 'admin'] },
       ]
     },
     {
       title: 'ACCESSIBILITY',
       isHighlight: true,
       items: [
-        { to: '/accessibility', label: 'Accessibility Hub', icon: Accessibility, disabled: false },
-        { to: '/sign-language', label: 'Sign Language', icon: Hand, disabled: false },
-        { to: '/captions', label: 'Captions', icon: Captions, disabled: false },
-        { to: '/speech-assist', label: 'Speech Assist', icon: Mic, disabled: false },
+        { to: '/accessibility', label: 'Accessibility Hub', icon: Accessibility, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
+        { to: '/sign-language', label: 'Sign Language', icon: Hand, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
+        { to: '/captions', label: 'Captions', icon: Captions, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
+        { to: '/speech-assist', label: 'Speech Assist', icon: Mic, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
       ]
     },
     {
       title: 'OFFLINE & LOW DATA',
       items: [
-        { to: '/lessons/uploaded', label: 'Offline Content', icon: WifiOff, disabled: false },
-        { to: '/downloads', label: 'Downloads', icon: Download, disabled: false },
-        { to: '/sync-status', label: 'Sync Status', icon: RefreshCw, disabled: false },
-        { to: '/data-usage', label: 'Data Usage', icon: Zap, disabled: false },
-      ]
-    },
-    {
-      title: 'COMMUNITY & SUPPORT',
-      items: [
-        { to: '/community', label: 'Community', icon: MessageSquare, disabled: false },
-        { to: '/community/ask', label: 'Ask Doubt', icon: HelpCircle, disabled: false },
-        { to: '/support', label: t.nav.support, icon: Headset, disabled: false },
-      ]
-    },
-    {
-      title: 'PROGRESS',
-      items: [
-        { to: '/insights', label: 'Progress', icon: BarChart, disabled: false },
-        { to: '/certificates', label: 'Achievements', icon: Award, disabled: false },
+        { to: '/lessons/uploaded', label: 'Offline Content', icon: WifiOff, disabled: false, roles: ['student', 'teacher', 'admin'] },
+        { to: '/downloads', label: 'Downloads', icon: Download, disabled: false, roles: ['student', 'teacher', 'admin'] },
+        { to: '/sync-status', label: 'Sync Status', icon: RefreshCw, disabled: false, roles: ['student', 'teacher', 'admin'] },
+        { to: '/data-usage', label: 'Data Usage', icon: Zap, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
       ]
     },
     {
       title: 'SYSTEM',
       items: [
-        { to: '/settings', label: t.nav.settings, icon: Settings, disabled: false },
-        { to: '/dashboard', label: t.nav.profile, icon: User, disabled: false },
-        ...(isAdmin ? [{ to: '/admin', label: 'Admin', icon: ShieldAlert, disabled: false }] : []),
+        { to: '/settings', label: t.nav.settings, icon: Settings, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
+        { to: '/admin', label: 'Admin Panel', icon: ShieldAlert, disabled: false, roles: ['admin'] },
       ]
     }
   ];
@@ -132,17 +134,22 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
           {/* Navigation Items */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 scrollbar-thin">
             <ul className="space-y-6">
-              {navGroups.map((group, gIdx) => (
-                <li key={gIdx} className="space-y-1">
-                  {!isCollapsed && (
-                    <h3 className="px-4 text-[10px] font-black uppercase tracking-widest text-app-text-muted mb-2">
-                      {group.title}
-                    </h3>
-                  )}
-                  <ul className="space-y-1">
-                    {group.items.map((item, iIdx) => {
-                      const isRestricted = !['/', '/accessibility', '/support'].includes(item.to);
-                      const isDisabled = (isGuest && isRestricted) || item.disabled;
+              {navGroups
+                .filter(group => !group.roles || group.roles.includes(userRole as any))
+                .map((group, gIdx) => (
+                  <li key={gIdx} className="space-y-1">
+                    {!isCollapsed && (
+                      <h3 className="px-4 text-[10px] font-black uppercase tracking-widest text-app-text-muted mb-2">
+                        {group.title}
+                      </h3>
+                    )}
+                    <ul className="space-y-1">
+                      {group.items
+                        .filter(item => !item.roles || item.roles.includes(userRole as any))
+                        .map((item, iIdx) => {
+                          const isRestricted = !['/', '/accessibility', '/support'].includes(item.to);
+                          const isAuthDisabled = isGuest && isRestricted;
+                          const isDisabled = isAuthDisabled || item.disabled || (isExamActive && item.to !== '/exams');
 
                       return (
                         <li key={iIdx}>

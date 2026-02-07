@@ -6,13 +6,15 @@ import {
   Lock, 
   CheckCircle, 
   AlertCircle,
-  ChevronDown
+  ChevronDown,
+  User
 } from 'lucide-react';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { authAPI } from '../services/api';
 import { useSettings } from '../context/SettingsContext';
 import type { SupportedLanguage } from '../i18n/translations';
+import type { UserRole } from '../context/AuthContext';
 
 const Register = () => {
   const { settings, updateLearning, updateThemeAccessibility } = useSettings();
@@ -20,6 +22,7 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<UserRole>('student');
   const [preferredLanguage, setPreferredLanguage] = useState<SupportedLanguage>(settings.learning.language);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -29,6 +32,13 @@ const Register = () => {
     () => ['English', 'Telugu', 'Hindi', 'Spanish', 'French'],
     []
   );
+
+  const roleOptions: { label: string; value: UserRole }[] = [
+    { label: 'Student', value: 'student' },
+    { label: 'Teacher', value: 'teacher' },
+    { label: 'Parent', value: 'parent' },
+    { label: 'Admin (restricted)', value: 'admin' },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +51,7 @@ const Register = () => {
       updateLearning({ language: preferredLanguage });
       updateThemeAccessibility({ voiceLanguage: preferredLanguage });
 
-      const response = await authAPI.register(name, email, password);
+      const response = await authAPI.register(name, email, password, role);
       if (response?.success) {
         setSuccessMessage('Registration successful! You can now sign in.');
         setName('');
@@ -88,6 +98,27 @@ const Register = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">I am a...</label>
+              <div className="relative group">
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value as UserRole)}
+                  className="w-full pl-10 pr-10 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold shadow-sm appearance-none"
+                >
+                  {roleOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <User size={18} className="text-primary" />
+                </div>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-app-text-muted">
+                  <ChevronDown size={18} />
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Preferred Language</label>
               <div className="relative group">

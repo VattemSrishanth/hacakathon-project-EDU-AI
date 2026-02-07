@@ -34,8 +34,9 @@ import { SettingsProvider, useSettings } from './context/SettingsContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { OfflineProvider } from './context/OfflineContext';
 import { CommunityProvider } from './context/CommunityContext';
+import { ExamProvider } from './context/ExamContext';
+import { ProgressProvider } from './context/ProgressContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import AdminRoute from './components/AdminRoute';
 import PublicRoute from './components/PublicRoute';
 import MainLayout from './components/Layout/MainLayout';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -278,7 +279,7 @@ function AppContent() {
       <Route
         path="/lessons"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
             <Lessons />
           </ProtectedRoute>
         }
@@ -286,7 +287,7 @@ function AppContent() {
       <Route
         path="/lessons/:id"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
             <LessonViewer />
           </ProtectedRoute>
         }
@@ -294,7 +295,7 @@ function AppContent() {
       <Route
         path="/lessons/uploaded"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
             <UploadedPdf />
           </ProtectedRoute>
         }
@@ -302,7 +303,7 @@ function AppContent() {
       <Route
         path="/lessons/quiz"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
             <PdfQuiz />
           </ProtectedRoute>
         }
@@ -310,7 +311,7 @@ function AppContent() {
       <Route
         path="/assignments"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
             <Assignments />
           </ProtectedRoute>
         }
@@ -318,7 +319,7 @@ function AppContent() {
       <Route
         path="/ai-tutor"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
             <AITutor />
           </ProtectedRoute>
         }
@@ -342,27 +343,27 @@ function AppContent() {
       <Route path="/sign-language" element={<ProtectedRoute><SignLanguage /></ProtectedRoute>} />
       <Route path="/captions" element={<ProtectedRoute><Captions /></ProtectedRoute>} />
       <Route path="/speech-assist" element={<ProtectedRoute><SpeechAssist /></ProtectedRoute>} />
-      <Route path="/downloads" element={<ProtectedRoute><UploadedPdf /></ProtectedRoute>} />
-      <Route path="/sync-status" element={<ComingSoon title="Sync Status" />} />
-      <Route path="/data-usage" element={<ComingSoon title="Data Usage" />} />
-      <Route path="/parent-view" element={<ComingSoon title="Parent View" />} />
+      <Route path="/downloads" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><UploadedPdf /></ProtectedRoute>} />
+      <Route path="/sync-status" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><ComingSoon title="Sync Status" /></ProtectedRoute>} />
+      <Route path="/data-usage" element={<ProtectedRoute><ComingSoon title="Data Usage" /></ProtectedRoute>} />
+      <Route path="/parent-view" element={<ProtectedRoute allowedRoles={['parent', 'admin']}><ComingSoon title="Parent View" /></ProtectedRoute>} />
       
       {/* New Feature Routes */}
       <Route path="/community" element={<ProtectedRoute><CommunityHome /></ProtectedRoute>} />
       <Route path="/community/ask" element={<ProtectedRoute><AskDoubt /></ProtectedRoute>} />
-      <Route path="/exams" element={<ProtectedRoute><Exams /></ProtectedRoute>} />
-      <Route path="/certificates" element={<ProtectedRoute><Certificates /></ProtectedRoute>} />
+      <Route path="/exams" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><Exams /></ProtectedRoute>} />
+      <Route path="/certificates" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><Certificates /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-      <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
+      <Route path="/insights" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'parent', 'admin']}><Insights /></ProtectedRoute>} />
       <Route path="/onboarding" element={<GettingStarted />} />
-      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute allowedRoles={['teacher', 'admin']}><Reports /></ProtectedRoute>} />
 
       <Route
         path="/admin"
         element={
-          <AdminRoute>
+          <ProtectedRoute allowedRoles={['admin']}>
             <Admin />
-          </AdminRoute>
+          </ProtectedRoute>
         }
       />
       <Route
@@ -421,7 +422,11 @@ function App() {
         <AccessibilityProvider>
           <OfflineProvider>
             <CommunityProvider>
-              <AppContent />
+              <ExamProvider>
+                <ProgressProvider>
+                  <AppContent />
+                </ProgressProvider>
+              </ExamProvider>
             </CommunityProvider>
           </OfflineProvider>
         </AccessibilityProvider>

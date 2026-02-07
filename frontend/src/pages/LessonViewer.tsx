@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useOffline } from '../context/OfflineContext';
+import { useProgress } from '../context/ProgressContext';
 import { lessonsAPI } from '../services/api';
 import { offlineContentService } from '../services/offlineContent';
 import SignLanguagePanel from '../components/Syllabus/SignLanguagePanel';
@@ -36,11 +37,23 @@ export default function LessonViewer() {
   const { settings } = useSettings();
   const { signLanguageEnabled, updateAccessibility } = useAccessibility();
   const { isOffline, downloadLesson, removeLesson, downloadedLessons, downloadingIds } = useOffline();
+  const { startLessonTimer, stopLessonTimer, markLessonCompleted } = useProgress();
   const [lesson, setLesson] = useState<LessonData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploadedPdf, setUploadedPdf] = useState<string | null>(location.state?.pdfUrl || null);
   const [isReading, setIsReading] = useState(false);
+
+  useEffect(() => {
+    if (lessonId) {
+      startLessonTimer(lessonId);
+    }
+    return () => {
+      if (lessonId) {
+        stopLessonTimer(lessonId);
+      }
+    };
+  }, [lessonId]);
 
   // Force captions when sign language is enabled
   useEffect(() => {
@@ -361,6 +374,23 @@ export default function LessonViewer() {
             )}
           </div>
         )}
+
+        {/* Completion Area */}
+        <div className="flex justify-center pt-8">
+          <Button 
+            variant="success" 
+            className="flex items-center gap-4 px-12 py-6 rounded-4xl shadow-2xl shadow-green-500/20 text-sm font-black uppercase tracking-[0.2em]"
+            onClick={() => {
+              if (lessonId) {
+                markLessonCompleted(lessonId, `Completed lesson: ${lesson.title}`);
+                navigate('/lessons');
+              }
+            }}
+          >
+            <CheckCircle2 size={24} />
+            Mark Lesson as Completed
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -1,10 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import Card from '../components/Card';
 import LoginTracker from '../components/LoginTracker';
 import { useSettings } from '../context/SettingsContext';
-import { useAuth } from '../context/AuthContext';
+import { useProgress } from '../context/ProgressContext';
 import { useNavigate } from 'react-router-dom';
-import { userDataAPI } from '../services/api';
 
 // Import all board syllabi for metrics
 import ncertSyllabus from '../data/ncert_syllabus.json';
@@ -12,22 +11,43 @@ import telanganaSyllabus from '../data/telangana_syllabus.json';
 import apSyllabus from '../data/andhra_pradesh_syllabus.json';
 
 import { 
-  BookOpen, 
-  ShieldCheck, 
   LineChart, 
+  Line, 
+  BarChart, 
+  Bar, 
+  PieChart, 
+  Pie, 
+  Cell, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from 'recharts';
+
+import { 
+  BookOpen, 
+  Trophy,
   Clock, 
-  CheckCircle2, 
   Star, 
   Zap,
-  CircleHelp,
   FileText,
   ClipboardCheck,
-  HelpCircle
+  HelpCircle,
+  TrendingUp,
+  History
 } from 'lucide-react';
 
 const Dashboard = () => {
   const { settings, t } = useSettings();
-  const { auth } = useAuth();
+  const { 
+    progress, 
+    getProgressPercentage, 
+    getWeeklyActivity, 
+    getTimeSpentData, 
+    getQuizStats,
+    setTotalLessons
+  } = useProgress();
   const navigate = useNavigate();
 
   // Select syllabus based on board setting
@@ -39,27 +59,8 @@ const Dashboard = () => {
       default: return ncertSyllabus;
     }
   }, [settings.learning.board]);
-  
-  const [lessonMetrics, setLessonMetrics] = useState({
-    completed: 0,
-    total: 10, 
-    percentage: 0,
-    certificates: 0,
-    questionsAsked: 0,
-    streakDays: 0
-  });
 
-  const [lastQuiz, setLastQuiz] = useState<{ pdfName: string; score: number; total: number; submittedAt: string } | null>(null);
-  const [activities, setActivities] = useState<any[]>([]);
-  
-  const [goalsProgress, setGoalsProgress] = useState({
-    lessons: 0,
-    ai: 0,
-    quiz: 0
-  });
-  
   useEffect(() => {
-    // Calculate total lessons from active syllabus
     let totalTopics = 0;
     try {
       const classes = (activeSyllabus as any).classes;
@@ -74,130 +75,58 @@ const Dashboard = () => {
     } catch (e) {
       totalTopics = 50; 
     }
+    setTotalLessons(totalTopics);
+  }, [activeSyllabus, setTotalLessons]);
 
-    const fetchProgress = async () => {
-      if (!auth?.user?.id) {
-        // Fallback to localStorage if no user
-        try {
-          const stored = localStorage.getItem('lesson_completion_tracker');
-          if (stored) {
-            const completedIds = JSON.parse(stored) as string[];
-            const count = completedIds.length;
-            const percentage = Math.round((count / totalTopics) * 100);
-            setLessonMetrics(prev => ({
-              ...prev,
-              completed: count,
-              total: totalTopics,
-              percentage: percentage,
-              certificates: Math.floor(count / 5)
-            }));
-            setGoalsProgress(prev => ({ ...prev, lessons: percentage }));
-          }
-        } catch (e) {
-          console.error('Failed to load local metrics', e);
-        }
-        return;
-      }
-
-      try {
-        const data = await userDataAPI.getProgress(String(auth.user.id));
-        if (data.success) {
-          const count = data.progress.lessonsCompleted || 0;
-          const total = totalTopics || data.progress.totalLessons || 50;
-          const percentage = Math.round((count / total) * 100);
-          
-          setLessonMetrics({
-            completed: count,
-            total: total,
-            percentage: percentage,
-            certificates: Math.floor(count / 3),
-            questionsAsked: data.progress.questionsAsked || 0,
-            streakDays: data.progress.streakDays || 1
-          });
-
-          setGoalsProgress({
-            lessons: percentage,
-            ai: Math.min((data.progress.questionsAsked || 0) * 10, 100),
-            quiz: data.progress.quiz_scores?.length > 0 ? 100 : 0
-          });
-
-          if (data.progress.quiz_scores && data.progress.quiz_scores.length > 0) {
-            setLastQuiz(data.progress.quiz_scores[0]);
-            const bestScore = Math.max(...data.progress.quiz_scores.map((q: any) => (q.score / q.total) * 100));
-            setGoalsProgress(prev => ({ ...prev, quiz: Math.round(bestScore) }));
-          }
-
-          if (data.progress.activities) {
-            setActivities(data.progress.activities.slice(0, 5));
-          }
-        }
-      } catch (e) {
-        console.error('Failed to fetch progress from API', e);
-        
-        // Fallback to local storage if API fails or user is offline
-        try {
-          const stored = localStorage.getItem('lesson_completion_tracker');
-          if (stored) {
-            const completedIds = JSON.parse(stored) as string[];
-            const count = completedIds.length;
-            const percentage = Math.round((count / totalTopics) * 100);
-            setLessonMetrics(prev => ({
-              ...prev,
-              completed: count,
-              total: totalTopics,
-              percentage: percentage,
-              certificates: Math.floor(count / 5)
-            }));
-            setGoalsProgress(prev => ({ ...prev, lessons: percentage }));
-          }
-        } catch (localErr) {
-          console.error('Local fallback failed', localErr);
-        }
-      }
-    };
-
-    fetchProgress();
-  }, [auth, activeSyllabus]);
-
-  const { level, contentPreference } = settings.learning;
-  
-  const getLevelLabel = (lvl: string) => {
-    switch (lvl) {
-      case 'Beginner':
-        return t.lessons.beginner;
-      case 'Intermediate':
-        return t.lessons.intermediate;
-      case 'Advanced':
-        return t.lessons.advanced;
-      default:
-        return lvl;
-    }
+  // Color System Constants
+  const COLORS = {
+    GREEN: '#22c55e',
+    RED: '#ef4444',
+    YELLOW: '#f59e0b',
+    BLACK: '#000000',
+    GRAY: '#e5e7eb'
   };
 
+  const percentage = getProgressPercentage();
+  const weeklyData = getWeeklyActivity();
+  const timeData = getTimeSpentData();
+  const quizData = getQuizStats();
+
+  const getProgressColor = (val: number) => {
+    if (val > 70) return COLORS.GREEN;
+    if (val >= 30) return COLORS.YELLOW;
+    return COLORS.RED;
+  };
+
+  const { level, contentPreference } = settings.learning;
+
+  const lastActivities = useMemo(() => progress.activityLog.slice(0, 3), [progress.activityLog]);
+  const certificatesCount = Math.floor(progress.lessonsCompleted.length / 5);
+
   return (
-    <div className="min-h-screen bg-app-bg-alt py-12">
+    <div className="min-h-screen bg-white py-12">
       <div className="dashboard-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-12">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h1 className="text-4xl font-black text-app-text-main tracking-tight">
+              <h1 className="text-4xl font-black text-black tracking-tight uppercase">
                 {t.dashboard.title}
               </h1>
-              <p className="text-app-text-sub mt-2 text-lg font-medium">
+              <p className="text-gray-600 mt-2 text-lg font-medium">
                 {t.dashboard.subtitle}
               </p>
             </div>
-            <div className="flex items-center gap-4 bg-app-bg p-4 rounded-2xl border border-app-border">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+            <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
+              <div className="w-12 h-12 rounded-xl bg-black flex items-center justify-center text-white">
                 <Star size={24} />
               </div>
               <div>
-                <p className="text-xs font-bold text-app-text-muted uppercase tracking-widest">
-                  Active Goal
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  Learning Mode
                 </p>
-                <p className="text-app-text-main font-bold">
-                  {getLevelLabel(level)} • {contentPreference}
+                <p className="text-black font-bold">
+                  {level} • {contentPreference}
                 </p>
               </div>
             </div>
@@ -208,170 +137,233 @@ const Dashboard = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full transition-all group-hover:scale-110" />
+              <Card className="border-2 border-gray-100 shadow-none">
                 <div className="flex flex-col">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4 text-primary">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-white ${progress.lessonsCompleted.length > 0 ? 'bg-green-500' : 'bg-black'}`}>
                     <BookOpen size={24} />
                   </div>
-                  <h3 className="text-3xl font-black text-app-text-main">{lessonMetrics.completed}</h3>
-                  <p className="text-app-text-sub font-bold text-sm">{t.dashboard.lessonsCompleted}</p>
+                  <h3 className="text-4xl font-black text-black">{progress.lessonsCompleted.length}</h3>
+                  <p className="text-gray-500 font-bold text-xs uppercase tracking-widest">{t.dashboard.lessonsCompleted}</p>
                 </div>
               </Card>
               
-              <Card className="relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-secondary/5 rounded-bl-full transition-all group-hover:scale-110" />
+              <Card className="border-2 border-gray-100 shadow-none">
                 <div className="flex flex-col">
-                  <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center mb-4 text-secondary">
-                    <ShieldCheck size={24} />
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-white ${certificatesCount > 0 ? 'bg-green-500' : 'bg-black'}`}>
+                    <Trophy size={24} />
                   </div>
-                  <h3 className="text-3xl font-black text-app-text-main">{lessonMetrics.certificates}</h3>
-                  <p className="text-app-text-sub font-bold text-sm">{t.dashboard.certificatesEarned}</p>
+                  <h3 className="text-4xl font-black text-black">{certificatesCount}</h3>
+                  <p className="text-gray-500 font-bold text-xs uppercase tracking-widest">Certificates</p>
                 </div>
               </Card>
 
-              <Card className="relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full transition-all group-hover:scale-110" />
+              <Card className="border-2 border-gray-100 shadow-none">
                 <div className="flex flex-col">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4 text-primary">
-                    <LineChart size={24} />
+                  <div 
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-white"
+                    style={{ backgroundColor: getProgressColor(percentage) }}
+                  >
+                    <TrendingUp size={24} />
                   </div>
-                  <h3 className="text-3xl font-black text-app-text-main">{lessonMetrics.percentage}%</h3>
-                  <p className="text-app-text-sub font-bold text-sm">{t.dashboard.progressRate}</p>
+                  <h3 className="text-4xl font-black text-black">{percentage}%</h3>
+                  <p className="text-gray-500 font-bold text-xs uppercase tracking-widest">{t.dashboard.progressRate}</p>
                 </div>
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Recent Activity */}
-              <Card>
-                <div className="flex items-center gap-2 mb-6 text-primary">
-                  <Clock size={24} />
-                  <h2 className="text-xl font-black text-app-text-main tracking-tight">
-                    {t.dashboard.recentActivity}
-                  </h2>
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Consistency Line Chart */}
+              <Card className="border-2 border-gray-100 shadow-none min-h-100 flex flex-col" aria-label="Learning Consistency Weekly Chart">
+                <h3 className="text-sm font-black text-gray-400 mb-8 uppercase tracking-[0.2em] flex items-center gap-2">
+                  <History size={18} /> Consistency
+                </h3>
+                <div className="flex-1 w-full pb-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={weeklyData} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="4 4" vertical={false} stroke={COLORS.GRAY} />
+                      <XAxis 
+                        dataKey="date" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fill: COLORS.GRAY, fontSize: 9, fontWeight: '900' }} 
+                        tickFormatter={(str) => str.split('-').slice(2).join('/')}
+                      />
+                      <YAxis hide domain={[0, 'auto']} />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '12px', border: '2px solid #000', boxShadow: 'none' }}
+                      />
+                      <Line 
+                        type="stepAfter" 
+                        dataKey="count" 
+                        stroke={COLORS.BLACK} 
+                        strokeWidth={3} 
+                        dot={(props: any) => {
+                          const { cx, cy, payload } = props;
+                          const color = payload.count > 0 ? COLORS.GREEN : COLORS.RED;
+                          return <circle cx={cx} cy={cy} r={5} fill={color} stroke="white" strokeWidth={2} />;
+                        }}
+                        activeDot={{ r: 7, strokeWidth: 0 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </div>
-                <div className="space-y-6">
-                  {activities.length === 0 ? (
-                    <div className="text-center py-6 text-app-text-sub italic text-sm">
-                      No recent activity recorded
-                    </div>
-                  ) : (
-                    activities.map((activity, index) => (
-                      <div key={index} className="flex items-center space-x-4 p-3 rounded-xl hover:bg-app-bg-alt transition-colors group">
-                        <div className="shrink-0">
-                          {activity.type === 'lesson' ? <CheckCircle2 className="text-green-500" size={18} /> : 
-                           activity.type === 'badge' ? <Zap className="text-yellow-500" size={18} /> : 
-                           <BookOpen className="text-primary" size={18} />}
-                        </div>
-                        <div className="grow">
-                          <p className="text-app-text-main font-bold text-sm">{activity.text}</p>
-                          <p className="text-[10px] text-app-text-muted font-bold uppercase tracking-widest mt-0.5">
-                            {new Date(activity.timestamp).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-app-border group-hover:bg-primary transition-colors" />
-                      </div>
-                    ))
-                  )}
+                <div className="mt-auto pt-6 flex gap-6 text-[9px] font-black tracking-widest uppercase border-t border-gray-50">
+                  <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500" /> Active Day</span>
+                  <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-red-500" /> Inactive Day</span>
                 </div>
               </Card>
 
-              {/* Learning Goals */}
-              <Card>
-                <div className="flex items-center gap-2 mb-6 text-primary">
-                  <Star size={24} />
-                  <h2 className="text-xl font-black text-app-text-main tracking-tight">
-                    {t.dashboard.learningGoals}
-                  </h2>
+              {/* Time Spent Bar Chart */}
+              <Card className="border-2 border-gray-100 shadow-none min-h-100 flex flex-col" aria-label="Time Spent Learning Bar Chart">
+                <h3 className="text-sm font-black text-gray-400 mb-8 uppercase tracking-[0.2em] flex items-center gap-2">
+                  <Clock size={18} /> Time Spent
+                </h3>
+                <div className="flex-1 w-full pb-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={timeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="4 4" vertical={false} stroke={COLORS.GRAY} />
+                      <XAxis 
+                        dataKey="day" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fill: COLORS.GRAY, fontSize: 10, fontWeight: '900' }} 
+                      />
+                      <YAxis hide />
+                      <Tooltip cursor={{ fill: COLORS.GRAY, opacity: 0.1 }} />
+                      <Bar dataKey="minutes" radius={[4, 4, 4, 4]} barSize={32}>
+                        {timeData.map((entry, index) => {
+                          let color = COLORS.RED;
+                          if (entry.status === 'productive') color = COLORS.GREEN;
+                          else if (entry.status === 'moderate') color = COLORS.YELLOW;
+                          return <Cell key={`cell-${index}`} fill={color} />;
+                        })}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
-                <div className="space-y-6">
-                  {[
-                    { goal: t.dashboard.goals.completeLessons, progress: goalsProgress.lessons, color: 'bg-primary' },
-                    { goal: t.dashboard.goals.practiceAI, progress: goalsProgress.ai, color: 'bg-secondary' },
-                    { goal: t.dashboard.goals.achieveScore, progress: goalsProgress.quiz, color: 'bg-primary' },
-                  ].map((item, index) => (
-                    <div key={index} className="space-y-3">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-app-text-main font-bold">{item.goal}</span>
-                        <span className="text-app-text-sub font-black">{item.progress}%</span>
-                      </div>
-                      <div className="w-full bg-app-bg-alt rounded-full h-3 p-1 border border-app-border overflow-hidden">
-                        <div
-                          className={`${item.color} h-full rounded-full transition-all duration-1000 ease-out shadow-sm`}
-                          style={{ width: `${item.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
+                <div className="mt-auto pt-6 flex flex-wrap gap-4 text-[9px] font-black tracking-widest uppercase border-t border-gray-50">
+                  <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500" /> Productive</span>
+                  <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-yellow-500" /> Moderate</span>
+                  <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500" /> Low</span>
                 </div>
               </Card>
             </div>
+
+            {/* Quiz Performance */}
+            <Card className="relative border-2 border-gray-100 shadow-none overflow-hidden" aria-label="Quiz Performance Doughnut Chart">
+               <div className="flex flex-col md:flex-row items-center gap-12">
+                  <div className="relative h-64 w-64 shrink-0 mx-auto md:mx-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={quizData}
+                          innerRadius={70}
+                          outerRadius={90}
+                          paddingAngle={8}
+                          dataKey="value"
+                          stroke="none"
+                        >
+                          <Cell fill={COLORS.GREEN} />
+                          <Cell fill={COLORS.RED} />
+                          <Cell fill={COLORS.YELLOW} />
+                        </Pie>
+                        <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                       <p className="text-3xl font-black text-black leading-none uppercase">QUIZ</p>
+                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">STATS</p>
+                    </div>
+                  </div>
+                  <div className="grow w-full space-y-4">
+                    <h3 className="text-xl font-black text-black uppercase tracking-tight text-center md:text-left">Detailed Performance</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 gap-3">
+                      {quizData.map((item, i) => (
+                        <div key={i} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100 group hover:border-black transition-all">
+                           <div className="flex items-center gap-3">
+                              <div className="w-4 h-4 rounded-full shadow-sm" style={{ backgroundColor: [COLORS.GREEN, COLORS.RED, COLORS.YELLOW][i] }} />
+                              <span className="font-bold text-black text-sm uppercase tracking-tight">{item.name}</span>
+                           </div>
+                           <span className="font-black text-black text-lg">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+               </div>
+            </Card>
           </div>
 
-          <div className="lg:col-span-1">
-            {lastQuiz && (
-              <Card className="mb-8">
-                <div className="flex items-center gap-2 mb-4 text-primary">
-                  <CircleHelp size={24} />
-                  <h2 className="text-xl font-black text-app-text-main tracking-tight">Last Quiz</h2>
-                </div>
-                <div className="space-y-3">
-                  <p className="text-app-text-main font-bold">{lastQuiz.pdfName}</p>
-                  <p className="text-app-text-sub font-medium">Score: {lastQuiz.score}/{lastQuiz.total}</p>
-                  <p className="text-xs font-black uppercase tracking-widest text-app-text-muted">
-                    {new Date(lastQuiz.submittedAt).toLocaleString()}
-                  </p>
-                </div>
-              </Card>
-            )}
+          <div className="lg:col-span-1 space-y-8">
+            {/* Recent Activity */}
+            <Card className="border-2 border-gray-100 shadow-none flex flex-col">
+              <div className="flex items-center gap-2 mb-8 text-black">
+                <Clock size={24} />
+                <h2 className="text-xl font-black text-black tracking-tight uppercase">
+                  Recent Activity
+                </h2>
+              </div>
+              <div className="space-y-4 flex-1">
+                {lastActivities.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center opacity-60">
+                    <History size={48} className="text-gray-200 mb-4" />
+                    <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">
+                      No recent activity
+                    </p>
+                  </div>
+                ) : (
+                  lastActivities.map((activity, index) => (
+                    <div key={index} className="flex items-center space-x-4 p-4 rounded-2xl border border-gray-50 bg-white hover:border-black hover:shadow-lg transition-all group cursor-default">
+                      <div className="shrink-0 w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-black group-hover:bg-black group-hover:text-white transition-colors">
+                        {activity.type === 'lesson' ? <BookOpen size={20} /> : 
+                         activity.type === 'quiz' ? <ClipboardCheck size={20} /> : 
+                         <Zap size={20} />}
+                      </div>
+                      <div className="grow min-w-0">
+                        <p className="text-black font-black text-[10px] uppercase tracking-tight leading-tight truncate">{activity.label || activity.type}</p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                          {new Date(activity.timestamp).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+              {lastActivities.length > 0 && (
+                <button 
+                  onClick={() => navigate('/notifications')}
+                  className="w-full mt-8 pt-6 text-[10px] font-black text-gray-400 hover:text-black uppercase tracking-widest transition-colors border-t border-gray-50"
+                >
+                  View Full History
+                </button>
+              )}
+            </Card>
+
             <LoginTracker />
 
-            {/* Additional Features Quick Access */}
-            <Card className="mt-8">
-              <div className="flex items-center gap-2 mb-4 text-primary">
-                <Zap size={24} />
-                <h2 className="text-xl font-black text-app-text-main tracking-tight">Quick Access</h2>
-              </div>
-              <div className="grid grid-cols-1 gap-3">
-                <button 
-                  onClick={() => navigate('/exams')}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-app-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left group"
-                >
-                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
-                    <ClipboardCheck size={20} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-app-text-main">Exams & Assessments</p>
-                    <p className="text-[10px] text-app-text-muted font-bold uppercase">Test your knowledge</p>
-                  </div>
-                </button>
-
-                <button 
-                  onClick={() => navigate('/reports')}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-app-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left group"
-                >
-                  <div className="p-2 rounded-lg bg-green-500/10 text-green-500 group-hover:scale-110 transition-transform">
-                    <FileText size={20} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-app-text-main">Usage Reports</p>
-                    <p className="text-[10px] text-app-text-muted font-bold uppercase">Download activity logs</p>
-                  </div>
-                </button>
-
-                <button 
-                  onClick={() => navigate('/onboarding')}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-app-border hover:bg-primary/5 hover:border-primary/30 transition-all text-left group"
-                >
-                  <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500 group-hover:scale-110 transition-transform">
-                    <HelpCircle size={20} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-app-text-main">Getting Started</p>
-                    <p className="text-[10px] text-app-text-muted font-bold uppercase">View platform guide</p>
-                  </div>
-                </button>
+            {/* Quick Access List */}
+            <Card className="border-2 border-gray-100 shadow-none">
+              <h2 className="text-[10px] font-black text-gray-400 tracking-[0.2em] uppercase mb-6">Explore Platform</h2>
+              <div className="space-y-2">
+                {[
+                  { label: 'Exams & Assessments', icon: ClipboardCheck, to: '/exams', color: 'bg-blue-500' },
+                  { label: 'Platform Reports', icon: FileText, to: '/reports', color: 'bg-green-500' },
+                  { label: 'Getting Started', icon: HelpCircle, to: '/onboarding', color: 'bg-purple-500' }
+                ].map((item, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => navigate(item.to)}
+                    className="w-full flex items-center justify-between p-4 rounded-2xl border-2 border-transparent hover:border-black hover:bg-gray-50 transition-all group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`p-2 rounded-xl ${item.color} text-white group-hover:scale-110 transition-transform`}>
+                        <item.icon size={16} />
+                      </div>
+                      <span className="text-[11px] font-black text-black uppercase tracking-tight">{item.label}</span>
+                    </div>
+                    <Star size={12} className="text-gray-200 group-hover:text-black" />
+                  </button>
+                ))}
               </div>
             </Card>
           </div>
@@ -382,3 +374,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
