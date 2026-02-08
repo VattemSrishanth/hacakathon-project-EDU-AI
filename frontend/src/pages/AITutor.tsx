@@ -82,7 +82,7 @@ const DeleteConfirmModal = ({
 };
 
 const AITutor = () => {
-  const { settings, t, updateLearning, updateThemeAccessibility } = useSettings();
+  const { settings, t, updateLearning, updateThemeAccessibility, updateAiTutor } = useSettings();
   const { auth } = useAuth();
   const { isOffline } = useOffline();
   const navigate = useNavigate();
@@ -398,11 +398,9 @@ const AITutor = () => {
                     updateThemeAccessibility({ voiceLanguage: cmd.value });
                  } else if (cmd.command === 'SET_THEME') {
                      const t = cmd.value.toLowerCase();
-                     if (t.includes('dark') || t.includes('void')) updateThemeAccessibility({ theme: 'Midnight Void' });
-                     else if (t.includes('light') || t.includes('crystal')) updateThemeAccessibility({ theme: 'Crystal Light' });
-                     else if (t.includes('sunset') || t.includes('orange') || t.includes('ember')) updateThemeAccessibility({ theme: 'Sunset Ember' });
-                     else if (t.includes('potter') || t.includes('wizard') || t.includes('magic')) updateThemeAccessibility({ theme: 'HARRY POTTER' });
-                     else if (t.includes('stranger') || t.includes('horror') || t.includes('upside')) updateThemeAccessibility({ theme: 'STRANGER THINGS' });
+                     if (t.includes('maroon') || t.includes('dark')) updateThemeAccessibility({ theme: 'Academic Maroon' });
+                     else if (t.includes('amber') || t.includes('sunset')) updateThemeAccessibility({ theme: 'Sunrise Amber' });
+                     else if (t.includes('white') || t.includes('light')) updateThemeAccessibility({ theme: 'Institutional White' });
                      
                      if (t.includes('low') || t.includes('power')) updateThemeAccessibility({ lowPowerMode: true });
                      if (t.includes('high') || t.includes('contrast')) updateThemeAccessibility({ highContrast: true });
@@ -585,12 +583,12 @@ const AITutor = () => {
   // If AI Tutor is disabled, show a message
   if (!enabled) {
     return (
-      <div className="min-h-screen bg-app-bg-alt py-12 px-4 flex items-center justify-center transition-colors duration-300">
+      <div className="min-h-screen bg-app-bg py-12 px-4 flex items-center justify-center transition-colors duration-300">
         <div className="max-w-xl w-full">
           <Card className="p-12 text-center border-2 border-app-border bg-app-bg shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-primary to-secondary" />
-            <div className="w-24 h-24 bg-app-bg-alt rounded-3xl flex items-center justify-center mx-auto mb-8 text-app-text-muted group-hover:scale-110 transition-transform duration-500">
-              <Zap size={48} className="text-primary" />
+            <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-ai-accent to-secondary" />
+            <div className="w-24 h-24 bg-app-bg rounded-3xl flex items-center justify-center mx-auto mb-8 text-app-text-muted group-hover:scale-110 transition-transform duration-500">
+              <Zap size={48} className="text-ai-accent" />
             </div>
             <h1 className="text-3xl font-black text-app-text-main mb-4 tracking-tight">
               {t.aiTutor.disabled}
@@ -599,7 +597,7 @@ const AITutor = () => {
               {t.aiTutor.disabledMessage}
             </p>
             <Link to="/settings" className="block">
-              <Button variant="primary" className="w-full py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-primary/25">
+              <Button variant="ai-accent" className="w-full py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-ai-accent/25">
                 Go to Settings
               </Button>
             </Link>
@@ -610,7 +608,7 @@ const AITutor = () => {
   }
 
   return (
-    <div className="min-h-screen bg-app-bg-alt py-12 px-4 transition-colors duration-300">
+    <div className="min-h-screen bg-app-bg py-12 px-4 transition-colors duration-300">
       {/* Hidden File Inputs */}
       <input
         type="file"
@@ -641,8 +639,8 @@ const AITutor = () => {
             <div className="p-6 flex flex-col h-full">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Clock size={20} className="text-primary" />
+                  <div className="w-8 h-8 rounded-lg bg-ai-accent/10 flex items-center justify-center">
+                    <Clock size={20} className="text-ai-accent" />
                   </div>
                   <h2 className="text-xl font-black text-app-text-main tracking-tight">History</h2>
                 </div>
@@ -656,7 +654,7 @@ const AITutor = () => {
 
               <button
                 onClick={createNewChat}
-                className="w-full mb-8 px-6 py-4 bg-primary text-white rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/25"
+                className="w-full mb-8 px-6 py-4 bg-ai-accent text-white rounded-2xl hover:bg-ai-accent/90 transition-all flex items-center justify-center gap-3 font-black uppercase tracking-widest text-xs shadow-lg shadow-ai-accent/25"
               >
                 <Plus size={20} />
                 New Conversation
@@ -675,7 +673,7 @@ const AITutor = () => {
                       className={`
                         group relative p-4 rounded-2xl cursor-pointer transition-all duration-200 border
                         ${session.id === currentSessionId
-                          ? 'bg-primary/5 border-primary/20 ring-1 ring-primary/10'
+                          ? 'bg-ai-accent/5 border-ai-accent/20 ring-1 ring-ai-accent/10'
                           : 'bg-app-bg-alt border-transparent hover:border-app-border shadow-sm'
                         }
                       `}
@@ -683,7 +681,7 @@ const AITutor = () => {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-black truncate ${session.id === currentSessionId ? 'text-primary' : 'text-app-text-main'}`}>
+                          <p className={`text-sm font-black truncate ${session.id === currentSessionId ? 'text-ai-accent' : 'text-app-text-main'}`}>
                             {session.title}
                           </p>
                           <p className="text-[10px] font-bold text-app-text-muted mt-1 uppercase tracking-widest">
@@ -722,7 +720,7 @@ const AITutor = () => {
                   </button>
                 )}
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center text-white shadow-lg">
+                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-ai-accent to-secondary flex items-center justify-center text-white shadow-lg">
                     <Zap size={24} />
                   </div>
                   <div>
@@ -731,7 +729,7 @@ const AITutor = () => {
                     </h1>
                     <div className="flex items-center gap-2 mt-1">
 
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
                       <span className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">
                         AI Model Online
                       </span>
@@ -740,14 +738,28 @@ const AITutor = () => {
                 </div>
               </div>
 
-              {/* Status Info */}
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-app-bg-alt rounded-lg border border-app-border">
-                <span className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">
-                  Style:
-                </span>
-                <span className="text-[10px] font-black text-primary uppercase tracking-widest">
-                  {answerStyle}
-                </span>
+              {/* Style Selector */}
+              <div className="flex items-center gap-1 p-1 bg-app-bg-alt rounded-xl border border-app-border shadow-inner">
+                <button
+                  onClick={() => updateAiTutor({ answerStyle: 'Short' })}
+                  className={`px-2.5 py-1.5 text-[9px] md:text-[10px] font-black rounded-lg transition-all duration-200 uppercase tracking-widest ${
+                    answerStyle === 'Short'
+                      ? 'bg-ai-accent text-white shadow-lg scale-105'
+                      : 'text-app-text-muted hover:bg-app-border/50'
+                  }`}
+                >
+                  Short
+                </button>
+                <button
+                  onClick={() => updateAiTutor({ answerStyle: 'Detailed' })}
+                  className={`px-2.5 py-1.5 text-[9px] md:text-[10px] font-black rounded-lg transition-all duration-200 uppercase tracking-widest ${
+                    answerStyle === 'Detailed'
+                      ? 'bg-ai-accent text-white shadow-lg scale-105'
+                      : 'text-app-text-muted hover:bg-app-border/50'
+                  }`}
+                >
+                  Detailed
+                </button>
               </div>
             </div>
 
@@ -766,7 +778,7 @@ const AITutor = () => {
                       className={`
                         px-6 py-4 rounded-3xl whitespace-pre-wrap text-sm md:text-base leading-relaxed relative
                         ${message.role === 'user' 
-                          ? 'bg-primary text-white rounded-br-none shadow-lg shadow-primary/20 font-medium' 
+                          ? 'bg-ai-accent text-white rounded-br-none shadow-lg shadow-ai-accent/20 font-medium' 
                           : 'bg-app-bg-alt text-app-text-main rounded-bl-none border border-app-border'
                         }
                       `}
@@ -805,9 +817,9 @@ const AITutor = () => {
                 <div className="flex justify-start">
                   <div className="bg-app-bg-alt border border-app-border rounded-3xl rounded-bl-none p-4 flex items-center gap-3">
                     <div className="flex gap-1">
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce"></div>
+                      <div className="w-1.5 h-1.5 bg-ai-accent rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="w-1.5 h-1.5 bg-ai-accent rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-1.5 h-1.5 bg-ai-accent rounded-full animate-bounce"></div>
                     </div>
                     <span className="text-xs font-black text-app-text-muted uppercase tracking-widest">Studying Context...</span>
                   </div>
@@ -820,19 +832,19 @@ const AITutor = () => {
             <div className="p-4 md:p-6 bg-app-bg border-t border-app-border">
               {/* File Context Indicator */}
               {fileContext && (
-                <div className="mb-4 p-3 bg-primary/10 rounded-2xl flex items-center justify-between border border-primary/20 animate-in slide-in-from-bottom-2">
+                <div className="mb-4 p-3 bg-ai-accent/10 rounded-2xl flex items-center justify-between border border-ai-accent/20 animate-in slide-in-from-bottom-2">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+                    <div className="w-8 h-8 rounded-lg bg-ai-accent/20 flex items-center justify-center text-ai-accent">
                       {fileContext.type === 'image' ? <ImagePlus size={18} /> : <FileText size={18} />}
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-primary uppercase tracking-widest">Active Context</p>
+                      <p className="text-[10px] font-black text-ai-accent uppercase tracking-widest">Active Context</p>
                       <p className="text-xs font-bold text-app-text-main truncate max-w-50">{fileContext.name}</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => setFileContext(null)}
-                    className="p-1.5 hover:bg-red-500/10 rounded-lg text-primary transition-colors"
+                    className="p-1.5 hover:bg-red-500/10 rounded-lg text-ai-accent transition-colors"
                   >
                     <X size={18} />
                   </button>
@@ -846,7 +858,7 @@ const AITutor = () => {
                     onClick={() => setPlusMenuOpen(!plusMenuOpen)}
                     className={`
                       p-3.5 rounded-2xl transition-all duration-300
-                      ${plusMenuOpen ? 'bg-primary text-white rotate-45' : 'bg-app-bg-alt text-app-text-muted hover:text-primary border border-app-border'}
+                      ${plusMenuOpen ? 'bg-ai-accent text-white rotate-45' : 'bg-app-bg-alt text-app-text-muted hover:text-ai-accent border border-app-border'}
                     `}
                   >
                     <Plus size={24} />
@@ -858,21 +870,21 @@ const AITutor = () => {
                         onClick={() => { fileInputRef.current?.click(); setPlusMenuOpen(false); }}
                         className="w-full text-left px-4 py-3 text-sm font-bold text-app-text-main hover:bg-app-bg-alt flex items-center gap-3 transition-colors"
                       >
-                        <ImagePlus size={20} className="text-primary" />
+                        <ImagePlus size={20} className="text-ai-accent" />
                         Analyze Image
                       </button>
                       <button
                         onClick={() => { pdfInputRef.current?.click(); setPlusMenuOpen(false); }}
                         className="w-full text-left px-4 py-3 text-sm font-bold text-app-text-main hover:bg-app-bg-alt flex items-center gap-3 transition-colors"
                       >
-                        <FileText size={20} className="text-primary" />
+                        <FileText size={20} className="text-ai-accent" />
                         Read PDF Document
                       </button>
                       <div className="h-px bg-app-border mx-3 my-2" />
                       <button
                         className="w-full text-left px-4 py-3 text-sm font-bold text-app-text-main hover:bg-app-bg-alt flex items-center gap-3 transition-colors opacity-50 cursor-not-allowed"
                       >
-                        <Youtube size={20} className="text-primary" />
+                        <Youtube size={20} className="text-ai-accent" />
                         Video Analysis
                       </button>
                     </div>
@@ -891,7 +903,7 @@ const AITutor = () => {
                       }
                     }}
                     placeholder="Ask LearnBridge AI..."
-                    className="w-full bg-app-bg-alt border border-app-border rounded-2xl py-3.5 pl-4 pr-12 text-app-text-main font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none max-h-32 min-h-13 custom-scrollbar"
+                    className="w-full bg-app-bg-alt border border-app-border rounded-2xl py-3.5 pl-4 pr-12 text-app-text-main font-medium focus:outline-none focus:ring-2 focus:ring-ai-accent/20 focus:border-ai-accent transition-all resize-none max-h-32 min-h-13 custom-scrollbar"
                     rows={1}
                   />
                   
@@ -900,7 +912,7 @@ const AITutor = () => {
                     onClick={startVoiceInput}
                     className={`
                       absolute right-2 bottom-2 p-2 rounded-xl transition-all duration-300
-                      ${isRecording ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/20' : 'text-app-text-muted hover:text-primary'}
+                      ${isRecording ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/20' : 'text-app-text-muted hover:text-ai-accent'}
                     `}
                   >
                     <Mic size={24} />
@@ -915,7 +927,7 @@ const AITutor = () => {
                     p-3.5 rounded-2xl transition-all duration-300 shadow-lg
                     ${loading || (!input.trim() && !fileContext)
                       ? 'bg-app-bg-alt text-app-text-muted border border-app-border cursor-not-allowed grayscale'
-                      : 'bg-primary text-white hover:scale-105 active:scale-95 shadow-primary/25'
+                      : 'bg-ai-accent text-white hover:scale-105 active:scale-95 shadow-ai-accent/25'
                     }
                   `}
                 >

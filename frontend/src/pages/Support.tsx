@@ -73,8 +73,8 @@ const Support = () => {
           </div>
 
           {/* Contact Info */}
-          <div className="group rounded-3xl bg-app-bg border border-app-border shadow-2xl p-8 hover:border-blue-500/50 transition-all duration-300">
-            <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-blue-500">
+          <div className="group rounded-3xl bg-app-bg border border-app-border shadow-2xl p-8 hover:border-primary/50 transition-all duration-300">
+            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-primary">
               <MessageCircle size={32} />
             </div>
             <h2 className="text-xl font-black text-app-text-main mb-3 tracking-tight">{t.support.contactUs}</h2>
@@ -105,22 +105,22 @@ const Support = () => {
         {/* Feedback System */}
         <section className="bg-app-bg rounded-3xl border border-app-border shadow-2xl p-8 mb-12">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-yellow-400/10 rounded-xl flex items-center justify-center text-yellow-500">
+            <div className="w-10 h-10 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary">
               <Star size={24} />
             </div>
             <h2 className="text-2xl font-black text-app-text-main tracking-tight">Share Your Feedback</h2>
           </div>
 
           {submitted ? (
-            <div className="text-center py-12 bg-green-50 rounded-2xl border border-green-100">
-              <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center py-12 bg-secondary/10 rounded-2xl border border-secondary/20">
+              <div className="w-16 h-16 bg-secondary text-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Send size={24} />
               </div>
-              <h3 className="text-xl font-black text-green-800 mb-2">Thank You!</h3>
-              <p className="text-green-700 font-medium">Your feedback helps us improve the learning experience.</p>
+              <h3 className="text-xl font-black text-secondary mb-2">Thank You!</h3>
+              <p className="text-secondary font-medium">Your feedback helps us improve the learning experience.</p>
               <button 
                 onClick={() => setSubmitted(false)}
-                className="mt-6 text-green-600 font-black uppercase tracking-widest text-xs"
+                className="mt-6 text-secondary font-black uppercase tracking-widest text-xs"
               >
                 Send Another
               </button>
@@ -138,7 +138,7 @@ const Support = () => {
                       type="button"
                       onClick={() => setRating(star)}
                       className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
-                        rating >= star ? 'bg-yellow-400 text-white scale-110' : 'bg-app-bg-alt text-app-text-muted hover:bg-yellow-400/20'
+                        rating >= star ? 'bg-secondary text-white scale-110' : 'bg-app-bg-alt text-app-text-muted hover:bg-secondary/20'
                       }`}
                     >
                       <Star fill={rating >= star ? 'currentColor' : 'none'} size={24} />

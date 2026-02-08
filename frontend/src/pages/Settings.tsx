@@ -17,11 +17,11 @@ import {
   Palette,
   Eye,
   Shield,
-  Sparkles,
   WifiOff,
   Cloud,
   Database,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -135,24 +135,24 @@ const Settings = () => {
   }) => (
     <button
       onClick={() => setActiveTab(id)}
-      className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${
+      className={`w-full flex items-center gap-3 px-1 py-3 rounded-xl transition-all duration-300 transform hover:translate-x-1 ${
         activeTab === id 
-          ? 'bg-app-bg text-primary shadow-sm' 
+          ? 'bg-app-bg/10 text-primary shadow-sm translate-x-1' 
           : 'text-app-text-sub hover:bg-app-bg/50'
       }`}
     >
-      <Icon className={`w-5 h-5 ${activeTab === id ? colorClass : 'text-app-text-muted opacity-60'}`} />
-      <span className={`text-sm font-bold ${activeTab === id ? 'text-primary' : ''}`}>{label}</span>
+      <Icon className={`w-5 h-5 shrink-0 ${activeTab === id ? colorClass : 'text-app-text-muted opacity-60'}`} />
+      <span className={`text-sm font-bold truncate ${activeTab === id ? 'text-primary' : ''}`}>{label}</span>
     </button>
   );
 
   return (
-    <div className="min-h-screen bg-app-bg text-app-text-main py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row gap-12">
+    <div className="min-h-screen bg-app-bg text-app-text-main py-6 px-2 sm:px-4 lg:px-6 transition-colors duration-300">
+      <div className="w-full">
+        <div className="flex flex-col md:flex-row gap-6 lg:gap-10">
           
           {/* Sidebar - Matching Image 2 */}
-          <aside className="w-full md:w-72 shrink-0 space-y-1">
+          <aside className="w-full md:w-64 shrink-0 space-y-0.5">
             <SidebarItem id="account" label="Account preferences" icon={User} colorClass="text-primary" />
             <SidebarItem id="security" label="Sign in & security" icon={Shield} colorClass="text-primary" />
             <SidebarItem id="visibility" label="Visibility" icon={Eye} colorClass="text-primary" />
@@ -166,9 +166,9 @@ const Settings = () => {
             <div className="pt-8 mt-8 border-t border-app-border">
               <button
                 onClick={() => navigate('/accessibility')}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-app-text-sub hover:bg-primary/5 hover:text-primary transition-all font-bold group"
+                className="w-full flex items-center justify-between px-2 py-3 rounded-xl text-app-text-sub hover:bg-primary/5 hover:text-primary transition-all duration-300 transform hover:translate-x-1 font-bold group"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <div className="w-5 h-5 flex items-center justify-center opacity-60 group-hover:opacity-100">
                     <Layout size={20} />
                   </div>
@@ -182,7 +182,7 @@ const Settings = () => {
           {/* Main Content Area */}
           <main className="flex-1 min-w-0">
             {saveMessage && (
-              <div className="mb-6 flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-600 rounded-2xl border border-emerald-500/20 animate-in fade-in slide-in-from-top-4 w-fit">
+              <div className="mb-6 flex items-center gap-2 px-4 py-2 bg-secondary/10 text-secondary rounded-2xl border border-secondary/20 animate-in fade-in slide-in-from-top-4 w-fit">
                 <Check size={16} />
                 <span className="text-xs font-black uppercase tracking-wider">{saveMessage}</span>
               </div>
@@ -410,8 +410,8 @@ const Settings = () => {
                     </div>
                   </label>
                   
-                  <div className="p-6 bg-emerald-500/5 rounded-2xl border border-emerald-500/10">
-                    <p className="text-xs text-emerald-600 font-bold uppercase tracking-widest leading-relaxed">
+                  <div className="p-6 bg-secondary/5 rounded-2xl border border-secondary/10">
+                    <p className="text-xs text-secondary font-bold uppercase tracking-widest leading-relaxed">
                       Your learning progress and activity are private by default. Currently, only you can see your dashboard.
                     </p>
                   </div>
@@ -461,8 +461,8 @@ const Settings = () => {
                 </header>
 
                 <div className="bg-app-bg-alt rounded-3xl border border-app-border p-8 space-y-6">
-                  <div className="p-8 bg-blue-500/5 rounded-2xl border border-blue-500/10 text-center">
-                    <div className="flex items-center justify-center mb-4 text-blue-500 opacity-40">
+                  <div className="p-8 bg-primary/5 rounded-2xl border border-primary/10 text-center">
+                    <div className="flex items-center justify-center mb-4 text-primary opacity-40">
                       <Layout size={48} />
                     </div>
                     <h3 className="font-black uppercase tracking-tighter text-xl mb-2">Clean Experience Guaranteed</h3>
@@ -613,64 +613,54 @@ const Settings = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <ThemeCard 
-                      id={"Midnight Void" as ThemeMode} 
-                      title="Midnight Void" 
-                      desc="Deep, immersive dark theme with electric blue accents" 
+                      id={"Academic Maroon" as ThemeMode} 
+                      title="Academic Maroon" 
+                      desc="Our signature institutional theme with deep maroon accents" 
                       icon={Moon} 
                       current={settings.themeAccessibility.theme}
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
-                      previewClass="gradient-midnight"
-                      accentClass="bg-blue-500"
+                      previewClass="bg-red-900"
+                      accentClass="bg-red-700"
                     />
                     <ThemeCard 
-                      id={"Crystal Light" as ThemeMode} 
-                      title="Crystal Light" 
-                      desc="Clean, bright theme with soft blue accents" 
+                      id={"Sunrise Amber" as ThemeMode} 
+                      title="Sunrise Amber" 
+                      desc="Bright and motivating theme with warm amber highlights" 
                       icon={Layout} 
                       current={settings.themeAccessibility.theme}
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
-                      previewClass="gradient-crystal border border-app-border"
-                      accentClass="bg-blue-600"
-                    />
-                    <ThemeCard 
-                      id={"Sunset Ember" as ThemeMode} 
-                      title="Sunset Ember" 
-                      desc="Warm, cozy theme with orange and amber tones" 
-                      icon={Home} 
-                      current={settings.themeAccessibility.theme}
-                      onClick={(id) => updateThemeAccessibility({ theme: id })}
-                      previewClass="gradient-sunset"
-                      accentClass="bg-orange-500"
-                    />
-                    <ThemeCard 
-                      id={"HARRY POTTER" as ThemeMode} 
-                      title="HARRY POTTER" 
-                      desc="Dark cinematic wizarding vibe with gold + bronze glow (original)" 
-                      icon={Sparkles} 
-                      current={settings.themeAccessibility.theme}
-                      onClick={(id) => updateThemeAccessibility({ theme: id })}
-                      previewClass="gradient-harry-potter"
+                      previewClass="bg-amber-50"
                       accentClass="bg-amber-500"
                     />
                     <ThemeCard 
-                      id={"STRANGER THINGS" as ThemeMode} 
-                      title="STRANGER THINGS" 
-                      desc="Eerie, retro-horror 80s vibe with neon red and dark forest atmosphere" 
-                      icon={Zap} 
+                      id={"Institutional White" as ThemeMode} 
+                      title="Institutional White" 
+                      desc="Clean, distraction-free white label portal design" 
+                      icon={Home} 
                       current={settings.themeAccessibility.theme}
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
-                      previewClass="gradient-stranger-things"
-                      accentClass="bg-red-600"
+                      previewClass="bg-white"
+                      accentClass="bg-slate-200"
                     />
                     <ThemeCard 
-                      id={"WEDNESDAY" as ThemeMode} 
-                      title="WEDNESDAY" 
-                      desc="Gothic, cinematic monochrome vibe with ink-spread effects and heavy atmosphere" 
+                      id={"Harry Potter" as ThemeMode} 
+                      title="Harry Potter" 
+                      desc="Authentic cinematic wizarding academy theme" 
+                      icon={Sparkles} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="bg-[#0b0c10]"
+                      accentClass="bg-[#d9b25f]"
+                    />
+                    <ThemeCard 
+                      id={"Premium Dark" as ThemeMode} 
+                      title="Premium Dark" 
+                      desc="Modern, high-end professional dark workspace" 
                       icon={Shield} 
                       current={settings.themeAccessibility.theme}
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
-                      previewClass="gradient-wednesday"
-                      accentClass="bg-white"
+                      previewClass="bg-[#0B0F14]"
+                      accentClass="bg-[#B45309]"
                     />
                   </div>
                 </section>
@@ -773,7 +763,7 @@ const Settings = () => {
                         <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors ${
                           isOffline 
                             ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-600' 
-                            : 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600'
+                            : 'bg-secondary/10 dark:bg-secondary/20 text-secondary'
                         }`}>
                           {isOffline ? <WifiOff size={32} /> : <Cloud size={32} />}
                         </div>
@@ -886,38 +876,38 @@ const ThemeCard = ({
       onClick={() => onClick(id)}
       className={`group flex flex-col items-start p-1 rounded-4xl transition-all duration-500 text-left ${
         isSelected 
-          ? 'ring-2 ring-blue-500 p-0.5' 
+          ? 'ring-2 ring-primary p-0.5' 
           : 'hover:-translate-y-1'
       }`}
     >
       <div className={`w-full aspect-16/10 ${previewClass} rounded-[1.8rem] relative overflow-hidden mb-6 p-4 shadow-inner`}>
         {/* Mock UI Preview in card */}
         <div className="h-full w-full flex gap-2">
-          <div className="w-1/4 h-full bg-white/10 rounded-lg p-2 space-y-1">
+          <div className="w-1/4 h-full bg-black/10 rounded-lg p-2 space-y-1">
              <div className={`h-2 w-full rounded-full ${accentClass} opacity-80`} />
-             <div className="h-1 w-2/3 bg-white/20 rounded-full" />
-             <div className="h-1 w-full bg-white/20 rounded-full" />
-             <div className="h-1 w-1/2 bg-white/20 rounded-full" />
+             <div className="h-1 w-2/3 bg-black/20 rounded-full" />
+             <div className="h-1 w-full bg-black/20 rounded-full" />
+             <div className="h-1 w-1/2 bg-black/20 rounded-full" />
           </div>
           <div className="flex-1 h-full space-y-2">
             <div className="flex gap-2 h-1/3">
-              <div className="flex-1 rounded-lg bg-white/5 border border-white/5" />
-              <div className="flex-1 rounded-lg bg-white/5 border border-white/5" />
+              <div className="flex-1 rounded-lg bg-black/5 border border-black/5" />
+              <div className="flex-1 rounded-lg bg-black/5 border border-black/5" />
             </div>
-            <div className="flex-1 h-2/3 rounded-lg bg-white/5 border border-white/5 p-2 flex items-end justify-center">
+            <div className="flex-1 h-2/3 rounded-lg bg-black/5 border border-black/5 p-2 flex items-end justify-center">
                <div className="flex gap-1">
-                 <div className="w-3 h-3 rounded bg-white/10" />
-                 <div className="w-3 h-3 rounded bg-white/10" />
+                 <div className="w-3 h-3 rounded bg-black/10" />
+                 <div className="w-3 h-3 rounded bg-black/10" />
                  <div className={`w-3 h-3 rounded ${accentClass}`} />
-                 <div className="w-3 h-3 rounded bg-white/10" />
-                 <div className="w-3 h-3 rounded bg-white/10" />
+                 <div className="w-3 h-3 rounded bg-black/10" />
+                 <div className="w-3 h-3 rounded bg-black/10" />
                </div>
             </div>
           </div>
         </div>
         
         {isSelected && (
-          <div className="absolute top-3 right-3 h-7 w-7 bg-blue-500 rounded-full flex items-center justify-center border-4 border-app-bg shadow-lg scale-110 animate-in zoom-in duration-300 text-white">
+          <div className="absolute top-3 right-3 h-7 w-7 bg-primary rounded-full flex items-center justify-center border-4 border-app-bg shadow-lg scale-110 animate-in zoom-in duration-300 text-white">
             <Check size={16} />
           </div>
         )}

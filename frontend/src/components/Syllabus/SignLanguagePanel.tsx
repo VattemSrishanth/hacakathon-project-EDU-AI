@@ -31,7 +31,7 @@ const SignLanguagePanel: React.FC<SignLanguagePanelProps> = ({
                 <h3 className="text-xl font-bold text-app-text-main uppercase tracking-tight">Sign Video Unavailable</h3>
                 <p className="text-app-text-sub text-sm font-medium mt-1">We are working on adding a sign language translation for this lesson.</p>
               </div>
-              <div className="bg-blue-500/5 text-blue-600 p-4 rounded-2xl flex items-start gap-3 border border-blue-500/10 text-left max-w-md">
+              <div className="bg-primary/5 text-primary p-4 rounded-2xl flex items-start gap-3 border border-primary/10 text-left max-w-md">
                 <Info size={18} className="shrink-0 mt-0.5" />
                 <p className="text-xs font-bold leading-relaxed">
                   FALLBACK: Please use the visual transcript below and the high-contrast text version for the best learning experience.

@@ -85,9 +85,9 @@ const Assignments = () => {
                         {assignment.category}
                       </span>
                       {assignment.status === 'Submitted' ? (
-                        <CheckCircle2 size={24} className="text-emerald-500" />
+                        <CheckCircle2 size={24} className="text-secondary" />
                       ) : (
-                        <div className="animate-pulse text-amber-500">
+                        <div className="animate-pulse text-secondary">
                           <Clock size={24} />
                         </div>
                       )}
@@ -121,8 +121,8 @@ const Assignments = () => {
                       </div>
                       <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm ${
                         assignment.status === 'Submitted' 
-                          ? 'bg-emerald-500 text-white shadow-emerald-500/20' 
-                          : 'bg-amber-500 text-white shadow-amber-500/20'
+                          ? 'bg-secondary text-white shadow-secondary/20' 
+                          : 'bg-secondary text-white shadow-secondary/20'
                       }`}>
                         {assignment.status}
                       </span>

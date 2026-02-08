@@ -175,7 +175,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, captionSrc, transcript, 
       {((captionsEnabled && !captionSrc) || (showTranscript && transcript)) && (
         <div className="bg-app-bg-alt border-t border-app-border p-6 lg:p-8 animate-in slide-in-from-bottom duration-300">
           <div className="flex items-start gap-3 mb-4">
-            <div className="p-2 bg-blue-500/10 rounded-xl text-blue-600">
+            <div className="p-2 bg-primary/10 rounded-xl text-primary">
               <CaptionsIcon size={20} />
             </div>
             <div>

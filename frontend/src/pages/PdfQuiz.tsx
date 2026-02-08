@@ -256,11 +256,11 @@ const PdfQuiz = () => {
               {questions.map((q) => (
                 <div key={q.id} className="p-6 rounded-2xl border border-app-border bg-app-bg shadow-sm">
                   <div className="flex items-start gap-3 mb-4">
-                    <span className="shrink-0 w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center font-black text-xs">
+                    <span className="shrink-0 w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-black text-xs">
                       {q.id}
                     </span>
                     <div className="flex-1">
-                       <span className="text-[10px] font-black uppercase tracking-tighter text-blue-500 mb-1 block">
+                       <span className="text-[10px] font-black uppercase tracking-tighter text-primary mb-1 block">
                          {q.type} Question
                        </span>
                        <p className="text-app-text-main font-bold text-lg leading-tight">{q.question}</p>
@@ -281,9 +281,9 @@ const PdfQuiz = () => {
                             disabled={submitted}
                             className={`text-left rounded-xl border-2 px-6 py-4 font-bold transition-all relative ${
                               isSelected 
-                                ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-600' 
-                                : 'border-slate-100 dark:border-slate-800 text-app-text-main hover:border-blue-200'
-                            } ${isCorrect ? 'border-green-500! bg-green-50! text-green-700!' : ''} 
+                                ? 'border-primary bg-primary/5 text-primary' 
+                                : 'border-slate-100 dark:border-slate-800 text-app-text-main hover:border-primary/20'
+                            } ${isCorrect ? 'border-amber-500! bg-amber-500/10! text-amber-700!' : ''} 
                             ${isWrong ? 'border-red-500! bg-red-50! text-red-700!' : ''}`}
                           >
                             <span className="mr-3 text-sm opacity-50">{String.fromCharCode(65 + idx)}.</span>
@@ -297,7 +297,7 @@ const PdfQuiz = () => {
                   {(q.type === 'short' || q.type === 'conceptual') && (
                     <div className="mt-4">
                        <textarea
-                         className="w-full p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/10 focus:border-blue-500 outline-none transition-all font-medium text-app-text-main"
+                         className="w-full p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/10 focus:border-primary outline-none transition-all font-medium text-app-text-main"
                          placeholder="Type your answer here..."
                          rows={2}
                          value={answers[q.id] || ''}
@@ -305,9 +305,9 @@ const PdfQuiz = () => {
                          disabled={submitted}
                        />
                        {submitted && (
-                         <div className="mt-4 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
-                            <p className="text-xs font-black uppercase text-blue-600 mb-1">Correct Answer / Criteria:</p>
-                            <p className="text-blue-800 dark:text-blue-200 font-bold">{q.correct_answer}</p>
+                         <div className="mt-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                            <p className="text-xs font-black uppercase text-primary mb-1">Correct Answer / Criteria:</p>
+                            <p className="text-primary font-bold">{q.correct_answer}</p>
                          </div>
                        )}
                     </div>
@@ -327,22 +327,22 @@ const PdfQuiz = () => {
           {submitted && score !== null && (
             <div className="mt-12 p-8 rounded-4xl bg-slate-900 text-white shadow-2xl flex items-center justify-between flex-wrap gap-6 border border-white/10">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-400 mb-2">Quiz Results</p>
-                <div className="flex items-baseline gap-2">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-amber-500 mb-2">Quiz Results</p>
+                <div className="flex items-baseline gap-2 text-app-text-main">
                    <span className="text-5xl font-black">{score}</span>
-                   <span className="text-xl text-slate-400">/ {questions.length}</span>
+                   <span className="text-xl text-app-text-muted">/ {questions.length}</span>
                 </div>
-                <p className="text-slate-400 mt-2 font-medium">Great effort! Review the explanations above to improve.</p>
+                <p className="text-app-text-sub mt-2 font-medium">Great effort! Review the explanations above to improve.</p>
               </div>
               <div className="flex gap-4">
                 <Button
-                  className="px-8 py-4 bg-white text-slate-900 rounded-2xl font-black hover:scale-105 transition-all"
+                  className="px-8 py-4 bg-app-bg text-app-text-main border-2 border-app-border rounded-2xl font-black hover:scale-105 transition-all"
                   onClick={() => navigate('/lessons', { replace: true })}
                 >
                   Lessons
                 </Button>
                 <Button
-                  className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black hover:scale-105 transition-all shadow-xl shadow-blue-500/30"
+                  className="px-8 py-4 bg-primary text-white rounded-2xl font-black hover:scale-105 transition-all shadow-xl shadow-primary/30"
                   onClick={() => navigate('/dashboard', { replace: true })}
                 >
                   Dashboard

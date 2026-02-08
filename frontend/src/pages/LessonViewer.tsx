@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useOffline } from '../context/OfflineContext';
@@ -34,6 +35,7 @@ export default function LessonViewer() {
   const { lessonId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { auth } = useAuth();
   const { settings } = useSettings();
   const { signLanguageEnabled, updateAccessibility } = useAccessibility();
   const { isOffline, downloadLesson, removeLesson, downloadedLessons, downloadingIds } = useOffline();
@@ -83,7 +85,11 @@ export default function LessonViewer() {
 
       try {
         // First check offline storage
-        const offlineLesson = await offlineContentService.getLesson(lessonId);
+        let offlineLesson = null;
+        if (auth?.user?.id) {
+          offlineLesson = await offlineContentService.getLesson(String(auth.user.id), lessonId);
+        }
+
         if (offlineLesson) {
           setLesson({
             id: offlineLesson.id,
@@ -240,7 +246,7 @@ export default function LessonViewer() {
                     <Button
                       variant="outline"
                       onClick={() => removeLesson(lesson.id)}
-                      className="flex items-center gap-3 px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-emerald-600 hover:text-red-500 transition-colors"
+                      className="flex items-center gap-3 px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-secondary hover:text-red-500 transition-colors"
                     >
                       <CheckCircle2 size={20} />
                       Lesson Downloaded (Delete?)
@@ -285,7 +291,7 @@ export default function LessonViewer() {
                 <Button
                   variant="success"
                   onClick={() => handleReadAloud(lesson.textVersion)}
-                  className="flex items-center gap-3 px-6 py-4 rounded-2xl shadow-lg shadow-emerald-500/20 text-xs font-black uppercase tracking-widest"
+                  className="flex items-center gap-3 px-6 py-4 rounded-2xl shadow-lg shadow-secondary/20 text-xs font-black uppercase tracking-widest"
                 >
                   <div className={isReading ? 'animate-pulse' : ''}>
                     <Volume2 size={24} />
@@ -308,7 +314,7 @@ export default function LessonViewer() {
               {settings.themeAccessibility.accessibilityMode === 'Blind' && (
                 <button
                   onClick={() => handleReadAloud(lesson.aiSummary)}
-                  className="ml-auto p-3 rounded-2xl bg-indigo-500/10 hover:bg-indigo-500/20 transition-all text-indigo-600"
+                  className="ml-auto p-3 rounded-2xl bg-primary/10 hover:bg-primary/20 transition-all text-primary"
                 >
                   <Volume2 size={24} />
                 </button>
@@ -379,7 +385,7 @@ export default function LessonViewer() {
         <div className="flex justify-center pt-8">
           <Button 
             variant="success" 
-            className="flex items-center gap-4 px-12 py-6 rounded-4xl shadow-2xl shadow-green-500/20 text-sm font-black uppercase tracking-[0.2em]"
+            className="flex items-center gap-4 px-12 py-6 rounded-4xl shadow-2xl shadow-secondary/20 text-sm font-black uppercase tracking-[0.2em]"
             onClick={() => {
               if (lessonId) {
                 markLessonCompleted(lessonId, `Completed lesson: ${lesson.title}`);

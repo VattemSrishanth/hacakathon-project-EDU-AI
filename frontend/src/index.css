@@ -1,80 +1,65 @@
 ﻿@import "tailwindcss";
 
-/* Stranger Things Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap');
+/* Institutional Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@400;500;600&display=swap');
 
-/* Wednesday Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&family=Metal+Mania&family=Pirata+One&display=swap');
-
-/* Wizarding fonts (safe, legally original styling) */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+SC:wght@400;600;700&family=Uncial+Antiqua&family=Inter:wght@400;500;600&family=Lora:wght@400;500;600&display=swap');
+/* Wizarding fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+SC:wght@400;600;700&family=Uncial+Antiqua&display=swap');
 
 /* ==================== Tailwind v4 Theme Configuration ==================== */
 @theme {
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-secondary: #0891b2;
+  --color-primary: #7F1D1D;
+  --color-primary-hover: #991B1B;
+  --color-secondary: #F59E0B;
+  --color-ai-accent: #6D28D9;
+  --color-error: #B91C1C;
+  
+  --color-sidebar-active-bg: #FEF3C7;
+  --color-sidebar-active-text: #7F1D1D;
+  --color-sidebar-hover-bg: #F3F4F6;
   
   /* Semantic Theme Colors */
   --color-app-text-main: var(--text-primary);
   --color-app-text-sub: var(--text-secondary);
   --color-app-text-muted: var(--text-muted);
   --color-app-bg: var(--bg-primary);
-  --color-app-bg-alt: var(--bg-secondary);
+  --color-app-bg-alt: var(--bg-primary);
   --color-app-border: var(--border-color);
+
+  --font-cinzel: "Cinzel Decorative", serif;
+  --font-uncial: "Uncial Antiqua", cursive;
+  --font-cormorant: "Cormorant SC", serif;
+  --font-inter: "Inter", sans-serif;
 }
 
 /* ==================== CSS Variables ==================== */
 :root {
-  /* Theme Colors - Light Mode (Slate 50/900 base) */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-card: #ffffff;
-  --text-primary: #020617; /* Slate 950 */
-  --text-secondary: #334155; /* Slate 700 */
-  --text-muted: #64748b; /* Slate 500 */
-  --border-color: #e2e8f0; /* Slate 200 */
+  /* Theme Colors - Light Mode (Educational Maroon base) */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F9FAFB;
+  --bg-card: #FFFFFF;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6B7280;
+  --border-color: #E5E7EB;
+  
+  /* Sidebar Specific */
+  --sidebar-active-bg: #FEF3C7;
+  --sidebar-active-text: #7F1D1D;
+  --sidebar-hover-bg: #F3F4F6;
   
   /* Font Size */
   --font-size-base: 16px;
   
   /* Transitions */
   --transition-speed: 200ms;
-
-  /* ==================== Wizarding Academy (Theme Tokens) ==================== */
-  /* Used by the cinematic wizarding theme (original + generic). */
-  --wa-font-heading: "Cinzel Decorative", "Cormorant SC", "Uncial Antiqua", "Cinzel", "Playfair Display", serif;
-  --wa-font-body: "Inter", "Lora", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-
-  --wa-bg-0: #0b0c10;
-  --wa-bg-1: #111217;
-  --wa-bg-2: #171a22;
-
-  --wa-ink-0: #f3efe6;
-  --wa-ink-1: #d7d0c4;
-  --wa-ink-2: #b7b0a2;
-  --wa-line: rgba(243, 239, 230, 0.12);
-
-  --wa-gold: #d9b25f;
-  --wa-bronze: #b98747;
-  --wa-amber: #f0c36a;
-  --wa-crimson: #b24a4a;
-  --wa-emerald: #3f9a79;
-  --wa-sapphire: #4a78c8;
-
-  --wa-glow-gold: rgba(217, 178, 95, 0.26);
-  --wa-glow-amber: rgba(240, 195, 106, 0.22);
-  --wa-glow-crimson: rgba(178, 74, 74, 0.18);
-  --wa-glow-emerald: rgba(63, 154, 121, 0.18);
-  --wa-glow-sapphire: rgba(74, 120, 200, 0.18);
 }
 
 /* ==================== GLOBAL ACCESSIBILITY HELPERS ==================== */
 .high-contrast {
-  --bg-primary: #000000 !important;
-  --bg-secondary: #000000 !important;
-  --bg-card: #000000 !important;
+  --bg-primary: #0a0a0a !important;
+  --bg-secondary: #0a0a0a !important;
+  --bg-card: #0a0a0a !important;
   --text-primary: #ffffff !important;
   --text-secondary: #ffff00 !important; /* High contrast yellow */
   --text-muted: #ffffff !important;
@@ -103,50 +88,27 @@
   --border-color: #1e293b; /* Slate 800 */
 }
 
-/* ==================== Themes ==================== */
-.theme-crystal {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-card: #ffffff;
-  --text-primary: #020617;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-secondary: #0891b2;
+/* Global Body Styling */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+  font-size: var(--font-size-base);
 }
 
-.theme-midnight {
-  --bg-primary: #020617;
-  --bg-secondary: #0f172a;
-  --bg-card: #1e293b;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border-color: #334155;
-  --color-primary: #3b82f6;
-  --color-primary-hover: #60a5fa;
-  --color-secondary: #22d3ee;
+/* Gentle site-wide transitions for color-related changes */
+body, nav, footer, .card, button, input, select {
+  transition-property: background-color, color, border-color, box-shadow, transform;
+  transition-duration: var(--transition-speed);
+  transition-timing-function: ease;
 }
 
-.theme-sunset {
-  --bg-primary: #fff7ed;
-  --bg-secondary: #ffedd5;
-  --bg-card: #ffffff;
-  --text-primary: #7c2d12;
-  --text-secondary: #9a3412;
-  --text-muted: #c2410c;
-  --border-color: #fed7aa;
-  --color-primary: #f97316;
-  --color-primary-hover: #fb923c;
-  --color-secondary: #fbbf24;
+.dark body {
+  background-color: var(--bg-secondary);
 }
 
-/* ==================== Cinematic Wizarding Theme (Authentic Realism) ==================== */
-/* Replaces previous generic gradients with texture-based cinematic overrides. */
+/* ==================== Cinematic Wizarding Theme (Harry Potter) ==================== */
 .theme-harry-potter {
-  /* Map into app semantic variables */
   --bg-primary: #0b0c10;
   --bg-secondary: #0f1014;
   --bg-card: rgba(18, 19, 24, 0.85);
@@ -168,22 +130,17 @@
   --wa-ink-1: #d7d0c4;
 }
 
-/* ==================== Global Castle Backdrop ==================== */
 .theme-harry-potter body {
   position: relative;
   font-family: "Cormorant SC", serif;
   color: var(--text-primary);
-  /* Fallback color */
   background-color: #050505;
-  /* Massive layered background: Vignette + Texture + Gradients */
   background-image: 
-    url('/assets/overlays/vignette.png'),
     radial-gradient(circle at 50% 30%, rgba(60, 40, 10, 0.25), transparent 70%),
-    linear-gradient(to bottom, rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0.95)),
-    url('/assets/textures/stone.jpg');
-  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
-  background-size: cover, 100% 100%, 100% 100%, 500px 500px;
-  background-attachment: fixed, fixed, fixed, fixed;
+    linear-gradient(to bottom, rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0.95));
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 /* Floating Ember Layers (Foreground) */
@@ -192,222 +149,44 @@
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: url('/assets/overlays/embers.png');
-  background-size: 800px 800px;
-  opacity: 0.4;
-  mix-blend-mode: screen;
-  animation: emberDrift 40s linear infinite;
+  background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,0.4) 100%);
   z-index: 1;
 }
 
-.theme-harry-potter body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,0.8) 100%);
-  z-index: 2;
-}
-
-/* ==================== Typography & Headings ==================== */
 .theme-harry-potter h1, .theme-harry-potter h2, .theme-harry-potter h3,
 .theme-harry-potter h4, .theme-harry-potter h5, .theme-harry-potter h6 {
-  font-family: var(--wa-font-heading);
-  text-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 20px rgba(217, 178, 95, 0.3);
-  letter-spacing: 0.05em;
-  color: var(--wa-ink-0);
-  animation: lightningFlicker 9.4s linear infinite;
+  font-family: var(--wa-font-heading) !important;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 20px rgba(217, 178, 95, 0.3) !important;
+  letter-spacing: 0.05em !important;
+  color: var(--wa-ink-0) !important;
 }
 
-/* ==================== Layout Container Overrides ==================== */
-.theme-harry-potter .dashboard-container {
-  /* Give the main container a slight library feel */
-  background: radial-gradient(circle at 50% 0, rgba(20, 15, 5, 0.2), transparent 70%);
-  border-radius: var(--wa-radius);
+.theme-harry-potter .card, .theme-harry-potter [class*="rounded-3xl"] {
+  border: 1px solid rgba(100, 90, 70, 0.4) !important;
+  background-color: var(--bg-card) !important;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5) !important;
 }
 
-/* ==================== Navbar (Polished Dark Stone) ==================== */
-.theme-harry-potter .navbar {
-  background-image: 
-    linear-gradient(rgba(10, 10, 12, 0.95), rgba(10, 10, 12, 0.95)),
-    url('/assets/textures/stone.jpg');
-  border-bottom: 1px solid rgba(217, 178, 95, 0.3);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-  position: sticky;
-  top: 0;
-  z-index: 30;
+.theme-harry-potter .button-primary, .theme-harry-potter .bg-primary {
+  background-image: linear-gradient(to bottom, rgba(217, 178, 95, 0.9), rgba(185, 135, 71, 1)) !important;
+  border: 1px solid #ffeebb !important;
+  color: #1a0f00 !important;
+  font-family: var(--wa-font-heading) !important;
 }
 
-.theme-harry-potter .navbar::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(217, 178, 95, 1), transparent);
-  box-shadow: 0 0 10px rgba(217, 178, 95, 0.8);
-  opacity: 0.6;
+.theme-harry-potter .sidebar, .theme-harry-potter aside {
+  background-color: #0b0c10 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-.theme-harry-potter .navbar a:hover {
-  text-shadow: 0 0 10px rgba(217, 178, 95, 0.8);
-  color: var(--color-primary);
-}
-
-/* ==================== Hero Section ==================== */
-.theme-harry-potter .hero-section {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(217, 178, 95, 0.3);
-  box-shadow: 0 0 50px rgba(0,0,0,0.8) inset;
-  background-image: 
-    linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)),
-    url('/assets/textures/stone.jpg'); /* Reuse stone for consistency */
-  background-size: cover;
-  padding: 2rem;
-  border-radius: var(--wa-radius-lg);
-}
-
-.theme-harry-potter .hero-section::after {
-  /* Warm candle glow spots */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(255, 160, 50, 0.15), transparent 30%),
-    radial-gradient(circle at 90% 80%, rgba(255, 160, 50, 0.1), transparent 30%);
-  animation: candleFlicker 6s infinite alternate;
-  pointer-events: none;
-}
-
-/* ==================== Cards (Parchment & Stone) ==================== */
-.theme-harry-potter .card {
-  border: 1px solid rgba(100, 90, 70, 0.4);
-  background-image: 
-    linear-gradient(rgba(20, 20, 25, 0.9), rgba(20, 20, 25, 0.95)),
-    url('/assets/textures/parchment.jpg'); /* Fallback to dark parchment feel */
-  background-size: cover;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-  transition: all 0.3s var(--wa-ease);
-}
-
-.theme-harry-potter .card:hover {
-  border-color: rgba(217, 178, 95, 0.6);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 15px rgba(217, 178, 95, 0.1);
-  transform: translateY(-3px);
-}
-
-/* Magic Card Special */
-.theme-harry-potter .magic-card {
-  border: 1px solid rgba(217, 178, 95, 0.5);
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(60, 40, 10, 0.3), transparent 70%),
-    linear-gradient(rgba(15, 15, 20, 0.85), rgba(15, 15, 20, 0.95)),
-    url('/assets/textures/parchment.jpg');
-  box-shadow: 0 0 30px rgba(217, 178, 95, 0.15) inset;
-  animation: floatSlow 8s ease-in-out infinite;
-  overflow: hidden;
-}
-
-.theme-harry-potter .magic-card::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  background: linear-gradient(120deg, transparent, rgba(255, 215, 0, 0.4), transparent);
-  transform: translateX(-100%);
-  animation: shimmerSweep 6s infinite;
-  opacity: 0.6;
-  pointer-events: none; 
-}
-
-/* ==================== Sidebar ==================== */
-.theme-harry-potter .sidebar {
-  background-image: 
-    linear-gradient(to right, rgba(10,10,15,0.95), rgba(15,15,20,0.9)),
-    url('/assets/textures/stone.jpg');
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--wa-radius-lg);
-  box-shadow: var(--wa-shadow-2);
-}
-
-.theme-harry-potter .sidebar a:hover {
-  background: linear-gradient(90deg, rgba(217, 178, 95, 0.15), transparent);
-  border-left: 2px solid #d9b25f;
-  color: #fff;
-}
-
-/* ==================== Footer ==================== */
-.theme-harry-potter .footer {
-  background-image: 
-    linear-gradient(to top, rgba(5,5,5,1), rgba(10,10,12,0.9)),
-    url('/assets/textures/stone.jpg');
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  position: relative;
-  overflow: hidden;
-}
-
-.theme-harry-potter .footer::before {
-  /* Warm bottom glow */
-  content: "";
-  position: absolute;
-  bottom: 0; 
-  left: 20%; 
-  right: 20%;
-  height: 100px;
-  background: radial-gradient(ellipse at bottom, rgba(255, 100, 0, 0.05), transparent 70%);
-  pointer-events: none;
-  animation: candleFlicker 5s infinite;
-}
-
-/* ==================== Buttons & Text ==================== */
-.theme-harry-potter .magic-text {
-  background: linear-gradient(to bottom, #fff, #d9b25f);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 5px rgba(217, 178, 95, 0.5));
-}
-
-.theme-harry-potter .button-primary {
-  background-image: 
-    linear-gradient(to bottom, rgba(217, 178, 95, 0.9), rgba(185, 135, 71, 1));
-  border: 1px solid #ffeebb;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  color: #1a0f00;
-  font-family: var(--wa-font-heading);
-}
-
-.theme-harry-potter .button-primary:hover {
-  filter: brightness(1.15) contrast(1.1);
-  box-shadow: 0 0 20px rgba(217, 178, 95, 0.6);
-}
-
-/* Required Animations */
 @keyframes floatSlow {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-8px); }
 }
 
-@keyframes spellFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes glowPulse {
-  0%, 100% { filter: saturate(1); opacity: 0.70; }
-  50% { filter: saturate(1.12); opacity: 1; }
-}
-
 @keyframes emberDrift {
   0% { transform: translate3d(0, 0, 0); }
   100% { transform: translate3d(3%, -3%, 0); }
-}
-
-@keyframes shimmerSweep {
-  0% { transform: translateX(-150%) skewX(-12deg); opacity: 0.35; } 
-  45% { opacity: 0.60; }
-  100% { transform: translateX(150%) skewX(-12deg); opacity: 0.35; }
 }
 
 @keyframes candleFlicker {
@@ -422,67 +201,7 @@
   7% { opacity: 0.95; }
 }
 
-/* Reduced motion friendliness */
-@media (prefers-reduced-motion: reduce) {
-  .theme-harry-potter body::before,
-  .theme-harry-potter body::after,
-  .theme-harry-potter .hero-section::before,
-  .theme-harry-potter .hero-section::after,
-  .theme-harry-potter .magic-card,
-  .theme-harry-potter .magic-card::before,
-  .theme-harry-potter .magic-card::after,
-  .theme-harry-potter .navbar::after,
-  .theme-harry-potter .footer::before,
-  .theme-harry-potter .card-float,
-  .theme-harry-potter .magic-text {
-    animation: none !important;
-  }
-  
-  .theme-harry-potter h1,
-  .theme-harry-potter h2,
-  .theme-harry-potter h3,
-  .theme-harry-potter h4,
-  .theme-harry-potter h5,
-  .theme-harry-potter h6,
-  .theme-harry-potter .wa-logo,
-  .theme-harry-potter .wa-title {
-    animation: none !important;
-  }
-}
-
-
-/* Theme Gradient Utility Classes for Settings Preview */
-.gradient-midnight { background: linear-gradient(135deg, #020617 0%, #1e293b 100%); }
-.gradient-crystal { background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); }
-.gradient-forest { background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); }
-.gradient-aurora { background: linear-gradient(135deg, #4c1d95 0%, #06b6d4 100%); }
-.gradient-sunset { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); }
-.gradient-hogwarts { background: linear-gradient(135deg, #740001 0%, #ffd700 100%); }
-.gradient-harry-potter { background: linear-gradient(135deg, #0b0c10 0%, #d9b25f 52%, #4a78c8 76%, #171a22 100%); }
-
-
-/* ==================== STRANGER THINGS Theme (Retro Horror) ==================== */
-/* End of Stranger Things Theme */
-
-
-/* Global Body Styling */
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color var(--transition-speed), color var(--transition-speed);
-  font-size: var(--font-size-base);
-}
-
-/* Gentle site-wide transitions for color-related changes */
-body, nav, footer, .card, button, input, select {
-  transition-property: background-color, color, border-color, box-shadow, transform;
-  transition-duration: var(--transition-speed);
-  transition-timing-function: ease;
-}
-
-.dark body {
-  background-color: var(--bg-secondary);
-}
+/* Reverting previous theme-wizard style */
 
 /* Force variable usage for common Tailwind classes in Dark Mode */
 .dark .bg-white { background-color: var(--bg-card) !important; }
@@ -496,9 +215,9 @@ body, nav, footer, .card, button, input, select {
 .dark .border-gray-200, .dark .border-gray-300 { border-color: var(--border-color) !important; }
 
 /* Fix Hero Section gradients */
-.from-indigo-50 { --tw-gradient-from: #eef2ff !important; }
+.from-indigo-50 { --tw-gradient-from: #fdf2f2 !important; } /* Very light primary tint */
 .via-white { --tw-gradient-via: #ffffff !important; }
-.to-cyan-50 { --tw-gradient-to: #ecfeff !important; }
+.to-cyan-50 { --tw-gradient-to: #fffbeb !important; } /* Very light secondary tint */
 
 .dark .from-indigo-50, .dark .via-white, .dark .to-cyan-50 {
   --tw-gradient-from: var(--bg-secondary) !important;
@@ -537,12 +256,12 @@ body, nav, footer, .card, button, input, select {
 }
 
 .popup-interactive:hover {
-  transform: translateY(-2px) scale(1.01);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .dark .popup-interactive:hover {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* ==================== Profile Dropdown Responsiveness ==================== */
@@ -573,586 +292,194 @@ body, nav, footer, .card, button, input, select {
   text-overflow: ellipsis;
 }
 
-/* ==================== Hogwarts Theme Animations ==================== */
-@keyframes float-magic {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  25% { transform: translateY(-5px) rotate(0.5deg); }
-  75% { transform: translateY(5px) rotate(-0.5deg); }
-}
-
-@keyframes sparkle {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-
-
 /* ==================== High Contrast Mode ==================== */
-.high-contrast body { background-color: #000000 !important; color: #ffffff !important; }
+.high-contrast body { background-color: #0a0a0a !important; color: #ffffff !important; }
 .high-contrast .bg-white, .high-contrast .bg-gray-50, .high-contrast .bg-gray-100 {
-  background-color: #000000 !important;
+  background-color: #0a0a0a !important;
   border: 2px solid #ffffff !important;
 }
 .high-contrast .text-gray-900, .high-contrast .text-gray-700, .high-contrast .text-gray-600 { color: #ffffff !important; }
 .high-contrast input, .high-contrast select, .high-contrast textarea {
-  background-color: #000000 !important;
+  background-color: #0a0a0a !important;
   color: #ffffff !important;
   border: 2px solid #ffffff !important;
 }
 
+/* ==================== Premium Dark Theme (Modern Professional) ==================== */
+.theme-premium-dark {
+  --bg-primary: #0B0F14;
+  --bg-secondary: #121826;
+  --bg-card: #111827;
+  --text-primary: #FFFFFF;
+  --text-secondary: #E5E7EB; /* Bright Gray 200 */
+  --text-muted: #9CA3AF;     /* Gray 400 */
+  --border-color: rgba(255, 255, 255, 0.12);
+  
+  --color-primary: #B45309; /* Warm Copper */
+  --color-primary-hover: #D97706;
+  --color-secondary: #FBBF24; /* Amber 400 */
+  --color-ai-accent: #8B5CF6; /* Violet 500 */
+  --color-error: #EF4444;
 
-/* Flicker Animations */
-@keyframes neonFlicker {
-  0%, 18%, 22%, 25%, 53%, 57%, 100% {
-    text-shadow: 
-      0 0 5px #ff0033,
-      0 0 15px #ff0033,
-      0 0 30px #d80027;
-    opacity: 1;
-  }
-  20%, 24%, 55% {
-    text-shadow: none;
-    opacity: 0.6;
-  }
+  --sidebar-active-bg: rgba(180, 83, 9, 0.2);
+  --sidebar-active-text: #FBBF24;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
 }
 
-@keyframes barFlicker {
-  0%, 100% { opacity: 1; box-shadow: 0 0 10px #ff0033; }
-  50% { opacity: 0.8; box-shadow: 0 0 5px #ff0033; }
-  52% { opacity: 0.4; }
-  54% { opacity: 0.8; }
+.theme-premium-dark body {
+  background-color: var(--bg-primary) !important;
+  background-image: radial-gradient(circle at 50% 0%, #161b22 0%, #0B0F14 100%) !important;
+  color: var(--text-primary) !important;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ==================== CINEMATIC STRANGER THINGS UPGRADE ==================== */
-
-.theme-stranger {
-  --bg-primary: #050510;
-  --bg-secondary: #0a0a14;
-  --bg-card: rgba(10, 10, 20, 0.9);
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0a0b0;
-  --text-muted: #606070;
-  --border-color: rgba(220, 20, 60, 0.4);
-  --color-primary: #ff0033;
-  --color-primary-hover: #ff3366;
-  --color-secondary: #4a5c6a;
+/* Custom Premium Scrollbar */
+.theme-premium-dark *::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.theme-premium-dark *::-webkit-scrollbar-track {
+  background: #0B0F14;
+}
+.theme-premium-dark *::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.theme-premium-dark *::-webkit-scrollbar-thumb:hover {
+  background: rgba(180, 83, 9, 0.4);
 }
 
-.theme-stranger body {
-  background-color: #020205;
-  background-image: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.85) 100%);
-  background-attachment: fixed;
-  overflow-x: hidden;
-  font-family: 'Cinzel', serif;
+.theme-premium-dark .card, 
+.theme-premium-dark [class*="rounded-3xl"],
+.theme-premium-dark [class*="rounded-2xl"],
+.theme-premium-dark .bg-white {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
 }
 
-/* 1. TEXT EFFECTS (GLITCH & NEON) */
-.theme-stranger h1, .theme-stranger h2, .theme-stranger .wa-title {
-  position: relative;
-  font-family: 'Playfair Display SC', serif !important;
-  text-transform: uppercase;
-  color: #ff0033;
-  animation: neonPulse 2s ease-in-out infinite alternate;
+.theme-premium-dark .sidebar, 
+.theme-premium-dark nav,
+.theme-premium-dark aside {
+  background-color: #0B0F14 !important;
+  border-color: var(--border-color) !important;
 }
 
-@keyframes neonPulse {
-  from { text-shadow: 0 0 5px rgba(255,0,51,0.5), 0 0 10px rgba(255,0,51,0.3); }
-  to { text-shadow: 0 0 15px rgba(255,0,51,0.8), 0 0 30px rgba(255,0,51,0.5); }
+.theme-premium-dark .sidebar-item-active,
+.theme-premium-dark [class*="bg-sidebar-active-bg"],
+.theme-premium-dark .bg-sidebar-active-bg {
+  background-color: var(--sidebar-active-bg) !important;
+  color: var(--sidebar-active-text) !important;
+  border: 1px solid rgba(180, 83, 9, 0.2) !important;
 }
 
-/* GLITCH STATE (Triggered via JS class on body) */
-.glitch-active.theme-stranger h1,
-.glitch-active.theme-stranger .wa-title {
-  animation: rgbSplit 0.15s steps(2) infinite;
+/* Fix for the white background issue in sidebar items */
+.theme-premium-dark [class*="hover:bg-sidebar-hover-bg"]:hover,
+.theme-premium-dark .hover\:bg-sidebar-hover-bg:hover,
+.theme-premium-dark [class*="hover:bg-gray-100"]:hover,
+.theme-premium-dark .hover\:bg-white:hover {
+  background-color: var(--sidebar-hover-bg) !important;
+  color: var(--text-primary) !important;
 }
 
-.glitch-active.theme-stranger .card {
-  animation: glitchShake 0.2s ease-in-out infinite;
+/* Ensure sidebar icons and text are always visible */
+.theme-premium-dark .sidebar a,
+.theme-premium-dark aside a,
+.theme-premium-dark nav a {
+  color: var(--text-secondary);
 }
 
-@keyframes rgbSplit {
-  0% { text-shadow: 3px 0 0 #ff0033, -3px 0 0 #00fff9; transform: translate(1px, 1px); }
-  50% { text-shadow: -3px 0 0 #ff0033, 3px 0 0 #00fff9; transform: translate(-1px, -1px); }
-  100% { text-shadow: 3px 0 0 #ff0033, -3px 0 0 #00fff9; transform: translate(0,0); }
+.theme-premium-dark .sidebar a:hover,
+.theme-premium-dark aside a:hover,
+.theme-premium-dark nav a:hover {
+  color: var(--text-primary) !important;
 }
 
-@keyframes glitchShake {
-  0%, 100% { transform: translate(0,0); }
-  25% { transform: translate(1px, -1px); filter: hue-rotate(10deg); }
-  75% { transform: translate(-1px, 1px); filter: hue-rotate(-10deg); }
+.theme-premium-dark .sidebar a.active,
+.theme-premium-dark aside a.active,
+.theme-premium-dark nav a.active {
+  background-color: var(--sidebar-active-bg) !important;
+  color: var(--sidebar-active-text) !important;
 }
 
-/* 2. OVERLAYS (FOG & SPORES) */
-.st-fog-layer {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, transparent 10%, rgba(255, 0, 51, 0.12) 100%);
-  pointer-events: none;
-  z-index: 1;
-  mix-blend-mode: color-dodge;
-  animation: fogShift 30s ease-in-out infinite;
-}
-
-.st-spores {
-  position: fixed;
-  inset: -200px;
-  pointer-events: none;
-  z-index: 3;
-  background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.5) 1.5px, transparent 1.5px),
-    radial-gradient(rgba(255, 0, 51, 0.4) 3px, transparent 3px);
-  background-size: 100px 100px, 150px 150px;
-  animation: sporeMove 60s linear infinite;
-  opacity: 0.3;
-}
-
-/* Enhanced Upside Down Effects */
-.st-vhs-noise {
-  position: fixed;
-  inset: 0;
-  background: 
-    url('https://www.transparenttextures.com/patterns/pinstripe-dark.png'),
-    url('https://www.transparenttextures.com/patterns/stardust.png');
-  opacity: 0.12;
-  pointer-events: none;
-  z-index: 10;
-  animation: vhsFlicker 0.6s steps(4) infinite;
-  mix-blend-mode: color-dodge;
-  will-change: transform, opacity;
-  transform: translateZ(0);
-}
-
-.st-rift {
-  position: absolute;
-  width: 3px;
-  height: 300px;
-  background: #ff0033;
-  box-shadow: 0 0 20px #ff0033, 0 0 60px #ff0033, 0 0 10px white inset;
-  opacity: 0.9;
-  filter: blur(1px);
-  border-radius: 50%;
-  animation: riftBreathe 4s infinite alternate;
-  z-index: 11;
-  will-change: transform, opacity;
-  transform: translateZ(0);
-}
-
-.st-tentacle {
-  position: fixed;
-  width: 600px;
-  height: 800px;
-  background: radial-gradient(ellipse at center, rgba(40, 0, 0, 0.9) 0%, rgba(20, 0, 0, 0.4) 40%, transparent 70%);
-  filter: blur(60px);
-  pointer-events: none;
-  z-index: 1;
-  animation: tentacleMove 25s ease-in-out infinite;
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
-.st-vein {
-  position: fixed;
-  background: linear-gradient(90deg, transparent, rgba(220, 20, 60, 0.6), transparent);
-  height: 3px;
-  width: 100%;
-  filter: blur(3px);
-  pointer-events: none;
-  z-index: 2;
-  animation: veinGrowth 30s linear infinite;
-  will-change: transform, opacity;
-  transform: translateZ(0);
-}
-
-@keyframes veinGrowth {
-  0% { transform: scaleX(0); opacity: 0; }
-  50% { transform: scaleX(1); opacity: 0.4; }
-  100% { transform: scaleX(0); opacity: 0; transform-origin: right; }
-}
-
-@keyframes vhsFlicker {
-  0%, 100% { transform: translate(0,0); }
-  33% { transform: translate(2px, 1px); opacity: 0.15; }
-  66% { transform: translate(-1px, -2px); opacity: 0.1; }
-}
-
-@keyframes riftBreathe {
-  from { opacity: 0.4; transform: scaleY(0.7) rotate(8deg) skewX(5deg); }
-  to { opacity: 1; transform: scaleY(1.4) rotate(-8deg) skewX(-5deg); box-shadow: 0 0 50px #ff0033, 0 0 80px rgba(255, 0, 51, 0.5); }
-}
-
-@keyframes tentacleMove {
-  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
-  33% { transform: translate(15vw, 15vh) rotate(15deg) scale(1.2); }
-  66% { transform: translate(-10vw, 20vh) rotate(-10deg) scale(0.85); }
-}
-
-@keyframes fogShift {
-  0% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.15) rotate(2deg); opacity: 0.8; }
-  100% { transform: scale(1) rotate(0deg); }
-}
-
-@keyframes sporeMove {
-  from { background-position: 0 0; }
-  to { background-position: 1000px 1000px; }
-}
-
-/* 3. INTERACTIONS */
-.theme-stranger button {
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.theme-stranger .button-primary {
-  background-color: #ff0033 !important;
-  color: #000 !important;
-  font-weight: 900 !important;
+.theme-premium-dark button.button-primary,
+.theme-premium-dark .bg-primary {
+  background-color: var(--color-primary) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 20px rgba(180, 83, 9, 0.2) !important;
   border: none !important;
 }
 
-.theme-stranger .button-primary:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 0 25px #ff0033, 0 0 50px rgba(255,0,51,0.3);
-  animation: flickerQuick 0.1s infinite, energyPulse 2s infinite;
+.theme-premium-dark button.button-primary:hover {
+  background-color: var(--color-primary-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 25px rgba(180, 83, 9, 0.3) !important;
 }
 
-@keyframes energyPulse {
-  0% { outline: 1px solid rgba(255, 0, 51, 0.5); outline-offset: 0; }
-  100% { outline: 5px solid transparent; outline-offset: 15px; }
-}
-
-@keyframes flickerQuick {
-  0%, 100% { opacity: 1; filter: brightness(1); }
-  50% { opacity: 0.9; filter: brightness(1.2); }
-}
-
-.theme-stranger .card {
-  background: rgba(5, 5, 12, 0.8) !important;
-  border: 1px solid rgba(255, 0, 51, 0.15) !important;
-  backdrop-filter: blur(5px);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.theme-stranger .card:active {
-  transform: scale(0.98) skew(1deg);
-  filter: hue-rotate(90deg);
-}
-
-.theme-stranger .card:hover {
-  border-color: #ff0033 !important;
-  box-shadow: inset 0 0 20px rgba(255, 0, 51, 0.15), 0 15px 40px rgba(0,0,0,0.6) !important;
-  transform: translateY(-5px);
-}
-
-/* Typography Scale */
-.theme-stranger h1 { font-size: clamp(2.5rem, 6vw, 4rem); letter-spacing: -0.02em; }
-.theme-stranger h2 { font-size: clamp(1rem, 2vw, 1.3rem); white-space: nowrap !important; }
-.theme-stranger h3 { font-size: clamp(0.9rem, 1.8vw, 1.15rem); white-space: nowrap !important; }
-
-/* Cinematic Fade-In for Cards */
-.theme-stranger .card {
-  animation: fadeRise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-}
-
-@keyframes fadeRise {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Scroll Parallax Hint (via translateZ in future if needed) */
-.theme-stranger main {
-  perspective: 1000px;
-}
-
-/* Reduced Motion Safety */
-@media (prefers-reduced-motion: reduce) {
-  .theme-stranger *, .st-fog-layer, .st-spores,
-  .theme-wednesday *, .wednesday-fog, .wednesday-rain, .wednesday-feather, .wednesday-flicker {
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
-  }
-}
-
-/* Add gradient class for settings preview */
-.gradient-stranger-things { 
-  background: linear-gradient(135deg, #020205 0%, #4a0000 50%, #020205 100%); 
-  border: 1px solid #ff0033; 
-}
-
-/* End of Stranger Things Theme */
-
-/* ==================== Wednesday Addams Theme (Gothic) ==================== */
-.theme-wednesday {
-  --bg-primary: #000000;
-  --bg-secondary: #050505;
-  --bg-card: #0a0a0a;
-  --text-primary: #f2f2f2;
-  --text-secondary: #a1a1a1;
-  --text-muted: #555555;
-  --border-color: #1a1a1a;
-  --color-primary: #444444;
-  --color-primary-hover: #ffffff;
-  --color-secondary: #1e293b;
-}
-
-.theme-wednesday body {
-  background-color: #000000 !important;
+.theme-premium-dark button.button-secondary {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--border-color) !important;
   color: var(--text-primary) !important;
-  font-family: 'Almendra', serif !important;
-  background-image: 
-    url('https://www.transparenttextures.com/patterns/stardust.png'),
-    radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000000 100%) !important;
-  background-attachment: fixed !important;
 }
 
-/* Typography Gothic Overrides */
-.theme-wednesday h1, 
-.theme-wednesday h2, 
-.theme-wednesday h3, 
-.theme-wednesday h4, 
-.theme-wednesday h5, 
-.theme-wednesday h6 {
-  font-family: 'Metal Mania', serif !important;
-  letter-spacing: 0.2em !important;
-  text-transform: uppercase !important;
-  color: #ffffff !important;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
-  animation: inkSpread 2s ease-out forwards !important;
+.theme-premium-dark .bg-ai-accent,
+.theme-premium-dark [class*="bg-ai-accent"] {
+  background-color: rgba(124, 58, 237, 0.1) !important;
+  color: #A78BFA !important;
+  border-color: rgba(124, 58, 237, 0.2) !important;
 }
 
-.theme-wednesday p, 
-.theme-wednesday span, 
-.theme-wednesday label, 
-.theme-wednesday input, 
-.theme-wednesday select, 
-.theme-wednesday textarea {
-  font-family: 'Almendra', serif !important;
-  letter-spacing: 0.05em !important;
+.theme-premium-dark input, 
+.theme-premium-dark select, 
+.theme-premium-dark textarea {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  border-radius: 12px !important;
 }
 
-/* Wednesday Components */
-.theme-wednesday .card, 
-.theme-wednesday [class*='bg-app-bg-alt'] {
-  background: #0a0a0a !important;
-  border: 1px solid #1a1a1a !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9) !important;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease !important;
+.theme-premium-dark input:focus, 
+.theme-premium-dark select:focus {
+  border-color: var(--color-primary) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
 }
 
-.theme-wednesday .card:hover {
-  transform: translateY(-8px) scale(1.01) !important;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 1), 0 0 20px rgba(255, 255, 255, 0.02) !important;
-  border-color: #333 !important;
+.theme-premium-dark .text-gray-900,
+.theme-premium-dark .text-black,
+.theme-premium-dark .text-app-text-main,
+.theme-premium-dark h1,
+.theme-premium-dark h2,
+.theme-premium-dark h3 { 
+  color: var(--text-primary) !important; 
+  letter-spacing: -0.01em;
 }
 
-.theme-wednesday button:not(.sr-only) {
-  font-family: 'Pirata One', serif !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.15em !important;
-  border: 1px solid #222 !important;
-  background: #000 !important;
-  transition: all 0.3s ease !important;
+.theme-premium-dark .text-gray-700, 
+.theme-premium-dark .text-gray-600,
+.theme-premium-dark .text-gray-500,
+.theme-premium-dark .text-gray-400,
+.theme-premium-dark .text-app-text-sub { 
+  color: var(--text-secondary) !important; 
 }
 
-.theme-wednesday button:not(.sr-only):hover {
-  border-color: #f2f2f2 !important;
-  background: #111 !important;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.15) !important;
-  color: #fff !important;
+.theme-premium-dark .text-app-text-muted {
+  color: var(--text-muted) !important;
 }
 
-/* Cinematic Effects Layers */
-.wednesday-fog {
-  position: absolute;
-  inset: 0;
-  background: url('https://www.transparenttextures.com/patterns/fog.png');
-  opacity: 0.15;
-  animation: fogMove 80s linear infinite;
+.theme-premium-dark .bg-gray-50 { background-color: var(--bg-secondary) !important; }
+
+/* Dashboard Chart Polish */
+.theme-premium-dark .recharts-cartesian-grid-horizontal line,
+.theme-premium-dark .recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.05) !important;
 }
 
-.wednesday-rain {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  opacity: 0.08;
+.theme-premium-dark .recharts-text {
+  fill: var(--text-muted) !important;
+  font-size: 12px;
 }
 
-.wednesday-rain::after {
-  content: '';
-  position: absolute;
-  inset: -100%;
-  background: repeating-linear-gradient(0deg, transparent, transparent 98%, #fff 98.1%, transparent 100%);
-  background-size: 2px 100px;
-  animation: rainVertical 0.6s linear infinite;
-}
-
-.wednesday-grain {
-  position: absolute;
-  inset: 0;
-  background: url('https://grainy-gradients.vercel.app/noise.svg');
-  opacity: 0.04;
-  mix-blend-mode: overlay;
-}
-
-.wednesday-vignette {
-  position: absolute;
-  inset: 0;
-  box-shadow: inset 0 0 200px 80px #000;
-  animation: vignettePulse 10s infinite alternate;
-}
-
-.wednesday-flicker {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.02), transparent),
-              radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.01), transparent);
-  animation: flickerBody 5s infinite;
-}
-
-.wednesday-feather {
-  position: absolute;
-  top: -50px;
-  width: 15px;
-  height: 30px;
-  background: #000;
-  clip-path: ellipse(30% 50% at 50% 50%);
-  opacity: 0.3;
-  animation: featherFloat 20s linear infinite;
-}
-
-/* Animations */
-@keyframes inkSpread {
-  0% { filter: blur(15px); opacity: 0; letter-spacing: 0.5em; }
-  100% { filter: blur(0); opacity: 1; letter-spacing: 0.2em; }
-}
-
-@keyframes fogMove {
-  from { background-position: 0 0; }
-  to { background-position: 1000px 1000px; }
-}
-
-@keyframes rainVertical {
-  from { transform: translateY(0); }
-  to { transform: translateY(100px); }
-}
-
-@keyframes vignettePulse {
-  from { opacity: 0.7; }
-  to { opacity: 1; }
-}
-
-@keyframes flickerBody {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.8; }
-  55% { opacity: 0.4; }
-  60% { opacity: 0.7; }
-}
-
-@keyframes featherFloat {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(10vw, 25vh) rotate(90deg); }
-  50% { transform: translate(-5vw, 50vh) rotate(180deg); }
-  75% { transform: translate(10vw, 75vh) rotate(270deg); }
-  100% { transform: translate(0, 105vh) rotate(360deg); }
-}
-
-/* Gothic Atmosphere Extensions */
-.wednesday-web-corner {
-  position: fixed;
-  width: 300px;
-  height: 300px;
-  pointer-events: none;
-  z-index: 9998;
-  opacity: 0.2;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0 0 L100 100 M0 0 L100 40 M0 0 L40 100 M20 8 Q 30 20 8 20 M40 15 Q 50 40 15 40 M60 25 Q 75 60 25 60 M80 35 Q 95 85 35 85' stroke='white' stroke-width='0.2' fill='none'/%3E%3C/svg%3E");
-  background-size: cover;
-}
-.web-tl { top: -20px; left: -20px; transform: rotate(0deg); }
-.web-tr { top: -20px; right: -20px; transform: rotate(90deg); }
-.web-bl { bottom: -20px; left: -20px; transform: rotate(-90deg); }
-
-.wednesday-spider-spawn {
-  position: fixed;
-  width: 24px;
-  height: 24px;
-  pointer-events: none;
-  z-index: 10000;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-}
-
-.spider-body {
-  width: 100%;
-  height: 100%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 8c-3 0-5-2-5-2M12 10c-4 0-6-1-6-1M12 14c-4 0-6 1-6 1M12 16c-3 0-5 2-5 2M12 8c3 0 5-2 5-2M12 10c4 0 6-1 6-1M12 14c4 0 6 1 6 1M12 16c3 0 5 2 5 2' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-
-.silk-thread {
-  position: absolute;
-  top: -1000px;
-  left: 50%;
-  width: 1px;
-  height: 1000px;
-  background: rgba(255,255,255,0.08);
-}
-
-.shadow-creature {
-  position: fixed;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, transparent 70%);
-  filter: blur(60px);
-  pointer-events: none;
-  z-index: 1;
-  mix-blend-mode: multiply;
-}
-
-/* Spider Animations */
-@keyframes crawlOnEdge {
-  0% { transform: translateY(0) rotate(0deg); offset-distance: 0%; }
-  100% { transform: translateY(0) rotate(0deg); offset-distance: 100%; }
-}
-
-@keyframes spiderWiggle {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1) rotate(2deg); }
-}
-
-@keyframes spiderDescend {
-  0% { transform: translateY(-100%); }
-  40%, 60% { transform: translateY(300px); }
-  100% { transform: translateY(-100%); }
-}
-
-@keyframes shadowPassHorizontal {
-  0% { transform: translate(-100%, 10%) rotate(5deg); opacity: 0; }
-  20% { opacity: 0.4; }
-  80% { opacity: 0.4; }
-  100% { transform: translate(150vw, 30%) rotate(-5deg); opacity: 0; }
-}
-
-/* Interactive Feed */
-.theme-wednesday button:hover::after {
-  content: '';
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: rgba(0,0,0,0.4);
-  filter: blur(4px);
-  border-radius: 50%;
-  animation: spiderScat 0.4s forwards;
-}
-
-@keyframes spiderScat {
-  0% { transform: translate(0,0) scale(1); opacity: 1; }
-  100% { transform: translate(40px, -20px) scale(0); opacity: 0; }
-}
-
-/* Settings Preview */
-.gradient-wednesday {
-  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-  border: 1px solid #333;
+/* Transitions */
+.theme-premium-dark * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }

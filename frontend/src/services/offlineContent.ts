@@ -2,10 +2,11 @@
 const DB_NAME = 'edu_ai_offline_db';
 const STORE_NAME = 'lessons';
 const DOUBTS_STORE = 'doubts';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 export interface OfflineLesson {
   id: string;
+  userId: string;
   title: string;
   content: any;
   subject: string;
@@ -31,9 +32,13 @@ const openDB = (): Promise<IDBDatabase> => {
 
     request.onupgradeneeded = (event: any) => {
       const db = event.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      
+      // If version 3 upgrade, recreate store with composite key
+      if (db.objectStoreNames.contains(STORE_NAME)) {
+        db.deleteObjectStore(STORE_NAME);
       }
+      db.createObjectStore(STORE_NAME, { keyPath: ['userId', 'id'] });
+
       if (!db.objectStoreNames.contains(DOUBTS_STORE)) {
         db.createObjectStore(DOUBTS_STORE, { keyPath: 'id' });
       }
@@ -54,41 +59,48 @@ export const offlineContentService = {
     });
   },
 
-  getLesson: async (id: string): Promise<OfflineLesson | null> => {
+  getLesson: async (userId: string, id: string): Promise<OfflineLesson | null> => {
     const db = await openDB();
     const transaction = db.transaction(STORE_NAME, 'readonly');
     const store = transaction.objectStore(STORE_NAME);
     return new Promise((resolve, reject) => {
-      const request = store.get(id);
+      // Use composite key to get specific lesson for specific user
+      const request = store.get([String(userId), String(id)]);
       request.onsuccess = () => resolve(request.result || null);
       request.onerror = () => reject(request.error);
     });
   },
 
-  getAllLessons: async (): Promise<OfflineLesson[]> => {
+  getAllLessons: async (userId?: string): Promise<OfflineLesson[]> => {
     const db = await openDB();
     const transaction = db.transaction(STORE_NAME, 'readonly');
     const store = transaction.objectStore(STORE_NAME);
     return new Promise((resolve, reject) => {
       const request = store.getAll();
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => {
+        let results = request.result as OfflineLesson[];
+        if (userId) {
+          results = results.filter(lesson => String(lesson.userId) === String(userId));
+        }
+        resolve(results);
+      };
       request.onerror = () => reject(request.error);
     });
   },
 
-  deleteLesson: async (id: string): Promise<void> => {
+  deleteLesson: async (userId: string, id: string): Promise<void> => {
     const db = await openDB();
     const transaction = db.transaction(STORE_NAME, 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
     return new Promise((resolve, reject) => {
-      const request = store.delete(id);
+      const request = store.delete([String(userId), String(id)]);
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });
   },
 
-  isLessonDownloaded: async (id: string): Promise<boolean> => {
-    const lesson = await offlineContentService.getLesson(id);
+  isLessonDownloaded: async (userId: string, id: string): Promise<boolean> => {
+    const lesson = await offlineContentService.getLesson(userId, id);
     return !!lesson;
   },
 

@@ -30,11 +30,11 @@ const SubjectList = ({ subjects, onSelectSubject, selectedSubject }: SubjectList
       {subjects.map((subject) => {
         const Icon = subjectIcons[subject] || BookOpen;
         const colorClass = 
-          subject.includes('Math') ? 'bg-blue-500/10 text-blue-500' :
-          subject.includes('Sci') ? 'bg-green-500/10 text-green-500' :
-          subject.includes('Soc') ? 'bg-orange-500/10 text-orange-500' :
-          subject.includes('Eng') ? 'bg-purple-500/10 text-purple-500' :
-          'bg-indigo-500/10 text-indigo-500';
+          subject.includes('Math') ? 'bg-primary/10 text-primary' :
+          subject.includes('Sci') ? 'bg-secondary/20 text-secondary' :
+          subject.includes('Soc') ? 'bg-primary/10 text-primary' :
+          subject.includes('Eng') ? 'bg-purple-500/10 text-purple-600' :
+          'bg-primary/5 text-primary';
 
         return (
           <Card

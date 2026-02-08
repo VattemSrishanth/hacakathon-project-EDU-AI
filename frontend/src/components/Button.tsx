@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'success';
+  variant?: 'primary' | 'secondary' | 'outline' | 'success' | 'ai-accent';
   children: ReactNode;
 }
 
@@ -12,13 +12,15 @@ const Button = ({ variant = 'primary', children, className = '', ...props }: But
   const themeHookClass =
     variant === 'primary' ? 'button-primary' :
     (variant === 'secondary' || variant === 'outline') ? 'button-secondary' :
+    variant === 'ai-accent' ? 'button-ai' :
     '';
   
   const variantStyles = {
     primary: 'bg-primary text-white hover:bg-primary-hover shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30',
     secondary: 'bg-secondary text-white hover:opacity-90 shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/30',
-    outline: 'border-2 border-app-border text-app-text-main hover:bg-app-bg-alt hover:border-app-text-main/20',
-    success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/30',
+    outline: 'border-2 border-primary text-primary hover:bg-primary/5',
+    success: 'bg-secondary text-white hover:opacity-90 shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/30',
+    'ai-accent': 'bg-ai-accent text-white hover:opacity-90 shadow-lg shadow-ai-accent/20 hover:shadow-xl hover:shadow-ai-accent/30',
   };
 
   return (

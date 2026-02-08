@@ -44,7 +44,7 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu }) => {
 
   const toggleTheme = () => {
     updateThemeAccessibility({ 
-      theme: isDark ? 'Crystal Light' : 'Midnight Void' 
+      theme: isDark ? 'Institutional White' : 'Academic Maroon' 
     });
   };
 
@@ -65,7 +65,7 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu }) => {
           <input 
             type="text"
             placeholder="Search lessons, tutors..."
-            className="w-full pl-10 pr-4 py-2 bg-app-accent/5 border border-app-border rounded-xl focus:ring-2 focus:ring-app-primary/20 focus:border-app-primary transition-all outline-none text-sm font-medium"
+            className="w-full pl-10 pr-4 py-2 bg-app-accent/5 border border-app-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm font-medium"
           />
         </div>
       </div>
@@ -76,7 +76,7 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu }) => {
         <div 
           className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ${
             isOnline 
-              ? 'bg-green-500/10 text-green-500' 
+              ? 'bg-amber-500/10 text-amber-600' 
               : 'bg-red-500/10 text-red-500 animate-pulse ring-1 ring-red-500/20'
           }`}
         >

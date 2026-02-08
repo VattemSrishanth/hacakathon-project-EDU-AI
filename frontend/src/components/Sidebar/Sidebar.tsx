@@ -183,7 +183,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
               <div 
                 className={`flex items-center gap-3 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors duration-500 ${
                   syncInProgress 
-                    ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' 
+                    ? 'bg-secondary/10 dark:bg-secondary/20 text-secondary' 
                     : 'bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400'
                 }`}
                 title={isOffline ? 'Working Offline' : 'Syncing Data...'}

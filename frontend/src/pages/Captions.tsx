@@ -9,10 +9,10 @@ const CaptionsPage = () => {
   return (
     <div className="min-h-screen bg-app-bg py-12 px-4">
       <div className="max-w-5xl mx-auto space-y-12">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-app-bg-alt p-10 rounded-[3rem] border border-app-border shadow-xl">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-app-bg p-10 rounded-[3rem] border border-app-border shadow-inst">
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-3xl bg-blue-500/10 flex items-center justify-center text-blue-600">
+              <div className="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center text-primary">
                 <CaptionsIcon size={36} />
               </div>
               <h1 className="text-4xl font-black text-app-text-main tracking-tight uppercase">Live Captions</h1>
@@ -26,7 +26,7 @@ const CaptionsPage = () => {
             onClick={toggleCaptions}
             className={`px-10 py-6 rounded-3xl font-black text-sm uppercase tracking-widest transition-all ${
               captionsEnabled 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20' 
+                ? 'bg-primary hover:bg-primary text-white shadow-inst' 
                 : 'bg-app-bg border-4 border-app-border text-app-text-main opacity-60 hover:opacity-100'
             }`}
           >

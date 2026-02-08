@@ -149,7 +149,11 @@ const Lessons = () => {
     try {
       // 0. Check Offline Storage first
       const lessonId = `${selectedClass}-${selectedSubject}-${selectedTopic}`;
-      const offlineLesson = await offlineContentService.getLesson(lessonId);
+      let offlineLesson = null;
+      if (auth?.user?.id) {
+        offlineLesson = await offlineContentService.getLesson(String(auth.user.id), lessonId);
+      }
+      
       if (offlineLesson) {
         setExplanation(offlineLesson.content.content);
         setGenerating(false);

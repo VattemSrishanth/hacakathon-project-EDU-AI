@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect } from 'react';
 import OfflineBanner from './components/OfflineBanner';
 import VoiceControl from './components/VoiceControl';
 import Home from './pages/Home';
@@ -30,7 +30,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
 import { AuthProvider } from './context/AuthContext';
-import { SettingsProvider, useSettings } from './context/SettingsContext';
+import { SettingsProvider } from './context/SettingsContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { OfflineProvider } from './context/OfflineContext';
 import { CommunityProvider } from './context/CommunityContext';
@@ -39,222 +39,7 @@ import { ProgressProvider } from './context/ProgressContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import MainLayout from './components/Layout/MainLayout';
-import { motion, AnimatePresence } from 'framer-motion';
 import AskDoubt from './pages/community/AskDoubt';
-
-// --- Supernatural Effects Component for Stranger Things Theme ---
-const SupernaturalEffects = () => {
-  const { settings } = useSettings();
-  const [isGlitching, setIsGlitching] = useState(false);
-  const [rifts, setRifts] = useState<{ id: number; left: string; top: string; scale: number }[]>([]);
-  const isStranger = settings.themeAccessibility.theme === 'STRANGER THINGS';
-  const timerRef = useRef<any>(null);
-
-  useEffect(() => {
-    if (!isStranger) {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      return;
-    }
-
-    const triggerGlitch = () => {
-      setIsGlitching(true);
-      setTimeout(() => setIsGlitching(false), 500 + Math.random() * 800);
-      
-      // Spawn a rift regularly
-      if (Math.random() > 0.35) {
-        const id = Date.now();
-        setRifts(prev => [...prev, { 
-          id, 
-          left: `${10 + Math.random() * 80}%`, 
-          top: `${10 + Math.random() * 80}%`,
-          scale: 0.8 + Math.random() * 2.0
-        }]);
-        setTimeout(() => setRifts(prev => prev.filter(r => r.id !== id)), 12000);
-      }
-
-      const nextGlitch = 6000 + Math.random() * 7000; 
-      timerRef.current = setTimeout(triggerGlitch, nextGlitch);
-    };
-
-    timerRef.current = setTimeout(triggerGlitch, 5000);
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [isStranger]);
-
-  useEffect(() => {
-    if (isStranger && isGlitching) {
-      document.body.classList.add('glitch-active');
-    } else {
-      document.body.classList.remove('glitch-active');
-    }
-    return () => document.body.classList.remove('glitch-active');
-  }, [isGlitching, isStranger]);
-
-  return (
-    <AnimatePresence>
-      {isStranger && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.5 }}
-          className="fixed inset-0 pointer-events-none z-9999 overflow-hidden"
-        >
-          {/* Cinematic Grain/Noise */}
-          <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')] will-change-[opacity]" />
-          
-          {/* VHS Noise Layer */}
-          <div className="st-vhs-noise" />
-          
-          {/* Floating Spores */}
-          <div className="st-spores" />
-          
-          {/* Fog Layers */}
-          <div className="st-fog-layer" />
-
-          {/* Creeping Tentacles & Veins */}
-          <div className="st-tentacle" style={{ bottom: '-150px', left: '-100px', transform: 'translateZ(0)' }} />
-          <div className="st-tentacle" style={{ top: '-150px', right: '-100px', animationDelay: '-8s', transform: 'translateZ(0)' }} />
-          <div className="st-tentacle" style={{ bottom: '-150px', right: '-100px', animationDelay: '-15s', transform: 'scaleX(-1) translateZ(0)' }} />
-          
-          <div className="st-vein" style={{ top: '10%', animationDelay: '0s', transform: 'translateZ(0)' }} />
-          <div className="st-vein" style={{ top: '40%', animationDelay: '5s', transform: 'translateZ(0)' }} />
-          <div className="st-vein" style={{ top: '70%', animationDelay: '12s', transform: 'translateZ(0)' }} />
-          <div className="st-vein" style={{ top: '85%', animationDelay: '18s', transform: 'translateZ(0)' }} />
-          
-          {/* Random Rifts */}
-          {rifts.map(rift => (
-            <div 
-              key={rift.id} 
-              className="st-rift" 
-              style={{ left: rift.left, top: rift.top, transform: `scale(${rift.scale})` }} 
-            />
-          ))}
-
-          {/* Moving Vignette */}
-          <div className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.9)]" />
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
-
-// --- Wednesday Addams Effects Component ---
-const WednesdayEffects = () => {
-  const { settings } = useSettings();
-  const isWednesday = settings.themeAccessibility.theme === 'WEDNESDAY';
-  const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
-  const [spiders, setSpiders] = useState<{ id: number; style: any; type: string }[]>([]);
-  const nextSpiderId = useRef(0);
-
-  useEffect(() => {
-    if (!isWednesday) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-
-    const spawnSpider = () => {
-      if (spiders.length >= 3) return; // Keep it elegant, max 3
-      
-      const id = nextSpiderId.current++;
-      const type = Math.random() > 0.5 ? 'descend' : 'crawl';
-      const duration = 10000 + Math.random() * 5000;
-      
-      const newSpider = {
-        id,
-        type,
-        style: type === 'descend' ? {
-          left: `${10 + Math.random() * 80}%`,
-          top: 0,
-          animation: `spiderDescend ${duration}ms linear forwards`,
-        } : {
-          left: '-50px',
-          top: `${20 + Math.random() * 60}%`,
-          animation: `crawlOnEdge ${duration}ms linear forwards`,
-          offsetPath: `path('M 0 0 L ${window.innerWidth + 100} ${Math.random() * 200 - 100}')`
-        }
-      };
-
-      setSpiders(prev => [...prev, newSpider]);
-      setTimeout(() => {
-        setSpiders(prev => prev.filter(s => s.id !== id));
-      }, duration);
-    };
-
-    const timer = setInterval(() => {
-      if (Math.random() > 0.6) spawnSpider();
-    }, 12000);
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      clearInterval(timer);
-    };
-  }, [isWednesday, spiders.length]);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (isWednesday) {
-      root.classList.add('theme-wednesday');
-      document.body.classList.add('theme-wednesday');
-    } else {
-      root.classList.remove('theme-wednesday');
-      document.body.classList.remove('theme-wednesday');
-    }
-  }, [isWednesday]);
-
-  return (
-    <AnimatePresence>
-      {isWednesday && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 2 }}
-          className="fixed inset-0 pointer-events-none z-9999 overflow-hidden"
-        >
-          {/* Web Strands in Corners */}
-          <div className="wednesday-web-corner web-tl" />
-          <div className="wednesday-web-corner web-tr" />
-          <div className="wednesday-web-corner web-bl" />
-
-          {/* Cinematic Overlay Layers */}
-          <div className="wednesday-fog" />
-          <div className="wednesday-rain" />
-          <div className="wednesday-grain" />
-          <div className="wednesday-vignette" />
-          <div className="wednesday-flicker" />
-          
-          {/* Shadow Creatures passing by */}
-          <div className="shadow-creature" style={{ animation: 'shadowPassHorizontal 40s linear infinite' }} />
-          <div className="shadow-creature" style={{ animation: 'shadowPassHorizontal 60s linear infinite reverse', top: '40%' }} />
-
-          {/* Spotlight that follows cursor */}
-          <div 
-            className="fixed inset-0 pointer-events-none z-12"
-            style={{
-              background: `radial-gradient(circle 350px at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.035) 0%, transparent 100%)`
-            }}
-          />
-
-          {/* Active Spiders */}
-          {spiders.map(spider => (
-            <div key={spider.id} className="wednesday-spider-spawn" style={spider.style}>
-              <div className="spider-body" style={{ animation: 'spiderWiggle 0.5s infinite' }} />
-              {spider.type === 'descend' && <div className="silk-thread" />}
-            </div>
-          ))}
-
-          {/* Sparse Raven Feathers */}
-          <div className="wednesday-feather" style={{ left: '15%', animationDelay: '0s' }} />
-          <div className="wednesday-feather" style={{ left: '85%', animationDelay: '12s' }} />
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
 
 function AppContent() {
   const location = useLocation();
@@ -398,8 +183,6 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-app-bg transition-colors duration-300">
-      <SupernaturalEffects />
-      <WednesdayEffects />
       <OfflineBanner />
       {isAuthPage ? (
         <main className="flex-1">

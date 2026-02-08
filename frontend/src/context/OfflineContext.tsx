@@ -32,13 +32,17 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Load downloaded lessons on mount
   const loadDownloaded = useCallback(async () => {
+    if (!auth?.user?.id) {
+        setDownloadedLessons([]);
+        return;
+    }
     try {
-      const lessons = await offlineContentService.getAllLessons();
+      const lessons = await offlineContentService.getAllLessons(String(auth.user.id));
       setDownloadedLessons(lessons.map(l => l.id));
     } catch (error) {
       console.error('Failed to load downloaded lessons:', error);
     }
-  }, []);
+  }, [auth?.user?.id]);
 
   useEffect(() => {
     loadDownloaded();
@@ -89,8 +93,10 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const saveOfflineLesson = async (lesson: OfflineLesson): Promise<void> => {
+    if (!auth?.user?.id) return;
     try {
-      await offlineContentService.saveLesson(lesson);
+      const lessonWithUser = { ...lesson, userId: String(auth.user.id) };
+      await offlineContentService.saveLesson(lessonWithUser);
       setDownloadedLessons(prev => [...new Set([...prev, lesson.id])]);
     } catch (error) {
       console.error('Failed to save manual offline lesson:', error);
@@ -98,6 +104,7 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const downloadLesson = async (lessonId: string): Promise<boolean> => {
+    if (!auth?.user?.id) return false;
     if (downloadingIds.includes(lessonId) || downloadedLessons.includes(lessonId)) {
       return false;
     }
@@ -111,6 +118,7 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       const offlineLesson: OfflineLesson = {
         id: lessonId,
+        userId: String(auth.user.id),
         title: lessonData.title,
         subject: lessonData.subject,
         content: content,
@@ -129,8 +137,9 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const removeLesson = async (lessonId: string): Promise<void> => {
+    if (!auth?.user?.id) return;
     try {
-      await offlineContentService.deleteLesson(lessonId);
+      await offlineContentService.deleteLesson(String(auth.user.id), lessonId);
       setDownloadedLessons(prev => prev.filter(id => id !== lessonId));
     } catch (error) {
       console.error(`Failed to remove lesson ${lessonId}:`, error);

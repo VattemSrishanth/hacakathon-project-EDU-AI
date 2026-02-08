@@ -10,7 +10,7 @@ const OfflineBanner: React.FC = () => {
   return (
     <div className={`
       border-b px-4 py-2 text-sm text-center font-black uppercase tracking-widest sticky top-0 z-100 animate-in slide-in-from-top duration-300 backdrop-blur-md
-      ${isOffline ? 'bg-amber-100/90 text-amber-800 border-amber-200' : 'bg-emerald-100/90 text-emerald-800 border-emerald-200'}
+      ${isOffline ? 'bg-amber-100/90 text-amber-800 border-amber-200' : 'bg-secondary/10 text-secondary border-secondary/20'}
     `}>
       <div className="flex items-center justify-center gap-4">
         <div className="flex items-center gap-2">
@@ -26,7 +26,7 @@ const OfflineBanner: React.FC = () => {
             </>
           ) : (
             <>
-              <RefreshCw size={16} className="text-emerald-600" />
+              <RefreshCw size={16} className="text-secondary" />
               <span>Back Online - Changes Synced</span>
             </>
           )}

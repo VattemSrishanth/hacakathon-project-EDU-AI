@@ -147,7 +147,7 @@ const ExamMode: React.FC<ExamModeProps> = ({ examTitle, questions, durationMinut
               {questions.map((_, i) => (
                 <div 
                   key={i} 
-                  className={`w-2 h-2 rounded-full transition-all ${i === currentIdx ? 'w-6 bg-primary' : (answers[questions[i].id] !== undefined ? 'bg-emerald-500' : 'bg-app-border')}`} 
+                  className={`w-2 h-2 rounded-full transition-all ${i === currentIdx ? 'w-6 bg-primary' : (answers[questions[i].id] !== undefined ? 'bg-secondary' : 'bg-app-border')}`} 
                 />
               ))}
             </div>
@@ -156,7 +156,7 @@ const ExamMode: React.FC<ExamModeProps> = ({ examTitle, questions, durationMinut
               <Button
                 variant="success"
                 onClick={handleSubmit}
-                className="px-10 rounded-2xl flex items-center gap-3 shadow-xl shadow-emerald-500/20"
+                className="px-10 rounded-2xl flex items-center gap-3 shadow-xl shadow-secondary/20"
               >
                 Submit Exam
                 <CheckCircle2 size={20} />

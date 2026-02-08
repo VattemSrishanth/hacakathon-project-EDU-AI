@@ -31,13 +31,13 @@ const Accessibility = () => {
 
   const modes: { id: AccessibilityMode; label: string; desc: string; icon: any; color: string }[] = [
     { id: 'Normal', label: 'Normal Mode', desc: 'Standard interface for all users.', icon: User, color: 'primary' },
-    { id: 'Deaf', label: 'Deaf Mode', desc: 'Enhanced visual indicators and captions.', icon: Ear, color: 'blue' },
-    { id: 'Dumb', label: 'Dumb Mode', desc: 'Communication tools for non-verbal users.', icon: MessageSquare, color: 'emerald' },
-    { id: 'Blind', label: 'Blind Mode', desc: 'Screen reader and voice-guided optimization.', icon: Eye, color: 'amber' }
+    { id: 'Deaf', label: 'Deaf Mode', desc: 'Enhanced visual indicators and captions.', icon: Ear, color: 'primary' },
+    { id: 'Dumb', label: 'Dumb Mode', desc: 'Communication tools for non-verbal users.', icon: MessageSquare, color: 'secondary' },
+    { id: 'Blind', label: 'Blind Mode', desc: 'Screen reader and voice-guided optimization.', icon: Eye, color: 'secondary' }
   ];
 
   return (
-    <div className="min-h-screen bg-app-bg-alt py-12 px-4 transition-colors duration-300">
+    <div className="min-h-screen bg-app-bg py-12 px-4 transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         <header className="mb-12">
           <div className="flex items-center gap-4 mb-4">
@@ -98,11 +98,11 @@ const Accessibility = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { label: 'Sign Language Mode', icon: Hand, enabled: signLanguageEnabled, toggle: toggleSignLanguage, color: 'bg-purple-500' },
-              { label: 'Live Captions', icon: Captions, enabled: captionsEnabled, toggle: toggleCaptions, color: 'bg-blue-500' },
-              { label: 'Speech Assist', icon: Mic, enabled: speechAssistEnabled, toggle: toggleSpeechAssist, color: 'bg-emerald-500' },
-              { label: 'High Contrast', icon: Monitor, enabled: highContrastEnabled, toggle: toggleHighContrast, color: 'bg-orange-600' },
-              { label: 'Large Text', icon: Type, enabled: largeTextEnabled, toggle: toggleLargeText, color: 'bg-indigo-600' },
+              { label: 'Sign Language Mode', icon: Hand, enabled: signLanguageEnabled, toggle: toggleSignLanguage, color: 'bg-ai-accent', baseColor: 'ai-accent' },
+              { label: 'Live Captions', icon: Captions, enabled: captionsEnabled, toggle: toggleCaptions, color: 'bg-primary', baseColor: 'primary' },
+              { label: 'Speech Assist', icon: Mic, enabled: speechAssistEnabled, toggle: toggleSpeechAssist, color: 'bg-secondary', baseColor: 'secondary' },
+              { label: 'High Contrast', icon: Monitor, enabled: highContrastEnabled, toggle: toggleHighContrast, color: 'bg-primary', baseColor: 'primary' },
+              { label: 'Large Text', icon: Type, enabled: largeTextEnabled, toggle: toggleLargeText, color: 'bg-primary', baseColor: 'primary' },
             ].map((feature, idx) => (
               <button
                 key={idx}
@@ -110,7 +110,7 @@ const Accessibility = () => {
                 className={`
                   flex items-center gap-4 p-6 rounded-3xl border-2 transition-all group
                   ${feature.enabled 
-                    ? `border-${feature.color.split('-')[1]}-500/20 bg-app-bg shadow-lg shadow-${feature.color.split('-')[1]}-500/5` 
+                    ? `border-${feature.baseColor}/20 bg-app-bg shadow-inst` 
                     : 'border-app-border bg-app-bg/50 hover:border-app-text-muted/30 opacity-60 hover:opacity-100'}
                 `}
               >
@@ -135,9 +135,9 @@ const Accessibility = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <Card className="p-8 bg-app-bg border border-app-border shadow-xl rounded-3xl">
+          <Card className="p-8 bg-app-bg border border-app-border shadow-inst rounded-3xl">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-blue-500/10 rounded-xl text-blue-600">
+              <div className="p-3 bg-primary/10 rounded-xl text-primary">
                 <Eye size={24} />
               </div>
               <h2 className="text-lg font-black text-app-text-main tracking-tight">Visual Support</h2>
@@ -152,9 +152,9 @@ const Accessibility = () => {
             </ul>
           </Card>
 
-          <Card className="p-8 bg-app-bg border border-app-border shadow-xl rounded-3xl">
+          <Card className="p-8 bg-app-bg border border-app-border shadow-inst rounded-3xl">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-600">
+              <div className="p-3 bg-secondary/10 rounded-xl text-secondary">
                 <Lightbulb size={24} />
               </div>
               <h2 className="text-lg font-black text-app-text-main tracking-tight">Performance</h2>
@@ -169,9 +169,9 @@ const Accessibility = () => {
             </ul>
           </Card>
 
-          <Card className="p-8 bg-app-bg border border-app-border shadow-xl rounded-3xl">
+          <Card className="p-8 bg-app-bg border border-app-border shadow-inst rounded-3xl">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-amber-500/10 rounded-xl text-amber-600">
+              <div className="p-3 bg-secondary/10 rounded-xl text-secondary">
                 <Globe size={24} />
               </div>
               <h2 className="text-lg font-black text-app-text-main tracking-tight">Localization</h2>
@@ -186,7 +186,7 @@ const Accessibility = () => {
             </ul>
           </Card>
 
-          <Card className="p-8 bg-app-bg border border-app-border shadow-xl rounded-3xl">
+          <Card className="p-8 bg-app-bg border border-app-border shadow-inst rounded-3xl">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-3 bg-primary/10 rounded-xl text-primary">
                 <MessageCircle size={24} />

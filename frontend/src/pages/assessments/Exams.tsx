@@ -60,8 +60,8 @@ const Exams = () => {
   if (examResult) {
     return (
       <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4">
-        <Card className="p-12 text-center rounded-[3rem] border-emerald-500/30 bg-emerald-500/5">
-          <div className="w-20 h-20 bg-emerald-500 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/20">
+        <Card className="p-12 text-center rounded-[3rem] border-secondary/30 bg-secondary/5 shadow-inst">
+          <div className="w-20 h-20 bg-secondary text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inst">
             <CheckCircle2 size={40} />
           </div>
           <h2 className="text-4xl font-black text-app-text-main mb-2">Exam Completed!</h2>
@@ -73,7 +73,7 @@ const Exams = () => {
               <p className="text-xs font-bold text-app-text-muted uppercase tracking-tighter">Score Percentage</p>
             </div>
             <div className="p-6 rounded-3xl bg-app-bg border border-app-border">
-              <p className="text-3xl font-black text-emerald-500">{examResult.correctAnswers}/{examResult.totalQuestions}</p>
+              <p className="text-3xl font-black text-secondary">{examResult.correctAnswers}/{examResult.totalQuestions}</p>
               <p className="text-xs font-bold text-app-text-muted uppercase tracking-tighter">Correct Answers</p>
             </div>
           </div>

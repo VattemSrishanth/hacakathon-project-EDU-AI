@@ -10,7 +10,7 @@ export type EducationBoard = 'NCERT' | 'Telangana' | 'Andhra Pradesh';
 export type ContentPreference = 'Text' | 'Video' | 'Both';
 export type AnswerStyle = 'Short' | 'Detailed';
 export type ReminderFrequency = 'Daily' | 'Weekly' | 'Off';
-export type ThemeMode = 'Midnight Void' | 'Crystal Light' | 'Sunset Ember' | 'HARRY POTTER' | 'STRANGER THINGS' | 'WEDNESDAY';
+export type ThemeMode = 'Academic Maroon' | 'Sunrise Amber' | 'Institutional White' | 'Harry Potter' | 'Premium Dark';
 export type FontSize = 'Small' | 'Medium' | 'Large';
 export type AccessibilityMode = 'Normal' | 'Deaf' | 'Dumb' | 'Blind';
 
@@ -86,7 +86,7 @@ export const defaultSettings: SettingsState = {
     reminderFrequency: 'Weekly',
   },
   themeAccessibility: {
-    theme: 'Crystal Light',
+    theme: 'Institutional White',
     fontSize: 'Medium',
     highContrast: false,
     reduceMotion: false,
@@ -147,8 +147,8 @@ const loadSettingsFromStorage = (): SettingsState => {
       themeAccessibility: {
         ...defaultSettings.themeAccessibility,
         ...(storedSettings?.themeAccessibility || {}),
-        // migration/fallback for old theme values
-        theme: (['Midnight Void', 'Crystal Light', 'Sunset Ember', 'HARRY POTTER', 'STRANGER THINGS'].includes(storedSettings?.themeAccessibility?.theme as any)
+        // Fallback for valid themes only
+        theme: (['Academic Maroon', 'Sunrise Amber', 'Institutional White', 'Harry Potter', 'Premium Dark'].includes(storedSettings?.themeAccessibility?.theme as any)
           ? storedSettings?.themeAccessibility?.theme 
           : defaultSettings.themeAccessibility.theme) as ThemeMode,
       },
@@ -171,43 +171,21 @@ const applyTheme = (theme: ThemeMode): void => {
   const root = document.documentElement;
   const body = document.body;
   
-  // Remove all potential theme classes from BOTH root and body to ensure clean switch
-  const themeClasses = ['theme-midnight', 'theme-crystal', 'theme-sunset', 'theme-harry-potter', 'theme-stranger', 'theme-wednesday', 'dark'];
+  // Remove all potential theme classes and dark mode
+  const themeClasses = ['dark', 'theme-harry-potter', 'theme-premium-dark'];
   root.classList.remove(...themeClasses);
   body.classList.remove(...themeClasses);
 
-  // Set base variables first (default to Crystal Light if needed)
-  if (['Midnight Void', 'HARRY POTTER', 'STRANGER THINGS', 'WEDNESDAY'].includes(theme)) {
+  // 'Academic Maroon' is our dark mode theme
+  if (theme === 'Academic Maroon') {
     root.classList.add('dark');
-  }
-
-  // Add specific theme class to BODY (as requested) and ROOT (for tailwind/css variables consistency)
-  // Using both ensures maximum compatibility with existing CSS selectors (some might rely on root, user asks for body)
-  let themeClass = '';
-  switch (theme) {
-    case 'Midnight Void':
-      themeClass = 'theme-midnight';
-      break;
-    case 'Crystal Light':
-      themeClass = 'theme-crystal';
-      break;
-    case 'Sunset Ember':
-      themeClass = 'theme-sunset';
-      break;
-    case 'HARRY POTTER':
-      themeClass = 'theme-harry-potter';
-      break;
-    case 'STRANGER THINGS':
-      themeClass = 'theme-stranger';
-      break;
-    case 'WEDNESDAY':
-      themeClass = 'theme-wednesday';
-      break;
-  }
-
-  if (themeClass) {
-    root.classList.add(themeClass);
-    body.classList.add(themeClass);
+    body.classList.add('dark');
+  } else if (theme === 'Harry Potter') {
+    root.classList.add('theme-harry-potter');
+    body.classList.add('theme-harry-potter');
+  } else if (theme === 'Premium Dark') {
+    root.classList.add('theme-premium-dark');
+    body.classList.add('theme-premium-dark');
   }
 };
 
@@ -322,7 +300,7 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
   }, [settings.learning.language]);
 
   const isDark = useMemo(() => {
-    return ['Midnight Void', 'HARRY POTTER', 'STRANGER THINGS', 'WEDNESDAY'].includes(settings.themeAccessibility.theme);
+    return settings.themeAccessibility.theme === 'Academic Maroon';
   }, [settings.themeAccessibility.theme]);
 
   const updateProfile = useCallback((profile: Partial<ProfileSettings>) => {

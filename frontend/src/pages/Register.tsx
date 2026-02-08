@@ -91,7 +91,7 @@ const Register = () => {
           )}
 
           {successMessage && (
-            <div className="mb-6 rounded-2xl border-2 border-emerald-500/20 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-600 font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+            <div className="mb-6 rounded-2xl border-2 border-secondary/20 bg-secondary/10 px-5 py-4 text-sm text-secondary font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
               <div className="shrink-0"><CheckCircle size={20} /></div>
               <span>{successMessage}</span>
             </div>
@@ -104,7 +104,7 @@ const Register = () => {
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value as UserRole)}
-                  className="w-full pl-10 pr-10 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold shadow-sm appearance-none"
+                  className="w-full pl-10 pr-10 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-bold shadow-sm appearance-none"
                 >
                   {roleOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -130,7 +130,7 @@ const Register = () => {
                     updateLearning({ language: lang });
                     updateThemeAccessibility({ voiceLanguage: lang });
                   }}
-                  className="w-full pl-4 pr-10 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold shadow-sm appearance-none"
+                  className="w-full pl-4 pr-10 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-bold shadow-sm appearance-none"
                 >
                   {languageOptions.map((lang) => (
                     <option key={lang} value={lang}>{lang}</option>
@@ -146,14 +146,14 @@ const Register = () => {
               <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Full Name</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <UserPlus size={20} className="text-primary group-focus-within:text-indigo-600 transition-colors" />
+                  <UserPlus size={20} className="text-primary group-focus-within:text-primary transition-colors" />
                 </div>
                 <input
                   type="text"
                   placeholder="John Doe"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
+                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
                   required
                 />
               </div>
@@ -163,14 +163,14 @@ const Register = () => {
               <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Email Address</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail size={20} className="text-primary group-focus-within:text-indigo-600 transition-colors" />
+                  <Mail size={20} className="text-primary group-focus-within:text-primary transition-colors" />
                 </div>
                 <input
                   type="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
+                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
                   required
                 />
               </div>
@@ -180,20 +180,20 @@ const Register = () => {
               <label className="block text-xs font-black text-app-text-sub ml-1 uppercase tracking-widest">Password</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock size={20} className="text-primary group-focus-within:text-indigo-600 transition-colors" />
+                  <Lock size={20} className="text-primary group-focus-within:text-primary transition-colors" />
                 </div>
                 <input
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
+                  className="w-full pl-12 pr-4 py-4 bg-app-bg border border-app-border text-app-text-main rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-bold shadow-sm placeholder:opacity-50 placeholder:text-app-text-muted"
                   required
                 />
               </div>
             </div>
 
-            <Button type="submit" className="w-full py-5 rounded-2xl shadow-xl shadow-indigo-500/20 text-sm font-black uppercase tracking-widest" disabled={loading}>
+            <Button type="submit" className="w-full py-5 rounded-2xl shadow-xl shadow-primary/20 text-sm font-black uppercase tracking-widest" disabled={loading}>
               {loading ? 'Creating account...' : 'Create Account Now'}
             </Button>
           </form>
@@ -201,7 +201,7 @@ const Register = () => {
           <div className="mt-10 pt-8 border-t border-app-border text-center">
             <p className="text-app-text-sub text-xs font-bold uppercase tracking-widest">
               Already have an account?{' '}
-              <Link to="/login" className="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 underline decoration-2 underline-offset-4">
+              <Link to="/login" className="text-primary font-black hover:text-primary transition-colors ml-1 underline decoration-2 underline-offset-4">
                 Sign In
               </Link>
             </p>

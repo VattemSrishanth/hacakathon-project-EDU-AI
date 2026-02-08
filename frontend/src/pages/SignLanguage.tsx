@@ -10,10 +10,10 @@ const SignLanguagePage = () => {
   return (
     <div className="min-h-screen bg-app-bg py-12 px-4 transition-colors duration-300">
       <div className="max-w-5xl mx-auto space-y-12">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-app-bg-alt p-10 rounded-[3rem] border border-app-border shadow-xl">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-app-bg p-10 rounded-[3rem] border border-app-border shadow-inst">
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-3xl bg-purple-500/10 flex items-center justify-center text-purple-600">
+              <div className="w-16 h-16 rounded-3xl bg-ai-accent/10 flex items-center justify-center text-ai-accent">
                 <Hand size={36} />
               </div>
               <h1 className="text-4xl font-black text-app-text-main tracking-tight uppercase italic">Sign Language Hub</h1>
@@ -25,9 +25,9 @@ const SignLanguagePage = () => {
           
           <Button 
             onClick={toggleSignLanguage}
-            className={`px-10 py-6 rounded-3xl font-black text-sm uppercase tracking-widest shadow-2xl transition-all active:scale-95 ${
+            className={`px-10 py-6 rounded-3xl font-black text-sm uppercase tracking-widest shadow-inst transition-all active:scale-95 ${
               signLanguageEnabled 
-                ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-purple-500/20' 
+                ? 'bg-ai-accent hover:bg-ai-accent text-white shadow-ai-accent/20' 
                 : 'bg-app-bg border-4 border-app-border text-app-text-main grayscale hover:grayscale-0'
             }`}
           >
@@ -46,9 +46,9 @@ const SignLanguagePage = () => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card className="p-10 bg-app-bg border border-app-border shadow-xl rounded-[2.5rem] space-y-6">
+          <Card className="p-10 bg-app-bg border border-app-border shadow-inst rounded-[2.5rem] space-y-6">
             <div className="flex items-center gap-4">
-              <div className="p-4 bg-blue-500/10 rounded-2xl text-blue-600">
+              <div className="p-4 bg-primary/10 rounded-2xl text-primary">
                 <Video size={24} />
               </div>
               <h2 className="text-xl font-black text-app-text-main tracking-tight uppercase">High Definition Feed</h2>
@@ -58,9 +58,9 @@ const SignLanguagePage = () => {
             </p>
           </Card>
 
-          <Card className="p-10 bg-app-bg border border-app-border shadow-xl rounded-[2.5rem] space-y-6">
+          <Card className="p-10 bg-app-bg border border-app-border shadow-inst rounded-[2.5rem] space-y-6">
             <div className="flex items-center gap-4">
-              <div className="p-4 bg-emerald-500/10 rounded-2xl text-emerald-600">
+              <div className="p-4 bg-secondary/10 rounded-2xl text-secondary">
                 <MessageSquareText size={24} />
               </div>
               <h2 className="text-xl font-black text-app-text-main tracking-tight uppercase">Smart Transcripts</h2>
@@ -71,9 +71,9 @@ const SignLanguagePage = () => {
           </Card>
         </div>
 
-        <section className="bg-zinc-950 text-white p-12 rounded-[3rem] border border-zinc-800 shadow-2xl relative overflow-hidden">
+        <section className="bg-app-bg text-app-text-main p-12 rounded-[3rem] border border-app-border shadow-inst relative overflow-hidden">
           <div className="relative z-10 space-y-6">
-            <h2 className="text-2xl font-black uppercase tracking-tighter text-purple-400">Platform Features</h2>
+            <h2 className="text-2xl font-black uppercase tracking-tighter text-ai-accent">Platform Features</h2>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {[
                 'Certified ASL/ISL Interpreters',
@@ -83,14 +83,14 @@ const SignLanguagePage = () => {
                 'Variable Playback Speed',
                 'Visual Focus Indicators'
               ].map((item) => (
-                <li key={item} className="flex items-center gap-3 font-bold text-zinc-400">
-                  <CheckCircle2 size={20} className="text-purple-500" />
+                <li key={item} className="flex items-center gap-3 font-bold text-app-text-sub">
+                  <CheckCircle2 size={20} className="text-ai-accent" />
                   {item}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-purple-600/10 blur-[100px] rounded-full" />
+          <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-ai-accent/5 blur-[100px] rounded-full" />
         </section>
       </div>
     </div>

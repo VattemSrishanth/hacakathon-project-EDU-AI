@@ -102,7 +102,7 @@ const LessonViewer = ({
             
             {isCompleted && (
               <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                signLanguageEnabled ? 'bg-green-500/20 text-green-500 border-green-500/30' : 'bg-green-500/10 text-green-500 border-green-500/20'
+                signLanguageEnabled ? 'bg-amber-500/20 text-amber-500 border-amber-500/30' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
               }`}>
                 Completed
               </div>
@@ -122,7 +122,7 @@ const LessonViewer = ({
           </div>
         </div>
 
-        <div className="prose prose-blue max-w-none">
+        <div className="prose prose-stone dark:prose-invert max-w-none">
           {generating ? (
             <div className="flex flex-col items-center justify-center py-24 space-y-6">
               <div className="relative">
@@ -228,7 +228,7 @@ const LessonViewer = ({
                 variant="primary"
                 onClick={handleDownload}
                 disabled={isOffline || isSaving || generating || !lesson.explanation || (downloadingIds || []).includes(lesson.id)}
-                className="flex items-center gap-2 px-6 py-4 rounded-full font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20"
+                className="flex items-center gap-2 px-6 py-4 rounded-full font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20"
               >
                 {isSaving || (downloadingIds || []).includes(lesson.id) ? (
                   <Loader2 size={18} className="animate-spin" />
@@ -242,7 +242,7 @@ const LessonViewer = ({
             <Button 
               onClick={onMarkComplete}
               className={`flex items-center gap-3 px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest shadow-lg transition-transform active:scale-95 ${
-                isCompleted ? 'bg-green-500 hover:bg-green-600' : 'bg-primary/20 text-primary border border-primary/20 hover:bg-primary/30'
+                isCompleted ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary/20 text-primary border border-primary/20 hover:bg-primary/30'
               }`}
             >
               {isCompleted ? 'Finished!' : 'Mark Done'}
@@ -260,7 +260,7 @@ const LessonViewer = ({
               onClick={() => onExplainMode('simple')}
               className="px-6 py-4 rounded-full font-black text-xs uppercase tracking-widest bg-app-bg border border-app-border text-app-text-main hover:border-primary/50 transition-all flex items-center gap-2"
             >
-              <Sparkles size={16} className="text-blue-500" />
+              <Sparkles size={16} className="text-primary" />
               Simple
             </button>
 
@@ -276,7 +276,7 @@ const LessonViewer = ({
               onClick={onTranslate}
               className="px-6 py-4 rounded-full font-black text-xs uppercase tracking-widest bg-app-bg border border-app-border text-app-text-main hover:border-primary/50 transition-all flex items-center gap-2"
             >
-              <Languages size={16} className="text-green-500" />
+              <Languages size={16} className="text-amber-500" />
               Translate
             </button>
           </div>

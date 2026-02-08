@@ -50,7 +50,7 @@ const AskDoubt = () => {
           <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest opacity-70">Get help from AI and fellow students</p>
         </div>
 
-        <Card className="p-8 border-app-border shadow-2xl rounded-[2.5rem] bg-app-bg-alt relative overflow-hidden">
+        <Card className="p-8 border-app-border shadow-inst rounded-[2.5rem] bg-app-bg-alt relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-5">
             <MessageSquare size={120} />
           </div>
@@ -81,7 +81,7 @@ const AskDoubt = () => {
             </div>
 
             {isOffline && (
-              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 flex items-center gap-3">
+              <div className="p-4 rounded-2xl bg-secondary/10 border border-secondary/20 text-secondary flex items-center gap-3">
                 <Sparkles size={20} />
                 <p className="text-xs font-black uppercase tracking-widest">Offline Mode: Your post will be synced later</p>
               </div>
@@ -100,8 +100,8 @@ const AskDoubt = () => {
 
         {/* Learning Tips */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 rounded-3xl bg-app-bg border border-app-border flex gap-4">
-            <div className="p-3 h-fit rounded-xl bg-orange-500/10 text-orange-600">
+          <div className="p-6 rounded-3xl bg-app-bg border border-app-border flex gap-4 shadow-inst">
+            <div className="p-3 h-fit rounded-xl bg-ai-accent/10 text-ai-accent">
               <Sparkles size={20} />
             </div>
             <div>
@@ -109,8 +109,8 @@ const AskDoubt = () => {
               <p className="text-xs font-medium text-app-text-sub mt-1">Try to include which part of the lesson you're stuck on.</p>
             </div>
           </div>
-          <div className="p-6 rounded-3xl bg-app-bg border border-app-border flex gap-4">
-            <div className="p-3 h-fit rounded-xl bg-blue-500/10 text-blue-600">
+          <div className="p-6 rounded-3xl bg-app-bg border border-app-border flex gap-4 shadow-inst">
+            <div className="p-3 h-fit rounded-xl bg-primary/10 text-primary">
               <BookOpen size={20} />
             </div>
             <div>

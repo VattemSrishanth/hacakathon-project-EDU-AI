@@ -30,8 +30,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         <TopBar onOpenMobileMenu={() => setIsMobileOpen(true)} />
 
         {/* Dynamic Page Content */}
-        <main className="flex-1 p-4 md:p-8">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 p-4 md:p-6 lg:p-8">
+          <div className="w-full">
             {children}
           </div>
         </main>

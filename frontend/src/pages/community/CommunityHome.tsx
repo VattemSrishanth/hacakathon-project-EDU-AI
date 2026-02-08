@@ -25,7 +25,7 @@ const CommunityHome = () => {
             <p className="text-app-text-sub font-bold text-sm uppercase tracking-widest opacity-70 flex items-center gap-3">
               Learn together, grow together
               {isOffline && (
-                <span className="flex items-center gap-1 text-amber-600 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-100">
+                <span className="flex items-center gap-1 text-secondary bg-secondary/10 px-2 py-0.5 rounded-lg border border-secondary/20">
                   <WifiOff size={12} />
                   Offline Mode
                 </span>
@@ -46,7 +46,7 @@ const CommunityHome = () => {
             <Button 
               variant="primary" 
               onClick={() => navigate('/community/ask')}
-              className="rounded-2xl group flex items-center gap-3 px-8 py-4 shadow-xl shadow-primary/20"
+              className="rounded-2xl group flex items-center gap-3 px-8 py-4 shadow-inst"
             >
               <Plus size={20} className="group-hover:rotate-90 transition-transform" />
               Ask a Doubt
@@ -86,12 +86,12 @@ const CommunityHome = () => {
         ) : doubts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-6 duration-1000">
             {doubts.map((doubt) => (
-              <Card key={doubt.id} className="group bg-app-bg-alt p-1 rounded-[2.5rem] border-app-border hover:border-primary/20 transition-all hover:shadow-2xl hover:shadow-primary/5">
+              <Card key={doubt.id} className="group bg-app-bg-alt p-1 rounded-[2.5rem] border-app-border hover:border-primary/20 transition-all hover:shadow-inst">
                 <div className="bg-app-bg p-8 rounded-[2.3rem] h-full flex flex-col space-y-6">
                   {/* Post Meta */}
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 font-black">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black">
                         {doubt.username.charAt(0)}
                       </div>
                       <div>

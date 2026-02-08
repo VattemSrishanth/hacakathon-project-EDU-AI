@@ -87,10 +87,7 @@ const Navbar = () => {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center group">
-              <span
-                className="text-3xl font-black tracking-tighter text-primary wa-logo magic-text"
-                data-text="LearnBridge AI"
-              >
+              <span className="text-3xl font-black tracking-tighter text-primary">
                 LearnBridge AI
               </span>
             </Link>
@@ -135,7 +132,7 @@ const Navbar = () => {
             
             {isGuest && (
               <div className="flex items-center gap-4">
-                <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
+                <span className="px-3 py-1 rounded-full bg-secondary/10 text-secondary text-[10px] font-black uppercase tracking-widest border border-secondary/20">
                   Guest Mode
                 </span>
                 <Link
@@ -315,7 +312,7 @@ const Navbar = () => {
             {!isAuthenticated ? (
               <Link
                 to="/login"
-                className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-indigo-700 transition-colors duration-200 inline-block w-fit"
+                className="px-4 py-2 rounded-lg bg-primary text-white hover:opacity-90 transition-opacity duration-200 inline-block w-fit"
                 onClick={() => setIsOpen(false)}
               >
                 {t.nav.login}

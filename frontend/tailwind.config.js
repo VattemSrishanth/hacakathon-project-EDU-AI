@@ -7,8 +7,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#4F46E5',
-        secondary: '#06B6D4',
+        primary: '#7F1D1D', // Institutional Maroon
+        secondary: '#F59E0B', // Academic Amber
+        'ai-accent': '#6D28D9', // AI Purple
+      },
+      boxShadow: {
+        'inst': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
       },
     },
   },

@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { FileText, ClipboardList, BookOpen, Trash2, Download, WifiOff, Clock, ChevronRight } from 'lucide-react';
 import Button from '../components/Button';
 import { useOffline } from '../context/OfflineContext';
+import { useAuth } from '../context/AuthContext';
 import { offlineContentService } from '../services/offlineContent';
 import type { OfflineLesson } from '../services/offlineContent';
 
@@ -16,6 +17,7 @@ const UploadedPdf = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { downloadedLessons, removeLesson } = useOffline();
+  const { auth } = useAuth();
   const [offlineLessons, setOfflineLessons] = useState<OfflineLesson[]>([]);
   const state = (location.state || {}) as LocationState;
   const pdfContainerRef = useRef<HTMLDivElement>(null);
@@ -26,11 +28,15 @@ const UploadedPdf = () => {
 
   useEffect(() => {
     const fetchOffline = async () => {
-      const lessons = await offlineContentService.getAllLessons();
-      setOfflineLessons(lessons);
+      if (auth?.user?.id) {
+        const lessons = await offlineContentService.getAllLessons(String(auth.user.id));
+        setOfflineLessons(lessons);
+      } else {
+        setOfflineLessons([]);
+      }
     };
     fetchOffline();
-  }, [downloadedLessons]);
+  }, [downloadedLessons, auth?.user?.id]);
 
   const handleFullscreen = () => {
     if (!document.fullscreenElement && pdfContainerRef.current) {
@@ -124,7 +130,7 @@ const UploadedPdf = () => {
 
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between gap-3 flex-wrap bg-white p-6 rounded-3xl shadow-sm border border-app-border">
+        <div className="flex items-center justify-between gap-3 flex-wrap bg-app-bg p-6 rounded-3xl shadow-sm border border-app-border">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
               <FileText size={32} className="text-primary" />
@@ -146,7 +152,7 @@ const UploadedPdf = () => {
               <Button
                 variant="primary"
                 onClick={() => navigate('/lessons/quiz', { state: { pdfUrl, pdfName, pdfData }, replace: true })}
-                className="rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 shadow-xl shadow-indigo-500/20"
+                className="rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 shadow-xl shadow-primary/20"
               >
                 <ClipboardList size={16} /> Start Smart Quiz
               </Button>
@@ -181,7 +187,7 @@ const UploadedPdf = () => {
   }, [navigate, pdfData, pdfName, pdfUrl, offlineLessons, removeLesson]);
 
   return (
-    <div className="min-h-screen bg-app-bg-alt py-12 px-4">
+    <div className="min-h-screen bg-app-bg py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {content}
       </div>
