@@ -4,15 +4,10 @@ import {
   MessageSquare, 
   Eye, 
   Accessibility as AccessibilityIcon, 
-  CheckCircle2, 
+  CheckCircle2,
   Lightbulb, 
   Globe, 
-  MessageCircle,
-  Hand,
-  Captions,
-  Mic,
-  Monitor,
-  Type
+  MessageCircle
 } from 'lucide-react';
 import Card from '../components/Card';
 import { useSettings } from '../context/SettingsContext';
@@ -22,12 +17,53 @@ import type { AccessibilityMode } from '../context/SettingsContext';
 const Accessibility = () => {
   const { settings, updateThemeAccessibility } = useSettings();
   const { 
-    signLanguageEnabled, toggleSignLanguage,
-    captionsEnabled, toggleCaptions,
-    speechAssistEnabled, toggleSpeechAssist,
-    highContrastEnabled, toggleHighContrast,
-    largeTextEnabled, toggleLargeText
+    updateAccessibility
   } = useAccessibility();
+
+  const handleModeChange = (modeId: AccessibilityMode) => {
+    // First update the theme mode
+    updateThemeAccessibility({ accessibilityMode: modeId });
+
+    // Then update the specific flags based on the mode
+    switch (modeId) {
+      case 'Normal':
+        updateAccessibility({
+          signLanguageEnabled: false,
+          captionsEnabled: false,
+          speechAssistEnabled: false,
+          highContrastEnabled: false,
+          largeTextEnabled: false
+        });
+        break;
+      case 'Deaf':
+        updateAccessibility({
+          signLanguageEnabled: false,
+          captionsEnabled: true,
+          speechAssistEnabled: false,
+          highContrastEnabled: false,
+          largeTextEnabled: false
+        });
+        break;
+      case 'Dumb':
+        updateAccessibility({
+          signLanguageEnabled: true,
+          captionsEnabled: false,
+          speechAssistEnabled: false,
+          highContrastEnabled: false,
+          largeTextEnabled: false
+        });
+        break;
+      case 'Blind':
+        updateAccessibility({
+          signLanguageEnabled: false,
+          captionsEnabled: false,
+          speechAssistEnabled: true,
+          highContrastEnabled: true,
+          largeTextEnabled: true
+        });
+        break;
+    }
+  };
 
   const modes: { id: AccessibilityMode; label: string; desc: string; icon: any; color: string }[] = [
     { id: 'Normal', label: 'Normal Mode', desc: 'Standard interface for all users.', icon: User, color: 'primary' },
@@ -55,7 +91,7 @@ const Accessibility = () => {
           {modes.map((mode) => (
             <button
               key={mode.id}
-              onClick={() => updateThemeAccessibility({ accessibilityMode: mode.id })}
+              onClick={() => handleModeChange(mode.id)}
               className={`
                 group p-8 rounded-3xl border-2 transition-all duration-300 text-left relative overflow-hidden bg-app-bg shadow-lg
                 ${settings.themeAccessibility.accessibilityMode === mode.id
@@ -87,51 +123,6 @@ const Accessibility = () => {
               )}
             </button>
           ))}
-        </div>
-
-        {/* Global Feature Toggles */}
-        <div className="mb-12 space-y-8">
-          <header>
-            <h2 className="text-2xl font-black text-app-text-main tracking-tight uppercase mb-2">Enhancement Controls</h2>
-            <p className="text-app-text-sub text-xs font-bold uppercase tracking-widest leading-none">Toggle specific assistive features across the platform</p>
-          </header>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { label: 'Sign Language Mode', icon: Hand, enabled: signLanguageEnabled, toggle: toggleSignLanguage, color: 'bg-ai-accent', baseColor: 'ai-accent' },
-              { label: 'Live Captions', icon: Captions, enabled: captionsEnabled, toggle: toggleCaptions, color: 'bg-primary', baseColor: 'primary' },
-              { label: 'Speech Assist', icon: Mic, enabled: speechAssistEnabled, toggle: toggleSpeechAssist, color: 'bg-secondary', baseColor: 'secondary' },
-              { label: 'High Contrast', icon: Monitor, enabled: highContrastEnabled, toggle: toggleHighContrast, color: 'bg-primary', baseColor: 'primary' },
-              { label: 'Large Text', icon: Type, enabled: largeTextEnabled, toggle: toggleLargeText, color: 'bg-primary', baseColor: 'primary' },
-            ].map((feature, idx) => (
-              <button
-                key={idx}
-                onClick={feature.toggle}
-                className={`
-                  flex items-center gap-4 p-6 rounded-3xl border-2 transition-all group
-                  ${feature.enabled 
-                    ? `border-${feature.baseColor}/20 bg-app-bg shadow-inst` 
-                    : 'border-app-border bg-app-bg/50 hover:border-app-text-muted/30 opacity-60 hover:opacity-100'}
-                `}
-              >
-                <div className={`p-3 rounded-2xl transition-colors ${feature.enabled ? `${feature.color} text-white` : 'bg-app-bg-alt text-app-text-muted group-hover:bg-app-bg-alt'}`}>
-                  <feature.icon size={24} />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-black text-app-text-main tracking-tight uppercase">{feature.label}</p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${feature.enabled ? 'bg-primary' : 'bg-app-text-muted'}`} />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-app-text-sub">
-                      {feature.enabled ? 'Enabled' : 'Disabled'}
-                    </span>
-                  </div>
-                </div>
-                <div className={`w-12 h-6 rounded-full relative transition-colors ${feature.enabled ? 'bg-primary' : 'bg-app-border'}`}>
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${feature.enabled ? 'left-7' : 'left-1'}`} />
-                </div>
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
