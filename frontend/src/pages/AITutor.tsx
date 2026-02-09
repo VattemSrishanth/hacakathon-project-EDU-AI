@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+﻿import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
 import type { AccessibilityMode } from '../context/SettingsContext';
@@ -69,7 +69,6 @@ declare global {
     };
   }
 }
-
 const CHAT_SESSIONS_KEY = 'ai_chat_sessions';
 
 interface ChatSession {
@@ -278,53 +277,59 @@ const AITutor = () => {
                     updateThemeAccessibility({ voiceLanguage: cmd.value as SupportedLanguage });
                  } else if (cmd.command === 'SET_THEME') {
                      const themeVal = String(cmd.value).toLowerCase();
-                     if (themeVal.includes('maroon') || themeVal.includes('dark')) updateThemeAccessibility({ theme: 'Academic Maroon' });
-                     else if (themeVal.includes('amber') || themeVal.includes('sunset')) updateThemeAccessibility({ theme: 'Sunrise Amber' });
-                     else if (themeVal.includes('white') || themeVal.includes('light')) updateThemeAccessibility({ theme: 'Institutional White' });
+                     if (themeVal.includes('maroon')) updateThemeAccessibility({ theme: 'Academic Maroon' });
+                     else if (themeVal.includes('amber')) updateThemeAccessibility({ theme: 'Sunrise Amber' });
+                     else if (themeVal.includes('white')) updateThemeAccessibility({ theme: 'Institutional White' });
+                     else if (themeVal.includes('void') || themeVal.includes('dark')) updateThemeAccessibility({ theme: 'Midnight Void' });
+                     else if (themeVal.includes('crystal') || themeVal.includes('light')) updateThemeAccessibility({ theme: 'Crystal Light' });
+                     else if (themeVal.includes('potter') || themeVal.includes('wizard')) updateThemeAccessibility({ theme: 'HARRY POTTER' });
+                     else if (themeVal.includes('stranger') || themeVal.includes('upside')) updateThemeAccessibility({ theme: 'STRANGER THINGS' });
+                     else if (themeVal.includes('wednesday') || themeVal.includes('goth')) updateThemeAccessibility({ theme: 'WEDNESDAY' });
+                     else if (themeVal.includes('thrones') || themeVal.includes('dragon')) updateThemeAccessibility({ theme: 'GAME OF THRONES' });
                      
                      if (themeVal.includes('low') || themeVal.includes('power')) updateThemeAccessibility({ lowPowerMode: true });
                      if (themeVal.includes('high') || themeVal.includes('contrast')) updateThemeAccessibility({ highContrast: true });
                  }
              }
              
-      // Update text to show clean explanation from JSON
-      if (parsed.explanation) {
-          aiContent = parsed.explanation;
-      } else if (parsed.answer && typeof parsed.answer === 'string') {
-          aiContent = parsed.answer;
-      } else if (typeof aiContent === 'object') {
-          // Fallback if it's still an object and we have no explanation field
-          aiContent = "Action performed successfully.";
+             // Update text to show clean explanation from JSON
+             if (parsed.explanation) {
+                 aiContent = parsed.explanation;
+             } else if (parsed.answer && typeof parsed.answer === 'string') {
+                 aiContent = parsed.answer;
+             } else if (typeof aiContent === 'object') {
+                 // Fallback if it's still an object and we have no explanation field
+                 aiContent = "Action performed successfully.";
+             }
+        }
+      } catch (e) {
+        console.log("Not a command JSON or error parsing", e);
       }
-    }
-  } catch (e) {
-      console.log("Not a command JSON or error parsing", e);
-  }
 
-  // Increment questions asked count in progress
-  if (auth?.user?.id) {
-    try {
-      const progRes = await userDataAPI.getProgress(String(auth.user.id));
-      if (progRes.success) {
-        const currentProg = progRes.progress;
-        const updatedActivities = [
-          { type: 'ai' as const, text: `Asked AI: ${activeInput.slice(0, 30)}...`, timestamp: new Date().toISOString() },
-          ...(currentProg.activities || [])
-        ].slice(0, 20);
+      // Increment questions asked count in progress
+      if (auth?.user?.id) {
+        try {
+          const progRes = await userDataAPI.getProgress(String(auth.user.id));
+          if (progRes.success) {
+            const currentProg = progRes.progress;
+            const updatedActivities = [
+              { type: 'ai' as const, text: `Asked AI: ${activeInput.slice(0, 30)}...`, timestamp: new Date().toISOString() },
+              ...(currentProg.activities || [])
+            ].slice(0, 20);
 
-        await userDataAPI.updateProgress(String(auth.user.id), {
-          ...currentProg,
-          questionsAsked: (currentProg.questionsAsked || 0) + 1,
-          activities: updatedActivities,
-          lastActivity: new Date().toISOString().split('T')[0]
-        });
+            await userDataAPI.updateProgress(String(auth.user.id), {
+              ...currentProg,
+              questionsAsked: (currentProg.questionsAsked || 0) + 1,
+              activities: updatedActivities,
+              lastActivity: new Date().toISOString().split('T')[0]
+            });
+          }
+        } catch (e) {
+          console.error('Failed to update questions count', e);
+        }
       }
-    } catch (e) {
-      console.error('Failed to update questions count', e);
-    }
-  }
 
-  const assistantMessage: ChatMessage = {
+      const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: String(aiContent), // Ensure it's a string for rendering
@@ -371,7 +376,7 @@ const AITutor = () => {
       return;
     }
 
-    const recognition = new SpeechRecognition();
+    const recognition = new (SpeechRecognition as unknown as { new (): ISpeechRecognition })();
     recognition.continuous = false;
     recognition.interimResults = true;
     
