@@ -46,6 +46,7 @@ export default function LessonViewer() {
   const [error, setError] = useState<string | null>(null);
   const [uploadedPdf, setUploadedPdf] = useState<string | null>(location.state?.pdfUrl || null);
   const [isReading, setIsReading] = useState(false);
+  const [showPdf, setShowPdf] = useState(false);
   const pdfContainerRef = useRef<HTMLDivElement>(null);
 
   const handleFullscreen = () => {
@@ -296,6 +297,17 @@ export default function LessonViewer() {
                   Update Lesson PDF
                 </Button>
               </label>
+
+              {(lesson.pdfUrl || uploadedPdf) && (
+                <Button
+                  variant="ai-accent"
+                  onClick={() => setShowPdf(!showPdf)}
+                  className="flex items-center gap-3 px-6 py-4 rounded-2xl shadow-lg shadow-primary/20 text-xs font-black uppercase tracking-widest"
+                >
+                  <FileText size={20} />
+                  {showPdf ? 'Hide Reference PDF' : 'View Reference PDF'}
+                </Button>
+              )}
               
               {settings.themeAccessibility.accessibilityMode === 'Blind' && (
                 <Button
@@ -335,71 +347,113 @@ export default function LessonViewer() {
         </div>
 
         {/* Content Area */}
-        {signLanguageEnabled ? (
-          <SignLanguagePanel 
-            lessonTitle={lesson.title} 
-            transcript={lesson.textVersion}
-            // signVideoUrl={lesson.signVideoUrl} // Assuming this might exist in future backend schema
-          />
-        ) : showTextVersion ? (
-          /* Text Version for Accessibility */
-          <div className="bg-app-bg-alt rounded-[2.5rem] p-10 border border-app-border shadow-inner">
-            <h2 className="text-2xl font-black text-app-text-main mb-8 uppercase tracking-tight">Lesson Content</h2>
-            <div className="prose prose-slate prose-xl dark:prose-invert max-w-none">
-              <pre className="whitespace-pre-wrap font-sans text-app-text-main leading-relaxed font-bold">
-                {lesson.textVersion}
-              </pre>
+        <div className="space-y-10">
+          {(showPdf && (uploadedPdf || lesson.pdfUrl)) && (
+             <div ref={pdfContainerRef} className="bg-app-bg-alt rounded-[2.5rem] p-3 border-4 border-primary/30 shadow-2xl overflow-hidden ring-4 ring-primary/10 animate-in zoom-in duration-500">
+               <div className="flex items-center justify-between px-8 py-4 bg-app-bg-alt/50 border-b border-app-border mb-3 rounded-t-[1.8rem]">
+                 <div className="flex items-center gap-3">
+                   <div className="w-3 h-3 rounded-full bg-primary animate-pulse" />
+                   <h3 className="text-sm font-black uppercase tracking-widest text-app-text-main">Reference Study Material</h3>
+                 </div>
+                 <div className="flex items-center gap-4">
+                   <button 
+                     onClick={handleFullscreen}
+                     className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all"
+                     title="Toggle Fullscreen"
+                   >
+                     <Maximize size={18} />
+                   </button>
+                   <button 
+                     onClick={() => setShowPdf(false)}
+                     className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-400"
+                   >
+                     [ Close PDF ]
+                   </button>
+                 </div>
+               </div>
+               <div className="relative rounded-[1.8rem] overflow-hidden bg-app-bg">
+                 <iframe
+                   src={uploadedPdf || lesson.pdfUrl || undefined}
+                   className="w-full border-0"
+                   style={{ height: '850px' }}
+                   title={`${lesson.title} PDF`}
+                   allowFullScreen
+                 />
+               </div>
+             </div>
+          )}
+
+          {signLanguageEnabled ? (
+            <SignLanguagePanel 
+              lessonTitle={lesson.title} 
+              transcript={lesson.textVersion}
+              // signVideoUrl={lesson.signVideoUrl} // Assuming this might exist in future backend schema
+            />
+          ) : showTextVersion ? (
+            /* Text Version for Accessibility */
+            <div className="bg-app-bg-alt rounded-[2.5rem] p-10 border border-app-border shadow-inner">
+              <h2 className="text-2xl font-black text-app-text-main mb-8 uppercase tracking-tight">Lesson Content</h2>
+              <div className="prose prose-slate prose-xl dark:prose-invert max-w-none">
+                <pre className="whitespace-pre-wrap font-sans text-app-text-main leading-relaxed font-bold">
+                  {lesson.textVersion}
+                </pre>
+              </div>
             </div>
-          </div>
-        ) : (
-          /* PDF Viewer */
-          <div ref={pdfContainerRef} className="bg-app-bg-alt rounded-[2.5rem] p-3 border border-app-border shadow-2xl overflow-hidden ring-1 ring-app-border">
-            {uploadedPdf || lesson.pdfUrl ? (
-              <div className="relative rounded-[1.8rem] overflow-hidden bg-app-bg">
-                <div className="absolute top-4 right-4 z-10 flex gap-2">
-                  <button 
-                    onClick={handleFullscreen}
-                    className="p-2 rounded-xl bg-black/50 text-white backdrop-blur-md hover:bg-black/70 transition-all"
-                    title="Toggle Fullscreen"
-                  >
-                    <Maximize size={16} />
-                  </button>
-                </div>
-                <iframe
-                  src={uploadedPdf || lesson.pdfUrl}
-                  className="w-full border-0"
-                  style={{ height: '850px' }}
-                  title={`${lesson.title} PDF`}
-                  allowFullScreen
-                />
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-32 px-4 text-center bg-app-bg rounded-4xl">
-                <div className="w-24 h-24 rounded-3xl bg-app-bg-alt border border-app-border flex items-center justify-center mb-8 group-hover:scale-110 transition-transform text-primary/60">
-                  <FileText size={40} />
-                </div>
-                <h3 className="text-2xl font-black text-app-text-main mb-3 uppercase tracking-tight">
-                  No PDF Content Available
-                </h3>
-                <p className="text-app-text-sub font-bold mb-10 max-w-md uppercase text-xs tracking-widest opacity-60">
-                  Please upload a PDF document to begin viewing this lesson's specialized content.
-                </p>
-                <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    accept="application/pdf"
-                    onChange={handlePdfUpload}
-                    className="hidden"
+          ) : !showPdf ? (
+            /* Standard PDF Viewer (if not already opened as reference) */
+            <div ref={pdfContainerRef} className="bg-app-bg-alt rounded-[2.5rem] p-3 border border-app-border shadow-2xl overflow-hidden ring-1 ring-app-border">
+              {uploadedPdf || lesson.pdfUrl ? (
+                <div className="relative rounded-[1.8rem] overflow-hidden bg-app-bg">
+                  <div className="absolute top-4 right-4 z-10 flex gap-2">
+                    <button 
+                      onClick={handleFullscreen}
+                      className="p-2 rounded-xl bg-black/50 text-white backdrop-blur-md hover:bg-black/70 transition-all"
+                      title="Toggle Fullscreen"
+                    >
+                      <Maximize size={16} />
+                    </button>
+                  </div>
+                  <iframe
+                    src={uploadedPdf || lesson.pdfUrl || undefined}
+                    className="w-full border-0"
+                    style={{ height: '850px' }}
+                    title={`${lesson.title} PDF`}
+                    allowFullScreen
                   />
-                  <Button variant="primary" className="flex items-center gap-4 px-10 py-5 rounded-4xl shadow-2xl shadow-primary/30 text-sm font-black uppercase tracking-[0.2em] transform active:scale-95 transition-all">
-                    <Upload size={28} />
-                    Upload PDF Now
-                  </Button>
-                </label>
-              </div>
-            )}
-          </div>
-        )}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-32 px-4 text-center bg-app-bg rounded-4xl">
+                  <div className="w-24 h-24 rounded-3xl bg-app-bg-alt border border-app-border flex items-center justify-center mb-8 group-hover:scale-110 transition-transform text-primary/60">
+                    <FileText size={40} />
+                  </div>
+                  <h3 className="text-2xl font-black text-app-text-main mb-3 uppercase tracking-tight">
+                    No PDF Content Available
+                  </h3>
+                  <p className="text-app-text-sub font-bold mb-10 max-w-md uppercase text-xs tracking-widest opacity-60">
+                    Please upload a PDF document to begin viewing this lesson's specialized content.
+                  </p>
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      onChange={handlePdfUpload}
+                      className="hidden"
+                    />
+                    <Button variant="primary" className="flex items-center gap-4 px-10 py-5 rounded-4xl shadow-2xl shadow-primary/30 text-sm font-black uppercase tracking-[0.2em] transform active:scale-95 transition-all">
+                      <Upload size={28} />
+                      Upload PDF Now
+                    </Button>
+                  </label>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Fallback or spacing when PDF is already shown above */
+            <div className="py-10 bg-app-bg-alt rounded-4xl border border-dashed border-app-border text-center">
+               <p className="text-app-text-sub font-black uppercase text-xs tracking-widest">Reference PDF is active above. Scroll up to view.</p>
+            </div>
+          )}
+        </div>
 
         {/* Completion Area */}
         <div className="flex justify-center pt-8">

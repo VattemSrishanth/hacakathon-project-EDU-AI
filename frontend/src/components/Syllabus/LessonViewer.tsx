@@ -147,6 +147,64 @@ const LessonViewer = ({
             </div>
           ) : (
             <div className="space-y-8">
+              {/* PDF Access - Available in All Modes */}
+              {lesson.pdfUrl && (
+                <div className={`mb-8 rounded-4xl border-2 p-6 flex items-center justify-between ${
+                  signLanguageEnabled ? 'border-primary/40 bg-primary/10' : 'border-primary/20 bg-primary/5'
+                }`}>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
+                      <FileText size={24} />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-sm uppercase tracking-wider text-app-text-main">Official Study Material</h4>
+                      <p className="text-xs font-bold text-app-text-sub uppercase tracking-widest mt-1">Admin uploaded PDF available</p>
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={() => setShowPdf(!showPdf)}
+                    className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg active:scale-95"
+                  >
+                    <FileText size={16} />
+                    {showPdf ? 'Hide PDF' : 'View PDF'}
+                  </Button>
+                </div>
+              )}
+
+              {showPdf && lesson.pdfUrl && (
+                <div ref={pdfContainerRef} className="mb-8 rounded-[2.5rem] border-2 border-app-border bg-app-bg-alt p-3 shadow-2xl animate-in zoom-in duration-500 overflow-hidden">
+                  <div className="flex items-center justify-between px-6 py-3 border-b border-app-border/50">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-app-text-sub">Interactive PDF Canvas</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <button 
+                        onClick={handleFullscreen}
+                        className="p-1.5 rounded-lg hover:bg-app-bg transition-colors text-app-text-muted hover:text-primary"
+                        title="Toggle Fullscreen"
+                      >
+                        <Maximize size={16} />
+                      </button>
+                      <button 
+                        onClick={() => setShowPdf(false)}
+                        className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors"
+                      >
+                        [ Close ]
+                      </button>
+                    </div>
+                  </div>
+                  <div className="rounded-[1.8rem] overflow-hidden bg-white h-175 border border-app-border/30">
+                    <iframe 
+                      src={lesson.pdfUrl}
+                      className="w-full h-full border-0"
+                      title="Lesson PDF Content"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
+
               {signLanguageEnabled ? (
                 <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-700">
                   <div className="flex items-center gap-2 mb-2">
@@ -176,61 +234,6 @@ const LessonViewer = ({
                 </div>
               ) : (
                 <>
-                  {lesson.pdfUrl && (
-                    <div className="mb-8 rounded-4xl border-2 border-primary/20 bg-primary/5 p-6 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
-                          <FileText size={24} />
-                        </div>
-                        <div>
-                          <h4 className="font-black text-sm uppercase tracking-wider text-app-text-main">Official Study Material</h4>
-                          <p className="text-xs font-bold text-app-text-sub uppercase tracking-widest mt-1">Admin uploaded PDF available</p>
-                        </div>
-                      </div>
-                      <Button 
-                        onClick={() => setShowPdf(!showPdf)}
-                        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg active:scale-95"
-                      >
-                        <FileText size={16} />
-                        {showPdf ? 'Hide PDF' : 'View PDF'}
-                      </Button>
-                    </div>
-                  )}
-
-                  {showPdf && lesson.pdfUrl && (
-                    <div ref={pdfContainerRef} className="mb-8 rounded-[2.5rem] border-2 border-app-border bg-app-bg-alt p-3 shadow-2xl animate-in zoom-in duration-500 overflow-hidden">
-                      <div className="flex items-center justify-between px-6 py-3 border-b border-app-border/50">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-app-text-sub">Interactive PDF Canvas</span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <button 
-                            onClick={handleFullscreen}
-                            className="p-1.5 rounded-lg hover:bg-app-bg transition-colors text-app-text-muted hover:text-primary"
-                            title="Toggle Fullscreen"
-                          >
-                            <Maximize size={16} />
-                          </button>
-                          <button 
-                            onClick={() => setShowPdf(false)}
-                            className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors"
-                          >
-                            [ Close ]
-                          </button>
-                        </div>
-                      </div>
-                      <div className="rounded-[1.8rem] overflow-hidden bg-white h-175 border border-app-border/30">
-                        <iframe 
-                          src={lesson.pdfUrl}
-                          className="w-full h-full border-0"
-                          title="Lesson PDF Content"
-                          allowFullScreen
-                        />
-                      </div>
-                    </div>
-                  )}
-
                   <p className="text-xl md:text-3xl text-app-text-main leading-relaxed font-medium bg-app-bg-alt/30 p-8 md:p-12 rounded-[3rem] border border-app-border/50 shadow-inner whitespace-pre-wrap">
                     {lesson.explanation}
                   </p>
