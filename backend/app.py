@@ -1279,11 +1279,13 @@ def get_syllabus_content():
     # Build case-insensitive regex for all fields to be ultra-flexible
     import re
     def get_regex(text):
-        return re.compile(f"^{re.escape(text)}$", re.IGNORECASE)
+        # Use partial match for board/subject to be more robust
+        val = str(text).strip()
+        return re.compile(f".*{re.escape(val)}.*", re.IGNORECASE)
         
     query = {
         "board": get_regex(board),
-        "class_level": get_regex(class_level), # Matches "10" vs "10 " or "1" vs "1"
+        "class_level": get_regex(class_level),
         "subject": get_regex(subject),
         "topic": get_regex(topic)
     }
