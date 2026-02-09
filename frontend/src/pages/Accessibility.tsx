@@ -47,7 +47,7 @@ const Accessibility = () => {
       case 'Dumb':
         updateAccessibility({
           signLanguageEnabled: true,
-          captionsEnabled: false,
+          captionsEnabled: true, // Also enable captions for better accessibility in sign mode
           speechAssistEnabled: false,
           highContrastEnabled: false,
           largeTextEnabled: false

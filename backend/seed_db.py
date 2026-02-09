@@ -16,7 +16,8 @@ LESSONS = [
         "level": "Beginner",
         "category": "Mathematics",
         "topics": ["Variables", "Equations", "Basic Arithmetic"],
-        "pdf_path": "algebra_intro.pdf"
+        "pdf_path": "algebra_intro.pdf",
+        "signVideoUrl": "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     },
     {
         "title": "World History: Ancient Civilizations",
@@ -25,7 +26,8 @@ LESSONS = [
         "level": "Intermediate",
         "category": "History",
         "topics": ["Egypt", "Rome", "Mesopotamia"],
-        "pdf_path": "ancient_civ.pdf"
+        "pdf_path": "ancient_civ.pdf",
+        "signVideoUrl": "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
     },
     {
         "title": "English Grammar Essentials",
@@ -34,7 +36,8 @@ LESSONS = [
         "level": "Beginner",
         "category": "English",
         "topics": ["Nouns", "Verbs", "Sentences", "Punctuation"],
-        "pdf_path": "english_grammar.pdf"
+        "pdf_path": "english_grammar.pdf",
+        "signVideoUrl": "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
     },
     {
         "title": "Programming Fundamentals",
@@ -43,7 +46,8 @@ LESSONS = [
         "level": "Beginner",
         "category": "Computer Science",
         "topics": ["Logic", "Loops", "Variables", "Functions"],
-        "pdf_path": "programming_fundamentals.pdf"
+        "pdf_path": "programming_fundamentals.pdf",
+        "signVideoUrl": "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
     },
     {
         "title": "Fractions and Decimals",
@@ -52,7 +56,8 @@ LESSONS = [
         "level": "Intermediate",
         "category": "Mathematics",
         "topics": ["Fractions", "Decimals", "Percentages"],
-        "pdf_path": "fractions_decimals.pdf"
+        "pdf_path": "fractions_decimals.pdf",
+        "signVideoUrl": "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
     },
     {
         "title": "The Solar System",
@@ -61,7 +66,8 @@ LESSONS = [
         "level": "Intermediate",
         "category": "Science",
         "topics": ["Planets", "Sun", "Moon", "Space"],
-        "pdf_path": "solar_system.pdf"
+        "pdf_path": "solar_system.pdf",
+        "signVideoUrl": "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
     },
     {
         "title": "Reading Comprehension",
@@ -70,7 +76,8 @@ LESSONS = [
         "level": "Beginner",
         "category": "English",
         "topics": ["Reading", "Vocabulary", "Comprehension"],
-        "pdf_path": "reading_comp.pdf"
+        "pdf_path": "reading_comp.pdf",
+        "signVideoUrl": "https://storage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
     },
     {
         "title": "Introduction to Programming",
@@ -78,7 +85,8 @@ LESSONS = [
         "duration": "60 mins",
         "level": "Intermediate",
         "category": "Computer Science",
-        "topics": ["Logic", "Variables", "Loops", "Conditions"]
+        "topics": ["Logic", "Variables", "Loops", "Conditions"],
+        "signVideoUrl": "https://storage.googleapis.com/gtv-videos-bucket/sample/SubmarineDesigns.mp4"
     }
 ]
 
