@@ -160,25 +160,45 @@ const UploadedPdf = () => {
           </div>
         </div>
 
-        <div className="border border-app-border rounded-2xl bg-app-bg shadow-sm">
-          <div className="border-b border-app-border px-4 py-3 flex items-center justify-between">
-            <span className="text-sm font-bold text-app-text-main">PDF Viewer</span>
-            <div className="flex items-center gap-2">
+        <div className="border border-app-border rounded-[2.5rem] bg-app-bg shadow-2xl overflow-hidden ring-1 ring-app-border">
+          <div className="border-b border-app-border px-8 py-5 flex items-center justify-between bg-app-bg-alt/50">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs font-black uppercase tracking-[0.2em] text-app-text-main">Dedicated PDF Document Box</span>
+            </div>
+            <div className="flex items-center gap-3">
+              {pdfUrl && (
+                <a 
+                  href={pdfUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all"
+                  title="Open Original"
+                >
+                   <Download size={18} />
+                </a>
+              )}
               <Button
                 variant="outline"
                 onClick={handleFullscreen}
-                className="rounded-xl font-bold text-xs uppercase tracking-widest"
+                className="rounded-xl font-bold text-[10px] uppercase tracking-widest px-4 py-2"
               >
-                Fullscreen
+                Toggle Fullscreen
               </Button>
             </div>
           </div>
-          <div ref={pdfContainerRef} className="h-[75vh] overflow-auto bg-app-bg-alt">
+          <div ref={pdfContainerRef} className="h-[80vh] overflow-hidden bg-[#525659]">
             <iframe
-              src={pdfUrl}
+              src={`${pdfUrl}#toolbar=0&navpanes=0`}
               title={pdfName}
-              className="w-full h-full"
+              className="w-full h-full border-0"
+              style={{ display: 'block' }}
             />
+          </div>
+          <div className="bg-app-bg-alt/30 px-8 py-4 border-t border-app-border flex justify-center">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-app-text-muted opacity-50">
+              SECURE PDF VIEWING CHANNEL
+            </p>
           </div>
         </div>
       </div>

@@ -52,6 +52,7 @@ const LessonViewer = ({
   isCompleted 
 }: LessonViewerProps) => {
   const [isSaving, setIsSaving] = useState(false);
+  const [showPdf, setShowPdf] = useState(false);
   const { signLanguageEnabled } = useAccessibility();
   const { isOffline, removeLesson, downloadedLessons, downloadingIds, saveOfflineLesson } = useOffline();
 
@@ -63,6 +64,7 @@ const LessonViewer = ({
     try {
       const offlineLesson: OfflineLesson = {
         id: lesson.id,
+        userId: localStorage.getItem('userId') || 'guest',
         title: lesson.title,
         subject: lesson.subject,
         content: { content: lesson.explanation },
@@ -175,16 +177,50 @@ const LessonViewer = ({
                           <p className="text-xs font-bold text-app-text-sub uppercase tracking-widest mt-1">Admin uploaded PDF available</p>
                         </div>
                       </div>
-                      <a 
-                        href={lesson.pdfUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
+                      <Button 
+                        onClick={() => setShowPdf(!showPdf)}
                         className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg active:scale-95"
                       >
-                        View PDF
-                      </a>
+                        <FileText size={16} />
+                        {showPdf ? 'Hide PDF' : 'View PDF'}
+                      </Button>
                     </div>
                   )}
+
+                  {showPdf && lesson.pdfUrl && (
+                    <div className="mb-8 rounded-[2.5rem] border-2 border-app-border bg-app-bg-alt p-3 shadow-2xl animate-in zoom-in duration-500 overflow-hidden">
+                      <div className="flex items-center justify-between px-6 py-3 border-b border-app-border/50">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-app-text-sub">Interactive PDF Canvas</span>
+                        </div>
+                        <button 
+                          onClick={() => setShowPdf(false)}
+                          className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors"
+                        >
+                          [ Close ]
+                        </button>
+                      </div>
+                      <div className="rounded-[1.8rem] overflow-hidden bg-white h-175 border border-app-border/30">
+                        <iframe 
+                          src={`${lesson.pdfUrl}#toolbar=0&navpanes=0`}
+                          className="w-full h-full border-0"
+                          title="Lesson PDF Content"
+                        />
+                      </div>
+                      <div className="p-4 flex justify-center">
+                        <a 
+                          href={lesson.pdfUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted hover:text-primary transition-all"
+                        >
+                          Open in full window ↗
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
                   <p className="text-xl md:text-3xl text-app-text-main leading-relaxed font-medium bg-app-bg-alt/30 p-8 md:p-12 rounded-[3rem] border border-app-border/50 shadow-inner whitespace-pre-wrap">
                     {lesson.explanation}
                   </p>
