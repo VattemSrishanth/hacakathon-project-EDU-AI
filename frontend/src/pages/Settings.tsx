@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   User, 
@@ -21,8 +21,9 @@ import {
   Cloud,
   Database,
   RefreshCw,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { useOffline } from '../context/OfflineContext';
@@ -32,8 +33,42 @@ import type {
   ReminderFrequency, 
   ThemeMode, 
   FontSize,
-  SupportedLanguage
+  SupportedLanguage,
+  EducationBoard,
+  AnswerStyle
 } from '../context/SettingsContext';
+
+type TabId = 'account' | 'security' | 'visibility' | 'privacy' | 'advertising' | 'notifications' | 'aitutor' | 'appearance' | 'offline';
+
+interface SidebarItemProps {
+  id: TabId;
+  label: string;
+  icon: LucideIcon;
+  colorClass: string;
+  activeTab: TabId;
+  setActiveTab: (id: TabId) => void;
+}
+
+const SidebarItem = ({ 
+  id, 
+  label, 
+  icon: Icon, 
+  colorClass,
+  activeTab,
+  setActiveTab
+}: SidebarItemProps) => (
+  <button
+    onClick={() => setActiveTab(id)}
+    className={`w-full flex items-center gap-3 px-1 py-3 rounded-xl transition-all duration-300 transform hover:translate-x-1 ${
+      activeTab === id 
+        ? 'bg-app-bg/10 text-primary shadow-sm translate-x-1' 
+        : 'text-app-text-sub hover:bg-app-bg/50'
+    }`}
+  >
+    <Icon className={`w-5 h-5 shrink-0 ${activeTab === id ? colorClass : 'text-app-text-muted opacity-60'}`} />
+    <span className={`text-sm font-bold truncate ${activeTab === id ? 'text-primary' : ''}`}>{label}</span>
+  </button>
+);
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -51,7 +86,7 @@ const Settings = () => {
   } = useSettings();
   const { isOffline, syncInProgress, triggerSync } = useOffline();
   
-  const [activeTab, setActiveTab] = useState<'account' | 'security' | 'visibility' | 'privacy' | 'advertising' | 'notifications' | 'aitutor' | 'appearance' | 'offline'>('account');
+  const [activeTab, setActiveTab] = useState<TabId>('account');
   const [saveMessage, setSaveMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
@@ -62,14 +97,6 @@ const Settings = () => {
   const [editName, setEditName] = useState(currentName);
   const [editEmail, setEditEmail] = useState(currentEmail);
   const [error, setError] = useState('');
-
-  // Sync local state when settings change and we're not editing
-  useEffect(() => {
-    if (!isEditing) {
-      setEditName(currentName);
-      setEditEmail(currentEmail);
-    }
-  }, [currentName, currentEmail, isEditing]);
 
   const showSaveMessage = (message: string) => {
     setSaveMessage(message);
@@ -88,6 +115,8 @@ const Settings = () => {
       setError('');
       showSaveMessage(t.settings.changesSaved);
     } else {
+      setEditName(currentName);
+      setEditEmail(currentEmail);
       setError('');
       setIsEditing(true);
     }
@@ -122,30 +151,6 @@ const Settings = () => {
     }
   };
 
-  const SidebarItem = ({ 
-    id, 
-    label, 
-    icon: Icon, 
-    colorClass 
-  }: { 
-    id: typeof activeTab, 
-    label: string, 
-    icon: any,
-    colorClass: string
-  }) => (
-    <button
-      onClick={() => setActiveTab(id)}
-      className={`w-full flex items-center gap-3 px-1 py-3 rounded-xl transition-all duration-300 transform hover:translate-x-1 ${
-        activeTab === id 
-          ? 'bg-app-bg/10 text-primary shadow-sm translate-x-1' 
-          : 'text-app-text-sub hover:bg-app-bg/50'
-      }`}
-    >
-      <Icon className={`w-5 h-5 shrink-0 ${activeTab === id ? colorClass : 'text-app-text-muted opacity-60'}`} />
-      <span className={`text-sm font-bold truncate ${activeTab === id ? 'text-primary' : ''}`}>{label}</span>
-    </button>
-  );
-
   return (
     <div className="min-h-screen bg-app-bg text-app-text-main py-6 px-2 sm:px-4 lg:px-6 transition-colors duration-300">
       <div className="w-full">
@@ -153,15 +158,15 @@ const Settings = () => {
           
           {/* Sidebar - Matching Image 2 */}
           <aside className="w-full md:w-64 shrink-0 space-y-0.5">
-            <SidebarItem id="account" label="Account preferences" icon={User} colorClass="text-primary" />
-            <SidebarItem id="security" label="Sign in & security" icon={Shield} colorClass="text-primary" />
-            <SidebarItem id="visibility" label="Visibility" icon={Eye} colorClass="text-primary" />
-            <SidebarItem id="privacy" label="Data privacy" icon={Lock} colorClass="text-primary" />
-            <SidebarItem id="advertising" label="Advertising data" icon={Images} colorClass="text-primary" />
-            <SidebarItem id="notifications" label="Notifications" icon={Bell} colorClass="text-primary" />
-            <SidebarItem id="aitutor" label="AI Tutor Settings" icon={MessageSquare} colorClass="text-primary" />
-            <SidebarItem id="appearance" label="Appearance & Theme" icon={Palette} colorClass="text-primary" />
-            <SidebarItem id="offline" label="Offline Data" icon={WifiOff} colorClass="text-primary" />
+            <SidebarItem id="account" label="Account preferences" icon={User} colorClass="text-primary" activeTab={activeTab} setActiveTab={setActiveTab} />
+            <SidebarItem id="security" label="Sign in & security" icon={Shield} colorClass="text-primary" activeTab={activeTab} setActiveTab={setActiveTab} />
+            <SidebarItem id="visibility" label="Visibility" icon={Eye} colorClass="text-primary" activeTab={activeTab} setActiveTab={setActiveTab} />
+            <SidebarItem id="privacy" label="Data privacy" icon={Lock} colorClass="text-primary" activeTab={activeTab} setActiveTab={setActiveTab} />
+            <SidebarItem id="advertising" label="Advertising data" icon={Images} colorClass="text-primary" activeTab={activeTab} setActiveTab={setActiveTab} />
+            <SidebarItem id="notifications" label="Notifications" icon={Bell} colorClass="text-primary" activeTab={activeTab} setActiveTab={setActiveTab} />
+            <SidebarItem id="aitutor" label="AI Tutor Settings" icon={MessageSquare} colorClass="text-primary" activeTab={activeTab} setActiveTab={setActiveTab} />
+            <SidebarItem id="appearance" label="Appearance & Theme" icon={Palette} colorClass="text-primary" activeTab={activeTab} setActiveTab={setActiveTab} />
+            <SidebarItem id="offline" label="Offline Data" icon={WifiOff} colorClass="text-primary" activeTab={activeTab} setActiveTab={setActiveTab} />
             
             <div className="pt-8 mt-8 border-t border-app-border">
               <button
@@ -259,7 +264,7 @@ const Settings = () => {
                         <select
                           value={settings.learning.board}
                           onChange={(e) => {
-                            updateLearning({ board: e.target.value as any });
+                            updateLearning({ board: e.target.value as EducationBoard });
                             showSaveMessage(t.settings.changesSaved);
                           }}
                           className="w-full bg-app-bg border border-app-border rounded-xl px-4 py-3 text-app-text-main outline-none focus:ring-2 focus:ring-primary/20 font-bold text-sm"
@@ -579,7 +584,7 @@ const Settings = () => {
                         <button
                           key={style}
                           onClick={() => {
-                            updateAiTutor({ answerStyle: style as any });
+                            updateAiTutor({ answerStyle: style as AnswerStyle });
                             showSaveMessage(t.settings.changesSaved);
                           }}
                           className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
@@ -863,7 +868,7 @@ const ThemeCard = ({
   id: ThemeMode, 
   title: string, 
   desc: string, 
-  icon: any, 
+  icon: LucideIcon, 
   current: ThemeMode, 
   onClick: (id: ThemeMode) => void,
   previewClass: string,

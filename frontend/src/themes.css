@@ -1,0 +1,210 @@
+/* ==================== Game of Thrones (Iron Throne Edition) Theme ==================== */
+
+/* Theme Variables Override */
+.theme-thrones-winter {
+  /* Palette: Ice, Iron, and Fire */
+  --got-ice-blue: #0f172a;  /* Deep Slate 900 */
+  --got-iron-grey: #1e293b; /* Slate 800 */
+  --got-fire-orange: #f59e0b; /* Amber 500 */
+  --got-fire-red: #b91c1c;    /* Red 700 */
+  --got-steel-highlight: #94a3b8; /* Slate 400 */
+  
+  --bg-primary: #020617; /* Slate 950 - Abyssal Black/Blue */
+  --bg-secondary: #0f172a; /* Slate 900 */
+  --bg-card: rgba(15, 23, 42, 0.85); /* Glassy Dark Slate */
+  
+  --text-primary: #e2e8f0; /* Slate 200 */
+  --text-secondary: #94a3b8; /* Slate 400 */
+  --text-muted: #64748b; /* Slate 500 */
+  --border-color: #334155; /* Slate 700 */
+  
+  --color-primary: var(--got-fire-orange);
+  --color-primary-hover: var(--got-fire-red);
+  --color-secondary: #3b82f6; /* Cold Blue */
+  
+  --font-heading: 'Cinzel Decorative', 'Cormorant SC', serif;
+  --font-body: 'Cormorant SC', serif;
+  
+  cursor: url('/assets/cursor/sword.png'), auto;
+}
+
+/* Base element styling for the theme */
+body.theme-thrones-winter {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  
+  /* 
+     Complex Background: 
+     1. Stone texture (multiply)
+     2. Radial Gradient: Cold Blue glow at top (Winter) 
+     3. Linear Gradient: Fire glow at very bottom (Dragons/Embers)
+     4. Base dark color
+  */
+  background-image: 
+    url('/assets/bg/stone-wall.jpg'),
+    radial-gradient(circle at 50% 0%, #1e3a8a 0%, transparent 60%), /* Top Blue Glow */
+    linear-gradient(to top, rgba(185, 28, 28, 0.2) 0%, transparent 30%), /* Bottom Fire Glow */
+    linear-gradient(to bottom, #020617, #0f172a); 
+    
+  background-size: cover, 100% 100%, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+  background-blend-mode: multiply, screen, screen, normal;
+}
+
+/* Typography Enhancements */
+.theme-thrones-winter h1, 
+.theme-thrones-winter h2, 
+.theme-thrones-winter h3, 
+.theme-thrones-winter h4, 
+.theme-thrones-winter h5 {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: linear-gradient(to bottom, #f1f5f9, #94a3b8);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+}
+
+/* Raven Animation */
+@keyframes ravenFly {
+  0% { transform: translate(-10vw, 10vh) scale(0.5) rotate(15deg); opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { transform: translate(110vw, -20vh) scale(0.8) rotate(-5deg); opacity: 0; }
+}
+
+@keyframes ravenFlap {
+  0%, 100% { d: path("M0,0 Q10,-10 20,0 L20,5 Q10,-5 0,5 Z"); } /* Wing Down */
+  50% { d: path("M0,0 Q10,10 20,0 L20,5 Q10,15 0,5 Z"); } /* Wing Up */
+}
+
+/* Snow & Ember Animations */
+@keyframes snowFall {
+  0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  100% { transform: translateY(110vh) translateX(20px) rotate(360deg); opacity: 0; }
+}
+
+@keyframes emberFloat {
+  0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { transform: translateY(50vh) scale(0); opacity: 0; }
+}
+
+/* UI Component Overrides - "Iron & Steel" Look */
+.theme-thrones-winter .bg-card,
+.theme-thrones-winter .card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)) !important;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add a metallic sheen hover effect to cards */
+.theme-thrones-winter .card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+  transform: skewX(-25deg);
+  transition: 0.5s;
+  pointer-events: none;
+}
+.theme-thrones-winter .card:hover::before {
+  left: 150%;
+  transition: 1s;
+}
+
+/* Buttons - "Valyrian Steel" */
+.theme-thrones-winter button, 
+.theme-thrones-winter .btn {
+  background: linear-gradient(to bottom, #334155, #1e293b);
+  border: 1px solid #475569;
+  color: #f8fafc;
+  font-family: var(--font-heading) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 6px rgba(0,0,0,0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-thrones-winter button:hover, 
+.theme-thrones-winter .btn:hover {
+  background: linear-gradient(to bottom, #dc2626, #991b1b); /* Blood Red Hover */
+  border-color: #ef4444;
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+  text-shadow: 0 1px 2px black;
+  transform: translateY(-2px);
+}
+
+/* Inputs */
+.theme-thrones-winter input,
+.theme-thrones-winter textarea,
+.theme-thrones-winter select {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+.theme-thrones-winter input:focus {
+  border-color: #94a3b8 !important;
+  box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.2);
+}
+
+/* Nav & Sidebar */
+.theme-thrones-winter nav,
+.theme-thrones-winter header {
+  background: rgba(2, 6, 23, 0.9) !important;
+  border-bottom: 1px solid #334155;
+  backdrop-filter: blur(10px);
+}
+
+.theme-thrones-winter aside,
+.theme-thrones-winter .sidebar {
+  background: linear-gradient(to bottom, rgba(2, 6, 23, 0.95), rgba(15, 23, 42, 0.95)) !important;
+  border-right: 1px solid #334155;
+}
+
+.theme-thrones-winter .nav-link-active {
+  color: #f59e0b !important; /* Ember Orange */
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+  background: linear-gradient(to right, rgba(245, 158, 11, 0.1), transparent);
+  border-left: 3px solid #f59e0b;
+}
+
+/* Effect Layers */
+.got-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.8) 100%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Snow */
+.got-snow-particle {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 2px white);
+  animation: snowFall linear infinite;
+}
+
+/* Ravens */
+.got-raven {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: black;
+  /* Use clip-path to make a bird shape "V" */
+  clip-path: polygon(0% 0%, 50% 30%, 100% 0%, 50% 100%); 
+  z-index: 20;
+  animation: ravenFly linear forwards;
+  pointer-events: none;
+}

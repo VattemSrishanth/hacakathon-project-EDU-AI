@@ -483,3 +483,215 @@ body, nav, footer, .card, button, input, select {
 .theme-premium-dark * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
+/* ==================== Game of Thrones (Winter is Coming) Theme ==================== */
+
+/* Theme Variables Override */
+.theme-thrones-winter {
+  --bg-primary: #1a1c20; /* Dark Charcoal/Storm */
+  --bg-secondary: #0f1012; /* Deep Stone */
+  --bg-card: #20232a; /* Iron/Stone */
+  --text-primary: #d1d5db; /* Silver/Steel */
+  --text-secondary: #9ca3af; /* Aged Iron */
+  --text-muted: #6b7280; /* Ash */
+  --border-color: #374151; /* Dark Iron Border */
+  
+  --color-primary: #ea580c; /* Ember Orange */
+  --color-primary-hover: #c2410c; /* Deep Fire */
+  --color-secondary: #94a3b8; /* Steel Blue (Cold) */
+  
+  --font-heading: 'Cinzel Decorative', 'Cormorant SC', serif;
+  --font-body: 'Cormorant SC', serif; /* Or keep readable body font */
+  
+  cursor: url('/assets/cursor/sword.png'), auto;
+}
+
+/* Base element styling for the theme */
+body.theme-thrones-winter {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  /* Fallback in case image is missing */
+  background-image: url('/assets/bg/stone-wall.jpg'), linear-gradient(to bottom, #1a1c20, #000); 
+  background-size: cover;
+  background-attachment: fixed;
+  background-blend-mode: multiply;
+}
+
+.theme-thrones-winter h1, 
+.theme-thrones-winter h2, 
+.theme-thrones-winter h3,
+.theme-thrones-winter h4,
+.theme-thrones-winter h5,
+.theme-thrones-winter h6 {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #e5e7eb; /* Silver */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+/* Animations */
+@keyframes snowFall {
+  0% { transform: translateY(-10vh) translateX(0); }
+  100% { transform: translateY(110vh) translateX(20px); }
+}
+
+@keyframes smokeDrift {
+  0% { transform: translateX(-10%) translateY(0); opacity: 0.4; }
+  50% { transform: translateX(10%) translateY(-20px); opacity: 0.6; }
+  100% { transform: translateX(-10%) translateY(0); opacity: 0.4; }
+}
+
+@keyframes emberFloat {
+  0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+  100% { transform: translateY(-10vh) scale(0); opacity: 0; }
+}
+
+@keyframes emberPulse {
+  0%, 100% { opacity: 0.5; box-shadow: 0 0 5px #ea580c; }
+  50% { opacity: 1; box-shadow: 0 0 15px #ea580c; }
+}
+
+/* Effect Layers */
+.got-vignette {
+  position: absolute;
+  inset: 0;
+  background-image: url('/assets/overlays/vignette.png');
+  background-size: cover;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.8;
+  mix-blend-mode: multiply;
+}
+
+.got-grain {
+  position: absolute;
+  inset: 0;
+  background: url('https://grainy-gradients.vercel.app/noise.svg');
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 11;
+}
+
+.got-snow-layer {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('/assets/overlays/snow.png');
+  pointer-events: none;
+  z-index: 12;
+  animation: snowFall 20s linear infinite;
+}
+.got-snow-layer.layer-1 { opacity: 0.6; animation-duration: 15s; background-size: 500px; }
+.got-snow-layer.layer-2 { opacity: 0.4; animation-duration: 25s; background-size: 400px; animation-delay: -5s; filter: blur(1px); }
+.got-snow-layer.layer-3 { opacity: 0.2; animation-duration: 35s; background-size: 300px; animation-delay: -10s; filter: blur(2px); }
+
+.got-smoke-layer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 100%;
+  background-image: url('/assets/overlays/smoke.png');
+  background-size: cover;
+  opacity: 0.3;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 13;
+  animation: smokeDrift 60s ease-in-out infinite;
+}
+
+.got-smoke-layer-secondary {
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 60%;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  pointer-events: none;
+  z-index: 14;
+}
+
+.got-embers-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.got-ember-particle {
+  position: absolute;
+  bottom: -10px;
+  width: 4px;
+  height: 4px;
+  background: #ea580c;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #f97316;
+  opacity: 0;
+  animation: emberFloat 5s linear forwards;
+}
+
+/* UI Component Overrides */
+.theme-thrones-winter .bg-white,
+.theme-thrones-winter .bg-card,
+.theme-thrones-winter .card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+.theme-thrones-winter button, 
+.theme-thrones-winter .btn {
+  border: 1px solid #4b5563;
+  background: linear-gradient(to bottom, #374151, #1f2937);
+  color: #e5e7eb;
+  font-family: var(--font-heading) !important;
+  letter-spacing: 0.05em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.theme-thrones-winter button:hover, 
+.theme-thrones-winter .btn:hover {
+  border-color: #ea580c;
+  box-shadow: 0 0 15px rgba(234, 88, 12, 0.4);
+  text-shadow: 0 0 5px #ea580c;
+  transform: translateY(-1px);
+}
+
+.theme-thrones-winter input,
+.theme-thrones-winter textarea,
+.theme-thrones-winter select {
+  background-color: #111316 !important;
+  border-color: #4b5563 !important;
+  color: #d1d5db !important;
+}
+
+/* Navigation special styling */
+.theme-thrones-winter nav,
+.theme-thrones-winter header {
+  background: rgba(15, 16, 18, 0.95) !important;
+  border-bottom: 2px solid #374151;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+
+/* Sidebar styling */
+.theme-thrones-winter aside,
+.theme-thrones-winter .sidebar {
+  background-color: #111316 !important;
+  border-right: 1px solid #374151;
+}
+
+.theme-thrones-winter .nav-link-active,
+.theme-thrones-winter .active {
+  color: #ea580c !important;
+  text-shadow: 0 0 10px rgba(234, 88, 12, 0.5);
+  border-left-color: #ea580c;
+}
+
+/* Footer fading into smoke */
+.theme-thrones-winter footer {
+  background: linear-gradient(to top, #0f1012, transparent);
+  border-top: 1px solid #374151;
+}
+
+
+.gradient-thrones {
+  background: linear-gradient(135deg, #1a1c20 0%, #20232a 100%);
+  border: 1px solid #ea580c;
+}

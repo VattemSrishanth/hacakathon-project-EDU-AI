@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
+import type { AccessibilityMode } from '../context/SettingsContext';
+import type { SupportedLanguage } from '../i18n/translations';
 import { useAuth } from '../context/AuthContext';
 import { useOffline } from '../context/OfflineContext';
 import { aiAPI, userDataAPI } from '../services/api';
@@ -22,6 +24,51 @@ import {
   X,
   Send,
 } from 'lucide-react';
+
+// Extend Window interface to include SpeechRecognition properties
+interface SpeechRecognitionResult {
+  [index: number]: {
+    transcript: string;
+    confidence: number;
+  };
+  isFinal: boolean;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionEvent {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionErrorEvent {
+  error: string;
+}
+
+interface ISpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: {
+      new (): ISpeechRecognition;
+    };
+    webkitSpeechRecognition: {
+      new (): ISpeechRecognition;
+    };
+  }
+}
 
 const CHAT_SESSIONS_KEY = 'ai_chat_sessions';
 
@@ -111,16 +158,205 @@ const AITutor = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const isSpeakingRef = useRef(false);
 
   // Speech Recognition Setup
-  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  const SpeechRecognition = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
 
   // Always enter the page scrolled to the top, even if coming from a scrolled view.
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [location.pathname]);
+
+  const handleSend = useCallback(async (forcedQuery?: string) => {
+    if (!enabled) return;
+    // Enable auto-scroll after the first user-triggered action.
+    hasInteractedRef.current = true;
+    
+    const queryToUse = forcedQuery || input;
+
+    // Allow sending if there's either text input OR an active file context
+    if (!queryToUse.trim() && !fileContext) return;
+
+    // Use default summary request if input is empty but context exists
+    const activeInput = queryToUse.trim() || (fileContext ? "Please summarize and explain this context for me." : "");
+    if (!activeInput) return;
+
+    if (isOffline) {
+      const offlineMsg: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: 'I am sorry, but I need an internet connection to process your request. Please reconnect and try again.',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, {
+        id: (Date.now() - 1).toString(),
+        role: 'user',
+        content: activeInput,
+        timestamp: new Date(),
+        imageUrl: fileContext?.type === 'image' ? fileContext.data : undefined,
+        attachmentType: fileContext?.type ?? undefined,
+        attachmentTitle: fileContext?.name,
+      }, offlineMsg]);
+      setInput('');
+      // Keep file context for retry/follow-up even in offline mode
+      return;
+    }
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: activeInput,
+      timestamp: new Date(),
+      imageUrl: fileContext?.type === 'image' ? fileContext.data : undefined,
+      attachmentType: fileContext?.type ?? undefined,
+      attachmentTitle: fileContext?.name,
+    };
+
+    // Save current file context for the request
+    const currentContext = fileContext;
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    // We KEEP the fileContext active so it's sent along with follow-up questions.
+    // The user can manually clear it using the 'X' button in the UI.
+    setLoading(true);
+
+    try {
+      /**
+       * Send unified request to backend.
+       */
+      const response = await aiAPI.ask(
+        activeInput, 
+        'regular', 
+        currentContext, 
+        true, 
+        settings.learning.language,
+        answerStyle
+      );
+      
+      let aiContent = response.answer || response.response || response.explanation || response.summary || t.aiTutor.errorMessage;
+      
+      // Intent Checking Logic
+      try {
+        interface AiParsedResponse {
+          action?: { command: string; value: unknown };
+          command?: string;
+          value?: unknown;
+          explanation?: string;
+          answer?: string;
+        }
+        let parsed: AiParsedResponse | null = null;
+        
+        // Handle if backend returned a direct object
+        if (typeof aiContent === 'object' && aiContent !== null) {
+            parsed = aiContent as AiParsedResponse;
+        } 
+        // Handle if backend returned a JSON string
+        else if (typeof aiContent === 'string' && (aiContent.trim().startsWith('{') || aiContent.includes('"command":'))) {
+             const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
+             if (jsonMatch) {
+                 parsed = JSON.parse(jsonMatch[0]);
+             }
+        }
+
+        if (parsed) {
+             // Handle Action (can be in 'action' field or top level if raw command)
+             const cmd = parsed.action || (parsed.command ? parsed : null);
+             
+             if (cmd && cmd.command) {
+                 console.log("Executing AI Command:", cmd);
+                 
+                 if (cmd.command === 'NAVIGATE') {
+                    navigate(cmd.value as string);
+                 } else if (cmd.command === 'SET_ACCESSIBILITY') {
+                    updateThemeAccessibility({ accessibilityMode: cmd.value as AccessibilityMode });
+                 } else if (cmd.command === 'SET_LANGUAGE') {
+                    // Update both app UI language and voice language for consistency
+                    updateLearning({ language: cmd.value as SupportedLanguage });
+                    updateThemeAccessibility({ voiceLanguage: cmd.value as SupportedLanguage });
+                 } else if (cmd.command === 'SET_THEME') {
+                     const themeVal = String(cmd.value).toLowerCase();
+                     if (themeVal.includes('maroon') || themeVal.includes('dark')) updateThemeAccessibility({ theme: 'Academic Maroon' });
+                     else if (themeVal.includes('amber') || themeVal.includes('sunset')) updateThemeAccessibility({ theme: 'Sunrise Amber' });
+                     else if (themeVal.includes('white') || themeVal.includes('light')) updateThemeAccessibility({ theme: 'Institutional White' });
+                     
+                     if (themeVal.includes('low') || themeVal.includes('power')) updateThemeAccessibility({ lowPowerMode: true });
+                     if (themeVal.includes('high') || themeVal.includes('contrast')) updateThemeAccessibility({ highContrast: true });
+                 }
+             }
+             
+      // Update text to show clean explanation from JSON
+      if (parsed.explanation) {
+          aiContent = parsed.explanation;
+      } else if (parsed.answer && typeof parsed.answer === 'string') {
+          aiContent = parsed.answer;
+      } else if (typeof aiContent === 'object') {
+          // Fallback if it's still an object and we have no explanation field
+          aiContent = "Action performed successfully.";
+      }
+    }
+  } catch (e) {
+      console.log("Not a command JSON or error parsing", e);
+  }
+
+  // Increment questions asked count in progress
+  if (auth?.user?.id) {
+    try {
+      const progRes = await userDataAPI.getProgress(String(auth.user.id));
+      if (progRes.success) {
+        const currentProg = progRes.progress;
+        const updatedActivities = [
+          { type: 'ai' as const, text: `Asked AI: ${activeInput.slice(0, 30)}...`, timestamp: new Date().toISOString() },
+          ...(currentProg.activities || [])
+        ].slice(0, 20);
+
+        await userDataAPI.updateProgress(String(auth.user.id), {
+          ...currentProg,
+          questionsAsked: (currentProg.questionsAsked || 0) + 1,
+          activities: updatedActivities,
+          lastActivity: new Date().toISOString().split('T')[0]
+        });
+      }
+    } catch (e) {
+      console.error('Failed to update questions count', e);
+    }
+  }
+
+  const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: String(aiContent), // Ensure it's a string for rendering
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      // BLIND MODE ONLY - Auto-speak responses
+      if (accessibilityMode === 'Blind' && !isSpeakingRef.current) {
+        isSpeakingRef.current = true;
+        const speech = new SpeechSynthesisUtterance(assistantMessage.content);
+        const langMap: Record<string, string> = {
+          'English': 'en-US', 'Hindi': 'hi-IN', 'Telugu': 'te-IN', 'Spanish': 'es-ES', 'French': 'fr-FR'
+        };
+        speech.lang = langMap[settings.learning.language] || 'en-US';
+        speech.onend = () => { isSpeakingRef.current = false; };
+        speech.onerror = () => { isSpeakingRef.current = false; };
+        window.speechSynthesis.speak(speech);
+      }
+    } catch (error) {
+      console.error("AI Send Error:", error);
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: t.aiTutor.errorMessage,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setLoading(false);
+    }
+  }, [enabled, input, fileContext, isOffline, accessibilityMode, settings.learning.language, answerStyle, t.aiTutor.errorMessage, navigate, updateThemeAccessibility, updateLearning, auth?.user?.id]);
 
   const startVoiceInput = () => {
     if (!SpeechRecognition) {
@@ -148,7 +384,7 @@ const AITutor = () => {
       setIsRecording(true);
     };
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       let transcript = '';
       for (let i = 0; i < event.results.length; i++) {
         transcript += event.results[i][0].transcript;
@@ -173,7 +409,7 @@ const AITutor = () => {
       }
     };
 
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error('Speech recognition error:', event.error);
       setIsRecording(false);
       if (event.error === 'no-speech') {
@@ -198,7 +434,7 @@ const AITutor = () => {
       try {
         const data = await userDataAPI.getChatHistory(String(auth.user.id));
         if (data.success && data.history.length > 0) {
-          const sessions: ChatSession[] = data.history.map((h: any) => ({
+          const sessions: ChatSession[] = data.history.map((h: { id: string; messages: ChatMessage[]; created_at: string }) => ({
             id: h.id,
             title: h.messages?.[1]?.content.substring(0, 30) + '...' || 'AI Conversation',
             messages: h.messages,
@@ -294,189 +530,7 @@ const AITutor = () => {
         state: { ...location.state, voiceQuery: null } 
       });
     }
-  }, [location.state, location.pathname, navigate]);
-
-  const handleSend = async (forcedQuery?: string) => {
-    if (!enabled) return;
-    // Enable auto-scroll after the first user-triggered action.
-    hasInteractedRef.current = true;
-    
-    const queryToUse = forcedQuery || input;
-
-    // Allow sending if there's either text input OR an active file context
-    if (!queryToUse.trim() && !fileContext) return;
-
-    // Use default summary request if input is empty but context exists
-    const activeInput = queryToUse.trim() || (fileContext ? "Please summarize and explain this context for me." : "");
-    if (!activeInput) return;
-
-    if (isOffline) {
-      const offlineMsg: ChatMessage = {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: 'I am sorry, but I need an internet connection to process your request. Please reconnect and try again.',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, {
-        id: (Date.now() - 1).toString(),
-        role: 'user',
-        content: activeInput,
-        timestamp: new Date(),
-        imageUrl: fileContext?.type === 'image' ? fileContext.data : undefined,
-        attachmentType: fileContext?.type ?? undefined,
-        attachmentTitle: fileContext?.name,
-      }, offlineMsg]);
-      setInput('');
-      // Keep file context for retry/follow-up even in offline mode
-      return;
-    }
-
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: activeInput,
-      timestamp: new Date(),
-      imageUrl: fileContext?.type === 'image' ? fileContext.data : undefined,
-      attachmentType: fileContext?.type ?? undefined,
-      attachmentTitle: fileContext?.name,
-    };
-
-    // Save current file context for the request
-    const currentContext = fileContext;
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-    // We KEEP the fileContext active so it's sent along with follow-up questions.
-    // The user can manually clear it using the 'X' button in the UI.
-    setLoading(true);
-
-    try {
-      /**
-       * Send unified request to backend.
-       */
-      const response = await aiAPI.ask(
-        activeInput, 
-        'regular', 
-        currentContext, 
-        true, 
-        settings.learning.language,
-        answerStyle
-      );
-      
-      let aiContent = response.answer || response.response || response.explanation || response.summary || t.aiTutor.errorMessage;
-      
-      // Intent Checking Logic
-      try {
-        let parsed: any = null;
-        
-        // Handle if backend returned a direct object
-        if (typeof aiContent === 'object' && aiContent !== null) {
-            parsed = aiContent;
-        } 
-        // Handle if backend returned a JSON string
-        else if (typeof aiContent === 'string' && (aiContent.trim().startsWith('{') || aiContent.includes('"command":'))) {
-             const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
-             if (jsonMatch) {
-                 parsed = JSON.parse(jsonMatch[0]);
-             }
-        }
-
-        if (parsed) {
-             // Handle Action (can be in 'action' field or top level if raw command)
-             const cmd = parsed.action || (parsed.command ? parsed : null);
-             
-             if (cmd && cmd.command) {
-                 console.log("Executing AI Command:", cmd);
-                 
-                 if (cmd.command === 'NAVIGATE') {
-                    navigate(cmd.value);
-                 } else if (cmd.command === 'SET_ACCESSIBILITY') {
-                    updateThemeAccessibility({ accessibilityMode: cmd.value });
-                 } else if (cmd.command === 'SET_LANGUAGE') {
-                    // Update both app UI language and voice language for consistency
-                    updateLearning({ language: cmd.value });
-                    updateThemeAccessibility({ voiceLanguage: cmd.value });
-                 } else if (cmd.command === 'SET_THEME') {
-                     const t = cmd.value.toLowerCase();
-                     if (t.includes('maroon') || t.includes('dark')) updateThemeAccessibility({ theme: 'Academic Maroon' });
-                     else if (t.includes('amber') || t.includes('sunset')) updateThemeAccessibility({ theme: 'Sunrise Amber' });
-                     else if (t.includes('white') || t.includes('light')) updateThemeAccessibility({ theme: 'Institutional White' });
-                     
-                     if (t.includes('low') || t.includes('power')) updateThemeAccessibility({ lowPowerMode: true });
-                     if (t.includes('high') || t.includes('contrast')) updateThemeAccessibility({ highContrast: true });
-                 }
-             }
-             
-      // Update text to show clean explanation from JSON
-      if (parsed.explanation) {
-          aiContent = parsed.explanation;
-      } else if (parsed.answer && typeof parsed.answer === 'string') {
-          aiContent = parsed.answer;
-      } else if (typeof aiContent === 'object') {
-          // Fallback if it's still an object and we have no explanation field
-          aiContent = "Action performed successfully.";
-      }
-    }
-  } catch (e) {
-      console.log("Not a command JSON or error parsing", e);
-  }
-
-  // Increment questions asked count in progress
-  if (auth?.user?.id) {
-    try {
-      const progRes = await userDataAPI.getProgress(String(auth.user.id));
-      if (progRes.success) {
-        const currentProg = progRes.progress;
-        const updatedActivities = [
-          { type: 'ai', text: `Asked AI: ${activeInput.slice(0, 30)}...`, timestamp: new Date().toISOString() },
-          ...(currentProg.activities || [])
-        ].slice(0, 20);
-
-        await userDataAPI.updateProgress(String(auth.user.id), {
-          ...currentProg,
-          questionsAsked: (currentProg.questionsAsked || 0) + 1,
-          activities: updatedActivities,
-          lastActivity: new Date().toISOString().split('T')[0]
-        });
-      }
-    } catch (e) {
-      console.error('Failed to update questions count', e);
-    }
-  }
-
-  const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: String(aiContent), // Ensure it's a string for rendering
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-
-      // BLIND MODE ONLY - Auto-speak responses
-      if (accessibilityMode === 'Blind' && !isSpeakingRef.current) {
-        isSpeakingRef.current = true;
-        const speech = new SpeechSynthesisUtterance(assistantMessage.content);
-        const langMap: Record<string, string> = {
-          'English': 'en-US', 'Hindi': 'hi-IN', 'Telugu': 'te-IN', 'Spanish': 'es-ES', 'French': 'fr-FR'
-        };
-        speech.lang = langMap[settings.learning.language] || 'en-US';
-        speech.onend = () => { isSpeakingRef.current = false; };
-        speech.onerror = () => { isSpeakingRef.current = false; };
-        window.speechSynthesis.speak(speech);
-      }
-    } catch (error) {
-      console.error("AI Send Error:", error);
-      const errorMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: t.aiTutor.errorMessage,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [location.state, location.pathname, navigate, handleSend]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

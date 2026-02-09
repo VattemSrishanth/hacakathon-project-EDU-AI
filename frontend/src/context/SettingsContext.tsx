@@ -10,7 +10,19 @@ export type EducationBoard = 'NCERT' | 'Telangana' | 'Andhra Pradesh';
 export type ContentPreference = 'Text' | 'Video' | 'Both';
 export type AnswerStyle = 'Short' | 'Detailed';
 export type ReminderFrequency = 'Daily' | 'Weekly' | 'Off';
-export type ThemeMode = 'Academic Maroon' | 'Sunrise Amber' | 'Institutional White' | 'Harry Potter' | 'Premium Dark';
+export type ThemeMode = 
+  | 'Academic Maroon' 
+  | 'Sunrise Amber' 
+  | 'Institutional White' 
+  | 'Harry Potter' 
+  | 'Premium Dark'
+  | 'Midnight Void' 
+  | 'Crystal Light' 
+  | 'Sunset Ember' 
+  | 'HARRY POTTER' 
+  | 'STRANGER THINGS' 
+  | 'WEDNESDAY' 
+  | 'GAME OF THRONES';
 export type FontSize = 'Small' | 'Medium' | 'Large';
 export type AccessibilityMode = 'Normal' | 'Deaf' | 'Dumb' | 'Blind';
 
@@ -148,7 +160,10 @@ const loadSettingsFromStorage = (): SettingsState => {
         ...defaultSettings.themeAccessibility,
         ...(storedSettings?.themeAccessibility || {}),
         // Fallback for valid themes only
-        theme: (['Academic Maroon', 'Sunrise Amber', 'Institutional White', 'Harry Potter', 'Premium Dark'].includes(storedSettings?.themeAccessibility?.theme as any)
+        theme: ([
+          'Academic Maroon', 'Sunrise Amber', 'Institutional White', 'Harry Potter', 'Premium Dark',
+          'Midnight Void', 'Crystal Light', 'Sunset Ember', 'HARRY POTTER', 'STRANGER THINGS', 'WEDNESDAY', 'GAME OF THRONES'
+        ].includes(storedSettings?.themeAccessibility?.theme as any)
           ? storedSettings?.themeAccessibility?.theme 
           : defaultSettings.themeAccessibility.theme) as ThemeMode,
       },
@@ -172,21 +187,33 @@ const applyTheme = (theme: ThemeMode): void => {
   const body = document.body;
   
   // Remove all potential theme classes and dark mode
-  const themeClasses = ['dark', 'theme-harry-potter', 'theme-premium-dark'];
+  const themeClasses = [
+    'dark', 
+    'theme-harry-potter', 
+    'theme-premium-dark',
+    'theme-midnight-void',
+    'theme-crystal-light',
+    'theme-sunset-ember',
+    'theme-st-upside-down',
+    'theme-wednesday-gothic',
+    'theme-thrones-winter'
+  ];
   root.classList.remove(...themeClasses);
   body.classList.remove(...themeClasses);
 
-  // 'Academic Maroon' is our dark mode theme
-  if (theme === 'Academic Maroon') {
+  if (theme === 'Academic Maroon' || theme === 'Midnight Void' || theme === 'Premium Dark') {
     root.classList.add('dark');
     body.classList.add('dark');
-  } else if (theme === 'Harry Potter') {
-    root.classList.add('theme-harry-potter');
-    body.classList.add('theme-harry-potter');
-  } else if (theme === 'Premium Dark') {
-    root.classList.add('theme-premium-dark');
-    body.classList.add('theme-premium-dark');
   }
+
+  if (theme === 'Midnight Void') root.classList.add('theme-midnight-void');
+  if (theme === 'Crystal Light') root.classList.add('theme-crystal-light');
+  if (theme === 'Sunset Ember') root.classList.add('theme-sunset-ember');
+  if (theme === 'Harry Potter' || theme === 'HARRY POTTER') root.classList.add('theme-harry-potter');
+  if (theme === 'STRANGER THINGS') root.classList.add('theme-st-upside-down');
+  if (theme === 'WEDNESDAY') root.classList.add('theme-wednesday-gothic');
+  if (theme === 'GAME OF THRONES') root.classList.add('theme-thrones-winter');
+  if (theme === 'Premium Dark') root.classList.add('theme-premium-dark');
 };
 
 const applyFontSize = (fontSize: FontSize): void => {
