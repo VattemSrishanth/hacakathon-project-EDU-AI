@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -18,7 +18,8 @@ import {
   Sparkles,
   Download,
   CheckCircle2,
-  WifiOff
+  WifiOff,
+  Maximize
 } from 'lucide-react';
 import Button from '../components/Button';
 
@@ -45,6 +46,15 @@ export default function LessonViewer() {
   const [error, setError] = useState<string | null>(null);
   const [uploadedPdf, setUploadedPdf] = useState<string | null>(location.state?.pdfUrl || null);
   const [isReading, setIsReading] = useState(false);
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleFullscreen = () => {
+    if (!document.fullscreenElement && pdfContainerRef.current) {
+      pdfContainerRef.current.requestFullscreen?.().catch(() => undefined);
+    } else if (document.fullscreenElement) {
+        document.exitFullscreen();
+    }
+  };
 
   useEffect(() => {
     if (lessonId) {
@@ -343,25 +353,24 @@ export default function LessonViewer() {
           </div>
         ) : (
           /* PDF Viewer */
-          <div className="bg-app-bg-alt rounded-[2.5rem] p-3 border border-app-border shadow-2xl overflow-hidden ring-1 ring-app-border">
+          <div ref={pdfContainerRef} className="bg-app-bg-alt rounded-[2.5rem] p-3 border border-app-border shadow-2xl overflow-hidden ring-1 ring-app-border">
             {uploadedPdf || lesson.pdfUrl ? (
               <div className="relative rounded-[1.8rem] overflow-hidden bg-app-bg">
                 <div className="absolute top-4 right-4 z-10 flex gap-2">
-                  <a 
-                    href={uploadedPdf || lesson.pdfUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <button 
+                    onClick={handleFullscreen}
                     className="p-2 rounded-xl bg-black/50 text-white backdrop-blur-md hover:bg-black/70 transition-all"
-                    title="Open in New Tab"
+                    title="Toggle Fullscreen"
                   >
-                    <Download size={16} />
-                  </a>
+                    <Maximize size={16} />
+                  </button>
                 </div>
                 <iframe
-                  src={`${uploadedPdf || lesson.pdfUrl}#toolbar=0&navpanes=0`}
+                  src={uploadedPdf || lesson.pdfUrl}
                   className="w-full border-0"
                   style={{ height: '850px' }}
                   title={`${lesson.title} PDF`}
+                  allowFullScreen
                 />
               </div>
             ) : (

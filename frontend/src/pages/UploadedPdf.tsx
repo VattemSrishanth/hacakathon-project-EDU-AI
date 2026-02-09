@@ -167,17 +167,6 @@ const UploadedPdf = () => {
               <span className="text-xs font-black uppercase tracking-[0.2em] text-app-text-main">Dedicated PDF Document Box</span>
             </div>
             <div className="flex items-center gap-3">
-              {pdfUrl && (
-                <a 
-                  href={pdfUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all"
-                  title="Open Original"
-                >
-                   <Download size={18} />
-                </a>
-              )}
               <Button
                 variant="outline"
                 onClick={handleFullscreen}
@@ -189,10 +178,11 @@ const UploadedPdf = () => {
           </div>
           <div ref={pdfContainerRef} className="h-[80vh] overflow-hidden bg-[#525659]">
             <iframe
-              src={`${pdfUrl}#toolbar=0&navpanes=0`}
+              src={pdfUrl}
               title={pdfName}
               className="w-full h-full border-0"
               style={{ display: 'block' }}
+              allowFullScreen
             />
           </div>
           <div className="bg-app-bg-alt/30 px-8 py-4 border-t border-app-border flex justify-center">

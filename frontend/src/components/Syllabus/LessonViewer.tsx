@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { 
   Volume2, 
   Sparkles, 
@@ -11,7 +11,8 @@ import {
   Video,
   Download,
   CheckCircle2,
-  Loader2
+  Loader2,
+  Maximize
 } from 'lucide-react';
 import Button from '../Button';
 import Card from '../Card';
@@ -53,8 +54,17 @@ const LessonViewer = ({
 }: LessonViewerProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [showPdf, setShowPdf] = useState(false);
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
   const { signLanguageEnabled } = useAccessibility();
   const { isOffline, removeLesson, downloadedLessons, downloadingIds, saveOfflineLesson } = useOffline();
+
+  const handleFullscreen = () => {
+    if (!document.fullscreenElement && pdfContainerRef.current) {
+      pdfContainerRef.current.requestFullscreen?.().catch(() => undefined);
+    } else if (document.fullscreenElement) {
+        document.exitFullscreen();
+    }
+  };
 
   const handleDownload = async () => {
     if (isSaving) return;
@@ -188,35 +198,35 @@ const LessonViewer = ({
                   )}
 
                   {showPdf && lesson.pdfUrl && (
-                    <div className="mb-8 rounded-[2.5rem] border-2 border-app-border bg-app-bg-alt p-3 shadow-2xl animate-in zoom-in duration-500 overflow-hidden">
+                    <div ref={pdfContainerRef} className="mb-8 rounded-[2.5rem] border-2 border-app-border bg-app-bg-alt p-3 shadow-2xl animate-in zoom-in duration-500 overflow-hidden">
                       <div className="flex items-center justify-between px-6 py-3 border-b border-app-border/50">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                           <span className="text-[10px] font-black uppercase tracking-widest text-app-text-sub">Interactive PDF Canvas</span>
                         </div>
-                        <button 
-                          onClick={() => setShowPdf(false)}
-                          className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors"
-                        >
-                          [ Close ]
-                        </button>
+                        <div className="flex items-center gap-4">
+                          <button 
+                            onClick={handleFullscreen}
+                            className="p-1.5 rounded-lg hover:bg-app-bg transition-colors text-app-text-muted hover:text-primary"
+                            title="Toggle Fullscreen"
+                          >
+                            <Maximize size={16} />
+                          </button>
+                          <button 
+                            onClick={() => setShowPdf(false)}
+                            className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors"
+                          >
+                            [ Close ]
+                          </button>
+                        </div>
                       </div>
                       <div className="rounded-[1.8rem] overflow-hidden bg-white h-175 border border-app-border/30">
                         <iframe 
-                          src={`${lesson.pdfUrl}#toolbar=0&navpanes=0`}
+                          src={lesson.pdfUrl}
                           className="w-full h-full border-0"
                           title="Lesson PDF Content"
+                          allowFullScreen
                         />
-                      </div>
-                      <div className="p-4 flex justify-center">
-                        <a 
-                          href={lesson.pdfUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted hover:text-primary transition-all"
-                        >
-                          Open in full window ↗
-                        </a>
                       </div>
                     </div>
                   )}
