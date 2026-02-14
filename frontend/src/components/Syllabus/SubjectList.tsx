@@ -3,7 +3,8 @@ import {
   FlaskConical, 
   BookOpen, 
   Globe2, 
-  Leaf 
+  Leaf,
+  Languages
 } from 'lucide-react';
 import Card from '../Card';
 
@@ -21,7 +22,9 @@ const subjectIcons: Record<string, any> = {
   'Social Science': Globe2,
   'Social Studies': Globe2,
   EVS: Leaf,
-  Environmental: Leaf
+  Environmental: Leaf,
+  Telugu: Languages,
+  Hindi: Languages
 };
 
 const SubjectList = ({ subjects, onSelectSubject, selectedSubject }: SubjectListProps) => {
@@ -34,6 +37,8 @@ const SubjectList = ({ subjects, onSelectSubject, selectedSubject }: SubjectList
           subject.includes('Sci') ? 'bg-secondary/20 text-secondary' :
           subject.includes('Soc') ? 'bg-primary/10 text-primary' :
           subject.includes('Eng') ? 'bg-purple-500/10 text-purple-600' :
+          subject === 'Telugu' ? 'bg-orange-500/10 text-orange-600' :
+          subject === 'Hindi' ? 'bg-rose-500/10 text-rose-600' :
           'bg-primary/5 text-primary';
 
         return (

@@ -14,7 +14,7 @@ def generate_syllabus(board_name):
         if grade <= 5:
             subject_list = ["Maths", "English", "EVS"]
         else:
-            subject_list = ["Maths", "Science", "English", "Social Science"]
+            subject_list = ["Maths", "Science", "English", "Social Science", "Telugu", "Hindi"]
 
         for subject in subject_list:
             units = []
@@ -127,6 +127,31 @@ def generate_syllabus(board_name):
                         {"unit": "Governing the Country", "topics": ["Elections", "Judiciary", "Parliament Basics"]}
                     ]
 
+            elif subject == "Telugu":
+                if board_name == "Telangana" and grade == 10:
+                    units = [
+                        {"unit": "Gadyabhagam (Prose Lessons)", "topics": ["దానశీలము", "ఎవరి భాష వాళ్ళకు వినసొంపు", "వీర తెలంగాణ", "కొత్తబాట", "నగరగీతం", "భాగ్యోదయం", "భిక్ష", "లక్ష్యసిద్ధి", "జీవనభాష్యం", "గోల్కొండ పట్టణము", "భూమిక"]},
+                        {"unit": "Upavachakam (Supplementary Reading)", "topics": ["బాలకాండము (ఉపవాచకం)", "అయోధ్యాకాండము (ఉపవాచకం)", "అరణ్యకాండము (ఉపవాచకం)", "కిష్కింధాకాండము (ఉపవాచకం)"]},
+                        {"unit": "Padyabhagam (Poetry)", "topics": ["శతక మధురిమ", "Patriotism and Nature Poems", "Humanity and Moral Values", "Classical Lyrics"]},
+                        {"unit": "Vyakaranam (Grammar)", "topics": ["సమాసాలు & సन्धులు", "ప్రత్యయాలు & విభక్తులు", "సమానార్థక & విరుద్ధ పదాలు", "లోకోక్తులు & సామెతలు", "విరామ చిహ్నాలు & వాక్య నిర్మాణం"]},
+                        {"unit": "Rachana (Writing Skills)", "topics": ["లేఖా రచన & వ్యాస రచన", "కథ & సంభాషణ రచన", "నివేదిక రచన", "Reading Comprehension"]}
+                    ]
+                else:
+                    units = [
+                        {"unit": "Vyakaranam (Grammar)", "topics": ["Sandhulu", "Samasalu", "Alankaralu", "Chandassu"]},
+                        {"unit": "Padyabhagam (Poetry)", "topics": ["Sataka Padyalu", "Prachina Kavitvam", "Adhunika Kavitvam"]},
+                        {"unit": "Gadyabhagam (Prose)", "topics": ["Kathalu", "Vyasaalu", "Upavachakam"]},
+                        {"unit": "Srujanathmakatha (Creative)", "topics": ["Lekha Rachana", "Samsistha Rachana", "Abhinandana"]}
+                    ]
+            
+            elif subject == "Hindi":
+                units = [
+                    {"unit": "Vyakaran (Grammar)", "topics": ["Sangya and Sarvanam", "Kriya and Visheshan", "Kaal and Karak", "Muhavare"]},
+                    {"unit": "Gadhya (Prose)", "topics": ["Kahani", "Nibandh", "Ekanki"]},
+                    {"unit": "Padhya (Poetry)", "topics": ["Dohe", "Kavita", "Pad"]},
+                    {"unit": "Rachanatmak Lekhan (Writing)", "topics": ["Patra Lekhan", "Anuched Lekhan", "Vigyapan"]}
+                ]
+
             elif subject == "EVS":
                 units = [
                     {"unit": "Our Body and Health", "topics": ["Sense Organs", "Personal Hygiene", "Healthy Food"]},
@@ -162,7 +187,7 @@ for board in boards:
     filepath = os.path.join(data_dir, filename)
     print(f"Generating {filename}...")
     data = generate_syllabus(board)
-    with open(filepath, "w") as f:
-        json.dump(data, f, indent=2)
+    with open(filepath, "w", encoding='utf-8') as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
 print("Syllabus generation complete.")

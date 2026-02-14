@@ -63,7 +63,7 @@ const AskDoubt = () => {
                 onChange={(e) => setSubject(e.target.value)}
                 className="w-full bg-app-bg border border-app-border rounded-2xl p-4 text-app-text-main font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               >
-                {['General', 'Mathematics', 'Science', 'English', 'Social Studies'].map(s => (
+                {['General', 'Mathematics', 'Science', 'English', 'Social Studies', 'Telugu', 'Hindi'].map(s => (
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>

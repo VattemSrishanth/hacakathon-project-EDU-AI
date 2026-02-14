@@ -14,12 +14,12 @@
             ]
           },
           {
-            "unit": "Chapter 2: Numbers from 1 to 9",
+            "unit": "Chapter 2: Numbers from One to Nine",
             "topics": [
-              "Basic concepts of Numbers from 1 to 9",
+              "Basic concepts of Numbers from One to Nine",
               "Practice exercises",
               "Mental maths",
-              "Applications of Numbers from 1 to 9"
+              "Applications of Numbers from One to Nine"
             ]
           },
           {
@@ -41,12 +41,84 @@
             ]
           },
           {
-            "unit": "Chapter 5: Measurement",
+            "unit": "Chapter 5: Numbers from Ten to Twenty",
+            "topics": [
+              "Basic concepts of Numbers from Ten to Twenty",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers from Ten to Twenty"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Time",
+            "topics": [
+              "Basic concepts of Time",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Time"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Measurement",
             "topics": [
               "Basic concepts of Measurement",
               "Practice exercises",
               "Mental maths",
               "Applications of Measurement"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Numbers from Twenty-one to Fifty",
+            "topics": [
+              "Basic concepts of Numbers from Twenty-one to Fifty",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers from Twenty-one to Fifty"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Data Handling",
+            "topics": [
+              "Basic concepts of Data Handling",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Data Handling"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Patterns",
+            "topics": [
+              "Basic concepts of Patterns",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Patterns"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Numbers",
+            "topics": [
+              "Basic concepts of Numbers",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Money",
+            "topics": [
+              "Basic concepts of Money",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Money"
+            ]
+          },
+          {
+            "unit": "Chapter 13: How Many",
+            "topics": [
+              "Basic concepts of How Many",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of How Many"
             ]
           }
         ],
@@ -61,7 +133,7 @@
             ]
           },
           {
-            "unit": "Literature Appreciation",
+            "unit": "Literature appreciation",
             "topics": [
               "Reading Classics",
               "Poetic Devices",
@@ -137,48 +209,120 @@
       "subjects": {
         "Maths": [
           {
-            "unit": "Chapter 1: Numbers in Groups",
+            "unit": "Chapter 1: Shapes and Space",
             "topics": [
-              "Basic concepts of Numbers in Groups",
+              "Basic concepts of Shapes and Space",
               "Practice exercises",
               "Mental maths",
-              "Applications of Numbers in Groups"
+              "Applications of Shapes and Space"
             ]
           },
           {
-            "unit": "Chapter 2: Add Our Points",
+            "unit": "Chapter 2: Numbers from One to Nine",
             "topics": [
-              "Basic concepts of Add Our Points",
+              "Basic concepts of Numbers from One to Nine",
               "Practice exercises",
               "Mental maths",
-              "Applications of Add Our Points"
+              "Applications of Numbers from One to Nine"
             ]
           },
           {
-            "unit": "Chapter 3: Lines and Lines",
+            "unit": "Chapter 3: Addition",
             "topics": [
-              "Basic concepts of Lines and Lines",
+              "Basic concepts of Addition",
               "Practice exercises",
               "Mental maths",
-              "Applications of Lines and Lines"
+              "Applications of Addition"
             ]
           },
           {
-            "unit": "Chapter 4: Give and Take",
+            "unit": "Chapter 4: Subtraction",
             "topics": [
-              "Basic concepts of Give and Take",
+              "Basic concepts of Subtraction",
               "Practice exercises",
               "Mental maths",
-              "Applications of Give and Take"
+              "Applications of Subtraction"
             ]
           },
           {
-            "unit": "Chapter 5: Patterns",
+            "unit": "Chapter 5: Numbers from Ten to Twenty",
+            "topics": [
+              "Basic concepts of Numbers from Ten to Twenty",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers from Ten to Twenty"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Time",
+            "topics": [
+              "Basic concepts of Time",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Time"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Measurement",
+            "topics": [
+              "Basic concepts of Measurement",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Measurement"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Numbers from Twenty-one to Fifty",
+            "topics": [
+              "Basic concepts of Numbers from Twenty-one to Fifty",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers from Twenty-one to Fifty"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Data Handling",
+            "topics": [
+              "Basic concepts of Data Handling",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Data Handling"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Patterns",
             "topics": [
               "Basic concepts of Patterns",
               "Practice exercises",
               "Mental maths",
               "Applications of Patterns"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Numbers",
+            "topics": [
+              "Basic concepts of Numbers",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Money",
+            "topics": [
+              "Basic concepts of Money",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Money"
+            ]
+          },
+          {
+            "unit": "Chapter 13: How Many",
+            "topics": [
+              "Basic concepts of How Many",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of How Many"
             ]
           }
         ],
@@ -193,7 +337,7 @@
             ]
           },
           {
-            "unit": "Literature Appreciation",
+            "unit": "Literature appreciation",
             "topics": [
               "Reading Classics",
               "Poetic Devices",
@@ -269,48 +413,120 @@
       "subjects": {
         "Maths": [
           {
-            "unit": "Chapter 1: Where to Look From",
+            "unit": "Chapter 1: Shapes and Space",
             "topics": [
-              "Basic concepts of Where to Look From",
+              "Basic concepts of Shapes and Space",
               "Practice exercises",
               "Mental maths",
-              "Applications of Where to Look From"
+              "Applications of Shapes and Space"
             ]
           },
           {
-            "unit": "Chapter 2: Fun with Numbers",
+            "unit": "Chapter 2: Numbers from One to Nine",
             "topics": [
-              "Basic concepts of Fun with Numbers",
+              "Basic concepts of Numbers from One to Nine",
               "Practice exercises",
               "Mental maths",
-              "Applications of Fun with Numbers"
+              "Applications of Numbers from One to Nine"
             ]
           },
           {
-            "unit": "Chapter 3: Give and Take",
+            "unit": "Chapter 3: Addition",
             "topics": [
-              "Basic concepts of Give and Take",
+              "Basic concepts of Addition",
               "Practice exercises",
               "Mental maths",
-              "Applications of Give and Take"
+              "Applications of Addition"
             ]
           },
           {
-            "unit": "Chapter 4: Long and Short",
+            "unit": "Chapter 4: Subtraction",
             "topics": [
-              "Basic concepts of Long and Short",
+              "Basic concepts of Subtraction",
               "Practice exercises",
               "Mental maths",
-              "Applications of Long and Short"
+              "Applications of Subtraction"
             ]
           },
           {
-            "unit": "Chapter 5: Shapes and Designs",
+            "unit": "Chapter 5: Numbers from Ten to Twenty",
             "topics": [
-              "Basic concepts of Shapes and Designs",
+              "Basic concepts of Numbers from Ten to Twenty",
               "Practice exercises",
               "Mental maths",
-              "Applications of Shapes and Designs"
+              "Applications of Numbers from Ten to Twenty"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Time",
+            "topics": [
+              "Basic concepts of Time",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Time"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Measurement",
+            "topics": [
+              "Basic concepts of Measurement",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Measurement"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Numbers from Twenty-one to Fifty",
+            "topics": [
+              "Basic concepts of Numbers from Twenty-one to Fifty",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers from Twenty-one to Fifty"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Data Handling",
+            "topics": [
+              "Basic concepts of Data Handling",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Data Handling"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Patterns",
+            "topics": [
+              "Basic concepts of Patterns",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Patterns"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Numbers",
+            "topics": [
+              "Basic concepts of Numbers",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Money",
+            "topics": [
+              "Basic concepts of Money",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Money"
+            ]
+          },
+          {
+            "unit": "Chapter 13: How Many",
+            "topics": [
+              "Basic concepts of How Many",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of How Many"
             ]
           }
         ],
@@ -325,7 +541,7 @@
             ]
           },
           {
-            "unit": "Literature Appreciation",
+            "unit": "Literature appreciation",
             "topics": [
               "Reading Classics",
               "Poetic Devices",
@@ -401,48 +617,120 @@
       "subjects": {
         "Maths": [
           {
-            "unit": "Chapter 1: Building with Bricks",
+            "unit": "Chapter 1: Shapes and Space",
             "topics": [
-              "Basic concepts of Building with Bricks",
+              "Basic concepts of Shapes and Space",
               "Practice exercises",
               "Mental maths",
-              "Applications of Building with Bricks"
+              "Applications of Shapes and Space"
             ]
           },
           {
-            "unit": "Chapter 2: Long and Short",
+            "unit": "Chapter 2: Numbers from One to Nine",
             "topics": [
-              "Basic concepts of Long and Short",
+              "Basic concepts of Numbers from One to Nine",
               "Practice exercises",
               "Mental maths",
-              "Applications of Long and Short"
+              "Applications of Numbers from One to Nine"
             ]
           },
           {
-            "unit": "Chapter 3: A Trip to Bhopal",
+            "unit": "Chapter 3: Addition",
             "topics": [
-              "Basic concepts of A Trip to Bhopal",
+              "Basic concepts of Addition",
               "Practice exercises",
               "Mental maths",
-              "Applications of A Trip to Bhopal"
+              "Applications of Addition"
             ]
           },
           {
-            "unit": "Chapter 4: Tick-Tick-Tick",
+            "unit": "Chapter 4: Subtraction",
             "topics": [
-              "Basic concepts of Tick-Tick-Tick",
+              "Basic concepts of Subtraction",
               "Practice exercises",
               "Mental maths",
-              "Applications of Tick-Tick-Tick"
+              "Applications of Subtraction"
             ]
           },
           {
-            "unit": "Chapter 5: The Way the World Looks",
+            "unit": "Chapter 5: Numbers from Ten to Twenty",
             "topics": [
-              "Basic concepts of The Way the World Looks",
+              "Basic concepts of Numbers from Ten to Twenty",
               "Practice exercises",
               "Mental maths",
-              "Applications of The Way the World Looks"
+              "Applications of Numbers from Ten to Twenty"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Time",
+            "topics": [
+              "Basic concepts of Time",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Time"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Measurement",
+            "topics": [
+              "Basic concepts of Measurement",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Measurement"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Numbers from Twenty-one to Fifty",
+            "topics": [
+              "Basic concepts of Numbers from Twenty-one to Fifty",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers from Twenty-one to Fifty"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Data Handling",
+            "topics": [
+              "Basic concepts of Data Handling",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Data Handling"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Patterns",
+            "topics": [
+              "Basic concepts of Patterns",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Patterns"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Numbers",
+            "topics": [
+              "Basic concepts of Numbers",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Money",
+            "topics": [
+              "Basic concepts of Money",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Money"
+            ]
+          },
+          {
+            "unit": "Chapter 13: How Many",
+            "topics": [
+              "Basic concepts of How Many",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of How Many"
             ]
           }
         ],
@@ -457,7 +745,7 @@
             ]
           },
           {
-            "unit": "Literature Appreciation",
+            "unit": "Literature appreciation",
             "topics": [
               "Reading Classics",
               "Poetic Devices",
@@ -533,48 +821,120 @@
       "subjects": {
         "Maths": [
           {
-            "unit": "Chapter 1: The Fish Tale",
+            "unit": "Chapter 1: Shapes and Space",
             "topics": [
-              "Basic concepts of The Fish Tale",
+              "Basic concepts of Shapes and Space",
               "Practice exercises",
               "Mental maths",
-              "Applications of The Fish Tale"
+              "Applications of Shapes and Space"
             ]
           },
           {
-            "unit": "Chapter 2: Shapes and Angles",
+            "unit": "Chapter 2: Numbers from One to Nine",
             "topics": [
-              "Basic concepts of Shapes and Angles",
+              "Basic concepts of Numbers from One to Nine",
               "Practice exercises",
               "Mental maths",
-              "Applications of Shapes and Angles"
+              "Applications of Numbers from One to Nine"
             ]
           },
           {
-            "unit": "Chapter 3: How Many Squares?",
+            "unit": "Chapter 3: Addition",
             "topics": [
-              "Basic concepts of How Many Squares?",
+              "Basic concepts of Addition",
               "Practice exercises",
               "Mental maths",
-              "Applications of How Many Squares?"
+              "Applications of Addition"
             ]
           },
           {
-            "unit": "Chapter 4: Parts and Wholes",
+            "unit": "Chapter 4: Subtraction",
             "topics": [
-              "Basic concepts of Parts and Wholes",
+              "Basic concepts of Subtraction",
               "Practice exercises",
               "Mental maths",
-              "Applications of Parts and Wholes"
+              "Applications of Subtraction"
             ]
           },
           {
-            "unit": "Chapter 5: Does it Look the Same?",
+            "unit": "Chapter 5: Numbers from Ten to Twenty",
             "topics": [
-              "Basic concepts of Does it Look the Same?",
+              "Basic concepts of Numbers from Ten to Twenty",
               "Practice exercises",
               "Mental maths",
-              "Applications of Does it Look the Same?"
+              "Applications of Numbers from Ten to Twenty"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Time",
+            "topics": [
+              "Basic concepts of Time",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Time"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Measurement",
+            "topics": [
+              "Basic concepts of Measurement",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Measurement"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Numbers from Twenty-one to Fifty",
+            "topics": [
+              "Basic concepts of Numbers from Twenty-one to Fifty",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers from Twenty-one to Fifty"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Data Handling",
+            "topics": [
+              "Basic concepts of Data Handling",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Data Handling"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Patterns",
+            "topics": [
+              "Basic concepts of Patterns",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Patterns"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Numbers",
+            "topics": [
+              "Basic concepts of Numbers",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Numbers"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Money",
+            "topics": [
+              "Basic concepts of Money",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of Money"
+            ]
+          },
+          {
+            "unit": "Chapter 13: How Many",
+            "topics": [
+              "Basic concepts of How Many",
+              "Practice exercises",
+              "Mental maths",
+              "Applications of How Many"
             ]
           }
         ],
@@ -589,7 +949,7 @@
             ]
           },
           {
-            "unit": "Literature Appreciation",
+            "unit": "Literature appreciation",
             "topics": [
               "Reading Classics",
               "Poetic Devices",
@@ -782,7 +1142,7 @@
             ]
           },
           {
-            "unit": "Literature Appreciation",
+            "unit": "Literature appreciation",
             "topics": [
               "Reading Classics",
               "Poetic Devices",
@@ -840,6 +1200,76 @@
               "Elections",
               "Judiciary",
               "Parliament Basics"
+            ]
+          }
+        ],
+        "Telugu": [
+          {
+            "unit": "Vyakaranam (Grammar)",
+            "topics": [
+              "Sandhulu",
+              "Samasalu",
+              "Alankaralu",
+              "Chandassu"
+            ]
+          },
+          {
+            "unit": "Padyabhagam (Poetry)",
+            "topics": [
+              "Sataka Padyalu",
+              "Prachina Kavitvam",
+              "Adhunika Kavitvam"
+            ]
+          },
+          {
+            "unit": "Gadyabhagam (Prose)",
+            "topics": [
+              "Kathalu",
+              "Vyasaalu",
+              "Upavachakam"
+            ]
+          },
+          {
+            "unit": "Srujanathmakatha (Creative)",
+            "topics": [
+              "Lekha Rachana",
+              "Samsistha Rachana",
+              "Abhinandana"
+            ]
+          }
+        ],
+        "Hindi": [
+          {
+            "unit": "Vyakaran (Grammar)",
+            "topics": [
+              "Sangya and Sarvanam",
+              "Kriya and Visheshan",
+              "Kaal and Karak",
+              "Muhavare"
+            ]
+          },
+          {
+            "unit": "Gadhya (Prose)",
+            "topics": [
+              "Kahani",
+              "Nibandh",
+              "Ekanki"
+            ]
+          },
+          {
+            "unit": "Padhya (Poetry)",
+            "topics": [
+              "Dohe",
+              "Kavita",
+              "Pad"
+            ]
+          },
+          {
+            "unit": "Rachanatmak Lekhan (Writing)",
+            "topics": [
+              "Patra Lekhan",
+              "Anuched Lekhan",
+              "Vigyapan"
             ]
           }
         ]
@@ -849,35 +1279,35 @@
       "subjects": {
         "Maths": [
           {
-            "unit": "Integers and Algebra",
+            "unit": "Chapter 1: Number Systems",
             "topics": [
-              "Negative numbers",
-              "Equations",
-              "Variables"
+              "Natural Numbers",
+              "Integers",
+              "Rational Numbers"
             ]
           },
           {
-            "unit": "Geometry and Mensuration",
+            "unit": "Chapter 2: Geometry Basics",
             "topics": [
-              "Triangles",
-              "Quadrilaterals",
-              "Area and Perimeter"
+              "Points and Lines",
+              "Angles",
+              "Triangles"
             ]
           },
           {
-            "unit": "Rational Numbers",
+            "unit": "Chapter 3: Measurement",
             "topics": [
-              "Standard form",
-              "Operations",
-              "Comparison"
+              "Length",
+              "Weight",
+              "Volume"
             ]
           },
           {
-            "unit": "Data Handling",
+            "unit": "Chapter 4: Data Handling",
             "topics": [
-              "Bar graphs",
-              "Probability basics",
-              "Pie charts"
+              "Pictographs",
+              "Bar Graphs",
+              "Averages"
             ]
           }
         ],
@@ -943,7 +1373,7 @@
             ]
           },
           {
-            "unit": "Literature Appreciation",
+            "unit": "Literature appreciation",
             "topics": [
               "Reading Classics",
               "Poetic Devices",
@@ -1001,6 +1431,76 @@
               "Elections",
               "Judiciary",
               "Parliament Basics"
+            ]
+          }
+        ],
+        "Telugu": [
+          {
+            "unit": "Vyakaranam (Grammar)",
+            "topics": [
+              "Sandhulu",
+              "Samasalu",
+              "Alankaralu",
+              "Chandassu"
+            ]
+          },
+          {
+            "unit": "Padyabhagam (Poetry)",
+            "topics": [
+              "Sataka Padyalu",
+              "Prachina Kavitvam",
+              "Adhunika Kavitvam"
+            ]
+          },
+          {
+            "unit": "Gadyabhagam (Prose)",
+            "topics": [
+              "Kathalu",
+              "Vyasaalu",
+              "Upavachakam"
+            ]
+          },
+          {
+            "unit": "Srujanathmakatha (Creative)",
+            "topics": [
+              "Lekha Rachana",
+              "Samsistha Rachana",
+              "Abhinandana"
+            ]
+          }
+        ],
+        "Hindi": [
+          {
+            "unit": "Vyakaran (Grammar)",
+            "topics": [
+              "Sangya and Sarvanam",
+              "Kriya and Visheshan",
+              "Kaal and Karak",
+              "Muhavare"
+            ]
+          },
+          {
+            "unit": "Gadhya (Prose)",
+            "topics": [
+              "Kahani",
+              "Nibandh",
+              "Ekanki"
+            ]
+          },
+          {
+            "unit": "Padhya (Poetry)",
+            "topics": [
+              "Dohe",
+              "Kavita",
+              "Pad"
+            ]
+          },
+          {
+            "unit": "Rachanatmak Lekhan (Writing)",
+            "topics": [
+              "Patra Lekhan",
+              "Anuched Lekhan",
+              "Vigyapan"
             ]
           }
         ]
@@ -1010,35 +1510,35 @@
       "subjects": {
         "Maths": [
           {
-            "unit": "Integers and Algebra",
+            "unit": "Chapter 1: Number Systems",
             "topics": [
-              "Negative numbers",
-              "Equations",
-              "Variables"
+              "Natural Numbers",
+              "Integers",
+              "Rational Numbers"
             ]
           },
           {
-            "unit": "Geometry and Mensuration",
+            "unit": "Chapter 2: Geometry Basics",
             "topics": [
-              "Triangles",
-              "Quadrilaterals",
-              "Area and Perimeter"
+              "Points and Lines",
+              "Angles",
+              "Triangles"
             ]
           },
           {
-            "unit": "Rational Numbers",
+            "unit": "Chapter 3: Measurement",
             "topics": [
-              "Standard form",
-              "Operations",
-              "Comparison"
+              "Length",
+              "Weight",
+              "Volume"
             ]
           },
           {
-            "unit": "Data Handling",
+            "unit": "Chapter 4: Data Handling",
             "topics": [
-              "Bar graphs",
-              "Probability basics",
-              "Pie charts"
+              "Pictographs",
+              "Bar Graphs",
+              "Averages"
             ]
           }
         ],
@@ -1104,7 +1604,7 @@
             ]
           },
           {
-            "unit": "Literature Appreciation",
+            "unit": "Literature appreciation",
             "topics": [
               "Reading Classics",
               "Poetic Devices",
@@ -1164,6 +1664,76 @@
               "Parliament Basics"
             ]
           }
+        ],
+        "Telugu": [
+          {
+            "unit": "Vyakaranam (Grammar)",
+            "topics": [
+              "Sandhulu",
+              "Samasalu",
+              "Alankaralu",
+              "Chandassu"
+            ]
+          },
+          {
+            "unit": "Padyabhagam (Poetry)",
+            "topics": [
+              "Sataka Padyalu",
+              "Prachina Kavitvam",
+              "Adhunika Kavitvam"
+            ]
+          },
+          {
+            "unit": "Gadyabhagam (Prose)",
+            "topics": [
+              "Kathalu",
+              "Vyasaalu",
+              "Upavachakam"
+            ]
+          },
+          {
+            "unit": "Srujanathmakatha (Creative)",
+            "topics": [
+              "Lekha Rachana",
+              "Samsistha Rachana",
+              "Abhinandana"
+            ]
+          }
+        ],
+        "Hindi": [
+          {
+            "unit": "Vyakaran (Grammar)",
+            "topics": [
+              "Sangya and Sarvanam",
+              "Kriya and Visheshan",
+              "Kaal and Karak",
+              "Muhavare"
+            ]
+          },
+          {
+            "unit": "Gadhya (Prose)",
+            "topics": [
+              "Kahani",
+              "Nibandh",
+              "Ekanki"
+            ]
+          },
+          {
+            "unit": "Padhya (Poetry)",
+            "topics": [
+              "Dohe",
+              "Kavita",
+              "Pad"
+            ]
+          },
+          {
+            "unit": "Rachanatmak Lekhan (Writing)",
+            "topics": [
+              "Patra Lekhan",
+              "Anuched Lekhan",
+              "Vigyapan"
+            ]
+          }
         ]
       }
     },
@@ -1171,35 +1741,35 @@
       "subjects": {
         "Maths": [
           {
-            "unit": "Integers and Algebra",
+            "unit": "Chapter 1: Number Systems",
             "topics": [
-              "Negative numbers",
-              "Equations",
-              "Variables"
+              "Natural Numbers",
+              "Integers",
+              "Rational Numbers"
             ]
           },
           {
-            "unit": "Geometry and Mensuration",
+            "unit": "Chapter 2: Geometry Basics",
             "topics": [
-              "Triangles",
-              "Quadrilaterals",
-              "Area and Perimeter"
+              "Points and Lines",
+              "Angles",
+              "Triangles"
             ]
           },
           {
-            "unit": "Rational Numbers",
+            "unit": "Chapter 3: Measurement",
             "topics": [
-              "Standard form",
-              "Operations",
-              "Comparison"
+              "Length",
+              "Weight",
+              "Volume"
             ]
           },
           {
-            "unit": "Data Handling",
+            "unit": "Chapter 4: Data Handling",
             "topics": [
-              "Bar graphs",
-              "Probability basics",
-              "Pie charts"
+              "Pictographs",
+              "Bar Graphs",
+              "Averages"
             ]
           }
         ],
@@ -1274,7 +1844,7 @@
             ]
           },
           {
-            "unit": "Literature Appreciation",
+            "unit": "Literature appreciation",
             "topics": [
               "Reading Classics",
               "Poetic Devices",
@@ -1332,6 +1902,76 @@
               "Elections",
               "Judiciary",
               "Parliament Basics"
+            ]
+          }
+        ],
+        "Telugu": [
+          {
+            "unit": "Vyakaranam (Grammar)",
+            "topics": [
+              "Sandhulu",
+              "Samasalu",
+              "Alankaralu",
+              "Chandassu"
+            ]
+          },
+          {
+            "unit": "Padyabhagam (Poetry)",
+            "topics": [
+              "Sataka Padyalu",
+              "Prachina Kavitvam",
+              "Adhunika Kavitvam"
+            ]
+          },
+          {
+            "unit": "Gadyabhagam (Prose)",
+            "topics": [
+              "Kathalu",
+              "Vyasaalu",
+              "Upavachakam"
+            ]
+          },
+          {
+            "unit": "Srujanathmakatha (Creative)",
+            "topics": [
+              "Lekha Rachana",
+              "Samsistha Rachana",
+              "Abhinandana"
+            ]
+          }
+        ],
+        "Hindi": [
+          {
+            "unit": "Vyakaran (Grammar)",
+            "topics": [
+              "Sangya and Sarvanam",
+              "Kriya and Visheshan",
+              "Kaal and Karak",
+              "Muhavare"
+            ]
+          },
+          {
+            "unit": "Gadhya (Prose)",
+            "topics": [
+              "Kahani",
+              "Nibandh",
+              "Ekanki"
+            ]
+          },
+          {
+            "unit": "Padhya (Poetry)",
+            "topics": [
+              "Dohe",
+              "Kavita",
+              "Pad"
+            ]
+          },
+          {
+            "unit": "Rachanatmak Lekhan (Writing)",
+            "topics": [
+              "Patra Lekhan",
+              "Anuched Lekhan",
+              "Vigyapan"
             ]
           }
         ]
@@ -1507,7 +2147,7 @@
             ]
           },
           {
-            "unit": "Literature Appreciation",
+            "unit": "Literature appreciation",
             "topics": [
               "Reading Classics",
               "Poetic Devices",
@@ -1568,6 +2208,96 @@
               "Agriculture in TS",
               "IT Sector in Hyderabad",
               "Handicrafts"
+            ]
+          }
+        ],
+        "Telugu": [
+          {
+            "unit": "Gadyabhagam (Prose Lessons)",
+            "topics": [
+              "దానశీలము",
+              "ఎవరి భాష వాళ్ళకు వినసొంపు",
+              "వీర తెలంగాణ",
+              "కొత్తబాట",
+              "నగరగీతం",
+              "భాగ్యోదయం",
+              "భిక్ష",
+              "లక్ష్యసిద్ధి",
+              "జీవనభాష్యం",
+              "గోల్కొండ పట్టణము",
+              "భూమిక"
+            ]
+          },
+          {
+            "unit": "Upavachakam (Supplementary Reading)",
+            "topics": [
+              "బాలకాండము (ఉపవాచకం)",
+              "అయోధ్యాకాండము (ఉపవాచకం)",
+              "అరణ్యకాండము (ఉపవాచకం)",
+              "కిష్కింధాకాండము (ఉపవాచకం)"
+            ]
+          },
+          {
+            "unit": "Padyabhagam (Poetry)",
+            "topics": [
+              "శతక మధురిమ",
+              "Patriotism and Nature Poems",
+              "Humanity and Moral Values",
+              "Classical Lyrics"
+            ]
+          },
+          {
+            "unit": "Vyakaranam (Grammar)",
+            "topics": [
+              "సమాసాలు & సन्धులు",
+              "ప్రత్యయాలు & విభక్తులు",
+              "సమానార్థక & విరుద్ధ పదాలు",
+              "లోకోక్తులు & సామెతలు",
+              "విరామ చిహ్నాలు & వాక్య నిర్మాణం"
+            ]
+          },
+          {
+            "unit": "Rachana (Writing Skills)",
+            "topics": [
+              "లేఖా రచన & వ్యాస రచన",
+              "కథ & సంభాషణ రచన",
+              "నివేదిక రచన",
+              "Reading Comprehension"
+            ]
+          }
+        ],
+        "Hindi": [
+          {
+            "unit": "Vyakaran (Grammar)",
+            "topics": [
+              "Sangya and Sarvanam",
+              "Kriya and Visheshan",
+              "Kaal and Karak",
+              "Muhavare"
+            ]
+          },
+          {
+            "unit": "Gadhya (Prose)",
+            "topics": [
+              "Kahani",
+              "Nibandh",
+              "Ekanki"
+            ]
+          },
+          {
+            "unit": "Padhya (Poetry)",
+            "topics": [
+              "Dohe",
+              "Kavita",
+              "Pad"
+            ]
+          },
+          {
+            "unit": "Rachanatmak Lekhan (Writing)",
+            "topics": [
+              "Patra Lekhan",
+              "Anuched Lekhan",
+              "Vigyapan"
             ]
           }
         ]

@@ -65,7 +65,7 @@ const CommunityHome = () => {
             />
           </div>
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-            {['All', 'Mathematics', 'Science', 'English', 'Social'].map(filter => (
+            {['All', 'Mathematics', 'Science', 'English', 'Social', 'Telugu', 'Hindi'].map(filter => (
               <button 
                 key={filter}
                 className="px-6 py-4 rounded-2xl bg-app-bg border border-app-border text-app-text-sub font-black text-[10px] uppercase tracking-widest hover:border-primary/30 hover:text-primary whitespace-nowrap transition-all flex items-center gap-2"

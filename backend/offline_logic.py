@@ -124,7 +124,7 @@ def offline_generate_explanation(question, learner_mode="regular", level="basic"
     """Generate structured offline explanation for Math, Science, and Computer basics."""
     if not question:
         return {
-            "explanation": "Please ask a clear question about Math, Science, English, or Computer basics.",
+            "explanation": "Please ask a clear question about Math, Science, English, Telugu, Hindi or Computer basics.",
             "example": "Example: What is RAM?",
             "summary": "Ask a clear question to get a full explanation."
         }
