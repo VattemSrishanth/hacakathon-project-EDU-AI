@@ -278,14 +278,11 @@ const AITutor = () => {
                  } else if (cmd.command === 'SET_THEME') {
                      const themeVal = String(cmd.value).toLowerCase();
                      if (themeVal.includes('maroon')) updateThemeAccessibility({ theme: 'Academic Maroon' });
-                     else if (themeVal.includes('amber')) updateThemeAccessibility({ theme: 'Sunrise Amber' });
-                     else if (themeVal.includes('white')) updateThemeAccessibility({ theme: 'Institutional White' });
-                     else if (themeVal.includes('void') || themeVal.includes('dark')) updateThemeAccessibility({ theme: 'Midnight Void' });
+                     else if (themeVal.includes('void')) updateThemeAccessibility({ theme: 'Midnight Void' });
                      else if (themeVal.includes('crystal') || themeVal.includes('light')) updateThemeAccessibility({ theme: 'Crystal Light' });
                      else if (themeVal.includes('potter') || themeVal.includes('wizard')) updateThemeAccessibility({ theme: 'Harry Potter' });
-                     else if (themeVal.includes('stranger') || themeVal.includes('upside')) updateThemeAccessibility({ theme: 'STRANGER THINGS' });
                      else if (themeVal.includes('wednesday') || themeVal.includes('goth')) updateThemeAccessibility({ theme: 'WEDNESDAY' });
-                     else if (themeVal.includes('thrones') || themeVal.includes('dragon')) updateThemeAccessibility({ theme: 'GAME OF THRONES' });
+                     else if (themeVal.includes('premium') || themeVal.includes('dark')) updateThemeAccessibility({ theme: 'Premium Dark' });
                      
                      if (themeVal.includes('low') || themeVal.includes('power')) updateThemeAccessibility({ lowPowerMode: true });
                      if (themeVal.includes('high') || themeVal.includes('contrast')) updateThemeAccessibility({ highContrast: true });

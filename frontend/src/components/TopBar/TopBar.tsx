@@ -44,7 +44,7 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu }) => {
 
   const toggleTheme = () => {
     updateThemeAccessibility({ 
-      theme: isDark ? 'Institutional White' : 'Academic Maroon' 
+      theme: isDark ? 'Crystal Light' : 'Academic Maroon' 
     });
   };
 

@@ -12,17 +12,11 @@ export type AnswerStyle = 'Short' | 'Detailed';
 export type ReminderFrequency = 'Daily' | 'Weekly' | 'Off';
 export type ThemeMode = 
   | 'Academic Maroon' 
-  | 'Sunrise Amber' 
-  | 'Institutional White' 
   | 'Harry Potter' 
   | 'Premium Dark'
   | 'Midnight Void' 
   | 'Crystal Light' 
-  | 'Sunset Ember' 
-  | 'Hogwarts'
-  | 'STRANGER THINGS' 
-  | 'WEDNESDAY' 
-  | 'GAME OF THRONES';
+  | 'WEDNESDAY';
 export type FontSize = 'Small' | 'Medium' | 'Large';
 export type AccessibilityMode = 'Normal' | 'Deaf' | 'Dumb' | 'Blind';
 
@@ -98,7 +92,7 @@ export const defaultSettings: SettingsState = {
     reminderFrequency: 'Weekly',
   },
   themeAccessibility: {
-    theme: 'Institutional White',
+    theme: 'Academic Maroon',
     fontSize: 'Medium',
     highContrast: false,
     reduceMotion: false,
@@ -161,8 +155,8 @@ const loadSettingsFromStorage = (): SettingsState => {
         ...(storedSettings?.themeAccessibility || {}),
         // Fallback for valid themes only
         theme: ([
-          'Academic Maroon', 'Sunrise Amber', 'Institutional White', 'Harry Potter', 'Premium Dark',
-          'Midnight Void', 'Crystal Light', 'Sunset Ember', 'HARRY POTTER', 'STRANGER THINGS', 'WEDNESDAY', 'GAME OF THRONES'
+          'Academic Maroon', 'Harry Potter', 'Premium Dark',
+          'Midnight Void', 'Crystal Light', 'WEDNESDAY'
         ].includes(storedSettings?.themeAccessibility?.theme as any)
           ? storedSettings?.themeAccessibility?.theme 
           : defaultSettings.themeAccessibility.theme) as ThemeMode,
@@ -190,14 +184,10 @@ const applyTheme = (theme: ThemeMode): void => {
   const themeClasses = [
     'dark', 
     'theme-harry-potter', 
-    'theme-hogwarts',
     'theme-premium-dark',
     'theme-midnight',
     'theme-crystal',
-    'theme-sunset',
-    'theme-stranger',
     'theme-wednesday',
-    'theme-thrones-winter'
   ];
   root.classList.remove(...themeClasses);
   body.classList.remove(...themeClasses);
@@ -209,12 +199,8 @@ const applyTheme = (theme: ThemeMode): void => {
 
   if (theme === 'Midnight Void') root.classList.add('theme-midnight');
   if (theme === 'Crystal Light') root.classList.add('theme-crystal');
-  if (theme === 'Sunset Ember') root.classList.add('theme-sunset');
   if (theme === 'Harry Potter') root.classList.add('theme-harry-potter');
-  if (theme === 'Hogwarts') root.classList.add('theme-hogwarts');
-  if (theme === 'STRANGER THINGS') root.classList.add('theme-stranger');
   if (theme === 'WEDNESDAY') root.classList.add('theme-wednesday');
-  if (theme === 'GAME OF THRONES') root.classList.add('theme-thrones-winter');
   if (theme === 'Premium Dark') root.classList.add('theme-premium-dark');
 };
 
