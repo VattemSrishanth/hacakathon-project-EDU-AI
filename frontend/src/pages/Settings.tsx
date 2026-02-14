@@ -13,6 +13,7 @@ import {
   Zap,
   Home,
   Moon,
+  Sun,
   Bell,
   Palette,
   Eye,
@@ -659,6 +660,16 @@ const Settings = () => {
                       accentClass="bg-[#d9b25f]"
                     />
                     <ThemeCard 
+                      id={"Hogwarts" as ThemeMode} 
+                      title="Hogwarts" 
+                      desc="Classic magical school theme with gold and crimson" 
+                      icon={Sparkles} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="bg-[#1a0f00]"
+                      accentClass="bg-[#d4af37]"
+                    />
+                    <ThemeCard 
                       id={"Premium Dark" as ThemeMode} 
                       title="Premium Dark" 
                       desc="Modern, high-end professional dark workspace" 
@@ -667,6 +678,66 @@ const Settings = () => {
                       onClick={(id) => updateThemeAccessibility({ theme: id })}
                       previewClass="bg-[#0B0F14]"
                       accentClass="bg-[#B45309]"
+                    />
+                    <ThemeCard 
+                      id={"STRANGER THINGS" as ThemeMode} 
+                      title="Stranger Things" 
+                      desc="Retro 80s horror theme with neon red accents" 
+                      icon={Sparkles} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="bg-[#050510]"
+                      accentClass="bg-[#ff0033]"
+                    />
+                    <ThemeCard 
+                      id={"WEDNESDAY" as ThemeMode} 
+                      title="Wednesday" 
+                      desc="Gothic Nevermore Academy aesthetic" 
+                      icon={Moon} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="bg-[#0a0a0c]"
+                      accentClass="bg-[#a78bfa]"
+                    />
+                    <ThemeCard 
+                      id={"GAME OF THRONES" as ThemeMode} 
+                      title="Game of Thrones" 
+                      desc="Winter is coming: House Stark aesthetic" 
+                      icon={Shield} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="bg-[#1a1c20]"
+                      accentClass="bg-[#ea580c]"
+                    />
+                    <ThemeCard 
+                      id={"Midnight Void" as ThemeMode} 
+                      title="Midnight Void" 
+                      desc="Deep space aesthetic with slate and cyan accents" 
+                      icon={Moon} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="bg-[#020617]"
+                      accentClass="bg-[#3b82f6]"
+                    />
+                    <ThemeCard 
+                      id={"Crystal Light" as ThemeMode} 
+                      title="Crystal Light" 
+                      desc="Pristine white and blue clarity theme" 
+                      icon={Sparkles} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="bg-[#ffffff]"
+                      accentClass="bg-[#2563eb]"
+                    />
+                    <ThemeCard 
+                      id={"Sunset Ember" as ThemeMode} 
+                      title="Sunset Ember" 
+                      desc="Warm autumn vibes with orange and brown tones" 
+                      icon={Sun} 
+                      current={settings.themeAccessibility.theme}
+                      onClick={(id) => updateThemeAccessibility({ theme: id })}
+                      previewClass="bg-[#fff7ed]"
+                      accentClass="bg-[#f97316]"
                     />
                   </div>
                 </section>

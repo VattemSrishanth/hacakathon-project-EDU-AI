@@ -282,7 +282,7 @@ const AITutor = () => {
                      else if (themeVal.includes('white')) updateThemeAccessibility({ theme: 'Institutional White' });
                      else if (themeVal.includes('void') || themeVal.includes('dark')) updateThemeAccessibility({ theme: 'Midnight Void' });
                      else if (themeVal.includes('crystal') || themeVal.includes('light')) updateThemeAccessibility({ theme: 'Crystal Light' });
-                     else if (themeVal.includes('potter') || themeVal.includes('wizard')) updateThemeAccessibility({ theme: 'HARRY POTTER' });
+                     else if (themeVal.includes('potter') || themeVal.includes('wizard')) updateThemeAccessibility({ theme: 'Harry Potter' });
                      else if (themeVal.includes('stranger') || themeVal.includes('upside')) updateThemeAccessibility({ theme: 'STRANGER THINGS' });
                      else if (themeVal.includes('wednesday') || themeVal.includes('goth')) updateThemeAccessibility({ theme: 'WEDNESDAY' });
                      else if (themeVal.includes('thrones') || themeVal.includes('dragon')) updateThemeAccessibility({ theme: 'GAME OF THRONES' });
@@ -645,7 +645,7 @@ const AITutor = () => {
       <div className="min-h-screen bg-app-bg py-12 px-4 flex items-center justify-center transition-colors duration-300">
         <div className="max-w-xl w-full">
           <Card className="p-12 text-center border-2 border-app-border bg-app-bg shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-ai-accent to-secondary" />
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-ai-accent to-secondary" />
             <div className="w-24 h-24 bg-app-bg rounded-3xl flex items-center justify-center mx-auto mb-8 text-app-text-muted group-hover:scale-110 transition-transform duration-500">
               <Zap size={48} className="text-ai-accent" />
             </div>
@@ -779,7 +779,7 @@ const AITutor = () => {
                   </button>
                 )}
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-ai-accent to-secondary flex items-center justify-center text-white shadow-lg">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-ai-accent to-secondary flex items-center justify-center text-white shadow-lg">
                     <Zap size={24} />
                   </div>
                   <div>

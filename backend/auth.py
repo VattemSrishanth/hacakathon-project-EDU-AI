@@ -11,29 +11,37 @@ EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 @auth_bp.route("/signup", methods=["POST"])
+@auth_bp.route("/register", methods=["POST"])
 def signup():
     try:
         data = request.get_json() or {}
-        username = str(data.get("username", "")).strip()
+        # Support both 'username' and 'name' for frontend compatibility
+        username = str(data.get("username") or data.get("name") or "").strip()
         email = str(data.get("email", "")).strip().lower()
         password = str(data.get("password", ""))
+        role = str(data.get("role", "student")).strip().lower()
         accessibility_mode = str(data.get("accessibility_mode", "regular")).strip().lower()
-        preferred_language = str(data.get("preferred_language", "en")).strip().lower()
+        preferred_language = str(data.get("preferred_language", "English")).strip()
 
-        if not USERNAME_RE.match(username):
-            return jsonify({"error": "Invalid username.", "status": "error"}), 400
+        if not username or len(username) < 2:
+            return jsonify({"error": "Name/Username is too short.", "status": "error"}), 400
         if not EMAIL_RE.match(email):
-            return jsonify({"error": "Invalid email.", "status": "error"}), 400
+            return jsonify({"error": "Invalid email format.", "status": "error"}), 400
         if not password or len(password) < 8:
             return jsonify({"error": "Password must be at least 8 characters.", "status": "error"}), 400
 
-        if accessibility_mode not in {"regular", "deaf", "speech", "normal"}:
+        if role not in {"student", "teacher", "parent", "admin", "user"}:
+            role = "student"
+
+        if accessibility_mode not in {"regular", "deaf", "speech", "blind", "normal"}:
             accessibility_mode = "regular"
         if accessibility_mode == "normal":
             accessibility_mode = "regular"
 
-        if preferred_language not in {"en", "es", "fr", "sw", "ar", "hi"}:
-            preferred_language = "en"
+        # Map display names to codes or just keep display names if that's what frontend uses
+        valid_langs = {"English", "Telugu", "Hindi", "Spanish", "French", "en", "hi", "te"}
+        if preferred_language not in valid_langs:
+            preferred_language = "English"
 
         if User.find_one({"$or": [{"username": username}, {"email": email}]}):
             return jsonify({"error": "Username or email already exists.", "status": "error"}), 409
@@ -45,7 +53,7 @@ def signup():
             "password_hash": password_hash,
             "accessibility_mode": accessibility_mode,
             "preferred_language": preferred_language,
-            "role": "user" # Default role
+            "role": role
         }
         user_id = User.create(user_data)
         user_doc = User.find_by_id(user_id)
@@ -63,7 +71,8 @@ def signup():
 def login():
     try:
         data = request.get_json() or {}
-        identifier = str(data.get("identifier", "")).strip().lower()
+        # Support both 'identifier' and 'email' for better frontend compatibility
+        identifier = str(data.get("identifier") or data.get("email") or "").strip().lower()
         password = str(data.get("password", ""))
 
         if not identifier or not password:

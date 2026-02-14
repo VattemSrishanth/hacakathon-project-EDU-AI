@@ -108,7 +108,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, captionSrc, transcript, 
         </video>
 
         {/* Custom Controls Overlay (Fade in on hover) */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity flex flex-col justify-end p-4 lg:p-6 gap-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity flex flex-col justify-end p-4 lg:p-6 gap-4">
           
           {/* Progress Bar */}
           <input

@@ -143,7 +143,7 @@ const Login = () => {
 
         <div className="bg-app-bg border-2 border-app-border rounded-[2.5rem] overflow-hidden p-10 shadow-inst relative">
           {/* Subtle Accent Line */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-primary/30 to-transparent" />
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
           
           <div className="mb-8 overflow-x-auto pb-4 scrollbar-none">
             <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4 ml-1">Select Access Portal</p>
@@ -155,7 +155,7 @@ const Login = () => {
                   className={`
                     flex flex-col items-center gap-3 px-6 py-5 rounded-3xl transition-all duration-300 border-2
                     ${role === r.id 
-                      ? `bg-linear-to-br ${r.color} border-transparent text-white shadow-lg ${r.shadow} scale-105` 
+                      ? `bg-gradient-to-br ${r.color} border-transparent text-white shadow-lg ${r.shadow} scale-105` 
                       : 'bg-gray-50 border-gray-100 text-gray-400 hover:border-primary/20 hover:text-primary'}
                   `}
                 >

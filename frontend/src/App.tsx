@@ -91,6 +91,17 @@ const SupernaturalEffects = () => {
     return () => document.body.classList.remove('glitch-active');
   }, [isGlitching, isStranger]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isStranger) {
+      root.classList.add('theme-stranger');
+      document.body.classList.add('theme-stranger');
+    } else {
+      root.classList.remove('theme-stranger');
+      document.body.classList.remove('theme-stranger');
+    }
+  }, [isStranger]);
+
   return (
     <AnimatePresence>
       {isStranger && (

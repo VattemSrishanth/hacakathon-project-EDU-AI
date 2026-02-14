@@ -7,6 +7,9 @@ import os
 import re
 import io
 import base64
+
+# Fix for Protocol Buffers compatibility with newer Python versions
+os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 import json
 import time
 from datetime import datetime, date
@@ -1252,11 +1255,11 @@ def get_admin_stats(current_user, user_id):
             "total_assignments": mongo.db.assignments.count_documents({}),
             "total_feedback": mongo.db.feedback.count_documents({}),
             "recent_feedback": Feedback.format_list(Feedback.find_all(limit=10, sort=[("created_at", -1)])),
-            "user_list": User.format_list(User.find_all(limit=50)),
-            "lesson_list": Course.format_list(Course.find_all(limit=100)),
-            "syllabus_list": SyllabusContent.format_list(SyllabusContent.find_all(limit=100)),
+            "user_list": User.format_list(User.find_all(limit=50, sort=[("created_at", -1)])),
+            "lesson_list": Course.format_list(Course.find_all(limit=100, sort=[("created_at", -1)])),
+            "syllabus_list": SyllabusContent.format_list(SyllabusContent.find_all(limit=100, sort=[("created_at", -1)])),
             "all_progress": Progress.format_list(Progress.find_all(limit=50)),
-            "all_notifications": Notification.format_list(Notification.find_all(limit=20))
+            "all_notifications": Notification.format_list(Notification.find_all(limit=20, sort=[("created_at", -1)]))
         }
         return jsonify({"success": True, "stats": stats})
     except Exception as e:
@@ -1368,7 +1371,7 @@ def get_syllabus_content():
         
     query = {
         "board": get_regex(board),
-        "class_level": get_regex(class_level),
+        "class_level": {"$in": [class_level, str(class_level), get_regex(class_level)]},
         "subject": get_regex(subject),
         "topic": get_regex(topic)
     }
@@ -1388,7 +1391,17 @@ def get_syllabus_content():
     if content:
         return jsonify({"success": True, "content": SyllabusContent.format_doc(content)})
     
-    # 2. Fallback: Check if there's a Course lesson that matches this topic
+    # 2. Fallback: Check if there's a broader topic match
+    if not content:
+        query_loose = {
+            "subject": get_regex(subject),
+            "topic": get_regex(topic)
+        }
+        content = SyllabusContent.find_one(query_loose)
+        if content:
+            return jsonify({"success": True, "content": SyllabusContent.format_doc(content)})
+
+    # 3. Fallback: Check if there's a Course lesson that matches this topic
     lesson_query = {
         "class_level": get_regex(class_level),
         "$or": [

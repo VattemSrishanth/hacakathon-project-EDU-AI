@@ -19,7 +19,7 @@ export type ThemeMode =
   | 'Midnight Void' 
   | 'Crystal Light' 
   | 'Sunset Ember' 
-  | 'HARRY POTTER' 
+  | 'Hogwarts'
   | 'STRANGER THINGS' 
   | 'WEDNESDAY' 
   | 'GAME OF THRONES';
@@ -190,12 +190,13 @@ const applyTheme = (theme: ThemeMode): void => {
   const themeClasses = [
     'dark', 
     'theme-harry-potter', 
+    'theme-hogwarts',
     'theme-premium-dark',
-    'theme-midnight-void',
-    'theme-crystal-light',
-    'theme-sunset-ember',
-    'theme-st-upside-down',
-    'theme-wednesday-gothic',
+    'theme-midnight',
+    'theme-crystal',
+    'theme-sunset',
+    'theme-stranger',
+    'theme-wednesday',
     'theme-thrones-winter'
   ];
   root.classList.remove(...themeClasses);
@@ -206,12 +207,13 @@ const applyTheme = (theme: ThemeMode): void => {
     body.classList.add('dark');
   }
 
-  if (theme === 'Midnight Void') root.classList.add('theme-midnight-void');
-  if (theme === 'Crystal Light') root.classList.add('theme-crystal-light');
-  if (theme === 'Sunset Ember') root.classList.add('theme-sunset-ember');
-  if (theme === 'Harry Potter' || theme === 'HARRY POTTER') root.classList.add('theme-harry-potter');
-  if (theme === 'STRANGER THINGS') root.classList.add('theme-st-upside-down');
-  if (theme === 'WEDNESDAY') root.classList.add('theme-wednesday-gothic');
+  if (theme === 'Midnight Void') root.classList.add('theme-midnight');
+  if (theme === 'Crystal Light') root.classList.add('theme-crystal');
+  if (theme === 'Sunset Ember') root.classList.add('theme-sunset');
+  if (theme === 'Harry Potter') root.classList.add('theme-harry-potter');
+  if (theme === 'Hogwarts') root.classList.add('theme-hogwarts');
+  if (theme === 'STRANGER THINGS') root.classList.add('theme-stranger');
+  if (theme === 'WEDNESDAY') root.classList.add('theme-wednesday');
   if (theme === 'GAME OF THRONES') root.classList.add('theme-thrones-winter');
   if (theme === 'Premium Dark') root.classList.add('theme-premium-dark');
 };

@@ -87,7 +87,7 @@ const Navbar = () => {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center group">
-              <span className="text-3xl font-black tracking-tighter text-primary">
+              <span className="wa-logo text-3xl font-black tracking-tighter text-primary">
                 LearnBridge AI
               </span>
             </Link>
