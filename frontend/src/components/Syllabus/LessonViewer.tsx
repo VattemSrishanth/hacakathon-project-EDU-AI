@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Volume2, 
   Sparkles, 
@@ -52,11 +53,19 @@ const LessonViewer = ({
   onMarkComplete,
   isCompleted 
 }: LessonViewerProps) => {
+  const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [showPdf, setShowPdf] = useState(false);
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const { signLanguageEnabled } = useAccessibility();
   const { isOffline, removeLesson, downloadedLessons, downloadingIds, saveOfflineLesson } = useOffline();
+
+  // Redirect to dedicated sign language page if mode is active
+  useEffect(() => {
+    if (signLanguageEnabled && lesson.id) {
+      navigate(`/sign-language/${lesson.id}`, { state: { lesson } });
+    }
+  }, [signLanguageEnabled, lesson, navigate]);
 
   const handleFullscreen = () => {
     if (!document.fullscreenElement && pdfContainerRef.current) {

@@ -422,7 +422,7 @@ function AppContent() {
           </ProtectedRoute>
         }
       />
-      <Route path="/sign-language" element={<ProtectedRoute><SignLanguage /></ProtectedRoute>} />
+      <Route path="/sign-language/*" element={<ProtectedRoute><SignLanguage /></ProtectedRoute>} />
       <Route path="/captions" element={<ProtectedRoute><Captions /></ProtectedRoute>} />
       <Route path="/speech-assist" element={<ProtectedRoute><SpeechAssist /></ProtectedRoute>} />
       <Route path="/downloads" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><UploadedPdf /></ProtectedRoute>} />

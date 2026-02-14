@@ -8,6 +8,7 @@ import { useProgress } from '../context/ProgressContext';
 import { lessonsAPI } from '../services/api';
 import { offlineContentService } from '../services/offlineContent';
 import SignLanguagePanel from '../components/Syllabus/SignLanguagePanel';
+import { youtubeService, generateSearchQuery } from '../services/youtubeService';
 import { 
   Upload, 
   Volume2, 
@@ -28,6 +29,7 @@ interface LessonData {
   title: string;
   description: string;
   pdfUrl?: string;
+  signVideoUrl?: string; // Added for dumb mode
   aiSummary: string;
   textVersion: string;
 }
@@ -47,6 +49,10 @@ export default function LessonViewer() {
   const [uploadedPdf, setUploadedPdf] = useState<string | null>(location.state?.pdfUrl || null);
   const [isReading, setIsReading] = useState(false);
   const [showPdf, setShowPdf] = useState(false);
+  const [youtubeEmbedUrl, setYoutubeEmbedUrl] = useState<string | null>(null);
+  const [videoTranscript, setVideoTranscript] = useState<string | null>(null);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
   const pdfContainerRef = useRef<HTMLDivElement>(null);
 
   const handleFullscreen = () => {
@@ -72,8 +78,44 @@ export default function LessonViewer() {
   useEffect(() => {
     if (signLanguageEnabled) {
       updateAccessibility({ captionsEnabled: true });
+      
+      // Redirect to dedicated sign language page for standard lessons
+      if (lessonId && lessonId !== 'uploaded') {
+        navigate(`/sign-language/${lessonId}`, { state: { lesson } });
+      }
     }
-  }, [signLanguageEnabled]);
+  }, [signLanguageEnabled, lessonId, lesson, navigate]);
+
+  // Fetch YouTube sign language video when mode is active
+  useEffect(() => {
+    const fetchSignLanguageVideo = async () => {
+      // Only fetch if dumb mode is on and we don't have a video yet
+      if (signLanguageEnabled && lesson && !youtubeEmbedUrl && !videoLoading) {
+        setVideoLoading(true);
+        setVideoError(null);
+        try {
+          const query = generateSearchQuery(lesson);
+          const result = await youtubeService.searchSignLanguageVideo(query);
+          setYoutubeEmbedUrl(result.embedUrl);
+
+          // Try to get captions/transcript for accurately displaying content
+          try {
+            const transcript = await youtubeService.getVideoCaptions(result.videoId);
+            if (transcript) setVideoTranscript(transcript);
+          } catch (tErr) {
+            console.log("Captions not found, will fallback to description");
+          }
+        } catch (err: any) {
+          console.error("Failed to load sign language video:", err);
+          setVideoError("Sign language video not available.");
+        } finally {
+          setVideoLoading(false);
+        }
+      }
+    };
+
+    fetchSignLanguageVideo();
+  }, [signLanguageEnabled, lesson, youtubeEmbedUrl, videoLoading]);
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -86,6 +128,7 @@ export default function LessonViewer() {
             title: state.pdfName || 'Uploaded PDF',
             description: 'Custom learning material',
             pdfUrl: state.pdfUrl,
+            signVideoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
             aiSummary: 'Analyzing your custom document...',
             textVersion: 'Extracting text for accessibility...'
           });
@@ -106,6 +149,7 @@ export default function LessonViewer() {
             id: offlineLesson.id,
             title: offlineLesson.title,
             description: 'Offline Content',
+            signVideoUrl: offlineLesson.content.signVideoUrl || "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
             aiSummary: offlineLesson.content.aiSummary || offlineLesson.content.summary || 'This content is available offline.',
             textVersion: offlineLesson.content.textVersion || offlineLesson.content.content || ''
           });
@@ -231,7 +275,7 @@ export default function LessonViewer() {
 
   return (
     <div className={`min-h-screen bg-app-bg text-app-text-main px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${signLanguageEnabled ? 'py-20' : 'py-12'}`}>
-      <div className={`max-auto ${signLanguageEnabled ? 'max-w-7xl' : 'max-w-5xl'} ${signLanguageEnabled ? 'space-y-16' : 'space-y-10'}`}>
+      <div className={`mx-auto ${signLanguageEnabled ? 'max-w-7xl' : 'max-w-5xl'} ${signLanguageEnabled ? 'space-y-16' : 'space-y-10'}`}>
         {/* Header */}
         <div className="space-y-6">
           <button
@@ -386,8 +430,10 @@ export default function LessonViewer() {
           {signLanguageEnabled ? (
             <SignLanguagePanel 
               lessonTitle={lesson.title} 
-              transcript={lesson.textVersion}
-              // signVideoUrl={lesson.signVideoUrl} // Assuming this might exist in future backend schema
+              transcript={videoTranscript || lesson.textVersion || lesson.description}
+              signVideoUrl={youtubeEmbedUrl || lesson.signVideoUrl}
+              isLoading={videoLoading}
+              error={videoError}
             />
           ) : showTextVersion ? (
             /* Text Version for Accessibility */

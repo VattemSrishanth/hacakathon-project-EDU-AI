@@ -36,6 +36,7 @@ from models import (
     OfflineSync,
     LoginStreak,
     SyllabusContent,
+    Doubt,
 )
 
 try:
@@ -326,6 +327,88 @@ def root():
 def health():
     """Health check endpoint."""
     return jsonify({"status": "ok", "message": "Server is running"})
+
+
+@app.route("/api/youtube-search", methods=["GET"])
+def youtube_search():
+    """Search for a video on YouTube and return the videoId."""
+    query = request.args.get("q", "").strip()
+    if not query:
+        return jsonify({"error": "No search query provided"}), 400
+    
+    # We prioritize sign language videos
+    search_query = query
+    if "sign language" not in search_query.lower():
+        search_query += " sign language"
+
+    api_key = os.environ.get("YOUTUBE_API_KEY")
+    if not api_key:
+        print("[WARN] YOUTUBE_API_KEY not found in environment, returning demo video.")
+        return jsonify({
+            "videoId": "0uG7S3_T-68", 
+            "note": "Demo mode: YOUTUBE_API_KEY not set",
+            "success": True
+        })
+
+    def do_search(q):
+        try:
+            search_url = "https://www.googleapis.com/youtube/v3/search"
+            params = {
+                "part": "snippet",
+                "q": q,
+                "maxResults": 1,
+                "type": "video",
+                "key": api_key,
+                "safeSearch": "moderate"
+            }
+            res = requests.get(search_url, params=params, timeout=7)
+            if res.status_code != 200:
+                return None, res.json().get('error', {}).get('message', 'API Error')
+            
+            data = res.json()
+            if "items" in data and len(data["items"]) > 0:
+                return data["items"][0], None
+            return None, "No results found"
+        except Exception as e:
+            return None, str(e)
+
+    # Try original query (e.g. "Linear Equations ISL sign language")
+    result_item, error_msg = do_search(search_query)
+    
+    # If no result, try a more general query (remove ISL etc.)
+    if not result_item and "ISL" in search_query:
+        print(f"[RETRY] No ISL results for '{search_query}', trying general sign language...")
+        fallback_query = search_query.replace("ISL ", "")
+        result_item, error_msg = do_search(fallback_query)
+
+    if result_item:
+        video_id = result_item["id"]["videoId"]
+        return jsonify({
+            "videoId": video_id, 
+            "title": result_item["snippet"]["title"],
+            "success": True
+        })
+    else:
+        return jsonify({"error": f"YouTube Search failed: {error_msg}", "success": False}), 500
+        print(f"[ERROR] YouTube Search failed: {e}")
+        return jsonify({"error": "Failed to search YouTube", "success": False}), 500
+
+
+@app.route("/api/youtube-captions", methods=["GET"])
+def youtube_captions():
+    """Fetch captions for a YouTube video."""
+    video_id = request.args.get("videoId", "")
+    if not video_id:
+        return jsonify({"error": "videoId is required"}), 400
+    
+    try:
+        # We try to get the transcript
+        transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+        full_text = " ".join([t['text'] for t in transcript_list])
+        return jsonify({"transcript": full_text, "success": True})
+    except Exception as e:
+        print(f"[INFO] No captions found for {video_id}: {e}")
+        return jsonify({"error": "No captions available for this video", "success": False}), 404
 
 
 # ==================== Authentication Routes ====================
@@ -902,7 +985,7 @@ def generate_lesson_explanation():
         return jsonify({"success": False, "error": f"Blackbox error: {exc}"}), 502
 
 
-@app.route("/api/lessons/<lesson_id>", methods=["GET"])
+@app.route("/api/lessons/<path:lesson_id>", methods=["GET"])
 def get_lesson(lesson_id):
     """Get a specific lesson by ID from MongoDB."""
     doc = Course.find_by_id(lesson_id)
@@ -915,7 +998,7 @@ def get_lesson(lesson_id):
     })
 
 
-@app.route("/api/lessons/<lesson_id>/content", methods=["GET"])
+@app.route("/api/lessons/<path:lesson_id>/content", methods=["GET"])
 def get_lesson_content(lesson_id):
     """Extract and return text content from a lesson's PDF."""
     doc = Course.find_by_id(lesson_id)
