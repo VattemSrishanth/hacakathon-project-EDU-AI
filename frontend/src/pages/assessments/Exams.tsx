@@ -4,6 +4,7 @@ import Card from '../../components/Card';
 import Button from '../../components/Button';
 import ExamMode from '../../components/assessments/ExamMode';
 import { useExam } from '../../context/ExamContext';
+import { useProgress } from '../../context/ProgressContext';
 
 const MOCK_EXAMS = [
   {
@@ -33,6 +34,7 @@ const MOCK_EXAMS = [
 
 const Exams = () => {
   const { isExamActive, startExam } = useExam();
+  const { recordQuizScore } = useProgress();
   const [selectedExam, setSelectedExam] = useState<typeof MOCK_EXAMS[0] | null>(null);
   const [examResult, setExamResult] = useState<any>(null);
 
@@ -43,6 +45,15 @@ const Exams = () => {
 
   const handleExamComplete = (result: any) => {
     setExamResult(result);
+    if (selectedExam) {
+      // Record to central progress
+      recordQuizScore(
+        selectedExam.id, 
+        result.correctAnswers, 
+        result.totalQuestions, 
+        `Completed Exam: ${selectedExam.title}`
+      );
+    }
     setSelectedExam(null);
   };
 

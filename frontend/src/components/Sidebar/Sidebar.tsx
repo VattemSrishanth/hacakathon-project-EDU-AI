@@ -4,7 +4,8 @@ import {
   Menu, X, LayoutDashboard, BookOpen, Sparkles, Accessibility, 
   Hand, Captions, Mic, WifiOff, Download, RefreshCw, Zap, 
   Settings, ShieldAlert,
-  ChevronLeft, ChevronRight, LogOut, Home, Award, BarChart, User
+  ChevronLeft, ChevronRight, LogOut, Home, Award, BarChart, User,
+  ListTodo, Bell, FileBarChart, Trophy, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
@@ -41,9 +42,25 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
       items: [
         { to: '/', label: 'Home', icon: Home, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
         { to: '/dashboard', label: t.nav.dashboard, icon: LayoutDashboard, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
-        { to: '/lessons', label: t.nav.lessons, icon: BookOpen, disabled: false, roles: ['student', 'teacher', 'admin'] },
-        { to: '/ai-tutor', label: t.nav.aiTutor, icon: Sparkles, disabled: false, roles: ['student', 'teacher', 'admin'] },
-        { to: '/exams', label: 'Exams', icon: Award, disabled: false, roles: ['student', 'teacher', 'admin'] },
+        { to: '/lessons', label: t.nav.lessons, icon: BookOpen, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
+        { to: '/ai-tutor', label: t.nav.aiTutor, icon: Sparkles, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
+        { to: '/assignments', label: 'Assignments', icon: ListTodo, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
+        { to: '/exams', label: 'Exams', icon: Award, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
+        { to: '/certificates', label: 'Certificates', icon: Trophy, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
+      ]
+    },
+    {
+       title: 'COMMUNITY',
+       items: [
+         { to: '/community', label: 'Community Hub', icon: MessageSquare, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
+         { to: '/notifications', label: 'Notifications', icon: Bell, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
+       ]
+    },
+    {
+      title: 'ANALYTICS',
+      items: [
+        { to: '/insights', label: 'Learning Insights', icon: BarChart, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
+        { to: '/reports', label: 'Progress Reports', icon: FileBarChart, disabled: false, roles: ['teacher', 'admin'] },
       ]
     },
     {
@@ -74,9 +91,9 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
     {
       title: 'OFFLINE & LOW DATA',
       items: [
-        { to: '/lessons/uploaded', label: 'Offline Content', icon: WifiOff, disabled: false, roles: ['student', 'teacher', 'admin'] },
-        { to: '/downloads', label: 'Downloads', icon: Download, disabled: false, roles: ['student', 'teacher', 'admin'] },
-        { to: '/sync-status', label: 'Sync Status', icon: RefreshCw, disabled: false, roles: ['student', 'teacher', 'admin'] },
+        { to: '/lessons/uploaded', label: 'Offline Content', icon: WifiOff, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
+        { to: '/downloads', label: 'Downloads', icon: Download, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
+        { to: '/sync-status', label: 'Sync Status', icon: RefreshCw, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
         { to: '/data-usage', label: 'Data Usage', icon: Zap, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] },
       ]
     },

@@ -1,9 +1,21 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 const Achievements = () => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    navigate('/certificates');
+  }, [navigate]);
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold">Achievements</h1>
-      <p className="text-app-text-sub mt-2">Coming Soon...</p>
+    <div className="flex items-center justify-center min-h-[60vh] p-8 text-center animate-in fade-in zoom-in duration-500">
+      <div className="animate-spin rounded-full h-8 w-8 border-2 border-transparent border-t-primary" />
+      <span className="ml-4 text-xs font-black text-app-text-muted uppercase tracking-widest">
+        Opening Achievement Center...
+      </span>
     </div>
   );
 };
+
 export default Achievements;

@@ -9,7 +9,7 @@ import {
 import Button from '../components/Button';
 import Card from '../components/Card';
 import { useProgress } from '../context/ProgressContext';
-import { quizAPI, userDataAPI } from '../services/api';
+import { quizAPI } from '../services/api';
 
 interface LocationState {
   pdfUrl?: string;
@@ -138,7 +138,7 @@ const PdfQuiz = () => {
       document.exitFullscreen?.().catch(() => undefined);
     }
     
-    // Persist result
+    // Persist result to local storage for quick view
     const result = {
       id: Date.now(),
       pdfName,
@@ -146,34 +146,6 @@ const PdfQuiz = () => {
       total,
       submittedAt: new Date().toISOString(),
     };
-
-    const syncToDb = async () => {
-      try {
-        const authData = localStorage.getItem('auth');
-        if (authData) {
-          const { user } = JSON.parse(authData);
-          const progRes = await userDataAPI.getProgress(String(user.id));
-          if (progRes.success) {
-            const currentProg = progRes.progress;
-            const updatedScores = [result, ...(currentProg.quiz_scores || [])].slice(0, 10);
-            const updatedActivities = [
-              { type: 'quiz', text: `Completed quiz on ${pdfName}: ${correctCount}/${total}`, timestamp: new Date().toISOString() },
-              ...(currentProg.activities || [])
-            ].slice(0, 20);
-
-            await userDataAPI.updateProgress(String(user.id), {
-              ...currentProg,
-              quiz_scores: updatedScores,
-              activities: updatedActivities,
-              lastActivity: new Date().toISOString().split('T')[0]
-            });
-          }
-        }
-      } catch (e) {
-        console.error('Failed to sync quiz result to DB', e);
-      }
-    };
-    syncToDb();
 
     try {
       const existing = JSON.parse(localStorage.getItem('quiz_results') || '[]') as typeof result[];

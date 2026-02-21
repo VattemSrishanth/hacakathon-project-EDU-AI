@@ -63,9 +63,23 @@ class MongoModel:
     def format_doc(doc):
         if not doc:
             return None
-        doc["id"] = str(doc["_id"])
-        del doc["_id"]
-        return doc
+        formatted = doc.copy()
+        
+        # Convert ObjectId to string
+        if "_id" in formatted:
+            formatted["id"] = str(formatted["_id"])
+            del formatted["_id"]
+        elif "id" not in formatted:
+            formatted["id"] = "temporary_id"
+            
+        # Convert datetime objects to ISO strings for JSON serialization
+        for key, value in formatted.items():
+            if isinstance(value, datetime):
+                formatted[key] = value.isoformat()
+            elif isinstance(value, date):
+                formatted[key] = value.isoformat()
+                
+        return formatted
 
     @staticmethod
     def format_list(docs):
@@ -82,6 +96,7 @@ def init_mongo_models(mongo_db):
     Progress.collection = db.progress
     Assignment.collection = db.assignments
     Notification.collection = db.notifications
+    EducationNews.collection = db.education_news
     Feedback.collection = db.feedback
     OfflineSync.collection = db.offline_sync
     LoginStreak.collection = db.login_streaks
@@ -168,7 +183,12 @@ class Assignment(MongoModel):
 
 class Notification(MongoModel):
     collection = None
-    # user_id, title, message, type, is_read, timestamp
+    # user_id, title, message, type, is_read, timestamp, priority
+
+
+class EducationNews(MongoModel):
+    collection = None
+    # title, description, source, publish_date, link, image_url
 
 
 class Feedback(MongoModel):

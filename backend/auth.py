@@ -43,6 +43,10 @@ def signup():
         if preferred_language not in valid_langs:
             preferred_language = "English"
 
+        role = str(data.get("role", "student")).strip().lower()
+        if role not in {"student", "teacher", "parent", "admin", "user"}:
+            role = "student"
+
         if User.find_one({"$or": [{"username": username}, {"email": email}]}):
             return jsonify({"error": "Username or email already exists.", "status": "error"}), 409
 
@@ -53,7 +57,7 @@ def signup():
             "password_hash": password_hash,
             "accessibility_mode": accessibility_mode,
             "preferred_language": preferred_language,
-            "role": role
+            "role": role # Respect role from request
         }
         user_id = User.create(user_data)
         user_doc = User.find_by_id(user_id)

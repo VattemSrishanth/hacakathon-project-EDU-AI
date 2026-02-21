@@ -626,7 +626,6 @@ const Settings = () => {
                       previewClass="bg-red-900"
                       accentClass="bg-red-700"
                     />
-                    
                     <ThemeCard 
                       id={"Harry Potter" as ThemeMode} 
                       title="Harry Potter" 

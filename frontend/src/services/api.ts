@@ -160,16 +160,22 @@ export const userDataAPI = {
     const response = await api.post('/progress', data, { params: { user_id: userId } });
     return response.data;
   },
-  saveChatHistory: async (userId: string, messages: any[]) => {
+  saveChatHistory: async (userId: string, messages: any[], sessionId?: string) => {
     if (!navigator.onLine) {
-      offlineSyncService.queueAction('CHAT_HISTORY', { userId, messages });
+      offlineSyncService.queueAction('CHAT_HISTORY', { userId, messages, sessionId });
       return { success: true, offline: true };
     }
-    const response = await api.post('/history', { messages }, { params: { user_id: userId } });
+    const response = await api.post('/history', { messages, sessionId }, { params: { user_id: userId } });
     return response.data;
   },
   getChatHistory: async (userId: string) => {
     const response = await api.get('/history', { params: { user_id: userId } });
+    return response.data;
+  },
+  clearChatHistory: async (userId: string, sessionId?: string) => {
+    const params: any = { user_id: userId };
+    if (sessionId) params.session_id = sessionId;
+    const response = await api.delete('/history', { params });
     return response.data;
   },
   submitFeedback: async (feedback: any) => {
@@ -182,6 +188,14 @@ export const userDataAPI = {
   },
   getNotifications: async (userId: string) => {
     const response = await api.get('/notifications', { params: { user_id: userId } });
+    return response.data;
+  },
+  updateNotificationsRead: async (userId: string) => {
+    const response = await api.put('/notifications/read', {}, { params: { user_id: userId } });
+    return response.data;
+  },
+  getEducationNews: async () => {
+    const response = await api.get('/education-news');
     return response.data;
   },
   getAssignments: async () => {

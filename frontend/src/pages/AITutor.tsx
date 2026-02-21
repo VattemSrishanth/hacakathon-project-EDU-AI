@@ -440,7 +440,7 @@ const AITutor = () => {
             id: h.id,
             title: h.messages?.[1]?.content.substring(0, 30) + '...' || 'AI Conversation',
             messages: h.messages,
-            timestamp: new Date(h.created_at)
+            timestamp: new Date(h.created_at || new Date())
           }));
           setChatSessions(sessions);
           if (sessions.length > 0) {
@@ -472,31 +472,40 @@ const AITutor = () => {
   // Save chat history to MongoDB
   useEffect(() => {
     const hasUserMessage = messages.some(m => m.role === 'user');
-    if (messages.length > 0 && currentSessionId && hasUserMessage && auth?.user?.id) {
+    if (messages.length > 1 && hasUserMessage && auth?.user?.id) {
       const syncChat = async () => {
         try {
-          // Generate session title from first user message
-          const firstUserMsg = messages.find(m => m.role === 'user');
-          const title = firstUserMsg 
-            ? firstUserMsg.content.slice(0, 40) + (firstUserMsg.content.length > 40 ? '...' : '')
-            : 'New Chat';
-
-          const currentSession: ChatSession = {
-            id: currentSessionId,
-            title,
-            messages,
-            timestamp: new Date(),
-          };
-
-          // Update local state first for responsiveness
-          setChatSessions(prev => {
-            const filtered = prev.filter(s => s.id !== currentSessionId);
-            return [currentSession, ...filtered].slice(0, 50);
-          });
-
-          // Sync to DB
+          // Sync to DB and get/persist session ID
           if (auth?.user?.id) {
-            await userDataAPI.saveChatHistory(String(auth.user.id), messages);
+            const res = await userDataAPI.saveChatHistory(
+              String(auth.user.id), 
+              messages, 
+              currentSessionId?.length === 24 ? currentSessionId : undefined
+            );
+            
+            // If backend returned a new real ID (for a new session), store it
+            if (res.success && res.id && res.id !== currentSessionId) {
+              setCurrentSessionId(res.id);
+            }
+
+            // Generate session title from first user message for local display
+            const firstUserMsg = messages.find(m => m.role === 'user');
+            const title = firstUserMsg 
+              ? firstUserMsg.content.slice(0, 40) + (firstUserMsg.content.length > 40 ? '...' : '')
+              : 'New Chat';
+
+            const currentSession: ChatSession = {
+              id: res.id || currentSessionId,
+              title,
+              messages,
+              timestamp: new Date(),
+            };
+
+            // Update local sessions list
+            setChatSessions(prev => {
+              const filtered = prev.filter(s => s.id !== (res.id || currentSessionId));
+              return [currentSession, ...filtered].slice(0, 50);
+            });
           }
         } catch (e) {
           console.error('DB Sync Error', e);
@@ -623,16 +632,39 @@ const AITutor = () => {
     setFileContext(null);
   };
 
-  const deleteSession = (sessionId: string) => {
-    setChatSessions(prev => {
-      const filtered = prev.filter(s => s.id !== sessionId);
-      window.localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(filtered));
-      return filtered;
-    });
-    
-    // If deleted current session, create new one
-    if (sessionId === currentSessionId) {
-      createNewChat();
+  const deleteSession = async (sessionId: string) => {
+    try {
+      if (auth?.user?.id && sessionId.length === 24) {
+        await userDataAPI.clearChatHistory(String(auth.user.id), sessionId);
+      }
+      
+      setChatSessions(prev => {
+        const filtered = prev.filter(s => s.id !== sessionId);
+        window.localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(filtered));
+        return filtered;
+      });
+      
+      // If deleted current session, create new one
+      if (sessionId === currentSessionId) {
+        createNewChat();
+      }
+    } catch (err) {
+      console.error('Failed to delete session', err);
+    }
+  };
+
+  const clearAllHistory = async () => {
+    if (window.confirm('Are you sure you want to clear all chat history? This cannot be undone.')) {
+      try {
+        if (auth?.user?.id) {
+          await userDataAPI.clearChatHistory(String(auth.user.id));
+        }
+        setChatSessions([]);
+        window.localStorage.removeItem(CHAT_SESSIONS_KEY);
+        createNewChat();
+      } catch (err) {
+        console.error('Failed to clear history', err);
+      }
     }
   };
 
@@ -642,7 +674,7 @@ const AITutor = () => {
       <div className="min-h-screen bg-app-bg py-12 px-4 flex items-center justify-center transition-colors duration-300">
         <div className="max-w-xl w-full">
           <Card className="p-12 text-center border-2 border-app-border bg-app-bg shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-ai-accent to-secondary" />
+            <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-ai-accent to-secondary" />
             <div className="w-24 h-24 bg-app-bg rounded-3xl flex items-center justify-center mx-auto mb-8 text-app-text-muted group-hover:scale-110 transition-transform duration-500">
               <Zap size={48} className="text-ai-accent" />
             </div>
@@ -723,39 +755,51 @@ const AITutor = () => {
                     <p className="text-sm font-bold text-app-text-muted">No conversations yet</p>
                   </div>
                 ) : (
-                  chatSessions.map((session) => (
-                    <div
-                      key={session.id}
-                      className={`
-                        group relative p-4 rounded-2xl cursor-pointer transition-all duration-200 border
-                        ${session.id === currentSessionId
-                          ? 'bg-ai-accent/5 border-ai-accent/20 ring-1 ring-ai-accent/10'
-                          : 'bg-app-bg-alt border-transparent hover:border-app-border shadow-sm'
-                        }
-                      `}
-                      onClick={() => loadSession(session)}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-black truncate ${session.id === currentSessionId ? 'text-ai-accent' : 'text-app-text-main'}`}>
-                            {session.title}
-                          </p>
-                          <p className="text-[10px] font-bold text-app-text-muted mt-1 uppercase tracking-widest">
-                            {new Date(session.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                          </p>
+                  <>
+                    {chatSessions.map((session) => (
+                      <div
+                        key={session.id}
+                        className={`
+                          group relative p-4 rounded-2xl cursor-pointer transition-all duration-200 border
+                          ${session.id === currentSessionId
+                            ? 'bg-ai-accent/5 border-ai-accent/20 ring-1 ring-ai-accent/10'
+                            : 'bg-app-bg-alt border-transparent hover:border-app-border shadow-sm'
+                          }
+                        `}
+                        onClick={() => loadSession(session)}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-black truncate ${session.id === currentSessionId ? 'text-ai-accent' : 'text-app-text-main'}`}>
+                              {session.title}
+                            </p>
+                            <p className="text-[10px] font-bold text-app-text-muted mt-1 uppercase tracking-widest">
+                              {session.timestamp instanceof Date && !isNaN(session.timestamp.getTime())
+                                ? session.timestamp.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+                                : 'Recent Session'}
+                            </p>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPendingDelete({ id: session.id, title: session.title });
+                            }}
+                            className={`${session.id === currentSessionId ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 p-1.5 hover:bg-red-500/10 rounded-lg text-red-500 transition-all`}
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setPendingDelete({ id: session.id, title: session.title });
-                          }}
-                          className={`${session.id === currentSessionId ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 p-1.5 hover:bg-red-500/10 rounded-lg text-red-500 transition-all`}
-                        >
-                          <Trash2 size={16} />
-                        </button>
                       </div>
-                    </div>
-                  ))
+                    ))}
+                    
+                    <button
+                      onClick={clearAllHistory}
+                      className="w-full mt-4 p-3 rounded-xl border border-app-border text-red-500 font-bold text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                      <Trash2 size={12} />
+                      Clear All History
+                    </button>
+                  </>
                 )}
               </div>
             </div>
@@ -776,7 +820,7 @@ const AITutor = () => {
                   </button>
                 )}
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-ai-accent to-secondary flex items-center justify-center text-white shadow-lg">
+                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-ai-accent to-secondary flex items-center justify-center text-white shadow-lg">
                     <Zap size={24} />
                   </div>
                   <div>
@@ -1011,3 +1055,4 @@ const AITutor = () => {
 };
 
 export default AITutor;
+

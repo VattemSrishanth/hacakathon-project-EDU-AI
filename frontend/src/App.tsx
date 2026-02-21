@@ -180,7 +180,7 @@ function AppContent() {
       <Route
         path="/lessons"
         element={
-          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}>
             <Lessons />
           </ProtectedRoute>
         }
@@ -188,7 +188,7 @@ function AppContent() {
       <Route
         path="/lessons/:id"
         element={
-          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}>
             <LessonViewer />
           </ProtectedRoute>
         }
@@ -196,7 +196,7 @@ function AppContent() {
       <Route
         path="/lessons/uploaded"
         element={
-          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}>
             <UploadedPdf />
           </ProtectedRoute>
         }
@@ -204,7 +204,7 @@ function AppContent() {
       <Route
         path="/lessons/quiz"
         element={
-          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}>
             <PdfQuiz />
           </ProtectedRoute>
         }
@@ -212,7 +212,7 @@ function AppContent() {
       <Route
         path="/assignments"
         element={
-          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}>
             <Assignments />
           </ProtectedRoute>
         }
@@ -220,7 +220,7 @@ function AppContent() {
       <Route
         path="/ai-tutor"
         element={
-          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+          <ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}>
             <AITutor />
           </ProtectedRoute>
         }
@@ -244,18 +244,18 @@ function AppContent() {
       <Route path="/sign-language/*" element={<ProtectedRoute><SignLanguage /></ProtectedRoute>} />
       <Route path="/captions" element={<ProtectedRoute><Captions /></ProtectedRoute>} />
       <Route path="/speech-assist" element={<ProtectedRoute><SpeechAssist /></ProtectedRoute>} />
-      <Route path="/downloads" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><UploadedPdf /></ProtectedRoute>} />
-      <Route path="/sync-status" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><ComingSoon title="Sync Status" /></ProtectedRoute>} />
+      <Route path="/downloads" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><UploadedPdf /></ProtectedRoute>} />
+      <Route path="/sync-status" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><ComingSoon title="Sync Status" /></ProtectedRoute>} />
       <Route path="/data-usage" element={<ProtectedRoute><ComingSoon title="Data Usage" /></ProtectedRoute>} />
       <Route path="/parent-view" element={<ProtectedRoute allowedRoles={['parent', 'admin']}><ComingSoon title="Parent View" /></ProtectedRoute>} />
       
       {/* New Feature Routes */}
       <Route path="/community" element={<ProtectedRoute><CommunityHome /></ProtectedRoute>} />
       <Route path="/community/ask" element={<ProtectedRoute><AskDoubt /></ProtectedRoute>} />
-      <Route path="/exams" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><Exams /></ProtectedRoute>} />
-      <Route path="/certificates" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><Certificates /></ProtectedRoute>} />
+      <Route path="/exams" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><Exams /></ProtectedRoute>} />
+      <Route path="/certificates" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><Certificates /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-      <Route path="/insights" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'parent', 'admin']}><Insights /></ProtectedRoute>} />
+      <Route path="/insights" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'parent', 'admin', 'user']}><Insights /></ProtectedRoute>} />
       <Route path="/onboarding" element={<GettingStarted />} />
       <Route path="/reports" element={<ProtectedRoute allowedRoles={['teacher', 'admin']}><Reports /></ProtectedRoute>} />
 

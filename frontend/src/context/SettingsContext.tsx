@@ -353,12 +353,21 @@ export const SettingsProvider: React.FC<React.PropsWithChildren> = ({ children }
     }));
   }, []);
 
-  const clearChatHistory = useCallback(() => {
+  const clearChatHistory = useCallback(async () => {
     try {
       window.localStorage.removeItem(CHAT_HISTORY_KEY);
       window.localStorage.removeItem(CHAT_HISTORY_KEY_ALT);
-    } catch {
-      // Ignore errors
+      
+      // Also clear from backend if user is logged in
+      const authData = localStorage.getItem('auth');
+      if (authData) {
+        const { user } = JSON.parse(authData);
+        if (user?.id) {
+          await userDataAPI.clearChatHistory(String(user.id));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to clear chat history', e);
     }
   }, []);
 

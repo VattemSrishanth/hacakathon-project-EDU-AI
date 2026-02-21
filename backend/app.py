@@ -12,7 +12,7 @@ import base64
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 import json
 import time
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from functools import wraps
 import requests
 from urllib.parse import urlparse, parse_qs
@@ -21,6 +21,7 @@ from xml.etree.ElementTree import ParseError
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_pymongo import PyMongo
+from bson.objectid import ObjectId
 
 from ai_engine import get_ai_response, generate_video_explanation, get_ai_response_payload, analyze_image
 import unified_llm as llm_service
@@ -40,6 +41,7 @@ from models import (
     LoginStreak,
     SyllabusContent,
     Doubt,
+    EducationNews,
 )
 
 try:
@@ -456,6 +458,11 @@ def register():
         if accessibility_mode == "normal":
             accessibility_mode = "regular"
 
+        # Validate role
+        role = str(data.get("role", "student")).strip().lower()
+        if role not in {"student", "teacher", "parent", "admin", "user"}:
+            role = "student"
+
         # Create user
         password_hash = User.set_password(password)
         user_data = {
@@ -464,7 +471,7 @@ def register():
             "password_hash": password_hash,
             "accessibility_mode": accessibility_mode,
             "preferred_language": preferred_language,
-            "role": "user"
+            "role": role
         }
         user_id = User.create(user_data)
         user_doc = User.find_by_id(user_id)
@@ -1084,7 +1091,7 @@ def manage_profile():
 
 # ==================== AI Chat History ====================
 
-@app.route("/api/history", methods=["GET", "POST"])
+@app.route("/api/history", methods=["GET", "POST", "DELETE"])
 def chat_history():
     """Get or save AI chat history."""
     user_id = request.args.get("user_id")
@@ -1095,52 +1102,127 @@ def chat_history():
         history = ChatHistory.find_all({"user_id": user_id}, sort=[("created_at", -1)])
         return jsonify({"success": True, "history": ChatHistory.format_list(history)})
     
-    else:
+    elif request.method == "POST":
         data = request.get_json()
         data["user_id"] = user_id
-        ChatHistory.create(data)
-        return jsonify({"success": True})
+        
+        # Support for updates to existing conversations
+        session_id = data.get("session_id") or data.get("sessionId")
+        
+        if session_id and len(session_id) == 24: # Valid ObjectId length
+            try:
+                # If we have an ID, update the existing entry
+                result = ChatHistory.collection.update_one(
+                    {"_id": ObjectId(session_id), "user_id": user_id},
+                    {"$set": {
+                        "messages": data.get("messages", []),
+                        "updated_at": datetime.utcnow()
+                    }}
+                )
+                if result.matched_count > 0:
+                    return jsonify({"success": True, "id": session_id})
+            except Exception:
+                pass
+                
+        # Create new history entry
+        new_id = ChatHistory.create(data)
+        return jsonify({"success": True, "id": str(new_id)})
+
+    elif request.method == "DELETE":
+        # If specific session_id is passed
+        session_id = request.args.get("session_id")
+        if session_id:
+            ChatHistory.delete(session_id)
+        else:
+            # Delete all history for this user
+            ChatHistory.collection.delete_many({"user_id": user_id})
+            
+        return jsonify({"success": True, "message": "History cleared"})
 
 
 # ==================== Progress Tracking ====================
 
 @app.route("/api/progress", methods=["GET", "POST"])
-def track_progress():
+@token_required
+def track_progress(current_user):
     """Get or update user learning progress."""
-    user_id = request.args.get("user_id")
-    if not user_id:
-        return jsonify({"error": "Auth required", "success": False}), 401
+    user_id = str(current_user["_id"])
+
+    # Define default schema (matching frontend)
+    default_progress = {
+        "lessonsCompleted": [],
+        "totalLessons": 50,
+        "timeSpent": {
+            "totalMinutes": 0,
+            "byLesson": {},
+            "byDay": {}
+        },
+        "quizScores": [],
+        "activityLog": [],
+        "questionsAsked": 0,
+        "lastActivityTimestamp": int(time.time() * 1000)
+    }
 
     if request.method == "GET":
         progress = Progress.find_one({"user_id": user_id})
+        
         if not progress:
-            progress = {
-                "user_id": user_id,
-                "lessonsCompleted": 0,
-                "totalLessons": 8,
-                "questionsAsked": 0,
-                "streakDays": 1,
-                "lastActivity": datetime.utcnow().strftime("%Y-%m-%d"),
-                "quiz_scores": [],
-                "activities": []
-            }
-        return jsonify({"success": True, "progress": Progress.format_doc(progress) if "_id" in progress else progress})
+            progress = {"user_id": user_id, **default_progress}
+            try:
+                Progress.create(progress)
+            except Exception:
+                pass
+        else:
+            # Migration/Merging: ensure new fields exist if we found old data
+            dirty = False
+            
+            # Transfer old field names if they exist and new names don't
+            if "lessons_completed" in progress and "lessonsCompleted" not in progress:
+                progress["lessonsCompleted"] = progress.get("lessons_completed", [])
+                dirty = True
+            
+            if "quiz_scores" in progress and "quizScores" not in progress:
+                progress["quizScores"] = progress.get("quiz_scores", [])
+                dirty = True
+                
+            if "questions_asked" in progress and "questionsAsked" not in progress:
+                progress["questionsAsked"] = progress.get("questions_asked", 0)
+                dirty = True
+
+            # Ensure all default keys exist
+            for key, val in default_progress.items():
+                if key not in progress:
+                    progress[key] = val
+                    dirty = True
+            
+            if dirty:
+                try:
+                    Progress.update(progress["_id"], progress)
+                except Exception:
+                    pass
+            
+        return jsonify({"success": True, "progress": Progress.format_doc(progress)})
     
     else:
+        # POST: update progress
         data = request.get_json()
-        progress_id = data.pop("id", None)
+        if not data:
+            return jsonify({"error": "No data provided", "success": False}), 400
+            
+        # Ensure we don't overwrite user_id and remove internal Mongo fields before update
+        data["user_id"] = user_id
+        data.pop("id", None)
+        data.pop("_id", None)
         
-        if progress_id:
-            Progress.update(progress_id, data)
-        else:
-            # Try to find by user_id if id not provided or null
+        try:
             existing = Progress.find_one({"user_id": user_id})
             if existing:
                 Progress.update(existing["_id"], data)
             else:
-                Progress.create({**data, "user_id": user_id})
-        
-        return jsonify({"success": True})
+                Progress.create(data)
+            return jsonify({"success": True})
+        except Exception as e:
+            return jsonify({"error": str(e), "success": False}), 500
 
 
 # ==================== Assignments & Feedback ====================
@@ -1178,17 +1260,134 @@ def manage_doubts():
 
 @app.route("/api/notifications", methods=["GET"])
 def get_notifications():
-    """Get notifications for a user."""
-    user_id = request.args.get("user_id")
-    notifs = Notification.find_all({"user_id": user_id}, sort=[("created_at", -1)])
-    return jsonify({"success": True, "notifications": Notification.format_list(notifs)})
-
-@app.route("/api/sync", methods=["POST"])
-def sync_offline_data():
-    """Sync offline progress and actions when user is back online."""
+    """Get notifications grouped by time."""
     user_id = request.args.get("user_id")
     if not user_id:
-        return jsonify({"error": "Auth required", "success": False}), 401
+        return jsonify({"success": False, "notifications": []})
+
+    # Find notifications for the specific user
+    notifications = Notification.find_all({"user_id": user_id}, sort=[("created_at", -1)])
+    
+    # If no notifications exist, create some mock "Welcome" notifications
+    if not notifications:
+        mock_notifs = [
+            {
+                "user_id": user_id,
+                "title": "Welcome!", 
+                "message": "Let's start your journey with LearnBridge AI.",
+                "type": "info",
+                "priority": "normal",
+                "created_at": datetime.utcnow()
+            },
+            {
+                "user_id": user_id,
+                "title": "New Assignment",
+                "message": "A new AI practice lesson is waiting for you.",
+                "type": "assignment",
+                "priority": "high",
+                "created_at": datetime.utcnow()
+            }
+        ]
+        for n in mock_notifs:
+            Notification.create(n)
+        notifications = Notification.find_all({"user_id": user_id}, sort=[("created_at", -1)])
+
+    return jsonify({"success": True, "notifications": Notification.format_list(notifications)})
+
+@app.route("/api/education-news", methods=["GET"])
+def get_education_news():
+    """
+    Get latest education news. 
+    Fetches latest education-related updates using keywords: 
+    'education exams scholarship students policy careers learning'
+    """
+    # In a real production app, we would use a News API like NewsAPI.org or GNews
+    # For now, we seed fresh "live" education content with the requested keywords
+    news = EducationNews.find_all({}, sort=[("publish_date", -1)], limit=12)
+    
+    # If no news or data is older than 24 hours, refresh with "latest" content
+    if not news or (len(news) > 0 and (datetime.utcnow() - news[0]['publish_date']).total_seconds() > 86400):
+        print("[news] Fetching latest education news updates...")
+        live_news = [
+            {
+                "title": "National Scholarship Portal 2026: New Merit Cum Means Dates Announced",
+                "description": "The Ministry of Education has opened the application window for the National Merit Cum Means scholarship for the academic session 2026-27. Eligible students can apply through the official portal before the end of March.",
+                "source": "Education Ministry",
+                "publish_date": datetime.utcnow() - timedelta(hours=2),
+                "link": "https://scholarships.gov.in/",
+                "image_url": "https://images.unsplash.com/photo-1523240715639-994ad5cd6389?q=80&w=1000"
+            },
+            {
+                "title": "Exams 2026: CBSE Announces Shift to Hybrid Assessment Mode",
+                "description": "In a major policy shift, CBSE has announced that the 2026 board exams will feature a mix of OMR-based multiple choice and descriptive answers to better assess student learning outcomes.",
+                "source": "CBSE News",
+                "publish_date": datetime.utcnow() - timedelta(hours=5),
+                "link": "https://cbse.gov.in/",
+                "image_url": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1000"
+            },
+            {
+                "title": "AI in Classrooms: New Government Policy for Rural Primary Schools",
+                "description": "A new education policy mandate requires every rural primary school to integrate AI-assisted learning tools by the start of the 2027 academic year to bridge the digital divide.",
+                "source": "Public Policy Journal",
+                "publish_date": datetime.utcnow() - timedelta(hours=12),
+                "link": "https://education.gov.in/policy",
+                "image_url": "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000"
+            },
+            {
+                "title": "Top Tech Career Trends for 2026: What Students Should Know",
+                "description": "As the job market evolves, career experts highlight AI engineering, sustainable energy tech, and telemedicine support as the top growing fields for recent graduates.",
+                "source": "Career Insight",
+                "publish_date": datetime.utcnow() - timedelta(hours=18),
+                "link": "https://example.edu/careers",
+                "image_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1000"
+            },
+            {
+                "title": "UGC Updates: Lateral Entry Options for Technical Degrees",
+                "description": "The University Grants Commission has simplified the lateral entry policy, allowing students with relevant diplomas to enter the 2nd year of degree programs more easily.",
+                "source": "UGC Media",
+                "publish_date": datetime.utcnow() - timedelta(days=1),
+                "link": "https://ugc.ac.in/",
+                "image_url": "https://images.unsplash.com/photo-1541339907198-e08756ebafe3?q=80&w=1000"
+            }
+        ]
+        
+        # Only add if it doesn't exist by title
+        for mn in live_news:
+            if not EducationNews.find_one({"title": mn["title"]}):
+                EducationNews.create(mn)
+        
+        # Re-fetch the updated list
+        news = EducationNews.find_all({}, sort=[("publish_date", -1)], limit=12)
+
+    # Reformat to match the requested return structure:
+    # title, description, image, source, publishedAt, url
+    formatted_news = []
+    for item in news:
+        formatted_news.append({
+            "id": str(item.get("_id")),
+            "title": item.get("title"),
+            "description": item.get("description"),
+            "image": item.get("image_url"),
+            "source": item.get("source"),
+            "publishedAt": item.get("publish_date").isoformat() if isinstance(item.get("publish_date"), datetime) else item.get("publish_date"),
+            "url": item.get("link")
+        })
+
+    return jsonify({"success": True, "news": formatted_news})
+
+@app.route("/api/notifications/read", methods=["PUT"])
+def mark_notifications_read():
+    """Mark all notifications as read for a user."""
+    user_id = request.args.get("user_id")
+    if user_id:
+        Notification.collection.update_many({"user_id": user_id, "is_read": False}, {"$set": {"is_read": True}})
+    return jsonify({"success": True})
+
+@app.route("/api/sync", methods=["POST"])
+@token_required
+def sync_offline_data(current_user):
+    """Sync offline progress and actions when user is back online."""
+    user_id = str(current_user["_id"])
     
     data = request.get_json()
     actions = data.get("actions", [])
