@@ -318,14 +318,14 @@ const CertificateCard: React.FC<{ certificate: Certificate, variants: any }> = (
   >
     <div className="relative h-48 overflow-hidden">
       <img src={certificate.courseImage} alt={certificate.courseName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-      <div className="absolute inset-0 bg-linear-to-t from-app-bg-alt via-transparent to-transparent opacity-60" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60" />
       <div className="absolute top-6 left-6 flex gap-3">
         <div className="px-3 py-1 bg-white border border-app-border text-app-text-main text-[8px] font-black uppercase tracking-widest rounded-lg flex items-center gap-1.5">
            <Star size={10} className="text-amber-500" fill="currentColor" />
            Certified
         </div>
       </div>
-      <div className="absolute bottom-6 left-6 text-2xl font-black text-white px-2 py-1 bg-black/40 backdrop-blur-md rounded-lg border border-white/20">
+      <div className="absolute bottom-6 left-6 text-2xl font-black text-white px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg border border-white/20">
         {certificate.grade}
       </div>
     </div>

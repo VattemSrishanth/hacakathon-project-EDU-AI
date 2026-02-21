@@ -149,7 +149,7 @@ const Notifications: React.FC = () => {
               <span className="w-8 h-px bg-primary" />
               Intelligence Hub
             </div>
-            <h1 className="text-4xl md:text-6xl font-black text-app-text-main tracking-tight uppercase leading-none">
+            <h1 className="text-4xl md:text-6xl font-black text-app-text-main dark:text-white tracking-tight uppercase leading-none">
               The <span className="text-primary italic">Education</span> Gazette
             </h1>
           </div>
@@ -207,14 +207,14 @@ const Notifications: React.FC = () => {
                     alt={featuredNews[carouselIndex].title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-linear-to-t from-app-bg via-app-bg/40 to-transparent" />
+                   <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent" />
                   
                   <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full max-w-4xl space-y-4">
                     <div className="flex items-center gap-3">
                       <span className="px-3 py-1 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-lg">
                         Featured
                       </span>
-                      <span className="flex items-center gap-1 text-[10px] font-black text-white/80 uppercase tracking-widest">
+                      <span className="flex items-center gap-1 text-[10px] font-black text-white uppercase tracking-widest">
                         <TrendingUp size={12} className="text-secondary" />
                         Trending Now
                       </span>
@@ -286,7 +286,7 @@ const Notifications: React.FC = () => {
         {/* Section: Category Filters */}
         <section className="mb-10">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-black text-app-text-main uppercase tracking-tight flex items-center gap-3">
+            <h3 className="text-xl font-black text-app-text-main dark:text-white uppercase tracking-tight flex items-center gap-3">
                <Filter size={20} className="text-primary" />
                Browse News
             </h3>
