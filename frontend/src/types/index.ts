@@ -26,8 +26,8 @@ export interface Notification {
   priority?: 'low' | 'normal' | 'high';
   is_read: boolean;
   created_at: string;
+  timestamp?: string;
 }
-
 export interface EducationNews {
   id: string;
   title: string;
@@ -65,6 +65,12 @@ export interface InProgressCertificate {
   lessonsRemaining: number;
   totalLessons: number;
   courseImage?: string;
+  tasks: {
+    lessonsCompleted: boolean;
+    assignmentsSubmitted: boolean;
+    quizAccuracyMet: boolean;
+    finalAssessmentCompleted: boolean;
+  };
 }
 
 export interface AchievementBadge {

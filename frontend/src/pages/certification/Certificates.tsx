@@ -9,8 +9,6 @@ import {
   Target, 
   Flame, 
   BookOpen, 
-  History, 
-  ExternalLink, 
   Printer,
   TrendingUp,
   Star,
@@ -50,15 +48,27 @@ const MOCK_IN_PROGRESS: InProgressCertificate[] = [
     progress: 75,
     lessonsRemaining: 3,
     totalLessons: 12,
-    courseImage: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop'
+    courseImage: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop',
+    tasks: {
+      lessonsCompleted: false,
+      assignmentsSubmitted: true,
+      quizAccuracyMet: true,
+      finalAssessmentCompleted: false
+    }
   },
   {
     id: '4',
     courseName: 'Advanced Computer Vision with AI',
-    progress: 40,
-    lessonsRemaining: 8,
+    progress: 90,
+    lessonsRemaining: 1,
     totalLessons: 14,
-    courseImage: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?q=80&w=2070&auto=format&fit=crop'
+    courseImage: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?q=80&w=2070&auto=format&fit=crop',
+    tasks: {
+      lessonsCompleted: false,
+      assignmentsSubmitted: true,
+      quizAccuracyMet: true,
+      finalAssessmentCompleted: false
+    }
   }
 ];
 
@@ -180,16 +190,25 @@ const Certificates = () => {
                     ))}
                   </div>
                 ) : (
-                  <EmptyState message="Earn your first certificate!" subtext="Complete any course to unlock your first professional certificate." />
+                  <EmptyState 
+                    message="You're on your way to earning certificates!" 
+                    subtext="Every lesson completed brings you closer. Check your eligibility tracker below to see your path to certification." 
+                  />
                 )}
               </section>
 
               {/* In-Progress Certs */}
               <section>
-                <h2 className="text-2xl font-black text-app-text-main uppercase tracking-tight flex items-center gap-3 mb-8">
-                  <Clock className="text-primary" size={28} />
-                  In-Progress Certifications
-                </h2>
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-2xl font-black text-app-text-main uppercase tracking-tight flex items-center gap-3">
+                    <Clock className="text-primary" size={28} />
+                    Eligibility Tracker
+                  </h2>
+                  <div className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-primary/5 border border-primary/20 rounded-full">
+                    <TrendingUp size={14} className="text-primary" />
+                    <span className="text-[10px] font-black text-primary uppercase tracking-widest">Live Progress Tracking</span>
+                  </div>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {MOCK_IN_PROGRESS.map((cert) => (
                     <InProgressCard key={cert.id} certificate={cert} variants={itemVariants} />
@@ -203,36 +222,36 @@ const Certificates = () => {
                   <Medal size={240} />
                 </div>
                 <div className="relative z-10 max-w-3xl">
-                  <h3 className="text-3xl font-black text-app-text-main uppercase tracking-tight mb-4">How to Earn Your <span className="text-primary">Global Certificate</span></h3>
+                  <h3 className="text-3xl font-black text-app-text-main uppercase tracking-tight mb-4">Certification <span className="text-primary">Requirements</span></h3>
                   <p className="text-sm font-bold text-app-text-sub uppercase tracking-widest leading-relaxed opacity-70 mb-10">
-                    Follow these simple steps and transform your learning into a globally recognized credential.
+                    To earn your official professional certificate, ensure all tasks below are completed for your chosen course.
                   </p>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <HowToStep 
                       number="01" 
-                      title="Master Lessons" 
-                      desc="Engage with interactive lessons and video tutorials designed by AI experts." 
+                      title="Master All Lessons" 
+                      desc="Watch all video content and interact with the modules until 100% completion." 
                     />
                     <HowToStep 
                       number="02" 
-                      title="Pass Quizzes" 
-                      desc="Demonstrate your knowledge with accuracy scores above 80% on each module." 
+                      title="Submit Assignments" 
+                      desc="Practical application of your skills through course assignments and projects." 
                     />
                     <HowToStep 
                       number="03" 
-                      title="Final Assessment" 
-                      desc="Complete the comprehensive final exam to verify your mastery of the entire course." 
+                      title="Meet Quiz Accuracy" 
+                      desc="Demonstrate mastery by scoring at least 80% accuracy across all module quizzes." 
                     />
                     <HowToStep 
                       number="04" 
-                      title="Share Success" 
-                      desc="Instantly download your PDF and share your achievement on professional networks." 
+                      title="Final Assessment" 
+                      desc="Pass the comprehensive final exam to verify your knowledge and unlock your certificate." 
                     />
                   </div>
 
                   <Link to="/lessons" className="mt-12 inline-flex items-center gap-3 px-10 py-5 bg-primary text-white font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:scale-105 transition-all">
-                    Continue Learning <ChevronRight size={18} />
+                    Continue My Tasks <ChevronRight size={18} />
                   </Link>
                 </div>
               </section>
@@ -345,7 +364,7 @@ const CertificateCard: React.FC<{ certificate: Certificate, variants: any }> = (
             <div className="text-xs font-black text-app-text-main uppercase">{new Date(certificate.completionDate).toLocaleDateString()}</div>
           </div>
           <div>
-            <div className="text-[8px] font-black text-app-text-muted uppercase tracking-widest mb-1 opacity-60">Assessment Score</div>
+            <div className="text-[8px] font-black text-app-text-muted uppercase tracking-widest mb-1 opacity-60">Final Score</div>
             <div className="text-xs font-black text-app-text-main uppercase">{certificate.score} Accuracy</div>
           </div>
        </div>
@@ -365,53 +384,96 @@ const CertificateCard: React.FC<{ certificate: Certificate, variants: any }> = (
   </motion.div>
 );
 
-const InProgressCard: React.FC<{ certificate: InProgressCertificate, variants: any }> = ({ certificate, variants }) => (
-  <motion.div 
-    variants={variants}
-    className="bg-app-bg-alt/50 border border-app-border rounded-[40px] p-8 group hover:bg-app-bg-alt transition-all duration-300"
-  >
-    <div className="flex gap-6 items-start mb-8">
-       <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border border-app-border">
-          <img src={certificate.courseImage} alt={certificate.courseName} className="w-full h-full object-cover" />
-       </div>
-       <div>
-          <h3 className="text-lg font-black text-app-text-main uppercase tracking-tight line-clamp-1 group-hover:text-primary transition-colors">{certificate.courseName}</h3>
-          <div className="flex items-center gap-2 mt-2">
-             <div className="px-2 py-1 bg-primary/10 text-primary text-[8px] font-black uppercase tracking-widest rounded">
-                Earned Status: Soon
-             </div>
-             <span className="text-[9px] font-bold text-app-text-muted uppercase tracking-widest flex items-center gap-1">
-                <BookOpen size={10} />
-                {certificate.lessonsRemaining} Lessons Left
-             </span>
-          </div>
-       </div>
-    </div>
+const InProgressCard: React.FC<{ certificate: InProgressCertificate, variants: any }> = ({ certificate, variants }) => {
+  const pendingTasksCount = Object.values(certificate.tasks || {}).filter(v => !v).length;
+  const isNearlyComplete = pendingTasksCount === 1;
 
-    <div className="space-y-4">
-       <div className="flex justify-between items-end mb-1">
-          <span className="text-[10px] font-black text-app-text-main uppercase tracking-widest">Progress to Certificate</span>
-          <span className="text-xs font-black text-primary">{certificate.progress}%</span>
-       </div>
-       <div className="h-4 w-full bg-app-border rounded-full p-1 overflow-hidden">
-          <motion.div 
-             initial={{ width: 0 }}
-             animate={{ width: `${certificate.progress}%` }}
-             transition={{ duration: 1, ease: "easeOut" }}
-             className="h-full bg-linear-to-r from-primary to-secondary rounded-full relative"
-          >
-             <div className="absolute inset-0 bg-white/20 animate-pulse" />
-          </motion.div>
-       </div>
-       <p className="text-[10px] font-bold text-app-text-sub uppercase tracking-widest italic opacity-60">
-          "Almost there! Just {certificate.lessonsRemaining} more lessons to earn your official credential."
-       </p>
+  return (
+    <motion.div 
+      variants={variants}
+      className={`bg-app-bg-alt/50 border ${isNearlyComplete ? 'border-amber-500/50 ring-1 ring-amber-500/20' : 'border-app-border'} rounded-[40px] p-8 group hover:bg-app-bg-alt transition-all duration-300 relative overflow-hidden`}
+    >
+      {isNearlyComplete && (
+        <div className="absolute top-0 right-0 px-4 py-1.5 bg-amber-500 text-white text-[9px] font-black uppercase tracking-widest rounded-bl-2xl">
+           Nearly Certified!
+        </div>
+      )}
+
+      <div className="flex gap-6 items-start mb-8">
+         <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border border-app-border group-hover:scale-105 transition-transform duration-500">
+            <img src={certificate.courseImage} alt={certificate.courseName} className="w-full h-full object-cover" />
+         </div>
+         <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+               <Clock size={12} className="text-primary" />
+               <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">In Progress</span>
+            </div>
+            <h3 className="text-lg font-black text-app-text-main uppercase tracking-tight truncate group-hover:text-primary transition-colors">{certificate.courseName}</h3>
+            <div className="flex items-center gap-2 mt-2">
+               <div className={`px-2 py-1 ${isNearlyComplete ? 'bg-amber-500/10 text-amber-600' : 'bg-primary/10 text-primary'} text-[8px] font-black uppercase tracking-widest rounded`}>
+                  {isNearlyComplete ? '1 task left to earn' : `${pendingTasksCount} tasks remaining`}
+               </div>
+               <span className="text-[9px] font-bold text-app-text-muted uppercase tracking-widest flex items-center gap-1">
+                  <BookOpen size={10} />
+                  {certificate.lessonsRemaining} Lessons Left
+               </span>
+            </div>
+         </div>
+      </div>
+
+      <div className="space-y-6">
+         <div>
+            <div className="flex justify-between items-end mb-2">
+               <span className="text-[10px] font-black text-app-text-main uppercase tracking-widest">Certification Readiness</span>
+               <span className="text-xs font-black text-primary">{certificate.progress}%</span>
+            </div>
+            <div className="h-3 w-full bg-app-border rounded-full p-0.5 overflow-hidden">
+               <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${certificate.progress}%` }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="h-full bg-linear-to-r from-primary via-secondary to-primary rounded-full relative"
+               >
+                  <div className="absolute inset-0 bg-white/20 animate-pulse" />
+               </motion.div>
+            </div>
+         </div>
+
+         {/* Task Checklist */}
+         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-app-border/50">
+            <TaskItem label="All Lessons" completed={certificate.tasks.lessonsCompleted} />
+            <TaskItem label="Assignments" completed={certificate.tasks.assignmentsSubmitted} />
+            <TaskItem label="Quiz Accuracy" completed={certificate.tasks.quizAccuracyMet} />
+            <TaskItem label="Final Test" completed={certificate.tasks.finalAssessmentCompleted} />
+         </div>
+
+         <div className="bg-app-bg rounded-2xl p-4 border border-app-border">
+            <p className="text-[10px] font-bold text-app-text-sub uppercase tracking-widest italic opacity-80 leading-relaxed text-center">
+               {isNearlyComplete 
+                 ? "🎯 You're just one step away! Complete the final requirement to unlock your global certificate."
+                 : `🚀 Great progress! Finish the remaining tasks to earn your credential.`
+               }
+            </p>
+         </div>
+      </div>
+      
+      <button className="w-full mt-8 py-4 bg-app-bg border border-app-border rounded-2xl text-[9px] font-black text-app-text-main uppercase tracking-[0.2em] group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
+         Continue Course Tasks
+      </button>
+    </motion.div>
+  );
+};
+
+const TaskItem = ({ label, completed }: { label: string, completed: boolean }) => (
+  <div className="flex items-center gap-2">
+    <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${completed ? 'bg-emerald-500 text-white' : 'border border-app-text-muted/30'}`}>
+      {completed ? <CheckCircle2 size={10} /> : <div className="w-1.5 h-1.5 rounded-full bg-app-text-muted/20" />}
     </div>
-    
-    <button className="w-full mt-8 py-4 bg-app-bg border border-app-border rounded-2xl text-[9px] font-black text-app-text-main uppercase tracking-[0.2em] group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
-       Continue Learning
-    </button>
-  </motion.div>
+    <span className={`text-[10px] font-bold uppercase tracking-tight ${completed ? 'text-app-text-main' : 'text-app-text-muted'}`}>
+      {label}
+      {!completed && <span className="ml-1 text-[8px] opacity-40 italic">(Pending)</span>}
+    </span>
+  </div>
 );
 
 const BadgeIcon: React.FC<{ badge: AchievementBadge, variants: any }> = ({ badge, variants }) => {
@@ -473,8 +535,8 @@ const EmptyState: React.FC<{ message: string, subtext: string }> = ({ message, s
     <p className="text-xs font-bold text-app-text-sub uppercase tracking-widest opacity-60 max-w-sm mx-auto mb-8">
       {subtext}
     </p>
-    <Link to="/lessons" className="px-10 py-4 bg-primary text-white font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
-       Browse Courses
+    <Link to="/lessons" className="px-10 py-4 bg-primary text-white font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-105 transition-all">
+       Continue Learning
     </Link>
   </div>
 );

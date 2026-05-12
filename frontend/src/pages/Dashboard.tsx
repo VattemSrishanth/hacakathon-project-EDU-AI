@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { useSettings } from '../context/SettingsContext';
@@ -7,11 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useOffline } from '../context/OfflineContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { syllabusAPI } from '../services/api';
 
-// Import all board syllabi for metrics
-import ncertSyllabus from '../data/ncert_syllabus.json';
-import telanganaSyllabus from '../data/telangana_syllabus.json';
-import apSyllabus from '../data/andhra_pradesh_syllabus.json';
 
 import { 
   BarChart, 
@@ -102,20 +99,28 @@ const Dashboard = () => {
     };
   }, [progress.activityLog]);
 
-  // Select syllabus based on board setting
-  const activeSyllabus = useMemo(() => {
-    switch (settings.learning.board) {
-      case 'Telangana': return telanganaSyllabus;
-      case 'Andhra Pradesh': return apSyllabus;
-      case 'NCERT':
-      default: return ncertSyllabus;
-    }
+  const [activeSyllabus, setActiveSyllabus] = useState<any>({ board: settings.learning.board, classes: {} });
+
+  useEffect(() => {
+    const fetchSyllabus = async () => {
+      try {
+        const res = await syllabusAPI.getBoard(settings.learning.board);
+        if (res.success && res.syllabus) {
+          setActiveSyllabus(res.syllabus);
+        } else {
+          setActiveSyllabus({ board: settings.learning.board, classes: {} });
+        }
+      } catch (e) {
+        setActiveSyllabus({ board: settings.learning.board, classes: {} });
+      }
+    };
+    fetchSyllabus();
   }, [settings.learning.board]);
 
   useEffect(() => {
     let totalTopics = 0;
     try {
-      const classes = (activeSyllabus as any).classes;
+      const classes = (activeSyllabus as any).classes || {};
       // Filter syllabus strictly to student's level for better motivation
       const grade = settings.learning.level.toString();
       

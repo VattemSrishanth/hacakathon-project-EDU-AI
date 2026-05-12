@@ -1,0 +1,81 @@
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
+
+const boardsRoutes = require("./routes/boards");
+const classesRoutes = require("./routes/classes");
+const subjectsRoutes = require("./routes/subjects");
+const chaptersRoutes = require("./routes/chapters");
+const topicsRoutes = require("./routes/topics");
+const searchRoutes = require("./routes/search");
+const userRoutes = require("./routes/users");
+const learningRoutes = require("./routes/learning");
+const syllabusRoutes = require("./routes/syllabus");
+const authRoutes = require("./routes/api_auth");
+const aiRoutes = require("./routes/ai");
+const lessonsRoutes = require("./routes/lessons");
+const userDataRoutes = require("./routes/userData");
+const adminRoutes = require("./routes/admin");
+const syllabusContentRoutes = require("./routes/syllabusContent");
+const healthRoutes = require("./routes/health");
+const quizRoutes = require("./routes/quiz");
+const ttsRoutes = require("./routes/tts");
+const newsRoutes = require("./routes/news");
+const communityRoutes = require("./routes/community");
+const youtubeRoutes = require("./routes/youtube");
+const notFound = require("./middleware/notFound");
+const errorHandler = require("./middleware/errorHandler");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json({ limit: "2mb" }));
+app.use(morgan("dev"));
+
+app.use("/boards", boardsRoutes);
+app.use("/classes", classesRoutes);
+app.use("/subjects", subjectsRoutes);
+app.use("/chapters", chaptersRoutes);
+app.use("/topics", topicsRoutes);
+app.use("/search", searchRoutes);
+app.use("/user", userRoutes);
+app.use("/learning", learningRoutes);
+app.use("/api/syllabus", syllabusRoutes);
+app.use("/auth", authRoutes);
+app.use("/", aiRoutes);
+app.use("/", lessonsRoutes);
+app.use("/", userDataRoutes);
+app.use("/", adminRoutes);
+app.use("/", syllabusContentRoutes);
+app.use("/", healthRoutes);
+app.use("/", quizRoutes);
+app.use("/", ttsRoutes);
+app.use("/", newsRoutes);
+app.use("/", communityRoutes);
+app.use("/", youtubeRoutes);
+
+app.use("/api/boards", boardsRoutes);
+app.use("/api/classes", classesRoutes);
+app.use("/api/subjects", subjectsRoutes);
+app.use("/api/chapters", chaptersRoutes);
+app.use("/api/topics", topicsRoutes);
+app.use("/api/search", searchRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/learning", learningRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api", aiRoutes);
+app.use("/api", lessonsRoutes);
+app.use("/api", userDataRoutes);
+app.use("/api", adminRoutes);
+app.use("/api", syllabusContentRoutes);
+app.use("/api", healthRoutes);
+app.use("/api", quizRoutes);
+app.use("/api", ttsRoutes);
+app.use("/api", newsRoutes);
+app.use("/api", communityRoutes);
+app.use("/api", youtubeRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
+
+module.exports = app;

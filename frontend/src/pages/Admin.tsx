@@ -2,11 +2,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { adminAPI, syllabusAPI } from '../services/api';
 
-// Import all board syllabi
-import ncertSyllabus from '../data/ncert_syllabus.json';
-import telanganaSyllabus from '../data/telangana_syllabus.json';
-import apSyllabus from '../data/andhra_pradesh_syllabus.json';
-
 interface Syllabus {
   board: string;
   classes: {
@@ -27,6 +22,7 @@ const Admin: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [activeTab, setActiveTab] = useState<'content' | 'users' | 'syllabus'>('content');
+  const [activeSyllabus, setActiveSyllabus] = useState<Syllabus>({ board: 'NCERT', classes: {} });
   
   // Syllabus form state
   const [syllabusForm, setSyllabusForm] = useState({
@@ -38,25 +34,34 @@ const Admin: React.FC = () => {
     pdf_base64: ''
   });
 
-  const activeSyllabus = useMemo(() => {
-    switch (syllabusForm.board) {
-      case 'Telangana': return telanganaSyllabus as unknown as Syllabus;
-      case 'Andhra Pradesh': return apSyllabus as unknown as Syllabus;
-      case 'NCERT':
-      default: return ncertSyllabus as unknown as Syllabus;
-    }
+  useEffect(() => {
+    const fetchSyllabus = async () => {
+      try {
+        const res = await syllabusAPI.getBoard(syllabusForm.board);
+        if (res.success && res.syllabus) {
+          setActiveSyllabus(res.syllabus as Syllabus);
+        } else {
+          setActiveSyllabus({ board: syllabusForm.board, classes: {} });
+          setError(res.message || 'Failed to load syllabus');
+        }
+      } catch (err) {
+        setActiveSyllabus({ board: syllabusForm.board, classes: {} });
+        setError('Failed to load syllabus');
+      }
+    };
+    fetchSyllabus();
   }, [syllabusForm.board]);
 
   const availableClasses = useMemo(() => Object.keys(activeSyllabus.classes), [activeSyllabus]);
   const availableSubjects = useMemo(() => {
     if (!syllabusForm.class) return [];
-    return Object.keys(activeSyllabus.classes[syllabusForm.class].subjects);
+    return Object.keys(activeSyllabus.classes[syllabusForm.class]?.subjects || {});
   }, [syllabusForm.class, activeSyllabus]);
 
   const availableTopics = useMemo(() => {
     if (!syllabusForm.class || !syllabusForm.subject) return [];
-    const subjects = activeSyllabus.classes[syllabusForm.class].subjects[syllabusForm.subject];
-    return subjects.flatMap(s => s.topics);
+    const subjects = activeSyllabus.classes[syllabusForm.class]?.subjects?.[syllabusForm.subject] || [];
+    return subjects.flatMap(s => s.topics || []);
   }, [syllabusForm.class, syllabusForm.subject, activeSyllabus]);
 
   // Fetch existing content when topic selection changes

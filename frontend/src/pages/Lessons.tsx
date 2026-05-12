@@ -5,11 +5,6 @@ import { useProgress } from '../context/ProgressContext';
 import { syllabusAPI, lessonGeneratorAPI } from '../services/api';
 import { offlineContentService } from '../services/offlineContent';
 
-// Import all board syllabi
-import ncertSyllabus from '../data/ncert_syllabus.json';
-import telanganaSyllabus from '../data/telangana_syllabus.json';
-import apSyllabus from '../data/andhra_pradesh_syllabus.json';
-
 import { 
   BookOpen, 
   ArrowLeft,
@@ -44,15 +39,11 @@ const Lessons = () => {
   const { auth } = useAuth();
   const { progress, markLessonCompleted, startLessonTimer, stopLessonTimer } = useProgress();
   
-  // Select syllabus based on board setting
-  const activeSyllabus = useMemo(() => {
-    switch (settings.learning.board) {
-      case 'Telangana': return telanganaSyllabus as unknown as Syllabus;
-      case 'Andhra Pradesh': return apSyllabus as unknown as Syllabus;
-      case 'NCERT':
-      default: return ncertSyllabus as unknown as Syllabus;
-    }
-  }, [settings.learning.board]);
+  const [activeSyllabus, setActiveSyllabus] = useState<Syllabus>({
+    board: settings.learning.board,
+    classes: {}
+  });
+  const [syllabusLoading, setSyllabusLoading] = useState(true);
 
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
@@ -62,6 +53,25 @@ const Lessons = () => {
   const [topicPdf, setTopicPdf] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+
+  useEffect(() => {
+    const fetchSyllabus = async () => {
+      setSyllabusLoading(true);
+      try {
+        const res = await syllabusAPI.getBoard(settings.learning.board);
+        if (res.success && res.syllabus) {
+          setActiveSyllabus(res.syllabus as Syllabus);
+        } else {
+          setActiveSyllabus({ board: settings.learning.board, classes: {} });
+        }
+      } catch (e) {
+        setActiveSyllabus({ board: settings.learning.board, classes: {} });
+      } finally {
+        setSyllabusLoading(false);
+      }
+    };
+    fetchSyllabus();
+  }, [settings.learning.board]);
 
   // Derived: check completion from central context
   const completedLessons = useMemo(() => progress.lessonsCompleted, [progress.lessonsCompleted]);
@@ -247,6 +257,11 @@ const customContentRes = await syllabusAPI.getContent(
               <h2 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Select Your Grade</h2>
               <p className="text-app-text-sub font-bold uppercase text-[10px] tracking-widest">Choose a class to explore the full curriculum</p>
             </div>
+            {syllabusLoading && (
+              <div className="text-center text-app-text-sub font-bold uppercase text-[10px] tracking-widest">
+                Loading syllabus...
+              </div>
+            )}
             <ClassList 
               onSelectClass={setSelectedClass} 
               selectedGrade={selectedClass} 

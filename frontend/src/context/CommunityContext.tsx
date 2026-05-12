@@ -6,9 +6,9 @@ import { offlineContentService, type OfflineDoubt } from '../services/offlineCon
 
 interface CommunityContextType {
   doubts: OfflineDoubt[];
-  postDoubt: (question: string, subject: string) => Promise<void>;
+  postDoubt: (question: string, subject: string, topic?: string, classLevel?: string) => Promise<void>;
   loading: boolean;
-  refreshDoubts: () => Promise<void>;
+  refreshDoubts: (filters?: any) => Promise<void>;
 }
 
 const CommunityContext = createContext<CommunityContextType | undefined>(undefined);
@@ -19,15 +19,23 @@ export const CommunityProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [doubts, setDoubts] = useState<OfflineDoubt[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const loadDoubts = useCallback(async () => {
+  const loadDoubts = useCallback(async (filters?: any) => {
     setLoading(true);
     try {
       // Load from local IndexedDB first
       const localDoubts = await offlineContentService.getAllDoubts();
       
       if (!isOffline) {
+        // Build query string from filters
+        let queryParams = new URLSearchParams();
+        if (filters) {
+          Object.entries(filters).forEach(([key, value]) => {
+            if (value) queryParams.append(key, String(value));
+          });
+        }
+        
         // If online, fetch from server too
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/community/doubts`);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/community/doubts${queryParams.toString() ? '?' + queryParams.toString() : ''}`);
         const result = await response.json();
         if (result.success) {
           // Merge server doubts with local unsynced doubts
@@ -35,8 +43,15 @@ export const CommunityProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             id: d.id,
             question: d.question,
             subject: d.subject,
+            topic: d.topic,
+            classLevel: d.class_level,
             username: d.username,
-            createdAt: new Date(d.created_at).getTime()
+            createdAt: new Date(d.created_at).getTime(),
+            repliesCount: d.replies_count,
+            viewsCount: d.views_count,
+            isVerified: d.is_verified,
+            helpfulCount: d.helpful_count,
+            status: d.status
           }));
           
           setDoubts([...serverDoubts]);
@@ -56,13 +71,20 @@ export const CommunityProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     loadDoubts();
   }, [loadDoubts]);
 
-  const postDoubt = async (question: string, subject: string) => {
+  const postDoubt = async (question: string, subject: string, topic?: string, classLevel?: string) => {
     const newDoubt: OfflineDoubt = {
       id: crypto.randomUUID(),
       question,
       subject,
+      topic,
+      classLevel,
       username: auth?.user?.username || 'Guest',
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      repliesCount: 0,
+      viewsCount: 0,
+      helpfulCount: 0,
+      isVerified: false,
+      status: 'open'
     };
 
     // Save locally
@@ -73,6 +95,8 @@ export const CommunityProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     offlineSyncService.queueAction('COMMUNITY_POST', {
       question,
       subject,
+      topic,
+      class_level: classLevel,
       username: newDoubt.username
     });
 

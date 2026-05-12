@@ -5,192 +5,218 @@
       "subjects": {
         "Maths": [
           {
-            "unit": "Chapter 1: Shapes and Space",
+            "unit": "Shapes and Space",
             "topics": [
-              "Basic concepts of Shapes and Space",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Shapes and Space"
+              "Big and Small",
+              "Near and Far",
+              "Top and Bottom",
+              "Inside and Outside"
             ]
           },
           {
-            "unit": "Chapter 2: Numbers from One to Nine",
+            "unit": "Numbers from One to Nine",
             "topics": [
-              "Basic concepts of Numbers from One to Nine",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Numbers from One to Nine"
+              "Counting",
+              "Number Recognition",
+              "Number Writing"
             ]
           },
           {
-            "unit": "Chapter 3: Addition",
+            "unit": "Addition",
             "topics": [
-              "Basic concepts of Addition",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Addition"
+              "Concept of Addition",
+              "Adding Objects",
+              "Simple Sums"
             ]
           },
           {
-            "unit": "Chapter 4: Subtraction",
+            "unit": "Subtraction",
             "topics": [
-              "Basic concepts of Subtraction",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Subtraction"
+              "Concept of Subtraction",
+              "Taking Away",
+              "Simple Subtraction"
             ]
           },
           {
-            "unit": "Chapter 5: Numbers from Ten to Twenty",
+            "unit": "Numbers from Ten to Twenty",
             "topics": [
-              "Basic concepts of Numbers from Ten to Twenty",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Numbers from Ten to Twenty"
+              "Counting 10-20",
+              "Number Names",
+              "Number Order"
             ]
           },
           {
-            "unit": "Chapter 6: Time",
+            "unit": "Time",
             "topics": [
-              "Basic concepts of Time",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Time"
+              "Day and Night",
+              "Daily Routine",
+              "Days of the Week"
             ]
           },
           {
-            "unit": "Chapter 7: Measurement",
+            "unit": "Measurement",
             "topics": [
-              "Basic concepts of Measurement",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Measurement"
+              "Long and Short",
+              "Heavy and Light",
+              "Comparison"
             ]
           },
           {
-            "unit": "Chapter 8: Numbers from Twenty-one to Fifty",
+            "unit": "Numbers from Twenty-One to Fifty",
             "topics": [
-              "Basic concepts of Numbers from Twenty-one to Fifty",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Numbers from Twenty-one to Fifty"
+              "Counting 21-50",
+              "Number Patterns",
+              "Before and After"
             ]
           },
           {
-            "unit": "Chapter 9: Data Handling",
+            "unit": "Data Handling",
             "topics": [
-              "Basic concepts of Data Handling",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Data Handling"
+              "Sorting Objects",
+              "Basic Data Representation"
             ]
           },
           {
-            "unit": "Chapter 10: Patterns",
+            "unit": "Patterns",
             "topics": [
-              "Basic concepts of Patterns",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Patterns"
-            ]
-          },
-          {
-            "unit": "Chapter 11: Numbers",
-            "topics": [
-              "Basic concepts of Numbers",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Numbers"
-            ]
-          },
-          {
-            "unit": "Chapter 12: Money",
-            "topics": [
-              "Basic concepts of Money",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of Money"
-            ]
-          },
-          {
-            "unit": "Chapter 13: How Many",
-            "topics": [
-              "Basic concepts of How Many",
-              "Practice exercises",
-              "Mental maths",
-              "Applications of How Many"
+              "Repeating Patterns",
+              "Shapes Patterns",
+              "Number Patterns"
             ]
           }
         ],
         "English": [
           {
-            "unit": "Grammar and Syntax",
+            "unit": "A Happy Child",
             "topics": [
-              "Sentence Structure",
-              "Tenses",
-              "Direct/Indirect Speech",
-              "Active/Passive"
+              "Poem Understanding",
+              "New Words",
+              "Reading Practice"
             ]
           },
           {
-            "unit": "Literature appreciation",
+            "unit": "Three Little Pigs",
             "topics": [
-              "Reading Classics",
-              "Poetic Devices",
-              "Thematic Analysis",
-              "Character Sketches"
+              "Story Comprehension",
+              "Characters",
+              "Moral"
             ]
           },
           {
-            "unit": "Creative Writing",
+            "unit": "After a Bath",
             "topics": [
-              "Letter Writing",
-              "Essay Composition",
-              "Story Telling",
-              "Debate Skills"
+              "Poem Recitation",
+              "Daily Activities"
             ]
           },
           {
-            "unit": "Vocabulary and Usage",
+            "unit": "The Bubble, the Straw, and the Shoe",
             "topics": [
-              "Idioms and Phrases",
-              "Synonyms/Antonyms",
-              "Etymology",
-              "Contextual Meaning"
+              "Story Flow",
+              "Sequence",
+              "Fun Learning"
+            ]
+          },
+          {
+            "unit": "One Little Kitten",
+            "topics": [
+              "Counting in English",
+              "Animals"
+            ]
+          },
+          {
+            "unit": "Lalu and Peelu",
+            "topics": [
+              "Story Meaning",
+              "Colors",
+              "Actions"
+            ]
+          },
+          {
+            "unit": "Once I Saw a Little Bird",
+            "topics": [
+              "Poem",
+              "Birds",
+              "Observation"
+            ]
+          },
+          {
+            "unit": "Mittu and the Yellow Mango",
+            "topics": [
+              "Story",
+              "Fruits",
+              "Speaking Skills"
             ]
           }
         ],
         "EVS": [
           {
-            "unit": "Our Body and Health",
+            "unit": "Myself",
             "topics": [
-              "Sense Organs",
-              "Personal Hygiene",
-              "Healthy Food"
+              "Body Parts",
+              "Personal Identity"
             ]
           },
           {
-            "unit": "Plants and Animals",
+            "unit": "My Family",
             "topics": [
-              "What do they eat?",
-              "Where do they live?",
-              "Life cycles"
+              "Family Members",
+              "Relationships"
             ]
           },
           {
-            "unit": "Water and Air",
+            "unit": "My School",
             "topics": [
-              "Uses of Water",
-              "Saving Water",
-              "Clean Air Habits"
+              "School Places",
+              "Teachers and Friends"
             ]
           },
           {
-            "unit": "Transport and Safety",
+            "unit": "My Body",
             "topics": [
-              "Means of Travel",
-              "Road Safety Rules",
-              "Emergency Contacts"
+              "Body Parts",
+              "Functions"
+            ]
+          },
+          {
+            "unit": "Food We Eat",
+            "topics": [
+              "Types of Food",
+              "Healthy Eating"
+            ]
+          },
+          {
+            "unit": "Clothes We Wear",
+            "topics": [
+              "Seasonal Clothes",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Our House",
+            "topics": [
+              "Types of Houses",
+              "Rooms"
+            ]
+          },
+          {
+            "unit": "Plants Around Us",
+            "topics": [
+              "Types of Plants",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Animals Around Us",
+            "topics": [
+              "Pet and Wild Animals",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Means of Transport",
+            "topics": [
+              "Land, Air, Water Transport"
             ]
           }
         ]

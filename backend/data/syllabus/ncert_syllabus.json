@@ -1,0 +1,4641 @@
+{
+  "board": "NCERT",
+  "classes": {
+    "1": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Shapes and Space",
+            "topics": [
+              "Big and Small",
+              "Near and Far",
+              "Top and Bottom",
+              "Inside and Outside"
+            ]
+          },
+          {
+            "unit": "Numbers from One to Nine",
+            "topics": [
+              "Counting",
+              "Number Recognition",
+              "Number Writing"
+            ]
+          },
+          {
+            "unit": "Addition",
+            "topics": [
+              "Concept of Addition",
+              "Adding Objects",
+              "Simple Sums"
+            ]
+          },
+          {
+            "unit": "Subtraction",
+            "topics": [
+              "Concept of Subtraction",
+              "Taking Away",
+              "Simple Subtraction"
+            ]
+          },
+          {
+            "unit": "Numbers from Ten to Twenty",
+            "topics": [
+              "Counting 10-20",
+              "Number Names",
+              "Number Order"
+            ]
+          },
+          {
+            "unit": "Time",
+            "topics": [
+              "Day and Night",
+              "Daily Routine",
+              "Days of the Week"
+            ]
+          },
+          {
+            "unit": "Measurement",
+            "topics": [
+              "Long and Short",
+              "Heavy and Light",
+              "Comparison"
+            ]
+          },
+          {
+            "unit": "Numbers from Twenty-One to Fifty",
+            "topics": [
+              "Counting 21-50",
+              "Number Patterns",
+              "Before and After"
+            ]
+          },
+          {
+            "unit": "Data Handling",
+            "topics": [
+              "Sorting Objects",
+              "Basic Data Representation"
+            ]
+          },
+          {
+            "unit": "Patterns",
+            "topics": [
+              "Repeating Patterns",
+              "Shapes Patterns",
+              "Number Patterns"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "A Happy Child",
+            "topics": [
+              "Poem Understanding",
+              "New Words",
+              "Reading Practice"
+            ]
+          },
+          {
+            "unit": "Three Little Pigs",
+            "topics": [
+              "Story Comprehension",
+              "Characters",
+              "Moral"
+            ]
+          },
+          {
+            "unit": "After a Bath",
+            "topics": [
+              "Poem Recitation",
+              "Daily Activities"
+            ]
+          },
+          {
+            "unit": "The Bubble, the Straw, and the Shoe",
+            "topics": [
+              "Story Flow",
+              "Sequence",
+              "Fun Learning"
+            ]
+          },
+          {
+            "unit": "One Little Kitten",
+            "topics": [
+              "Counting in English",
+              "Animals"
+            ]
+          },
+          {
+            "unit": "Lalu and Peelu",
+            "topics": [
+              "Story Meaning",
+              "Colors",
+              "Actions"
+            ]
+          },
+          {
+            "unit": "Once I Saw a Little Bird",
+            "topics": [
+              "Poem",
+              "Birds",
+              "Observation"
+            ]
+          },
+          {
+            "unit": "Mittu and the Yellow Mango",
+            "topics": [
+              "Story",
+              "Fruits",
+              "Speaking Skills"
+            ]
+          }
+        ],
+        "EVS": [
+          {
+            "unit": "Myself",
+            "topics": [
+              "Body Parts",
+              "Personal Identity"
+            ]
+          },
+          {
+            "unit": "My Family",
+            "topics": [
+              "Family Members",
+              "Relationships"
+            ]
+          },
+          {
+            "unit": "My School",
+            "topics": [
+              "School Places",
+              "Teachers and Friends"
+            ]
+          },
+          {
+            "unit": "My Body",
+            "topics": [
+              "Body Parts",
+              "Functions"
+            ]
+          },
+          {
+            "unit": "Food We Eat",
+            "topics": [
+              "Types of Food",
+              "Healthy Eating"
+            ]
+          },
+          {
+            "unit": "Clothes We Wear",
+            "topics": [
+              "Seasonal Clothes",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Our House",
+            "topics": [
+              "Types of Houses",
+              "Rooms"
+            ]
+          },
+          {
+            "unit": "Plants Around Us",
+            "topics": [
+              "Types of Plants",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Animals Around Us",
+            "topics": [
+              "Pet and Wild Animals",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Means of Transport",
+            "topics": [
+              "Land, Air, Water Transport"
+            ]
+          }
+        ]
+      }
+    },
+    "2": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: What is Long, What is Round?",
+            "topics": [
+              "Shapes in surroundings",
+              "Long and round objects",
+              "Identification of shapes"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Counting in Groups",
+            "topics": [
+              "Counting in groups",
+              "Skip counting",
+              "Grouping objects"
+            ]
+          },
+          {
+            "unit": "Chapter 3: How Much Can You Carry?",
+            "topics": [
+              "Weight comparison",
+              "Heavy and light",
+              "Estimation"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Counting in Tens",
+            "topics": [
+              "Tens concept",
+              "Place value (tens and ones)",
+              "Number formation"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Patterns",
+            "topics": [
+              "Repeating patterns",
+              "Number patterns",
+              "Shape patterns"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Footprints",
+            "topics": [
+              "Measurement using body parts",
+              "Length comparison"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Jugs and Mugs",
+            "topics": [
+              "Capacity",
+              "More and less",
+              "Comparing quantities"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Tens and Ones",
+            "topics": [
+              "Place value",
+              "Number breakdown",
+              "Expanded form"
+            ]
+          },
+          {
+            "unit": "Chapter 9: My Funday",
+            "topics": [
+              "Calendar basics",
+              "Days of week",
+              "Time awareness"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Add Our Points",
+            "topics": [
+              "Addition of numbers",
+              "Carry forward",
+              "Word problems"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Lines and Lines",
+            "topics": [
+              "Straight lines",
+              "Curved lines",
+              "Patterns using lines"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Give and Take",
+            "topics": [
+              "Subtraction",
+              "Borrowing",
+              "Real-life problems"
+            ]
+          },
+          {
+            "unit": "Chapter 13: The Longest Step",
+            "topics": [
+              "Length comparison",
+              "Measurement estimation"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Birds Come, Birds Go",
+            "topics": [
+              "Number operations",
+              "Addition and subtraction practice"
+            ]
+          },
+          {
+            "unit": "Chapter 15: How Many Ponytails?",
+            "topics": [
+              "Multiplication concept (intro)",
+              "Repeated addition"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Unit 1: First Day at School",
+            "topics": [
+              "Poem",
+              "Feelings",
+              "New words"
+            ]
+          },
+          {
+            "unit": "Unit 1: Haldi's Adventure",
+            "topics": [
+              "Story",
+              "Animals",
+              "Sequence"
+            ]
+          },
+          {
+            "unit": "Unit 2: I Am Lucky!",
+            "topics": [
+              "Poem",
+              "Imagination"
+            ]
+          },
+          {
+            "unit": "Unit 2: I Want",
+            "topics": [
+              "Story",
+              "Desires",
+              "Understanding"
+            ]
+          },
+          {
+            "unit": "Unit 3: A Smile",
+            "topics": [
+              "Poem",
+              "Kindness"
+            ]
+          },
+          {
+            "unit": "Unit 3: The Wind and the Sun",
+            "topics": [
+              "Story",
+              "Moral lesson"
+            ]
+          },
+          {
+            "unit": "Unit 4: Rain",
+            "topics": [
+              "Poem",
+              "Weather"
+            ]
+          },
+          {
+            "unit": "Unit 4: Storm in the Garden",
+            "topics": [
+              "Story",
+              "Nature"
+            ]
+          },
+          {
+            "unit": "Unit 5: Zoo Manners",
+            "topics": [
+              "Poem",
+              "Behavior"
+            ]
+          },
+          {
+            "unit": "Unit 5: Funny Bunny",
+            "topics": [
+              "Story",
+              "Animals"
+            ]
+          },
+          {
+            "unit": "Unit 6: Mr. Nobody",
+            "topics": [
+              "Poem",
+              "Imagination"
+            ]
+          },
+          {
+            "unit": "Unit 6: Curlylocks and the Three Bears",
+            "topics": [
+              "Story",
+              "Characters"
+            ]
+          },
+          {
+            "unit": "Unit 7: On My Blackboard I Can Draw",
+            "topics": [
+              "Poem",
+              "Creativity"
+            ]
+          },
+          {
+            "unit": "Unit 7: Make it Shorter",
+            "topics": [
+              "Story",
+              "Problem solving"
+            ]
+          },
+          {
+            "unit": "Unit 8: I am the Music Man",
+            "topics": [
+              "Poem",
+              "Music"
+            ]
+          },
+          {
+            "unit": "Unit 8: The Mumbai Musicians",
+            "topics": [
+              "Story",
+              "Teamwork"
+            ]
+          },
+          {
+            "unit": "Unit 9: Granny Granny Please Comb My Hair",
+            "topics": [
+              "Poem",
+              "Family"
+            ]
+          },
+          {
+            "unit": "Unit 9: The Magic Porridge Pot",
+            "topics": [
+              "Story",
+              "Fantasy"
+            ]
+          },
+          {
+            "unit": "Unit 10: Strange Talk",
+            "topics": [
+              "Poem",
+              "Language fun"
+            ]
+          },
+          {
+            "unit": "Unit 10: The Grasshopper and the Ant",
+            "topics": [
+              "Story",
+              "Moral"
+            ]
+          }
+        ],
+        "EVS": [
+          {
+            "unit": "My Family",
+            "topics": [
+              "Family types",
+              "Relationships"
+            ]
+          },
+          {
+            "unit": "Our Food",
+            "topics": [
+              "Types of food",
+              "Healthy habits"
+            ]
+          },
+          {
+            "unit": "Clothes We Wear",
+            "topics": [
+              "Seasonal clothes",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Our House",
+            "topics": [
+              "Types of houses",
+              "Cleanliness"
+            ]
+          },
+          {
+            "unit": "Plants Around Us",
+            "topics": [
+              "Plant types",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Animals Around Us",
+            "topics": [
+              "Domestic animals",
+              "Wild animals"
+            ]
+          },
+          {
+            "unit": "Means of Transport",
+            "topics": [
+              "Land, air, water transport"
+            ]
+          },
+          {
+            "unit": "Water",
+            "topics": [
+              "Uses of water",
+              "Saving water"
+            ]
+          },
+          {
+            "unit": "Air Around Us",
+            "topics": [
+              "Importance of air",
+              "Clean air"
+            ]
+          },
+          {
+            "unit": "Seasons",
+            "topics": [
+              "Weather changes",
+              "Seasonal activities"
+            ]
+          },
+          {
+            "unit": "Safety Rules",
+            "topics": [
+              "Road safety",
+              "Home safety"
+            ]
+          },
+          {
+            "unit": "Good Habits",
+            "topics": [
+              "Cleanliness",
+              "Discipline"
+            ]
+          }
+        ]
+      }
+    },
+    "3": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Where to Look From",
+            "topics": [
+              "Viewpoints",
+              "Top and side views",
+              "Spatial understanding"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Fun with Numbers",
+            "topics": [
+              "Number patterns",
+              "Place value",
+              "Number sequences"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Give and Take",
+            "topics": [
+              "Addition",
+              "Subtraction",
+              "Word problems"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Long and Short",
+            "topics": [
+              "Measurement of length",
+              "Units (cm, m)",
+              "Estimation"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Shapes and Designs",
+            "topics": [
+              "2D shapes",
+              "Patterns",
+              "Symmetry"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Fun with Give and Take",
+            "topics": [
+              "Advanced addition",
+              "Advanced subtraction",
+              "Practice problems"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Time Goes On",
+            "topics": [
+              "Reading clock",
+              "Calendar",
+              "Days and months"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Who is Heavier?",
+            "topics": [
+              "Weight comparison",
+              "Units (kg)",
+              "Estimation"
+            ]
+          },
+          {
+            "unit": "Chapter 9: How Many Times?",
+            "topics": [
+              "Multiplication",
+              "Repeated addition",
+              "Tables"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Play with Patterns",
+            "topics": [
+              "Number patterns",
+              "Shape patterns",
+              "Pattern rules"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Jugs and Mugs",
+            "topics": [
+              "Capacity",
+              "Measurement (litre)",
+              "Comparison"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Can We Share?",
+            "topics": [
+              "Division",
+              "Equal sharing",
+              "Grouping"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Smart Charts",
+            "topics": [
+              "Data handling",
+              "Pictographs",
+              "Reading charts"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Rupees and Paise",
+            "topics": [
+              "Money",
+              "Transactions",
+              "Addition/subtraction of money"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Unit 1: Good Morning",
+            "topics": [
+              "Poem",
+              "Greetings",
+              "Nature"
+            ]
+          },
+          {
+            "unit": "Unit 1: The Magic Garden",
+            "topics": [
+              "Story",
+              "Plants",
+              "Imagination"
+            ]
+          },
+          {
+            "unit": "Unit 2: Bird Talk",
+            "topics": [
+              "Poem",
+              "Birds",
+              "Sounds"
+            ]
+          },
+          {
+            "unit": "Unit 2: Nina and the Baby Sparrows",
+            "topics": [
+              "Story",
+              "Care for animals"
+            ]
+          },
+          {
+            "unit": "Unit 3: Little by Little",
+            "topics": [
+              "Poem",
+              "Growth"
+            ]
+          },
+          {
+            "unit": "Unit 3: The Enormous Turnip",
+            "topics": [
+              "Story",
+              "Teamwork"
+            ]
+          },
+          {
+            "unit": "Unit 4: Sea Song",
+            "topics": [
+              "Poem",
+              "Sea life"
+            ]
+          },
+          {
+            "unit": "Unit 4: A Little Fish Story",
+            "topics": [
+              "Story",
+              "Learning from mistakes"
+            ]
+          },
+          {
+            "unit": "Unit 5: The Balloon Man",
+            "topics": [
+              "Poem",
+              "Daily life"
+            ]
+          },
+          {
+            "unit": "Unit 5: The Yellow Butterfly",
+            "topics": [
+              "Story",
+              "Nature"
+            ]
+          },
+          {
+            "unit": "Unit 6: Trains",
+            "topics": [
+              "Poem",
+              "Transport"
+            ]
+          },
+          {
+            "unit": "Unit 6: The Story of the Road",
+            "topics": [
+              "Story",
+              "Road safety"
+            ]
+          },
+          {
+            "unit": "Unit 7: Puppy and I",
+            "topics": [
+              "Poem",
+              "Pets"
+            ]
+          },
+          {
+            "unit": "Unit 7: Little Tiger, Big Tiger",
+            "topics": [
+              "Story",
+              "Animals"
+            ]
+          },
+          {
+            "unit": "Unit 8: What's in the Mailbox?",
+            "topics": [
+              "Poem",
+              "Communication"
+            ]
+          },
+          {
+            "unit": "Unit 8: My Silly Sister",
+            "topics": [
+              "Story",
+              "Family"
+            ]
+          },
+          {
+            "unit": "Unit 9: Don't Tell",
+            "topics": [
+              "Poem",
+              "Imagination"
+            ]
+          },
+          {
+            "unit": "Unit 9: He is My Brother",
+            "topics": [
+              "Story",
+              "Relationships"
+            ]
+          },
+          {
+            "unit": "Unit 10: How Creatures Move",
+            "topics": [
+              "Poem",
+              "Animal movement"
+            ]
+          },
+          {
+            "unit": "Unit 10: The Ship of the Desert",
+            "topics": [
+              "Story",
+              "Camel",
+              "Desert life"
+            ]
+          }
+        ],
+        "EVS": [
+          {
+            "unit": "Chapter 1: Poonam's Day Out",
+            "topics": [
+              "Daily life",
+              "People at work"
+            ]
+          },
+          {
+            "unit": "Chapter 2: The Plant Fairy",
+            "topics": [
+              "Plants",
+              "Observation"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Water O' Water!",
+            "topics": [
+              "Water sources",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Our First School",
+            "topics": [
+              "Family",
+              "Care"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Chhotu's House",
+            "topics": [
+              "Types of houses"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Foods We Eat",
+            "topics": [
+              "Food types",
+              "Nutrition"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Saying without Speaking",
+            "topics": [
+              "Communication",
+              "Body language"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Flying High",
+            "topics": [
+              "Birds",
+              "Flight"
+            ]
+          },
+          {
+            "unit": "Chapter 9: It's Raining",
+            "topics": [
+              "Rain",
+              "Water cycle (basic)"
+            ]
+          },
+          {
+            "unit": "Chapter 10: What is Cooking?",
+            "topics": [
+              "Cooking process",
+              "Food preparation"
+            ]
+          },
+          {
+            "unit": "Chapter 11: From Here to There",
+            "topics": [
+              "Transport",
+              "Travel"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Work We Do",
+            "topics": [
+              "Occupations",
+              "Jobs"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Sharing Our Feelings",
+            "topics": [
+              "Emotions",
+              "Disability awareness"
+            ]
+          },
+          {
+            "unit": "Chapter 14: The Story of Food",
+            "topics": [
+              "Food sources",
+              "Farming"
+            ]
+          },
+          {
+            "unit": "Chapter 15: Making Pots",
+            "topics": [
+              "Pottery",
+              "Clay"
+            ]
+          },
+          {
+            "unit": "Chapter 16: Games We Play",
+            "topics": [
+              "Indoor games",
+              "Outdoor games"
+            ]
+          },
+          {
+            "unit": "Chapter 17: Here Comes a Letter",
+            "topics": [
+              "Communication",
+              "Post"
+            ]
+          },
+          {
+            "unit": "Chapter 18: A House Like This",
+            "topics": [
+              "Different houses"
+            ]
+          },
+          {
+            "unit": "Chapter 19: Our Friends - Animals",
+            "topics": [
+              "Animals",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Chapter 20: Drop by Drop",
+            "topics": [
+              "Water conservation"
+            ]
+          },
+          {
+            "unit": "Chapter 21: Families Can Be Different",
+            "topics": [
+              "Family diversity"
+            ]
+          },
+          {
+            "unit": "Chapter 22: Left-Right",
+            "topics": [
+              "Directions",
+              "Movement"
+            ]
+          },
+          {
+            "unit": "Chapter 23: A Beautiful Cloth",
+            "topics": [
+              "Clothes",
+              "Weaving"
+            ]
+          },
+          {
+            "unit": "Chapter 24: Web of Life",
+            "topics": [
+              "Food chain (basic)",
+              "Environment"
+            ]
+          }
+        ]
+      }
+    },
+    "4": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Building with Bricks",
+            "topics": [
+              "3D shapes",
+              "Patterns with cubes",
+              "Spatial visualization"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Long and Short",
+            "topics": [
+              "Length measurement",
+              "Units (cm, m, km)",
+              "Conversion"
+            ]
+          },
+          {
+            "unit": "Chapter 3: A Trip to Bhopal",
+            "topics": [
+              "Word problems",
+              "Addition and subtraction",
+              "Estimation"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Tick-Tick-Tick",
+            "topics": [
+              "Time reading",
+              "Clock",
+              "Duration"
+            ]
+          },
+          {
+            "unit": "Chapter 5: The Way the World Looks",
+            "topics": [
+              "Views (top, side)",
+              "Maps (basic)",
+              "Spatial sense"
+            ]
+          },
+          {
+            "unit": "Chapter 6: The Junk Seller",
+            "topics": [
+              "Multiplication",
+              "Word problems"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Jugs and Mugs",
+            "topics": [
+              "Capacity",
+              "Litres and millilitres",
+              "Measurement"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Carts and Wheels",
+            "topics": [
+              "Circles",
+              "Radius and diameter",
+              "Drawing circles"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Halves and Quarters",
+            "topics": [
+              "Fractions",
+              "Half, quarter",
+              "Equal sharing"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Play with Patterns",
+            "topics": [
+              "Patterns",
+              "Number sequences",
+              "Designs"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Tables and Shares",
+            "topics": [
+              "Multiplication tables",
+              "Division",
+              "Sharing equally"
+            ]
+          },
+          {
+            "unit": "Chapter 12: How Heavy? How Light?",
+            "topics": [
+              "Weight",
+              "Units (kg, g)",
+              "Estimation"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Fields and Fences",
+            "topics": [
+              "Perimeter",
+              "Area (basic)",
+              "Shapes"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Smart Charts",
+            "topics": [
+              "Data handling",
+              "Bar graphs",
+              "Reading charts"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Unit 1: Wake Up!",
+            "topics": [
+              "Poem",
+              "Morning routine"
+            ]
+          },
+          {
+            "unit": "Unit 1: Neha's Alarm Clock",
+            "topics": [
+              "Story",
+              "Daily habits"
+            ]
+          },
+          {
+            "unit": "Unit 2: Noses",
+            "topics": [
+              "Poem",
+              "Fun observation"
+            ]
+          },
+          {
+            "unit": "Unit 2: The Little Fir Tree",
+            "topics": [
+              "Story",
+              "Nature",
+              "Festivals"
+            ]
+          },
+          {
+            "unit": "Unit 3: Run!",
+            "topics": [
+              "Poem",
+              "Movement"
+            ]
+          },
+          {
+            "unit": "Unit 3: Nasruddin's Aim",
+            "topics": [
+              "Story",
+              "Humor"
+            ]
+          },
+          {
+            "unit": "Unit 4: Why?",
+            "topics": [
+              "Poem",
+              "Curiosity"
+            ]
+          },
+          {
+            "unit": "Unit 4: Alice in Wonderland",
+            "topics": [
+              "Story",
+              "Fantasy"
+            ]
+          },
+          {
+            "unit": "Unit 5: Don't be Afraid of the Dark",
+            "topics": [
+              "Poem",
+              "Confidence"
+            ]
+          },
+          {
+            "unit": "Unit 5: Helen Keller",
+            "topics": [
+              "Biography",
+              "Inspiration"
+            ]
+          },
+          {
+            "unit": "Unit 6: Hiawatha",
+            "topics": [
+              "Poem",
+              "Nature"
+            ]
+          },
+          {
+            "unit": "Unit 6: The Scholar's Mother Tongue",
+            "topics": [
+              "Story",
+              "Language"
+            ]
+          },
+          {
+            "unit": "Unit 7: A Watering Rhyme",
+            "topics": [
+              "Poem",
+              "Plants"
+            ]
+          },
+          {
+            "unit": "Unit 7: The Giving Tree",
+            "topics": [
+              "Story",
+              "Kindness"
+            ]
+          },
+          {
+            "unit": "Unit 8: Books",
+            "topics": [
+              "Poem",
+              "Reading"
+            ]
+          },
+          {
+            "unit": "Unit 8: Going to Buy a Book",
+            "topics": [
+              "Story",
+              "Books and learning"
+            ]
+          },
+          {
+            "unit": "Unit 9: The Naughty Boy",
+            "topics": [
+              "Poem",
+              "Travel"
+            ]
+          },
+          {
+            "unit": "Unit 9: Pinocchio",
+            "topics": [
+              "Story",
+              "Moral"
+            ]
+          }
+        ],
+        "EVS": [
+          {
+            "unit": "Chapter 1: Going to School",
+            "topics": [
+              "Travel methods",
+              "Distance"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Ear to Ear",
+            "topics": [
+              "Animals",
+              "Features"
+            ]
+          },
+          {
+            "unit": "Chapter 3: A Day with Nandu",
+            "topics": [
+              "Elephants",
+              "Animal behavior"
+            ]
+          },
+          {
+            "unit": "Chapter 4: The Story of Amrita",
+            "topics": [
+              "Environment",
+              "Trees"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Anita and the Honeybees",
+            "topics": [
+              "Bees",
+              "Work and livelihood"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Omana's Journey",
+            "topics": [
+              "Travel",
+              "Geography basics"
+            ]
+          },
+          {
+            "unit": "Chapter 7: From the Window",
+            "topics": [
+              "Observation",
+              "Surroundings"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Reaching Grandmother's House",
+            "topics": [
+              "Transport",
+              "Maps"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Changing Families",
+            "topics": [
+              "Family structure",
+              "Relationships"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Hu Tu Tu, Hu Tu Tu",
+            "topics": [
+              "Games",
+              "Teamwork"
+            ]
+          },
+          {
+            "unit": "Chapter 11: The Valley of Flowers",
+            "topics": [
+              "Plants",
+              "Nature"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Changing Times",
+            "topics": [
+              "Past and present",
+              "Changes"
+            ]
+          },
+          {
+            "unit": "Chapter 13: A River's Tale",
+            "topics": [
+              "Water",
+              "River usage"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Basva's Farm",
+            "topics": [
+              "Farming",
+              "Crops"
+            ]
+          },
+          {
+            "unit": "Chapter 15: From Market to Home",
+            "topics": [
+              "Food supply",
+              "Transport"
+            ]
+          },
+          {
+            "unit": "Chapter 16: A Busy Month",
+            "topics": [
+              "Birds",
+              "Migration"
+            ]
+          },
+          {
+            "unit": "Chapter 17: Nandita in Mumbai",
+            "topics": [
+              "City life",
+              "Differences"
+            ]
+          },
+          {
+            "unit": "Chapter 18: Too Much Water, Too Little Water",
+            "topics": [
+              "Water problems",
+              "Conservation"
+            ]
+          },
+          {
+            "unit": "Chapter 19: Abdul in the Garden",
+            "topics": [
+              "Plants",
+              "Gardening"
+            ]
+          },
+          {
+            "unit": "Chapter 20: Eating Together",
+            "topics": [
+              "Food habits",
+              "Culture"
+            ]
+          },
+          {
+            "unit": "Chapter 21: Food and Fun",
+            "topics": [
+              "Cooking",
+              "Sharing"
+            ]
+          },
+          {
+            "unit": "Chapter 22: The World in My Home",
+            "topics": [
+              "Family values",
+              "Differences"
+            ]
+          },
+          {
+            "unit": "Chapter 23: Pochampalli",
+            "topics": [
+              "Weaving",
+              "Occupation"
+            ]
+          },
+          {
+            "unit": "Chapter 24: Home and Abroad",
+            "topics": [
+              "Migration",
+              "Travel"
+            ]
+          },
+          {
+            "unit": "Chapter 25: Spicy Riddles",
+            "topics": [
+              "Spices",
+              "Food"
+            ]
+          },
+          {
+            "unit": "Chapter 26: Defence Officer: Wahida",
+            "topics": [
+              "Jobs",
+              "Inspiration"
+            ]
+          },
+          {
+            "unit": "Chapter 27: Chuskit Goes to School",
+            "topics": [
+              "Disability",
+              "Inclusion"
+            ]
+          }
+        ]
+      }
+    },
+    "5": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: The Fish Tale",
+            "topics": [
+              "Large numbers",
+              "Place value",
+              "Reading and writing numbers"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Shapes and Angles",
+            "topics": [
+              "Angles",
+              "Types of angles",
+              "Rotation"
+            ]
+          },
+          {
+            "unit": "Chapter 3: How Many Squares?",
+            "topics": [
+              "Area (counting squares)",
+              "Patterns",
+              "Geometry basics"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Parts and Wholes",
+            "topics": [
+              "Fractions",
+              "Equivalent fractions",
+              "Comparisons"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Does it Look the Same?",
+            "topics": [
+              "Symmetry",
+              "Mirror images",
+              "Reflections"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Be My Multiple, I'll Be Your Factor",
+            "topics": [
+              "Multiples",
+              "Factors",
+              "Divisibility"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Can You See the Pattern?",
+            "topics": [
+              "Number patterns",
+              "Sequences",
+              "Rules"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Mapping Your Way",
+            "topics": [
+              "Maps",
+              "Directions",
+              "Coordinates (basic)"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Boxes and Sketches",
+            "topics": [
+              "3D shapes",
+              "Nets",
+              "Views (top/side/front)"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Tenths and Hundredths",
+            "topics": [
+              "Decimals",
+              "Place value",
+              "Conversion"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Area and its Boundary",
+            "topics": [
+              "Area",
+              "Perimeter",
+              "Measurement"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Smart Charts",
+            "topics": [
+              "Data handling",
+              "Bar graphs",
+              "Interpretation"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Ways to Multiply and Divide",
+            "topics": [
+              "Multiplication methods",
+              "Division",
+              "Word problems"
+            ]
+          },
+          {
+            "unit": "Chapter 14: How Big? How Heavy?",
+            "topics": [
+              "Measurement",
+              "Weight",
+              "Volume"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Unit 1: Ice-cream Man",
+            "topics": [
+              "Poem",
+              "Summer",
+              "Imagery"
+            ]
+          },
+          {
+            "unit": "Unit 1: Wonderful Waste!",
+            "topics": [
+              "Story",
+              "Resourcefulness"
+            ]
+          },
+          {
+            "unit": "Unit 2: Teamwork",
+            "topics": [
+              "Poem",
+              "Cooperation"
+            ]
+          },
+          {
+            "unit": "Unit 2: Flying Together",
+            "topics": [
+              "Story",
+              "Unity"
+            ]
+          },
+          {
+            "unit": "Unit 3: My Shadow",
+            "topics": [
+              "Poem",
+              "Observation"
+            ]
+          },
+          {
+            "unit": "Unit 3: Robinson Crusoe Discovers a Footprint",
+            "topics": [
+              "Adventure",
+              "Story understanding"
+            ]
+          },
+          {
+            "unit": "Unit 4: Crying",
+            "topics": [
+              "Poem",
+              "Emotions"
+            ]
+          },
+          {
+            "unit": "Unit 4: My Elder Brother",
+            "topics": [
+              "Story",
+              "Family"
+            ]
+          },
+          {
+            "unit": "Unit 5: The Lazy Frog",
+            "topics": [
+              "Poem",
+              "Humor"
+            ]
+          },
+          {
+            "unit": "Unit 5: Rip Van Winkle",
+            "topics": [
+              "Story",
+              "Fantasy"
+            ]
+          },
+          {
+            "unit": "Unit 6: Class Discussion",
+            "topics": [
+              "Poem",
+              "School life"
+            ]
+          },
+          {
+            "unit": "Unit 6: The Talkative Barber",
+            "topics": [
+              "Story",
+              "Humor"
+            ]
+          },
+          {
+            "unit": "Unit 7: Topsy-Turvy Land",
+            "topics": [
+              "Poem",
+              "Imagination"
+            ]
+          },
+          {
+            "unit": "Unit 7: Gulliver's Travels",
+            "topics": [
+              "Adventure",
+              "Fantasy"
+            ]
+          },
+          {
+            "unit": "Unit 8: Nobody's Friend",
+            "topics": [
+              "Poem",
+              "Friendship"
+            ]
+          },
+          {
+            "unit": "Unit 8: The Little Bully",
+            "topics": [
+              "Story",
+              "Behavior"
+            ]
+          },
+          {
+            "unit": "Unit 9: Sing a Song of People",
+            "topics": [
+              "Poem",
+              "People around us"
+            ]
+          },
+          {
+            "unit": "Unit 9: Around the World",
+            "topics": [
+              "Travel",
+              "Exploration"
+            ]
+          },
+          {
+            "unit": "Unit 10: Malu Bhalu",
+            "topics": [
+              "Poem",
+              "Animals"
+            ]
+          },
+          {
+            "unit": "Unit 10: Who Will Be Ningthou?",
+            "topics": [
+              "Story",
+              "Leadership"
+            ]
+          }
+        ],
+        "EVS": [
+          {
+            "unit": "Chapter 1: Super Senses",
+            "topics": [
+              "Animal senses",
+              "Adaptation"
+            ]
+          },
+          {
+            "unit": "Chapter 2: A Snake Charmer's Story",
+            "topics": [
+              "Snakes",
+              "Traditions"
+            ]
+          },
+          {
+            "unit": "Chapter 3: From Tasting to Digesting",
+            "topics": [
+              "Food digestion",
+              "Body"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Mangoes Round the Year",
+            "topics": [
+              "Food preservation"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Seeds and Seeds",
+            "topics": [
+              "Seeds",
+              "Germination"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Every Drop Counts",
+            "topics": [
+              "Water conservation"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Experiments with Water",
+            "topics": [
+              "Water properties"
+            ]
+          },
+          {
+            "unit": "Chapter 8: A Treat for Mosquitoes",
+            "topics": [
+              "Mosquito breeding",
+              "Health"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Up You Go!",
+            "topics": [
+              "Mountains",
+              "Climbing"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Walls Tell Stories",
+            "topics": [
+              "History",
+              "Art"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Sunita in Space",
+            "topics": [
+              "Space",
+              "Astronauts"
+            ]
+          },
+          {
+            "unit": "Chapter 12: What if it Finishes...?",
+            "topics": [
+              "Natural resources"
+            ]
+          },
+          {
+            "unit": "Chapter 13: A Shelter so High!",
+            "topics": [
+              "Shelter",
+              "Extreme climates"
+            ]
+          },
+          {
+            "unit": "Chapter 14: When the Earth Shook!",
+            "topics": [
+              "Earthquakes",
+              "Disaster awareness"
+            ]
+          },
+          {
+            "unit": "Chapter 15: Blow Hot, Blow Cold",
+            "topics": [
+              "Breathing",
+              "Air"
+            ]
+          },
+          {
+            "unit": "Chapter 16: Who Will Do This Work?",
+            "topics": [
+              "Work division",
+              "Society"
+            ]
+          },
+          {
+            "unit": "Chapter 17: Across the Wall",
+            "topics": [
+              "Sports",
+              "Breaking barriers"
+            ]
+          },
+          {
+            "unit": "Chapter 18: No Place for Us?",
+            "topics": [
+              "Migration",
+              "Urbanization"
+            ]
+          },
+          {
+            "unit": "Chapter 19: A Seed Tells a Farmer's Story",
+            "topics": [
+              "Farming",
+              "Agriculture"
+            ]
+          },
+          {
+            "unit": "Chapter 20: Whose Forests?",
+            "topics": [
+              "Forests",
+              "People"
+            ]
+          },
+          {
+            "unit": "Chapter 21: Like Father, Like Daughter",
+            "topics": [
+              "Family roles"
+            ]
+          },
+          {
+            "unit": "Chapter 22: On the Move Again",
+            "topics": [
+              "Migration",
+              "Nomadic life"
+            ]
+          }
+        ]
+      }
+    },
+    "6": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Knowing Our Numbers",
+            "topics": [
+              "Large numbers",
+              "Place value",
+              "Comparison",
+              "Estimation"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Whole Numbers",
+            "topics": [
+              "Number line",
+              "Properties",
+              "Successor and predecessor"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Playing with Numbers",
+            "topics": [
+              "Factors",
+              "Multiples",
+              "Prime numbers",
+              "HCF, LCM"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Basic Geometrical Ideas",
+            "topics": [
+              "Points",
+              "Lines",
+              "Angles"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Understanding Elementary Shapes",
+            "topics": [
+              "Triangles",
+              "Quadrilaterals",
+              "Circles"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Integers",
+            "topics": [
+              "Positive and negative numbers",
+              "Number line"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Fractions",
+            "topics": [
+              "Types",
+              "Equivalent fractions",
+              "Operations"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Decimals",
+            "topics": [
+              "Decimal representation",
+              "Operations"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Data Handling",
+            "topics": [
+              "Pictographs",
+              "Bar graphs"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Mensuration",
+            "topics": [
+              "Perimeter",
+              "Area"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Algebra",
+            "topics": [
+              "Variables",
+              "Expressions"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Ratio and Proportion",
+            "topics": [
+              "Ratio",
+              "Unitary method"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Symmetry",
+            "topics": [
+              "Line symmetry"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Practical Geometry",
+            "topics": [
+              "Construction",
+              "Compass use"
+            ]
+          }
+        ],
+        "Science": [
+          {
+            "unit": "Chapter 1: Food: Where Does It Come From?",
+            "topics": [
+              "Sources",
+              "Plants and animals"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Components of Food",
+            "topics": [
+              "Nutrients",
+              "Deficiency diseases"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Fibre to Fabric",
+            "topics": [
+              "Cotton",
+              "Jute"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Sorting Materials into Groups",
+            "topics": [
+              "Properties",
+              "Classification"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Separation of Substances",
+            "topics": [
+              "Filtration",
+              "Evaporation"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Changes Around Us",
+            "topics": [
+              "Reversible changes"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Getting to Know Plants",
+            "topics": [
+              "Plant parts",
+              "Functions"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Body Movements",
+            "topics": [
+              "Joints",
+              "Movement"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Living Organisms and Their Surroundings",
+            "topics": [
+              "Habitat",
+              "Adaptation"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Motion and Measurement of Distances",
+            "topics": [
+              "Units",
+              "Motion types"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Light, Shadows and Reflections",
+            "topics": [
+              "Light sources",
+              "Shadows"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Electricity and Circuits",
+            "topics": [
+              "Circuits",
+              "Conductors"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Fun with Magnets",
+            "topics": [
+              "Magnet properties"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Water",
+            "topics": [
+              "Water cycle",
+              "Conservation"
+            ]
+          },
+          {
+            "unit": "Chapter 15: Air Around Us",
+            "topics": [
+              "Composition"
+            ]
+          },
+          {
+            "unit": "Chapter 16: Garbage In, Garbage Out",
+            "topics": [
+              "Waste management"
+            ]
+          }
+        ],
+        "History": [
+          {
+            "unit": "Chapter 1: What, Where, How and When?",
+            "topics": [
+              "Sources of history"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Earliest People",
+            "topics": [
+              "Hunter-gatherers"
+            ]
+          },
+          {
+            "unit": "Chapter 3: From Gathering to Growing Food",
+            "topics": [
+              "Agriculture"
+            ]
+          },
+          {
+            "unit": "Chapter 4: In the Earliest Cities",
+            "topics": [
+              "Harappan civilization"
+            ]
+          },
+          {
+            "unit": "Chapter 5: What Books and Burials Tell Us",
+            "topics": [
+              "Vedas"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Kingdoms, Kings and an Early Republic",
+            "topics": [
+              "Janapadas"
+            ]
+          },
+          {
+            "unit": "Chapter 7: New Questions and Ideas",
+            "topics": [
+              "Buddhism",
+              "Jainism"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Ashoka, the Emperor Who Gave Up War",
+            "topics": [
+              "Mauryan empire"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Vital Villages, Thriving Towns",
+            "topics": [
+              "Rural life"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Traders, Kings and Pilgrims",
+            "topics": [
+              "Trade"
+            ]
+          },
+          {
+            "unit": "Chapter 11: New Empires and Kingdoms",
+            "topics": [
+              "Gupta empire"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Buildings, Paintings and Books",
+            "topics": [
+              "Art",
+              "Culture"
+            ]
+          }
+        ],
+        "Geography": [
+          {
+            "unit": "Chapter 1: The Earth in the Solar System",
+            "topics": [
+              "Planets"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Globe: Latitudes and Longitudes",
+            "topics": [
+              "Coordinates"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Motions of the Earth",
+            "topics": [
+              "Rotation",
+              "Revolution"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Maps",
+            "topics": [
+              "Types"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Major Domains of the Earth",
+            "topics": [
+              "Lithosphere"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Major Landforms of the Earth",
+            "topics": [
+              "Mountains"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Our Country - India",
+            "topics": [
+              "India overview"
+            ]
+          },
+          {
+            "unit": "Chapter 8: India: Climate, Vegetation and Wildlife",
+            "topics": [
+              "Climate"
+            ]
+          }
+        ],
+        "Civics": [
+          {
+            "unit": "Chapter 1: Understanding Diversity",
+            "topics": [
+              "Diversity"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Diversity and Discrimination",
+            "topics": [
+              "Equality"
+            ]
+          },
+          {
+            "unit": "Chapter 3: What is Government?",
+            "topics": [
+              "Government types"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Key Elements of a Democratic Government",
+            "topics": [
+              "Democracy"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Panchayati Raj",
+            "topics": [
+              "Local governance"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Rural Administration",
+            "topics": [
+              "Village system"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Urban Administration",
+            "topics": [
+              "Municipality"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Rural Livelihoods",
+            "topics": [
+              "Jobs"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Urban Livelihoods",
+            "topics": [
+              "City jobs"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Honeysuckle: Who Did Patrick's Homework?",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeysuckle: How the Dog Found Himself a New Master!",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeysuckle: Taro's Reward",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeysuckle: An Indian-American Woman in Space",
+            "topics": [
+              "Biography"
+            ]
+          },
+          {
+            "unit": "Honeysuckle: A Different Kind of School",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeysuckle: Who I Am",
+            "topics": [
+              "Autobiography"
+            ]
+          },
+          {
+            "unit": "Honeysuckle: Fair Play",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeysuckle: A Game of Chance",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeysuckle: Desert Animals",
+            "topics": [
+              "Informational"
+            ]
+          },
+          {
+            "unit": "Honeysuckle: The Banyan Tree",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "A Pact with the Sun: A Tale of Two Birds",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "A Pact with the Sun: The Friendly Mongoose",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "A Pact with the Sun: The Shepherd's Treasure",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "A Pact with the Sun: The Old-Clock Shop",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "A Pact with the Sun: Tansen",
+            "topics": [
+              "Biography"
+            ]
+          },
+          {
+            "unit": "A Pact with the Sun: The Monkey and the Crocodile",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "A Pact with the Sun: The Wonder Called Sleep",
+            "topics": [
+              "Informational"
+            ]
+          },
+          {
+            "unit": "A Pact with the Sun: A Pact with the Sun",
+            "topics": [
+              "Story"
+            ]
+          }
+        ],
+        "Hindi": [
+          {
+            "unit": "Vasant: वह चिड़िया जो",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Vasant: बचपन",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Vasant: नादान दोस्त",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Vasant: चाँद से थोड़ी-सी गप्पें",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Durva: कलम",
+            "topics": [
+              "लेखन"
+            ]
+          },
+          {
+            "unit": "Durva: पतंग",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Bal Ramkatha: राम जन्म",
+            "topics": [
+              "कथा"
+            ]
+          },
+          {
+            "unit": "Bal Ramkatha: सीता स्वयंवर",
+            "topics": [
+              "कथा"
+            ]
+          }
+        ]
+      }
+    },
+    "7": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Integers",
+            "topics": [
+              "Operations on integers",
+              "Number line",
+              "Properties"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Fractions and Decimals",
+            "topics": [
+              "Operations",
+              "Conversion",
+              "Word problems"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Data Handling",
+            "topics": [
+              "Mean",
+              "Median",
+              "Mode",
+              "Bar graphs"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Simple Equations",
+            "topics": [
+              "Variables",
+              "Solving equations"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Lines and Angles",
+            "topics": [
+              "Angle types",
+              "Transversal",
+              "Pairs of angles"
+            ]
+          },
+          {
+            "unit": "Chapter 6: The Triangle and Its Properties",
+            "topics": [
+              "Types of triangles",
+              "Angle sum property"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Congruence of Triangles",
+            "topics": [
+              "SSS, SAS, ASA",
+              "Congruence rules"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Comparing Quantities",
+            "topics": [
+              "Ratio",
+              "Percentage",
+              "Profit and loss"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Rational Numbers",
+            "topics": [
+              "Properties",
+              "Operations"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Practical Geometry",
+            "topics": [
+              "Construction of triangles"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Perimeter and Area",
+            "topics": [
+              "Area of shapes",
+              "Circumference"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Algebraic Expressions",
+            "topics": [
+              "Terms",
+              "Simplification"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Exponents and Powers",
+            "topics": [
+              "Laws of exponents",
+              "Scientific notation"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Symmetry",
+            "topics": [
+              "Line symmetry",
+              "Rotational symmetry"
+            ]
+          },
+          {
+            "unit": "Chapter 15: Visualising Solid Shapes",
+            "topics": [
+              "3D shapes",
+              "Nets"
+            ]
+          }
+        ],
+        "Science": [
+          {
+            "unit": "Chapter 1: Nutrition in Plants",
+            "topics": [
+              "Photosynthesis",
+              "Types of nutrition"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Nutrition in Animals",
+            "topics": [
+              "Digestive system"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Fibre to Fabric",
+            "topics": [
+              "Wool",
+              "Silk"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Heat",
+            "topics": [
+              "Temperature",
+              "Measurement"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Acids, Bases and Salts",
+            "topics": [
+              "Properties",
+              "Indicators"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Physical and Chemical Changes",
+            "topics": [
+              "Types of changes"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Weather, Climate and Adaptations",
+            "topics": [
+              "Weather vs climate"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Winds, Storms and Cyclones",
+            "topics": [
+              "Air pressure",
+              "Cyclones"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Soil",
+            "topics": [
+              "Soil types",
+              "Properties"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Respiration in Organisms",
+            "topics": [
+              "Breathing",
+              "Respiration"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Transportation in Animals and Plants",
+            "topics": [
+              "Circulatory system",
+              "Transport in plants"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Reproduction in Plants",
+            "topics": [
+              "Asexual and sexual reproduction"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Motion and Time",
+            "topics": [
+              "Speed",
+              "Graphs"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Electric Current and Its Effects",
+            "topics": [
+              "Heating effect",
+              "Magnetic effect"
+            ]
+          },
+          {
+            "unit": "Chapter 15: Light",
+            "topics": [
+              "Reflection",
+              "Mirrors"
+            ]
+          },
+          {
+            "unit": "Chapter 16: Water: A Precious Resource",
+            "topics": [
+              "Water conservation"
+            ]
+          },
+          {
+            "unit": "Chapter 17: Forests: Our Lifeline",
+            "topics": [
+              "Ecosystem"
+            ]
+          },
+          {
+            "unit": "Chapter 18: Wastewater Story",
+            "topics": [
+              "Treatment",
+              "Sanitation"
+            ]
+          }
+        ],
+        "History": [
+          {
+            "unit": "Chapter 1: Tracing Changes Through a Thousand Years",
+            "topics": [
+              "Historical changes"
+            ]
+          },
+          {
+            "unit": "Chapter 2: New Kings and Kingdoms",
+            "topics": [
+              "Medieval kingdoms"
+            ]
+          },
+          {
+            "unit": "Chapter 3: The Delhi Sultans",
+            "topics": [
+              "Sultanate"
+            ]
+          },
+          {
+            "unit": "Chapter 4: The Mughal Empire",
+            "topics": [
+              "Mughals"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Rulers and Buildings",
+            "topics": [
+              "Architecture"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Towns, Traders and Craftspersons",
+            "topics": [
+              "Trade"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Tribes, Nomads and Settled Communities",
+            "topics": [
+              "Communities"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Devotional Paths to the Divine",
+            "topics": [
+              "Bhakti, Sufi"
+            ]
+          },
+          {
+            "unit": "Chapter 9: The Making of Regional Cultures",
+            "topics": [
+              "Culture"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Eighteenth-Century Political Formations",
+            "topics": [
+              "Political changes"
+            ]
+          }
+        ],
+        "Geography": [
+          {
+            "unit": "Chapter 1: Environment",
+            "topics": [
+              "Natural environment"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Inside Our Earth",
+            "topics": [
+              "Earth structure"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Our Changing Earth",
+            "topics": [
+              "Landforms"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Air",
+            "topics": [
+              "Atmosphere"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Water",
+            "topics": [
+              "Hydrosphere"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Natural Vegetation and Wildlife",
+            "topics": [
+              "Forests"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Human Environment - Settlement, Transport and Communication",
+            "topics": [
+              "Human settlements"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Human Environment Interactions - The Tropical and the Subtropical Region",
+            "topics": [
+              "Regions"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Life in the Temperate Grasslands",
+            "topics": [
+              "Grasslands"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Life in the Deserts",
+            "topics": [
+              "Desert life"
+            ]
+          }
+        ],
+        "Civics": [
+          {
+            "unit": "Chapter 1: On Equality",
+            "topics": [
+              "Equality"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Role of the Government in Health",
+            "topics": [
+              "Health services"
+            ]
+          },
+          {
+            "unit": "Chapter 3: How the State Government Works",
+            "topics": [
+              "State government"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Growing Up as Boys and Girls",
+            "topics": [
+              "Gender roles"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Women Change the World",
+            "topics": [
+              "Women empowerment"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Understanding Media",
+            "topics": [
+              "Media role"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Understanding Advertising",
+            "topics": [
+              "Advertising"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Markets Around Us",
+            "topics": [
+              "Markets"
+            ]
+          },
+          {
+            "unit": "Chapter 9: A Shirt in the Market",
+            "topics": [
+              "Production chain"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Honeycomb: Three Questions",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeycomb: A Gift of Chappals",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeycomb: Gopal and the Hilsa Fish",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeycomb: The Ashes That Made Trees Bloom",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeycomb: Quality",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeycomb: Expert Detectives",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeycomb: The Invention of Vita-Wonk",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeycomb: Fire: Friend and Foe",
+            "topics": [
+              "Informational"
+            ]
+          },
+          {
+            "unit": "Honeycomb: A Bicycle in Good Repair",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeycomb: The Story of Cricket",
+            "topics": [
+              "Informational"
+            ]
+          },
+          {
+            "unit": "An Alien Hand: The Tiny Teacher",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "An Alien Hand: Bringing Up Kari",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "An Alien Hand: The Desert",
+            "topics": [
+              "Informational"
+            ]
+          },
+          {
+            "unit": "An Alien Hand: The Cop and the Anthem",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "An Alien Hand: Golu Grows a Nose",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "An Alien Hand: I Want Something in a Cage",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "An Alien Hand: Chandni",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "An Alien Hand: The Bear Story",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "An Alien Hand: A Tiger in the House",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "An Alien Hand: An Alien Hand",
+            "topics": [
+              "Story"
+            ]
+          }
+        ],
+        "Hindi": [
+          {
+            "unit": "Vasant: हम पंछी उन्मुक्त गगन के",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Vasant: हिमालय की बेटियाँ",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Vasant: कठपुतली",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Vasant: मिठाईवाला",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Vasant: पापा खो गए",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Vasant: शाम - एक किसान",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Vasant: अपूरव अनुभव",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Vasant: रहीम के दोहे",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Vasant: एक तिनका",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Vasant: खानपान की बदलती तस्वीर",
+            "topics": [
+              "लेख"
+            ]
+          },
+          {
+            "unit": "Durva: चिड़िया और चुरुंगुन",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Durva: सबसे सुंदर लड़की",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Durva: मैं हूँ रोबोट",
+            "topics": [
+              "लेख"
+            ]
+          },
+          {
+            "unit": "Bal Mahabharat Katha: पांडवों की कहानी",
+            "topics": [
+              "कथा"
+            ]
+          },
+          {
+            "unit": "Bal Mahabharat Katha: कौरव-पांडव संघर्ष",
+            "topics": [
+              "कथा"
+            ]
+          }
+        ]
+      }
+    },
+    "8": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Rational Numbers",
+            "topics": [
+              "Properties",
+              "Operations"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Linear Equations in One Variable",
+            "topics": [
+              "Solving equations",
+              "Applications"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Understanding Quadrilaterals",
+            "topics": [
+              "Properties",
+              "Angle sum"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Practical Geometry",
+            "topics": [
+              "Construction of quadrilaterals"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Data Handling",
+            "topics": [
+              "Mean, median, mode",
+              "Graphs"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Squares and Square Roots",
+            "topics": [
+              "Square numbers",
+              "Methods"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Cubes and Cube Roots",
+            "topics": [
+              "Cube numbers",
+              "Applications"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Comparing Quantities",
+            "topics": [
+              "Percentage",
+              "Profit and loss",
+              "Simple and compound interest"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Algebraic Expressions and Identities",
+            "topics": [
+              "Identities",
+              "Expansion"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Visualising Solid Shapes",
+            "topics": [
+              "3D shapes",
+              "Nets"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Mensuration",
+            "topics": [
+              "Surface area",
+              "Volume"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Exponents and Powers",
+            "topics": [
+              "Laws",
+              "Standard form"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Direct and Inverse Proportions",
+            "topics": [
+              "Proportionality"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Factorisation",
+            "topics": [
+              "Algebraic factorisation"
+            ]
+          },
+          {
+            "unit": "Chapter 15: Introduction to Graphs",
+            "topics": [
+              "Coordinate plane",
+              "Plotting points"
+            ]
+          },
+          {
+            "unit": "Chapter 16: Playing with Numbers",
+            "topics": [
+              "Number properties",
+              "Patterns"
+            ]
+          }
+        ],
+        "Science": [
+          {
+            "unit": "Chapter 1: Crop Production and Management",
+            "topics": [
+              "Agriculture practices"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Microorganisms: Friend and Foe",
+            "topics": [
+              "Microbes",
+              "Uses and harms"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Synthetic Fibres and Plastics",
+            "topics": [
+              "Types",
+              "Properties"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Materials: Metals and Non-Metals",
+            "topics": [
+              "Properties",
+              "Uses"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Coal and Petroleum",
+            "topics": [
+              "Fuels",
+              "Conservation"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Combustion and Flame",
+            "topics": [
+              "Burning",
+              "Types of flame"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Conservation of Plants and Animals",
+            "topics": [
+              "Biodiversity"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Cell - Structure and Functions",
+            "topics": [
+              "Cell parts"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Reproduction in Animals",
+            "topics": [
+              "Reproductive systems"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Reaching the Age of Adolescence",
+            "topics": [
+              "Puberty",
+              "Hormones"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Force and Pressure",
+            "topics": [
+              "Force types"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Friction",
+            "topics": [
+              "Types",
+              "Applications"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Sound",
+            "topics": [
+              "Production",
+              "Propagation"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Chemical Effects of Electric Current",
+            "topics": [
+              "Electrolysis"
+            ]
+          },
+          {
+            "unit": "Chapter 15: Some Natural Phenomena",
+            "topics": [
+              "Lightning",
+              "Earthquakes"
+            ]
+          },
+          {
+            "unit": "Chapter 16: Light",
+            "topics": [
+              "Reflection",
+              "Human eye"
+            ]
+          },
+          {
+            "unit": "Chapter 17: Stars and the Solar System",
+            "topics": [
+              "Celestial bodies"
+            ]
+          },
+          {
+            "unit": "Chapter 18: Pollution of Air and Water",
+            "topics": [
+              "Pollution control"
+            ]
+          }
+        ],
+        "History": [
+          {
+            "unit": "Chapter 1: How, When and Where",
+            "topics": [
+              "Modern history sources"
+            ]
+          },
+          {
+            "unit": "Chapter 2: From Trade to Territory",
+            "topics": [
+              "East India Company"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Ruling the Countryside",
+            "topics": [
+              "Revenue systems"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Tribals, Dikus and the Vision of a Golden Age",
+            "topics": [
+              "Tribal movements"
+            ]
+          },
+          {
+            "unit": "Chapter 5: When People Rebel",
+            "topics": [
+              "1857 revolt"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Colonialism and the City",
+            "topics": [
+              "Urban development"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Weavers, Iron Smelters and Factory Owners",
+            "topics": [
+              "Industries"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Civilising the 'Native', Educating the Nation",
+            "topics": [
+              "Education policies"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Women, Caste and Reform",
+            "topics": [
+              "Social reform"
+            ]
+          },
+          {
+            "unit": "Chapter 10: The Changing World of Visual Arts",
+            "topics": [
+              "Art"
+            ]
+          },
+          {
+            "unit": "Chapter 11: The Making of the National Movement",
+            "topics": [
+              "Freedom struggle"
+            ]
+          },
+          {
+            "unit": "Chapter 12: India After Independence",
+            "topics": [
+              "Post-independence"
+            ]
+          }
+        ],
+        "Geography": [
+          {
+            "unit": "Chapter 1: Resources",
+            "topics": [
+              "Types of resources"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Land, Soil, Water, Natural Vegetation and Wildlife Resources",
+            "topics": [
+              "Natural resources"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Mineral and Power Resources",
+            "topics": [
+              "Minerals"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Agriculture",
+            "topics": [
+              "Farming types"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Industries",
+            "topics": [
+              "Industrial sectors"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Human Resources",
+            "topics": [
+              "Population"
+            ]
+          }
+        ],
+        "Civics": [
+          {
+            "unit": "Chapter 1: The Indian Constitution",
+            "topics": [
+              "Features"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Understanding Secularism",
+            "topics": [
+              "Secularism"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Why Do We Need a Parliament?",
+            "topics": [
+              "Parliament"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Understanding Laws",
+            "topics": [
+              "Law-making"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Judiciary",
+            "topics": [
+              "Courts"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Understanding Our Criminal Justice System",
+            "topics": [
+              "Justice system"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Understanding Marginalisation",
+            "topics": [
+              "Marginalisation"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Confronting Marginalisation",
+            "topics": [
+              "Rights"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Public Facilities",
+            "topics": [
+              "Services"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Law and Social Justice",
+            "topics": [
+              "Rights and laws"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Honeydew: The Best Christmas Present in the World",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeydew: The Tsunami",
+            "topics": [
+              "Disaster"
+            ]
+          },
+          {
+            "unit": "Honeydew: Glimpses of the Past",
+            "topics": [
+              "History"
+            ]
+          },
+          {
+            "unit": "Honeydew: Bepin Choudhury's Lapse of Memory",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeydew: The Summit Within",
+            "topics": [
+              "Adventure"
+            ]
+          },
+          {
+            "unit": "Honeydew: This is Jody's Fawn",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Honeydew: A Visit to Cambridge",
+            "topics": [
+              "Biography"
+            ]
+          },
+          {
+            "unit": "Honeydew: A Short Monsoon Diary",
+            "topics": [
+              "Nature"
+            ]
+          },
+          {
+            "unit": "It So Happened: How the Camel Got His Hump",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "It So Happened: Children at Work",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "It So Happened: The Selfish Giant",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "It So Happened: The Treasure Within",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "It So Happened: Princess September",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "It So Happened: The Fight",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "It So Happened: The Open Window",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "It So Happened: Jalebis",
+            "topics": [
+              "Story"
+            ]
+          }
+        ],
+        "Hindi": [
+          {
+            "unit": "Vasant: ध्वनि",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Vasant: लाख की चूड़ियाँ",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Vasant: बस की यात्रा",
+            "topics": [
+              "लेख"
+            ]
+          },
+          {
+            "unit": "Vasant: दीवानों की हस्ती",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Vasant: चिट्ठियों की अनूठी दुनिया",
+            "topics": [
+              "लेख"
+            ]
+          },
+          {
+            "unit": "Vasant: भगवान के डाकिए",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Vasant: क्या निराश हुआ जाए",
+            "topics": [
+              "लेख"
+            ]
+          },
+          {
+            "unit": "Vasant: यह सबसे कठिन समय नहीं",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Durva: गुड़िया",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Durva: दो गौरैया",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Bharat Ki Khoj: भारत की खोज",
+            "topics": [
+              "इतिहास"
+            ]
+          },
+          {
+            "unit": "Bharat Ki Khoj: सांस्कृतिक विरासत",
+            "topics": [
+              "संस्कृति"
+            ]
+          }
+        ]
+      }
+    },
+    "9": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Number Systems",
+            "topics": [
+              "Real numbers",
+              "Irrational numbers"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Polynomials",
+            "topics": [
+              "Algebraic expressions",
+              "Zeros of polynomials"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Coordinate Geometry",
+            "topics": [
+              "Cartesian plane",
+              "Plotting points"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Linear Equations in Two Variables",
+            "topics": [
+              "Graphical solutions"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Introduction to Euclid's Geometry",
+            "topics": [
+              "Axioms",
+              "Postulates"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Lines and Angles",
+            "topics": [
+              "Angle relationships"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Triangles",
+            "topics": [
+              "Congruence",
+              "Properties"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Quadrilaterals",
+            "topics": [
+              "Properties"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Areas of Parallelograms and Triangles",
+            "topics": [
+              "Area relationships"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Circles",
+            "topics": [
+              "Chord properties"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Constructions",
+            "topics": [
+              "Geometric constructions"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Heron's Formula",
+            "topics": [
+              "Area of triangle"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Surface Areas and Volumes",
+            "topics": [
+              "3D shapes"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Statistics",
+            "topics": [
+              "Data representation"
+            ]
+          },
+          {
+            "unit": "Chapter 15: Probability",
+            "topics": [
+              "Basic probability"
+            ]
+          }
+        ],
+        "Science": [
+          {
+            "unit": "Physics: Motion",
+            "topics": [
+              "Speed",
+              "Velocity",
+              "Graphs"
+            ]
+          },
+          {
+            "unit": "Physics: Force and Laws of Motion",
+            "topics": [
+              "Newton's laws"
+            ]
+          },
+          {
+            "unit": "Physics: Gravitation",
+            "topics": [
+              "Gravity",
+              "Free fall"
+            ]
+          },
+          {
+            "unit": "Physics: Work and Energy",
+            "topics": [
+              "Kinetic and potential energy"
+            ]
+          },
+          {
+            "unit": "Physics: Sound",
+            "topics": [
+              "Sound waves"
+            ]
+          },
+          {
+            "unit": "Chemistry: Matter in Our Surroundings",
+            "topics": [
+              "States of matter"
+            ]
+          },
+          {
+            "unit": "Chemistry: Is Matter Around Us Pure?",
+            "topics": [
+              "Mixtures",
+              "Separation"
+            ]
+          },
+          {
+            "unit": "Chemistry: Atoms and Molecules",
+            "topics": [
+              "Atomic structure"
+            ]
+          },
+          {
+            "unit": "Chemistry: Structure of the Atom",
+            "topics": [
+              "Electrons, protons"
+            ]
+          },
+          {
+            "unit": "Biology: The Fundamental Unit of Life",
+            "topics": [
+              "Cell structure"
+            ]
+          },
+          {
+            "unit": "Biology: Tissues",
+            "topics": [
+              "Types of tissues"
+            ]
+          },
+          {
+            "unit": "Biology: Diversity in Living Organisms",
+            "topics": [
+              "Classification"
+            ]
+          },
+          {
+            "unit": "Biology: Why Do We Fall Ill?",
+            "topics": [
+              "Health",
+              "Diseases"
+            ]
+          },
+          {
+            "unit": "Biology: Natural Resources",
+            "topics": [
+              "Air, water"
+            ]
+          },
+          {
+            "unit": "Biology: Improvement in Food Resources",
+            "topics": [
+              "Agriculture"
+            ]
+          }
+        ],
+        "History": [
+          {
+            "unit": "Chapter 1: The French Revolution",
+            "topics": [
+              "Causes",
+              "Impact"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Socialism in Europe and the Russian Revolution",
+            "topics": [
+              "Russian revolution"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Nazism and the Rise of Hitler",
+            "topics": [
+              "Hitler",
+              "World War II"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Forest Society and Colonialism",
+            "topics": [
+              "Forests"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Pastoralists in the Modern World",
+            "topics": [
+              "Nomadic life"
+            ]
+          }
+        ],
+        "Geography": [
+          {
+            "unit": "Chapter 1: India - Size and Location",
+            "topics": [
+              "Geographical location"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Physical Features of India",
+            "topics": [
+              "Mountains",
+              "Plains"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Drainage",
+            "topics": [
+              "Rivers"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Climate",
+            "topics": [
+              "Weather patterns"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Natural Vegetation and Wildlife",
+            "topics": [
+              "Forests"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Population",
+            "topics": [
+              "Population growth"
+            ]
+          }
+        ],
+        "Civics": [
+          {
+            "unit": "Chapter 1: What is Democracy? Why Democracy?",
+            "topics": [
+              "Democracy"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Constitutional Design",
+            "topics": [
+              "Indian constitution"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Electoral Politics",
+            "topics": [
+              "Elections"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Working of Institutions",
+            "topics": [
+              "Parliament"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Democratic Rights",
+            "topics": [
+              "Fundamental rights"
+            ]
+          }
+        ],
+        "Economics": [
+          {
+            "unit": "Chapter 1: The Story of Village Palampur",
+            "topics": [
+              "Village economy"
+            ]
+          },
+          {
+            "unit": "Chapter 2: People as Resource",
+            "topics": [
+              "Human capital"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Poverty as a Challenge",
+            "topics": [
+              "Poverty"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Food Security in India",
+            "topics": [
+              "Food distribution"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "Beehive: The Fun They Had",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Beehive: The Sound of Music",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Beehive: The Little Girl",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Beehive: A Truly Beautiful Mind",
+            "topics": [
+              "Biography"
+            ]
+          },
+          {
+            "unit": "Beehive: The Snake and the Mirror",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Beehive: My Childhood",
+            "topics": [
+              "Autobiography"
+            ]
+          },
+          {
+            "unit": "Beehive: Packing",
+            "topics": [
+              "Humor"
+            ]
+          },
+          {
+            "unit": "Beehive: Reach for the Top",
+            "topics": [
+              "Biography"
+            ]
+          },
+          {
+            "unit": "Beehive: The Bond of Love",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Beehive: Kathmandu",
+            "topics": [
+              "Travel"
+            ]
+          },
+          {
+            "unit": "Beehive: If I Were You",
+            "topics": [
+              "Drama"
+            ]
+          },
+          {
+            "unit": "Moments: The Lost Child",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Moments: The Adventures of Toto",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Moments: Iswaran the Storyteller",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Moments: In the Kingdom of Fools",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Moments: The Happy Prince",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Moments: Weathering the Storm in Ersama",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Moments: The Last Leaf",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Moments: A House Is Not a Home",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Moments: The Accidental Tourist",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Moments: The Beggar",
+            "topics": [
+              "Story"
+            ]
+          }
+        ],
+        "Hindi": [
+          {
+            "unit": "Kshitij: दो बैलों की कथा",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Kshitij: ल्हासा की ओर",
+            "topics": [
+              "यात्रा"
+            ]
+          },
+          {
+            "unit": "Kshitij: उपभोक्तावाद की संस्कृति",
+            "topics": [
+              "लेख"
+            ]
+          },
+          {
+            "unit": "Kritika: इस जल प्रलय में",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Kritika: मेरे संग की औरतें",
+            "topics": [
+              "लेख"
+            ]
+          }
+        ]
+      }
+    },
+    "10": {
+      "subjects": {
+        "Maths": [
+          {
+            "unit": "Chapter 1: Real Numbers",
+            "topics": [
+              "Euclid's division lemma",
+              "HCF, LCM"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Polynomials",
+            "topics": [
+              "Zeros",
+              "Graphs"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Pair of Linear Equations in Two Variables",
+            "topics": [
+              "Graphical and algebraic methods"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Quadratic Equations",
+            "topics": [
+              "Factorisation",
+              "Formula"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Arithmetic Progressions",
+            "topics": [
+              "Sequences",
+              "nth term"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Triangles",
+            "topics": [
+              "Similarity",
+              "Theorems"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Coordinate Geometry",
+            "topics": [
+              "Distance formula",
+              "Section formula"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Introduction to Trigonometry",
+            "topics": [
+              "Trigonometric ratios"
+            ]
+          },
+          {
+            "unit": "Chapter 9: Some Applications of Trigonometry",
+            "topics": [
+              "Heights and distances"
+            ]
+          },
+          {
+            "unit": "Chapter 10: Circles",
+            "topics": [
+              "Tangents",
+              "Properties"
+            ]
+          },
+          {
+            "unit": "Chapter 11: Constructions",
+            "topics": [
+              "Geometric constructions"
+            ]
+          },
+          {
+            "unit": "Chapter 12: Areas Related to Circles",
+            "topics": [
+              "Sector area"
+            ]
+          },
+          {
+            "unit": "Chapter 13: Surface Areas and Volumes",
+            "topics": [
+              "3D shapes"
+            ]
+          },
+          {
+            "unit": "Chapter 14: Statistics",
+            "topics": [
+              "Mean, median, mode"
+            ]
+          },
+          {
+            "unit": "Chapter 15: Probability",
+            "topics": [
+              "Theoretical probability"
+            ]
+          }
+        ],
+        "Science": [
+          {
+            "unit": "Physics: Light - Reflection and Refraction",
+            "topics": [
+              "Mirror, lens"
+            ]
+          },
+          {
+            "unit": "Physics: The Human Eye and the Colourful World",
+            "topics": [
+              "Eye defects"
+            ]
+          },
+          {
+            "unit": "Physics: Electricity",
+            "topics": [
+              "Ohm's law",
+              "Circuits"
+            ]
+          },
+          {
+            "unit": "Physics: Magnetic Effects of Electric Current",
+            "topics": [
+              "Magnetism"
+            ]
+          },
+          {
+            "unit": "Physics: Sources of Energy",
+            "topics": [
+              "Renewable energy"
+            ]
+          },
+          {
+            "unit": "Chemistry: Chemical Reactions and Equations",
+            "topics": [
+              "Balancing equations"
+            ]
+          },
+          {
+            "unit": "Chemistry: Acids, Bases and Salts",
+            "topics": [
+              "pH scale"
+            ]
+          },
+          {
+            "unit": "Chemistry: Metals and Non-metals",
+            "topics": [
+              "Reactivity"
+            ]
+          },
+          {
+            "unit": "Chemistry: Carbon and its Compounds",
+            "topics": [
+              "Hydrocarbons"
+            ]
+          },
+          {
+            "unit": "Chemistry: Periodic Classification of Elements",
+            "topics": [
+              "Periodic table"
+            ]
+          },
+          {
+            "unit": "Biology: Life Processes",
+            "topics": [
+              "Nutrition",
+              "Respiration"
+            ]
+          },
+          {
+            "unit": "Biology: Control and Coordination",
+            "topics": [
+              "Nervous system"
+            ]
+          },
+          {
+            "unit": "Biology: How do Organisms Reproduce?",
+            "topics": [
+              "Reproduction"
+            ]
+          },
+          {
+            "unit": "Biology: Heredity and Evolution",
+            "topics": [
+              "Genetics"
+            ]
+          },
+          {
+            "unit": "Biology: Our Environment",
+            "topics": [
+              "Ecosystem"
+            ]
+          },
+          {
+            "unit": "Biology: Management of Natural Resources",
+            "topics": [
+              "Sustainability"
+            ]
+          }
+        ],
+        "History": [
+          {
+            "unit": "Chapter 1: The Rise of Nationalism in Europe",
+            "topics": [
+              "Nationalism"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Nationalism in India",
+            "topics": [
+              "Freedom struggle"
+            ]
+          },
+          {
+            "unit": "Chapter 3: The Making of a Global World",
+            "topics": [
+              "Globalisation"
+            ]
+          },
+          {
+            "unit": "Chapter 4: The Age of Industrialisation",
+            "topics": [
+              "Industries"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Print Culture and the Modern World",
+            "topics": [
+              "Printing press"
+            ]
+          }
+        ],
+        "Geography": [
+          {
+            "unit": "Chapter 1: Resources and Development",
+            "topics": [
+              "Resource planning"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Forest and Wildlife Resources",
+            "topics": [
+              "Conservation"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Water Resources",
+            "topics": [
+              "Water management"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Agriculture",
+            "topics": [
+              "Farming types"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Minerals and Energy Resources",
+            "topics": [
+              "Energy sources"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Manufacturing Industries",
+            "topics": [
+              "Industrial growth"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Lifelines of National Economy",
+            "topics": [
+              "Transport",
+              "Communication"
+            ]
+          }
+        ],
+        "Civics": [
+          {
+            "unit": "Chapter 1: Power Sharing",
+            "topics": [
+              "Forms of power sharing"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Federalism",
+            "topics": [
+              "Federal structure"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Democracy and Diversity",
+            "topics": [
+              "Social divisions"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Gender, Religion and Caste",
+            "topics": [
+              "Social issues"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Popular Struggles and Movements",
+            "topics": [
+              "Movements"
+            ]
+          },
+          {
+            "unit": "Chapter 6: Political Parties",
+            "topics": [
+              "Party system"
+            ]
+          },
+          {
+            "unit": "Chapter 7: Outcomes of Democracy",
+            "topics": [
+              "Evaluation"
+            ]
+          },
+          {
+            "unit": "Chapter 8: Challenges to Democracy",
+            "topics": [
+              "Reforms"
+            ]
+          }
+        ],
+        "Economics": [
+          {
+            "unit": "Chapter 1: Development",
+            "topics": [
+              "Indicators"
+            ]
+          },
+          {
+            "unit": "Chapter 2: Sectors of the Indian Economy",
+            "topics": [
+              "Primary, secondary, tertiary"
+            ]
+          },
+          {
+            "unit": "Chapter 3: Money and Credit",
+            "topics": [
+              "Banks"
+            ]
+          },
+          {
+            "unit": "Chapter 4: Globalisation and the Indian Economy",
+            "topics": [
+              "Global trade"
+            ]
+          },
+          {
+            "unit": "Chapter 5: Consumer Rights",
+            "topics": [
+              "Rights",
+              "Protection"
+            ]
+          }
+        ],
+        "English": [
+          {
+            "unit": "First Flight: A Letter to God",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "First Flight: Nelson Mandela: Long Walk to Freedom",
+            "topics": [
+              "Biography"
+            ]
+          },
+          {
+            "unit": "First Flight: Two Stories about Flying",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "First Flight: From the Diary of Anne Frank",
+            "topics": [
+              "Diary"
+            ]
+          },
+          {
+            "unit": "First Flight: The Hundred Dresses",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "First Flight: Glimpses of India",
+            "topics": [
+              "Travel"
+            ]
+          },
+          {
+            "unit": "First Flight: Mijbil the Otter",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "First Flight: Madam Rides the Bus",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "First Flight: The Sermon at Benares",
+            "topics": [
+              "Philosophy"
+            ]
+          },
+          {
+            "unit": "First Flight: The Proposal",
+            "topics": [
+              "Drama"
+            ]
+          },
+          {
+            "unit": "Footprints Without Feet: A Triumph of Surgery",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Footprints Without Feet: The Thief's Story",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Footprints Without Feet: The Midnight Visitor",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Footprints Without Feet: A Question of Trust",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Footprints Without Feet: Footprints without Feet",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Footprints Without Feet: The Making of a Scientist",
+            "topics": [
+              "Biography"
+            ]
+          },
+          {
+            "unit": "Footprints Without Feet: The Necklace",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Footprints Without Feet: The Hack Driver",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Footprints Without Feet: Bholi",
+            "topics": [
+              "Story"
+            ]
+          },
+          {
+            "unit": "Footprints Without Feet: The Book that Saved the Earth",
+            "topics": [
+              "Drama"
+            ]
+          }
+        ],
+        "Hindi": [
+          {
+            "unit": "Kshitij: सूरदास",
+            "topics": [
+              "कविता"
+            ]
+          },
+          {
+            "unit": "Kshitij: राम-लक्ष्मण-परशुराम संवाद",
+            "topics": [
+              "काव्य"
+            ]
+          },
+          {
+            "unit": "Kshitij: आत्मकथ्य",
+            "topics": [
+              "लेख"
+            ]
+          },
+          {
+            "unit": "Kritika: माता का आँचल",
+            "topics": [
+              "कहानी"
+            ]
+          },
+          {
+            "unit": "Kritika: जॉर्ज पंचम की नाक",
+            "topics": [
+              "कहानी"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

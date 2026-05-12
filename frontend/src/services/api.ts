@@ -253,6 +253,10 @@ export const adminAPI = {
 };
 
 export const syllabusAPI = {
+  getBoard: async (board: string) => {
+    const response = await api.get(`/syllabus/board/${encodeURIComponent(board)}`);
+    return response.data;
+  },
   getContent: async (board: string, classLevel: string, subject: string, topic: string) => {
     const response = await api.get('/syllabus-content', { 
       params: { 

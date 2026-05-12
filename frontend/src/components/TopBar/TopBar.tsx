@@ -24,6 +24,13 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu }) => {
   const navigate = useNavigate();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
+  const displayName = (() => {
+    if (auth?.user?.name) return auth.user.name;
+    if (auth?.user?.username) return auth.user.username;
+    if (auth?.user?.email) return auth.user.email.split('@')[0];
+    return "Guest student";
+  })();
+
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -129,7 +136,7 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu }) => {
 
         {/* User Profile */}
         <button 
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/settings')}
           className="flex items-center gap-2 p-1.5 hover:bg-app-accent/10 rounded-full transition-all border border-transparent hover:border-app-border group"
         >
           <div className="w-8 h-8 rounded-full bg-app-primary/10 border-2 border-app-primary/20 flex items-center justify-center text-app-primary transition-transform group-hover:scale-110">
@@ -137,7 +144,7 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu }) => {
           </div>
           <div className="hidden sm:block text-left">
             <p className="text-xs font-black text-app-text truncate max-w-20">
-              {auth?.user?.username || "Guest student"}
+              {displayName}
             </p>
             <p className="text-[10px] text-app-text-muted font-bold uppercase tracking-widest leading-none">
               Lvl 1

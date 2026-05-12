@@ -22,8 +22,6 @@ const SignLanguagePage = () => {
 
   useEffect(() => {
     const fetchLessonAndVideo = async () => {
-      if (!lessonId) return;
-      
       setLoading(true);
       setError(null);
       try {
@@ -47,14 +45,12 @@ const SignLanguagePage = () => {
           }
         }
 
-        if (lessonData) {
-          // 2. Search for YouTube video
-          const query = generateSearchQuery(lessonData);
-          const result = await youtubeService.searchSignLanguageVideo(query);
-          setVideoUrl(result.embedUrl);
-        } else {
-          setError("Lesson details are missing.");
-        }
+        const query = lessonData
+          ? generateSearchQuery(lessonData)
+          : "sign language education lesson";
+
+        const result = await youtubeService.searchSignLanguageVideo(query);
+        setVideoUrl(result.embedUrl);
       } catch (err: any) {
         console.error("Error loading sign language content:", err);
         setError(err.message || "Sign language video not available for this topic.");
@@ -63,10 +59,10 @@ const SignLanguagePage = () => {
       }
     };
 
-    if (signLanguageEnabled && lessonId) {
+    if (signLanguageEnabled) {
       fetchLessonAndVideo();
     }
-  }, [lessonId, signLanguageEnabled]);
+  }, [lessonId, signLanguageEnabled, lesson]);
 
   // If user disables sign mode while on a specific lesson, take them back to standard view
   useEffect(() => {

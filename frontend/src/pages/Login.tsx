@@ -195,6 +195,23 @@ const Login = () => {
             </div>
           )}
 
+          <div className="mb-8">
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full py-5 bg-white border-2 border-gray-100 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-4 hover:border-primary/20 transition-all text-gray-700 active:scale-95"
+            >
+              <FcGoogle size={20} />
+              Continue with Google
+            </button>
+          </div>
+
+          <div className="flex items-center gap-4 mb-8">
+            <div className="h-px flex-1 bg-gray-100" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">or use email</span>
+            <div className="h-px flex-1 bg-gray-100" />
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
               <label className="block text-[10px] font-black text-gray-500 ml-1 uppercase tracking-[0.2em]">
@@ -262,15 +279,6 @@ const Login = () => {
           </form>
 
           <div className="mt-8 pt-8 border-t-2 border-gray-100 flex flex-col gap-4">
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full py-5 bg-white border-2 border-gray-100 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-4 hover:border-primary/20 transition-all text-gray-700 active:scale-95"
-            >
-              <FcGoogle size={20} />
-              Secure Sync with Google
-            </button>
-
             <button
               type="button"
               onClick={handleGuestMode}

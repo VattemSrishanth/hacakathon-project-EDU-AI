@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
   Menu, X, LayoutDashboard, BookOpen, Sparkles, Accessibility, 
@@ -25,11 +25,47 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
   const { isExamActive } = useExam();
   const location = useLocation();
   const navigate = useNavigate();
+  const navScrollRef = useRef<HTMLDivElement | null>(null);
+  const bottomSentinelRef = useRef<HTMLDivElement | null>(null);
+  const [showLogout, setShowLogout] = useState(false);
 
   // Close mobile sidebar on route change
   useEffect(() => {
     setIsMobileOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    const container = navScrollRef.current;
+    const sentinel = bottomSentinelRef.current;
+    if (!container || !sentinel) return;
+
+    const updateIfNoScroll = () => {
+      const noScroll = container.scrollHeight <= container.clientHeight + 1;
+      if (noScroll) {
+        setShowLogout(true);
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+        setShowLogout(entry.isIntersecting);
+      },
+      { root: container, threshold: 0.95 }
+    );
+
+    observer.observe(sentinel);
+    updateIfNoScroll();
+
+    const resizeObserver = new ResizeObserver(updateIfNoScroll);
+    resizeObserver.observe(container);
+
+    return () => {
+      observer.disconnect();
+      resizeObserver.disconnect();
+    };
+  }, [isCollapsed, isMobileOpen, location.pathname]);
 
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
   const toggleMobile = () => setIsMobileOpen(!isMobileOpen);
@@ -149,7 +185,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
           </div>
 
           {/* Navigation Items */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 scrollbar-thin">
+          <div ref={navScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-3 scrollbar-thin">
             <ul className="space-y-6">
               {navGroups
                 .filter(group => !group.roles || group.roles.includes(userRole as any))
@@ -192,6 +228,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
                 </li>
               ))}
             </ul>
+            <div ref={bottomSentinelRef} className="h-1" aria-hidden="true" />
           </div>
 
           {/* Footer - Logout/User info/Connectivity */}
@@ -216,19 +253,21 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }:
               </div>
             )}
 
-            <button
-              onClick={logout}
-              className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group relative`}
-              title={isCollapsed ? t.nav.logout : ''}
-            >
-              <LogOut size={22} className="shrink-0" />
-              {!isCollapsed && <span className="text-sm font-black uppercase tracking-wider">{t.nav.logout}</span>}
-              {isCollapsed && (
-                <div className="absolute left-full ml-2 px-2 py-1 bg-red-600 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
-                  {t.nav.logout}
-                </div>
-              )}
-            </button>
+            {showLogout && (
+              <button
+                onClick={logout}
+                className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group relative`}
+                title={isCollapsed ? t.nav.logout : ''}
+              >
+                <LogOut size={22} className="shrink-0" />
+                {!isCollapsed && <span className="text-sm font-black uppercase tracking-wider">{t.nav.logout}</span>}
+                {isCollapsed && (
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-red-600 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
+                    {t.nav.logout}
+                  </div>
+                )}
+              </button>
+            )}
           </div>
         </div>
       </nav>

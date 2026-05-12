@@ -435,17 +435,38 @@ const AITutor = () => {
       if (!auth?.user?.id) return;
       try {
         const data = await userDataAPI.getChatHistory(String(auth.user.id));
-        if (data.success && data.history.length > 0) {
-          const sessions: ChatSession[] = data.history.map((h: { id: string; messages: ChatMessage[]; created_at: string }) => ({
-            id: h.id,
-            title: h.messages?.[1]?.content.substring(0, 30) + '...' || 'AI Conversation',
-            messages: h.messages,
-            timestamp: new Date(h.created_at || new Date())
-          }));
-          setChatSessions(sessions);
-          if (sessions.length > 0) {
-            setCurrentSessionId(sessions[0].id);
-            setMessages(sessions[0].messages);
+        const history = data?.history;
+
+        if (data?.success && Array.isArray(history) && history.length > 0) {
+          const looksLikeSessionList = history.some((item) => Array.isArray(item?.messages));
+
+          if (looksLikeSessionList) {
+            const sessions: ChatSession[] = history.map(
+              (h: { id: string; messages: ChatMessage[]; created_at: string }) => ({
+                id: h.id,
+                title: h.messages?.[1]?.content.substring(0, 30) + '...' || 'AI Conversation',
+                messages: Array.isArray(h.messages) ? h.messages : [],
+                timestamp: new Date(h.created_at || new Date())
+              })
+            );
+            setChatSessions(sessions);
+            if (sessions.length > 0) {
+              setCurrentSessionId(sessions[0].id);
+              setMessages(Array.isArray(sessions[0].messages) ? sessions[0].messages : []);
+              return;
+            }
+          } else {
+            const sessionId = data?.id || Date.now().toString();
+            const title = history?.[1]?.content?.substring(0, 30) + '...' || 'AI Conversation';
+            const session: ChatSession = {
+              id: sessionId,
+              title,
+              messages: history,
+              timestamp: new Date()
+            };
+            setChatSessions([session]);
+            setCurrentSessionId(session.id);
+            setMessages(session.messages);
             return;
           }
         }

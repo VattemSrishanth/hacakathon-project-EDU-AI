@@ -18,9 +18,16 @@ export interface OfflineDoubt {
   id: string;
   question: string;
   subject: string;
+  topic?: string;
+  classLevel?: string;
   username: string;
   createdAt: number;
   isSyncing?: boolean;
+  repliesCount?: number;
+  viewsCount?: number;
+  isVerified?: boolean;
+  status?: string;
+  helpfulCount?: number;
 }
 
 const openDB = (): Promise<IDBDatabase> => {

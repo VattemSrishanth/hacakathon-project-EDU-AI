@@ -10,8 +10,6 @@ import {
   BookOpen, 
   ChevronRight,
   TrendingUp,
-  Globe,
-  Play,
   Heart,
   Share2,
   BookMarked,
@@ -21,8 +19,7 @@ import {
   LayoutGrid,
   List,
   ChevronLeft,
-  ChevronRight as ChevronRightIcon,
-  Video
+  ChevronRight as ChevronRightIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
@@ -120,23 +117,19 @@ const Notifications: React.FC = () => {
       {/* Dynamic News Ticker */}
       <div className="w-full bg-app-bg-alt border-b border-app-border/50 py-2 overflow-hidden whitespace-nowrap">
         <div className="max-w-7xl mx-auto px-4 flex items-center gap-8 animate-in slide-in-from-right-full duration-[40s] repeat-infinite">
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            LIVE: CBSE EXAM RESULTS IN 2 DAYS
-          </div>
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted">
-             <TrendingUp size={12} className="text-secondary" />
-             SCHOLARSHIP PORTAL OPEN FOR 2026
-          </div>
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted">
-             <Globe size={12} className="text-primary" />
-             GLOBAL: AI LITERACY MANDATE UPDATES
-          </div>
-          {/* Duplicate for seamless scroll */}
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            UGC: NEW CAREER GUIDELINES RELEASED
-          </div>
+          {!loadingNews && news.length > 0 ? (
+            news.slice(0, 10).map((n, i) => (
+              <div key={i} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                {n.title.toUpperCase()}
+              </div>
+            ))
+          ) : (
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              LIVE UPDATES LOADING
+            </div>
+          )}
         </div>
       </div>
 
@@ -156,7 +149,9 @@ const Notifications: React.FC = () => {
           
           <div className="flex items-center gap-4">
              <div className="text-right hidden sm:block">
-                <div className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">February 21, 2026</div>
+                <div className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">
+                  {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </div>
                 <div className="text-xs font-bold text-app-text-main uppercase tracking-tight">Student Edition</div>
              </div>
              <div className="w-px h-10 bg-app-border" />
@@ -206,6 +201,9 @@ const Notifications: React.FC = () => {
                     src={featuredNews[carouselIndex].image || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070'} 
                     alt={featuredNews[carouselIndex].title}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070';
+                    }}
                   />
                    <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent" />
                   
@@ -331,54 +329,6 @@ const Notifications: React.FC = () => {
                </div>
             </section>
 
-            {/* Section 3: Featured Video Card */}
-            <section>
-               <div className="relative group rounded-[40px] overflow-hidden border border-app-border shadow-xl">
-                  <div className="aspect-video relative overflow-hidden">
-                     <img 
-                       src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070" 
-                       alt="Education Briefing" 
-                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                     />
-                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
-                     <button className="absolute inset-0 m-auto w-20 h-20 bg-primary/90 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300">
-                        <Play fill="currentColor" size={32} />
-                     </button>
-                     <div className="absolute top-6 left-6 flex items-center gap-2">
-                        <div className="bg-red-600 text-white text-[8px] font-black px-2 py-1 rounded uppercase tracking-[0.2em] animate-pulse">
-                           Live Briefing
-                        </div>
-                        <div className="bg-black/30 backdrop-blur-md text-white text-[8px] font-black px-2 py-1 rounded uppercase tracking-[0.2em] border border-white/10">
-                           <Video size={10} className="inline mr-1" />
-                           Career Guidance
-                        </div>
-                     </div>
-                  </div>
-                  <div className="p-8 bg-app-bg-alt">
-                     <h3 className="text-2xl font-black text-app-text-main uppercase tracking-tight mb-3">
-                        Mastering Competitive Exams 2026: The AI Strategy
-                     </h3>
-                     <p className="text-sm text-app-text-sub font-bold uppercase tracking-widest leading-relaxed opacity-70 mb-6">
-                        Watch our latest education briefing on how to leverage AI tools for national entrance exams.
-                     </p>
-                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                           <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                              <Zap className="text-primary" size={20} />
-                           </div>
-                           <div>
-                              <div className="text-xs font-black text-app-text-main uppercase tracking-tight">AI Academic Team</div>
-                              <div className="text-[10px] font-bold text-app-text-muted uppercase tracking-widest">12K Students Watching</div>
-                           </div>
-                        </div>
-                        <button className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-2 hover:scale-105 transition-all">
-                           Watch Now <ChevronRight size={14} />
-                        </button>
-                     </div>
-                  </div>
-               </div>
-            </section>
-
             {/* Section 4: Top Stories List (Scholarships, etc) */}
             <section className="space-y-6">
                <div className="flex items-center justify-between">
@@ -389,27 +339,29 @@ const Notifications: React.FC = () => {
                   <button className="text-[10px] font-black text-secondary uppercase tracking-[0.2em]">View All</button>
                </div>
                <div className="space-y-4">
-                  {[
-                    { title: "National PM Scholarship 2026: Application Portal Now Live", type: "Scholarship", date: "2h ago", color: "text-emerald-500" },
-                    { title: "New UGC Policy on Credits for Online Internships", type: "Policy", date: "5h ago", color: "text-blue-500" },
-                    { title: "JEE Main 2026 Attempt 1 Schedule Published", type: "Exams", date: "8h ago", color: "text-amber-500" },
-                    { title: "Top 10 Emerging AI Careers for Graduates in 2026", type: "Career", date: "1d ago", color: "text-purple-500" }
-                  ].map((story, idx) => (
-                    <motion.div 
-                      key={idx}
-                      whileHover={{ x: 10 }}
-                      className="group p-5 bg-app-bg-alt/50 border border-app-border rounded-2xl flex items-center justify-between gap-4 cursor-pointer hover:bg-app-bg-alt transition-all"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className={`w-1.5 h-10 rounded-full ${story.color.replace('text-', 'bg-')}`} />
-                        <div>
-                          <span className={`text-[10px] font-black uppercase tracking-widest ${story.color}`}>{story.type}</span>
-                          <h4 className="text-sm font-black text-app-text-main uppercase tracking-tight group-hover:text-primary transition-colors">{story.title}</h4>
+                  {!loadingNews && filteredNews.length > 4 ? (
+                    filteredNews.slice(4, 9).map((story, idx) => (
+                      <motion.div 
+                        key={idx}
+                        whileHover={{ x: 10 }}
+                        onClick={() => window.open(story.url, '_blank')}
+                        className="group p-5 bg-app-bg-alt/50 border border-app-border rounded-2xl flex items-center justify-between gap-4 cursor-pointer hover:bg-app-bg-alt transition-all"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={`w-1.5 h-10 rounded-full ${['bg-emerald-500', 'bg-blue-500', 'bg-amber-500', 'bg-purple-500'][idx % 4]}`} />
+                          <div>
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${['text-emerald-500', 'text-blue-500', 'text-amber-500', 'text-purple-500'][idx % 4]}`}>{story.source}</span>
+                            <h4 className="text-sm font-black text-app-text-main uppercase tracking-tight group-hover:text-primary transition-colors">{story.title}</h4>
+                          </div>
                         </div>
-                      </div>
-                      <span className="text-[10px] font-bold text-app-text-muted uppercase tracking-widest">{story.date}</span>
-                    </motion.div>
-                  ))}
+                        <span className="text-[10px] font-bold text-app-text-muted uppercase tracking-widest">
+                           {new Date(story.publishedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                        </span>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="py-6 text-center text-[10px] font-black uppercase tracking-widest opacity-40">No additional updates</div>
+                  )}
                </div>
             </section>
 
@@ -466,7 +418,7 @@ const Notifications: React.FC = () => {
                                    {notif.title}
                                 </h4>
                                 <span className="text-[8px] font-bold text-app-text-muted uppercase tracking-widest whitespace-nowrap">
-                                   {new Date(notif.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                   {new Date(notif.timestamp || (notif as any).created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                 </span>
                              </div>
                              <p className="text-[10px] font-bold text-app-text-sub uppercase tracking-widest line-clamp-2 mt-1 opacity-60">
@@ -541,7 +493,10 @@ const NewsItemCard: React.FC<{ item: EducationNews }> = ({ item }) => (
       <img 
         src={item.image || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070'} 
         alt={item.title} 
-        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070';
+        }}
       />
       <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
          <div className="flex gap-4">

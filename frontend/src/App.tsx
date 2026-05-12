@@ -41,6 +41,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import MainLayout from './components/Layout/MainLayout';
 import AskDoubt from './pages/community/AskDoubt';
+import Discussions from './pages/community/Discussions';
 
 // --- Wednesday Addams Effects Component ---
 const WednesdayEffects = () => {
@@ -252,13 +253,13 @@ function AppContent() {
       {/* New Feature Routes */}
       <Route path="/community" element={<ProtectedRoute><CommunityHome /></ProtectedRoute>} />
       <Route path="/community/ask" element={<ProtectedRoute><AskDoubt /></ProtectedRoute>} />
+      <Route path="/community/discussion/:id" element={<ProtectedRoute><Discussions /></ProtectedRoute>} />
       <Route path="/exams" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><Exams /></ProtectedRoute>} />
       <Route path="/certificates" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><Certificates /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/insights" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'parent', 'admin', 'user']}><Insights /></ProtectedRoute>} />
       <Route path="/onboarding" element={<GettingStarted />} />
       <Route path="/reports" element={<ProtectedRoute allowedRoles={['teacher', 'admin']}><Reports /></ProtectedRoute>} />
-
       <Route
         path="/admin"
         element={

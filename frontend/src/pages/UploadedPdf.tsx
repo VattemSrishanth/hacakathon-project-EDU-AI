@@ -193,7 +193,6 @@ const UploadedPdf = () => {
         </div>
       </div>
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, pdfData, pdfName, pdfUrl, offlineLessons, removeLesson]);
 
   return (
