@@ -61,4 +61,10 @@ const updateProgress = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { login, getProgress, updateProgress };
+const logout = asyncHandler(async (req, res) => {
+  // Since JWT is stateless and stored on the client, backend logout is mostly a placeholder
+  // If cookies were used, we would clear them here: res.clearCookie('token');
+  return res.json({ message: "Logged out successfully" });
+});
+
+module.exports = { login, logout, getProgress, updateProgress };

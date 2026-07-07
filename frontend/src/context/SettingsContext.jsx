@@ -1,0 +1,406 @@
+import React, { createContext, useContext, useEffect, useMemo, useCallback, useState } from 'react';
+import translations from '../i18n/translations';
+
+import { userDataAPI } from '../services/api';
+import { useAuth } from './AuthContext';
+
+// ==================== Types ====================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ==================== Constants ====================
+const SETTINGS_KEY = 'settings';
+const AUTH_KEY = 'auth';
+const CHAT_HISTORY_KEY = 'ai_chat_history';
+const CHAT_HISTORY_KEY_ALT = 'aiChatHistory';
+
+export const defaultSettings = {
+  profile: {
+    name: 'Student',
+    email: 'student@example.com',
+    avatarDataUrl: ''
+  },
+  learning: {
+    language: 'English',
+    level: 'Beginner',
+    board: 'NCERT',
+    contentPreference: 'Both'
+  },
+  aiTutor: {
+    enabled: true,
+    answerStyle: 'Detailed',
+    showChatHistory: true
+  },
+  notifications: {
+    assignmentReminders: true,
+    newLessonNotifications: true,
+    reminderFrequency: 'Weekly'
+  },
+  themeAccessibility: {
+    theme: 'Academic Maroon',
+    fontSize: 'Medium',
+    highContrast: false,
+    reduceMotion: false,
+    lowPowerMode: false,
+    voiceLanguage: 'English',
+    accessibilityMode: 'Normal'
+  }
+};
+
+// ==================== Context Interface ====================
+
+
+
+
+
+
+
+
+
+
+
+
+
+const SettingsContext = createContext(undefined);
+
+// ==================== Helper Functions ====================
+const loadSettingsFromStorage = () => {
+  try {
+    const stored = window.localStorage.getItem(SETTINGS_KEY);
+    const storedSettings = stored ? JSON.parse(stored) : null;
+    const authRaw = window.localStorage.getItem(AUTH_KEY);
+    const auth = authRaw ? JSON.parse(authRaw) : null;
+
+    const fallbackName = auth?.user?.name || auth?.user?.username || defaultSettings.profile.name;
+    const fallbackEmail = auth?.user?.email || defaultSettings.profile.email;
+    const fallbackAvatar = auth?.user?.avatarUrl || '';
+
+    return {
+      profile: {
+        ...defaultSettings.profile,
+        ...storedSettings?.profile,
+        name: fallbackName,
+        email: fallbackEmail,
+        avatarDataUrl: fallbackAvatar || storedSettings?.profile?.avatarDataUrl || ''
+      },
+      learning: {
+        ...defaultSettings.learning,
+        ...storedSettings?.learning
+      },
+      aiTutor: {
+        ...defaultSettings.aiTutor,
+        ...storedSettings?.aiTutor
+      },
+      notifications: {
+        ...defaultSettings.notifications,
+        ...storedSettings?.notifications
+      },
+      themeAccessibility: {
+        ...defaultSettings.themeAccessibility,
+        ...(storedSettings?.themeAccessibility || {}),
+        // Fallback for valid themes only
+        theme: [
+        'Academic Maroon', 'Harry Potter', 'Premium Dark',
+        'Midnight Void', 'Crystal Light', 'WEDNESDAY'].
+        includes(storedSettings?.themeAccessibility?.theme) ?
+        storedSettings?.themeAccessibility?.theme :
+        defaultSettings.themeAccessibility.theme
+      }
+    };
+  } catch {
+    return defaultSettings;
+  }
+};
+
+const saveSettingsToStorage = (settings) => {
+  try {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch {
+
+    // Ignore storage errors
+  }};
+
+// ==================== Apply Global Effects ====================
+const applyTheme = (theme) => {
+  const root = document.documentElement;
+  const body = document.body;
+
+  // Remove all potential theme classes and dark mode
+  const themeClasses = [
+  'dark',
+  'theme-harry-potter',
+  'theme-premium-dark',
+  'theme-midnight',
+  'theme-crystal',
+  'theme-wednesday'];
+
+  root.classList.remove(...themeClasses);
+  body.classList.remove(...themeClasses);
+
+  if (theme === 'Academic Maroon' || theme === 'Midnight Void' || theme === 'Premium Dark') {
+    root.classList.add('dark');
+    body.classList.add('dark');
+  }
+
+  if (theme === 'Midnight Void') root.classList.add('theme-midnight');
+  if (theme === 'Crystal Light') root.classList.add('theme-crystal');
+  if (theme === 'Harry Potter') root.classList.add('theme-harry-potter');
+  if (theme === 'WEDNESDAY') root.classList.add('theme-wednesday');
+  if (theme === 'Premium Dark') root.classList.add('theme-premium-dark');
+};
+
+const applyFontSize = (fontSize) => {
+  const root = document.documentElement;
+  const sizes = {
+    Small: '14px',
+    Medium: '16px',
+    Large: '18px'
+  };
+  root.style.setProperty('--font-size-base', sizes[fontSize]);
+  root.style.fontSize = sizes[fontSize];
+};
+
+const applyHighContrast = (enabled) => {
+  const root = document.documentElement;
+  if (enabled) {
+    root.classList.add('high-contrast');
+  } else {
+    root.classList.remove('high-contrast');
+  }
+};
+
+const applyReduceMotion = (enabled) => {
+  const root = document.documentElement;
+  if (enabled) {
+    root.classList.add('reduce-motion');
+  } else {
+    root.classList.remove('reduce-motion');
+  }
+};
+
+const applyLowPowerMode = (enabled) => {
+  const root = document.documentElement;
+  if (enabled) {
+    root.classList.add('low-power');
+  } else {
+    root.classList.remove('low-power');
+  }
+};
+
+const applyAllEffects = (settings) => {
+  applyTheme(settings.themeAccessibility.theme);
+  applyFontSize(settings.themeAccessibility.fontSize);
+  applyHighContrast(settings.themeAccessibility.highContrast);
+  applyReduceMotion(settings.themeAccessibility.reduceMotion);
+  applyLowPowerMode(settings.themeAccessibility.lowPowerMode);
+};
+
+// ==================== Provider Component ====================
+export const SettingsProvider = ({ children }) => {
+  const { auth } = useAuth();
+  const [settings, setSettings] = useState(() => loadSettingsFromStorage());
+
+  // Keep profile in sync with Auth
+  useEffect(() => {
+    if (auth?.status === 'logged_in' && auth.user) {
+      setSettings((prev) => ({
+        ...prev,
+        profile: {
+          ...prev.profile,
+          name: auth.user?.name || auth.user?.username || prev.profile.name,
+          email: auth.user?.email || prev.profile.email,
+          avatarDataUrl: auth.user?.avatarUrl || prev.profile.avatarDataUrl
+        }
+      }));
+    }
+  }, [auth?.user, auth?.status]);
+
+  // Apply effects on mount and settings change
+  useEffect(() => {
+    applyAllEffects(settings);
+    saveSettingsToStorage(settings);
+
+    // Sync with backend if logged in
+    const syncToBackend = async () => {
+      try {
+        const authData = localStorage.getItem('auth');
+        if (authData) {
+          const { user } = JSON.parse(authData);
+          if (user?.id) {
+            if (!navigator.onLine) {
+              const { offlineSyncService } = await import('../services/offlineSync');
+              offlineSyncService.queueAction('SETTINGS', settings);
+              return;
+            }
+            // We use the profile API to save accessibility and learning settings too
+            await userDataAPI.updateProfile(String(user.id), {
+              settings: settings
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('Backend settings sync failed, queuing for retry...');
+        try {
+          const { offlineSyncService } = await import('../services/offlineSync');
+          offlineSyncService.queueAction('SETTINGS', settings);
+        } catch (err) {
+          console.error('Offline sync failed completely');
+        }
+      }
+    };
+
+    // Low frequency sync to avoid hitting API on every keystroke
+    const timer = setTimeout(syncToBackend, 5000);
+    return () => clearTimeout(timer);
+  }, [settings]);
+
+  // Get translations based on current language
+  const t = useMemo(() => {
+    return translations[settings.learning.language] || translations.English;
+  }, [settings.learning.language]);
+
+  const isDark = useMemo(() => {
+    return settings.themeAccessibility.theme === 'Academic Maroon';
+  }, [settings.themeAccessibility.theme]);
+
+  const updateProfile = useCallback((profile) => {
+    setSettings((prev) => ({
+      ...prev,
+      profile: { ...prev.profile, ...profile }
+    }));
+  }, []);
+
+  const updateLearning = useCallback((learning) => {
+    setSettings((prev) => ({
+      ...prev,
+      learning: { ...prev.learning, ...learning }
+    }));
+  }, []);
+
+  const updateAiTutor = useCallback((aiTutor) => {
+    setSettings((prev) => ({
+      ...prev,
+      aiTutor: { ...prev.aiTutor, ...aiTutor }
+    }));
+  }, []);
+
+  const updateNotifications = useCallback((notifications) => {
+    setSettings((prev) => ({
+      ...prev,
+      notifications: { ...prev.notifications, ...notifications }
+    }));
+  }, []);
+
+  const updateThemeAccessibility = useCallback((themeAccessibility) => {
+    setSettings((prev) => ({
+      ...prev,
+      themeAccessibility: { ...prev.themeAccessibility, ...themeAccessibility }
+    }));
+  }, []);
+
+  const clearChatHistory = useCallback(async () => {
+    try {
+      window.localStorage.removeItem(CHAT_HISTORY_KEY);
+      window.localStorage.removeItem(CHAT_HISTORY_KEY_ALT);
+
+      // Also clear from backend if user is logged in
+      const authData = localStorage.getItem('auth');
+      if (authData) {
+        const { user } = JSON.parse(authData);
+        if (user?.id) {
+          await userDataAPI.clearChatHistory(String(user.id));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to clear chat history', e);
+    }
+  }, []);
+
+  const resetSettings = useCallback(() => {
+    setSettings(defaultSettings);
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      settings,
+      t,
+      isDark,
+      updateProfile,
+      updateLearning,
+      updateAiTutor,
+      updateNotifications,
+      updateThemeAccessibility,
+      clearChatHistory,
+      resetSettings
+    }),
+    [settings, t, isDark, updateProfile, updateLearning, updateAiTutor, updateNotifications, updateThemeAccessibility, clearChatHistory, resetSettings]
+  );
+
+  return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
+};
+
+// ==================== Hook ====================
+export const useSettings = () => {
+  const context = useContext(SettingsContext);
+  if (!context) {
+    throw new Error('useSettings must be used within a SettingsProvider');
+  }
+  return context;
+};
+
+// Export translation type for components
