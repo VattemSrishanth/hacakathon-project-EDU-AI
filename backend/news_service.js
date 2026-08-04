@@ -107,9 +107,9 @@ function parseItems(xml, sourceName) {
       title,
       description,
       source: sourceName,
-      publish_date: pubDate.toISOString(),
-      link,
-      image_url: imageUrl
+      publishedAt: pubDate.toISOString(),
+      url: link,
+      image: imageUrl
     });
   }
 

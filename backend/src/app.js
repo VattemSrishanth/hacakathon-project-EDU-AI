@@ -23,6 +23,9 @@ const ttsRoutes = require("./routes/tts");
 const newsRoutes = require("./routes/news");
 const communityRoutes = require("./routes/community");
 const youtubeRoutes = require("./routes/youtube");
+const doubtRoutes = require("./routes/doubt");
+const verificationRoutes = require("./routes/verification");
+const timetableRoutes = require("./routes/timetable");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -53,6 +56,9 @@ app.use("/", ttsRoutes);
 app.use("/", newsRoutes);
 app.use("/", communityRoutes);
 app.use("/", youtubeRoutes);
+app.use("/doubt", doubtRoutes);
+app.use("/verification", verificationRoutes);
+app.use("/timetable", timetableRoutes);
 
 app.use("/api/boards", boardsRoutes);
 app.use("/api/classes", classesRoutes);

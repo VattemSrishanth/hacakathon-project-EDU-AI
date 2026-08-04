@@ -1,251 +1,278 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 import {
-  MessageSquare, Plus, Search, HelpCircle, Clock, Filter,
+  MessageSquare, Plus, HelpCircle, Clock, Filter,
   RefreshCw, WifiOff, ThumbsUp, Reply, Bookmark, Eye,
-  CheckCircle2, Award, UserCheck, ChevronRight } from
-'lucide-react';
-import { useCommunity } from '../../context/CommunityContext';
-import { useOffline } from '../../context/OfflineContext';
-import Button from '../../components/Button';
-import Card from '../../components/Card';
+  CheckCircle2, Award, UserCheck, ChevronRight, Shield, Zap, Calendar, Laptop
+} from "lucide-react";
+import { useCommunity } from "../../context/CommunityContext";
+import { useOffline } from "../../context/OfflineContext";
+import { useAuth } from "../../context/AuthContext";
+import Button from "../../components/Button";
+import Card from "../../components/Card";
+
+// Connect components
+import DoubtConnectModal from "../../components/community/DoubtConnectModal";
+import SessionConsole from "../../components/community/SessionConsole";
+import TimetablePlanner from "../../components/community/TimetablePlanner";
+import TeacherDashboard from "../../components/community/TeacherDashboard";
+
+const socket = io("http://localhost:4000");
 
 const CommunityHome = () => {
   const navigate = useNavigate();
   const { doubts, loading, refreshDoubts } = useCommunity();
   const { isOffline } = useOffline();
-  const [activeFilter, setActiveFilter] = useState('All');
-  const [activeSort, setActiveSort] = useState('Recent');
+  const { auth, updateUser } = useAuth();
+  
+  const [activeTab, setActiveTab] = useState(
+    auth?.user?.role === "teacher" ? "teacher_portal" : "matcher"
+  );
+  
+  useEffect(() => {
+    setActiveTab(auth?.user?.role === "teacher" ? "teacher_portal" : "matcher");
+  }, [auth?.user?.role]);
 
-  const filters = ['All', 'Mathematics', 'Science', 'English', 'Social Studies', 'Physics'];
-  const sortOptions = ['Recent', 'Solved', 'Unanswered', 'Most Helpful', 'Teacher Answered'];
+  const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
+  const [activeSession, setActiveSession] = useState(null);
+
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeSort, setActiveSort] = useState("Recent");
+
+  const filters = ["All", "Mathematics", "Science", "English", "Social Studies", "Physics"];
+  const sortOptions = ["Recent", "Solved", "Unanswered", "Most Helpful", "Teacher Answered"];
+
+  // Register socket mappings
+  useEffect(() => {
+    if (auth?.user?.id) {
+      socket.emit("register_user", { 
+        userId: auth.user.id, 
+        role: auth.user.role || "student" 
+      });
+    }
+  }, [auth]);
+
+  // Listen to match success events
+  useEffect(() => {
+    socket.on("match_success", (data) => {
+      setActiveSession(data.session);
+      setIsMatchModalOpen(false);
+    });
+
+    return () => {
+      socket.off("match_success");
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-app-bg py-10 px-4 sm:px-6 lg:px-8 font-sans">
+      {/* Active Session Overlay Console */}
+      {activeSession && (
+        <SessionConsole
+          session={activeSession}
+          socket={socket}
+          auth={auth}
+          onLeave={() => setActiveSession(null)}
+        />
+      )}
+
       <div className="max-w-6xl mx-auto space-y-8">
-        
         {/* Professional Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-app-border pb-8">
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider">
-              Discussion Forum
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-primary text-white text-[10px] font-bold uppercase tracking-wider">
+              Community Hub
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Academic Peer Learning</h1>
-            <p className="text-slate-500 font-medium text-sm flex items-center gap-2">
-              Collaborate on complex topics and share verified knowledge
-              {isOffline &&
-              <span className="flex items-center gap-1.5 text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-100 font-bold text-[10px]">
+            <h1 className="text-3xl font-black text-app-text-main tracking-tight">Academic Ecosystem</h1>
+            <p className="text-app-text-sub font-medium text-sm flex items-center gap-2">
+              Instantly resolve doubts, construct smart schedules, and participate in peer discussions
+              {isOffline && (
+                <span className="flex items-center gap-1.5 text-orange-600 bg-orange-50/20 px-2 py-0.5 rounded border border-orange-100/35 font-bold text-[10px]">
                   <WifiOff size={10} />
                   OFFLINE
                 </span>
-              }
+              )}
             </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={() => refreshDoubts()}
-              disabled={loading || isOffline}
-              className="rounded-xl flex items-center gap-2 px-5 py-3 border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-xs">
-              
-              <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-              Refresh Feed
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => navigate('/community/ask')}
-              className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 px-6 py-3 font-bold text-xs shadow-sm shadow-indigo-200">
-              
-              <Plus size={16} />
-              New Discussion
-            </Button>
-          </div>
-        </div>
-
-        {/* Search & Advanced Filters */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          <div className="lg:col-span-8 space-y-6">
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
-              <input
-                type="text"
-                placeholder="Search by topic, keyword, or problem statement..."
-                className="w-full bg-white border border-slate-200 rounded-xl pl-12 pr-4 py-4 text-slate-800 font-medium focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/50 outline-none transition-all shadow-sm" />
-              
-            </div>
-
-            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-              {filters.map((filter) =>
+            <div className="flex items-center gap-3 mt-3">
+              <span className="text-[10px] font-black uppercase text-app-text-muted">
+                Role Context: <span className="text-primary font-black uppercase">{auth?.user?.role}</span>
+              </span>
               <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`px-5 py-2.5 rounded-lg border text-xs font-bold whitespace-nowrap transition-all ${
-                activeFilter === filter ?
-                'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm' :
-                'bg-white border-slate-200 text-slate-600 hover:border-slate-300'}`
-                }>
-                
-                  {filter}
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div className="lg:col-span-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 text-slate-900 font-bold text-xs uppercase tracking-wider">
-              <Filter size={14} className="text-indigo-600" />
-              Filter By
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {sortOptions.map((option) =>
-              <button
-                key={option}
                 onClick={() => {
-                  setActiveSort(option);
-                  refreshDoubts({ filter: option.toLowerCase().replace(' ', '_') });
+                  const newRole = auth?.user?.role === "teacher" ? "student" : "teacher";
+                  updateUser({ role: newRole });
                 }}
-                className={`px-3 py-2 rounded-lg text-[10px] font-bold text-left transition-all ${
-                activeSort === option ?
-                'bg-slate-900 text-white' :
-                'bg-slate-50 text-slate-500 hover:bg-slate-100'}`
-                }>
-                
-                  {option}
-                </button>
-              )}
+                className="px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-lg text-[9px] font-black uppercase tracking-[0.1em] transition-all hover:scale-105 active:scale-95 shadow-sm">
+                Switch Role to {auth?.user?.role === "teacher" ? "Student" : "Teacher"} (dev bypass)
+              </button>
             </div>
+          </div>
+
+          <div className="flex items-center gap-3 bg-app-bg-alt border border-app-border p-1 rounded-2xl">
+            {[
+              { id: "matcher", label: "Doubt Connect", icon: Zap },
+              { id: "peer_forum", label: "Peer Forum", icon: MessageSquare },
+              { id: "timetable", label: "AI Timetable", icon: Calendar },
+              { id: "teacher_portal", label: "Tutor Panel", icon: Laptop }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                  activeTab === tab.id
+                    ? "bg-primary text-white shadow-sm shadow-primary/20"
+                    : "text-app-text-sub hover:text-primary"
+                }`}>
+                <tab.icon size={14} />
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Content Area */}
-        {loading && doubts.length === 0 ?
-        <div className="py-24 flex flex-col items-center justify-center space-y-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
-            <div className="relative">
-              <div className="w-16 h-16 rounded-full border-4 border-indigo-100 border-t-indigo-600 animate-spin"></div>
-              <HelpCircle className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-200" size={24} />
+        {/* Tab content matcher */}
+        {activeTab === "matcher" && (
+          <div className="max-w-3xl mx-auto text-center py-16 space-y-8 animate-fade-in">
+            <div className="relative inline-flex items-center justify-center">
+              <div className="absolute w-24 h-24 bg-primary/10 rounded-full animate-ping" />
+              <div className="w-16 h-16 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary/10">
+                <Zap size={32} />
+              </div>
             </div>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Synchronizing discussions...</p>
-          </div> :
-        doubts.length > 0 ?
-        <div className="grid grid-cols-1 gap-5">
-            {doubts.map((doubt) =>
-          <Card key={doubt.id} className={`group bg-white border border-slate-200 overflow-hidden hover:border-indigo-300 transition-all hover:shadow-md rounded-2xl ${doubt.isVerified ? 'border-l-4 border-l-emerald-500' : ''}`}>
-                <div className="p-6">
-                  {/* Context Header */}
-                  <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-2.5 py-1 rounded bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200 uppercase">{doubt.subject}</span>
-                        <span className="px-2.5 py-1 rounded bg-indigo-50 text-indigo-700 text-[10px] font-bold border border-indigo-100 uppercase">{doubt.topic || 'General'}</span>
-                        <span className="px-2.5 py-1 rounded bg-slate-50 text-slate-500 text-[10px] font-bold border border-slate-100 uppercase">{doubt.classLevel || 'Class 10'}</span>
-                      </div>
-                      {doubt.status === 'solved' &&
-                  <div className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded text-[10px] font-bold border border-emerald-100">
-                          <CheckCircle2 size={12} />
-                          RESOLVED
-                        </div>
-                  }
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1.5 text-slate-400 text-xs">
-                        <Clock size={12} />
-                        {new Date(doubt.createdAt).toLocaleDateString()}
-                      </div>
-                      <button className="text-slate-300 hover:text-indigo-600 transition-colors">
-                        <Bookmark size={16} />
-                      </button>
-                    </div>
-                  </div>
 
-                  {/* Question Content */}
-                  <div className="cursor-pointer" onClick={() => navigate(`/community/discussion/${doubt.id}`)}>
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors mb-3">
-                      {doubt.question}
-                    </h3>
-                  </div>
-
-                  {/* Credentials & Indicators */}
-                  <div className="flex flex-wrap items-center justify-between gap-6 pt-5 border-t border-slate-50">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs">
-                          {doubt.username.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            {doubt.username}
-                            {doubt.username.includes('Teacher') &&
-                        <span className="bg-amber-100 text-amber-700 text-[9px] px-1.5 py-0.5 rounded flex items-center gap-0.5 font-black uppercase">
-                                <Award size={10} />
-                                Teacher
-                              </span>
-                        }
-                          </p>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Top Contributor</p>
-                        </div>
-                      </div>
-                      <div className="h-4 w-px bg-slate-100 hidden sm:block" />
-                      <div className="flex items-center gap-1 text-emerald-600 text-[10px] font-black uppercase tracking-widest bg-emerald-50/50 px-2 py-1 rounded">
-                        <UserCheck size={12} />
-                        Verified Expert
-                      </div>
-                    </div>
-
-                    {/* Metrics & Quick Actions */}
-                    <div className="flex items-center gap-6">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1.5 text-slate-500 font-bold text-[11px]">
-                          <MessageSquare size={14} className="text-slate-400" />
-                          {doubt.repliesCount || 0} Replies
-                        </div>
-                        <div className="flex items-center gap-1.5 text-slate-500 font-bold text-[11px]">
-                          <Eye size={14} className="text-slate-400" />
-                          {doubt.viewsCount || 0} Views
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all border border-slate-100 group/btn">
-                          <ThumbsUp size={14} className="group-hover/btn:scale-110 transition-transform" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Helpful ({doubt.helpfulCount || 0})</span>
-                        </button>
-                        <button
-                      onClick={() => navigate(`/community/discussion/${doubt.id}`)}
-                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-all border border-indigo-600 shadow-sm group/reply">
-                      
-                          <Reply size={14} />
-                          <span className="text-[10px] font-bold uppercase tracking-wider">View Thread</span>
-                          <ChevronRight size={14} className="group-hover/reply:translate-x-1 transition-transform" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-          )}
-          </div> :
-
-        <div className="py-24 flex flex-col items-center justify-center space-y-6 bg-white rounded-3xl border border-slate-100 shadow-sm text-center px-10">
-            <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
-              <MessageSquare size={40} />
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-app-text-main tracking-tight uppercase">Instant Doubt Connect</h2>
+              <p className="text-app-text-sub text-sm max-w-lg mx-auto font-medium leading-relaxed">
+                Stuck on a tricky math equation or compiler error? Connect with a verified tutor immediately for a real-time call and synchronized canvas session.
+              </p>
             </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">Start the Conversation</h3>
-              <p className="text-slate-500 mt-2 font-medium max-w-sm">There are no discussions in this area yet. Be the first to ask a doubt or start an academic thread!</p>
-            </div>
+
             <Button
-            variant="primary"
-            onClick={() => navigate('/community/ask')}
-            className="rounded-xl px-10 py-4 font-bold bg-indigo-600">
-            
-              Ask First Doubt
+              onClick={() => setIsMatchModalOpen(true)}
+              className="py-5 px-10 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-primary-hover transition-all hover:shadow-xl shadow-primary/25">
+              Initialize Tutor Match
             </Button>
-          </div>
-        }
-      </div>
-    </div>);
 
+            <DoubtConnectModal
+              isOpen={isMatchModalOpen}
+              onClose={() => setIsMatchModalOpen(false)}
+              socket={socket}
+              auth={auth}
+            />
+          </div>
+        )}
+
+        {activeTab === "peer_forum" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in">
+            <div className="lg:col-span-8 space-y-6">
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-app-text-muted" size={18} />
+                <input
+                  type="text"
+                  placeholder="Search by topic, keyword, or problem statement..."
+                  className="w-full bg-app-bg-alt border border-app-border rounded-xl pl-12 pr-4 py-4 text-app-text-main font-medium focus:ring-4 focus:ring-primary/5 focus:border-primary/50 outline-none transition-all shadow-sm"
+                />
+              </div>
+
+              <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                {filters.map((filter) => (
+                  <button
+                    key={filter}
+                    onClick={() => setActiveFilter(filter)}
+                    className={`px-5 py-2.5 rounded-lg border text-xs font-bold whitespace-nowrap transition-all ${
+                      activeFilter === filter
+                        ? "bg-primary/10 border-primary/20 text-primary shadow-sm"
+                        : "bg-app-bg-alt border-app-border text-app-text-sub hover:border-primary/30"
+                    }`}>
+                    {filter}
+                  </button>
+                ))}
+              </div>
+
+              {/* Doubt feed */}
+              {loading && doubts.length === 0 ? (
+                <div className="py-24 flex flex-col items-center justify-center space-y-6 bg-app-bg-alt rounded-3xl border border-app-border shadow-sm">
+                  <div className="w-10 h-10 rounded-full border-4 border-primary/10 border-t-primary animate-spin" />
+                  <p className="text-app-text-muted font-bold uppercase tracking-widest text-[10px]">Loading feed...</p>
+                </div>
+              ) : doubts.length > 0 ? (
+                <div className="grid grid-cols-1 gap-5">
+                  {doubts.map((doubt) => (
+                    <Card key={doubt.id} className="group overflow-hidden hover:border-primary/50 transition-all hover:shadow-md rounded-2xl">
+                      <div className="p-6">
+                        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                          <div className="flex items-center gap-3">
+                            <span className="px-2.5 py-1 rounded bg-app-bg text-app-text-sub text-[10px] font-bold border border-app-border uppercase">{doubt.subject}</span>
+                            <span className="px-2.5 py-1 rounded bg-primary/10 text-primary text-[10px] font-bold border border-primary/20 uppercase">{doubt.topic || "General"}</span>
+                          </div>
+                        </div>
+                        <h3 className="text-lg font-bold text-app-text-main group-hover:text-primary transition-colors mb-3">
+                          {doubt.question}
+                        </h3>
+                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-app-border/40">
+                          <span className="text-xs text-app-text-sub font-medium">Asked by {doubt.username}</span>
+                          <Button
+                            variant="primary"
+                            onClick={() => navigate(`/community/discussion/${doubt.id}`)}
+                            className="py-2 px-4 bg-primary hover:bg-primary-hover text-white rounded-lg font-bold text-[10px] uppercase">
+                            View Discussion
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-24 flex flex-col items-center justify-center space-y-6 bg-app-bg-alt rounded-3xl border border-app-border shadow-sm text-center px-10">
+                  <div className="w-16 h-16 bg-app-bg rounded-full flex items-center justify-center text-app-text-muted">
+                    <MessageSquare size={32} />
+                  </div>
+                  <h3 className="text-lg font-bold text-app-text-main">No peer discussions yet</h3>
+                </div>
+              )}
+            </div>
+
+            <div className="lg:col-span-4 bg-app-bg-alt p-6 rounded-2xl border border-app-border shadow-sm space-y-4">
+              <div className="flex items-center gap-2 text-app-text-main font-bold text-xs uppercase tracking-wider">
+                <Filter size={14} className="text-primary" />
+                Sort By
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {sortOptions.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => {
+                      setActiveSort(option);
+                      refreshDoubts({ filter: option.toLowerCase().replace(" ", "_") });
+                    }}
+                    className={`px-3 py-2 rounded-lg text-[10px] font-bold text-left transition-all ${
+                      activeSort === option
+                        ? "bg-primary text-white"
+                        : "bg-app-bg text-app-text-sub hover:bg-app-bg-alt border border-app-border/30"
+                    }`}>
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "timetable" && (
+          <TimetablePlanner auth={auth} />
+        )}
+
+        {activeTab === "teacher_portal" && (
+          <TeacherDashboard
+            auth={auth}
+            socket={socket}
+            onJoinSession={(sess) => setActiveSession(sess)}
+          />
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default CommunityHome;

@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema(
     avatar_url: { type: String, default: "", trim: true },
     role: { type: String, default: "student", trim: true },
     password_hash: { type: String, default: "" },
+    warning_count: { type: Number, default: 0 },
+    ban_expires_at: { type: Date, default: null },
+    is_permanently_banned: { type: Boolean, default: false },
     last_opened: {
       class_id: { type: mongoose.Schema.Types.ObjectId, ref: "Class" },
       subject_id: { type: mongoose.Schema.Types.ObjectId, ref: "Subject" },

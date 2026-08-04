@@ -26,6 +26,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      try {
+        window.localStorage.removeItem('auth');
+      } catch (e) {}
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth API
 export const authAPI = {
   login: async (email: string, password: string) => {
@@ -40,6 +53,11 @@ export const authAPI = {
   
   getCurrentUser: async () => {
     const response = await api.get('/auth/me');
+    return response.data;
+  },
+
+  getDevCredentials: async () => {
+    const response = await api.get('/auth/dev-credentials');
     return response.data;
   },
 };
@@ -208,6 +226,66 @@ export const userDataAPI = {
 export const adminAPI = {
   getStats: async (adminId: string) => {
     const response = await api.get(`/admin/${adminId}/stats`);
+    return response.data;
+  },
+
+  getUsersList: async (params: any) => {
+    const response = await api.get('/admin/users/list', { params });
+    return response.data;
+  },
+
+  performUserBulkAction: async (userIds: string[], action: string) => {
+    const response = await api.post('/admin/users/bulk', { userIds, action });
+    return response.data;
+  },
+
+  getTeacherVerifications: async () => {
+    const response = await api.get('/admin/verifications');
+    return response.data;
+  },
+
+  verifyTeacher: async (id: string, action: string, feedback?: string) => {
+    const response = await api.post(`/admin/verifications/${id}/verify`, { action, feedback });
+    return response.data;
+  },
+
+  getLiveMentorLogs: async () => {
+    const response = await api.get('/admin/live-mentor/logs');
+    return response.data;
+  },
+
+  getModerationLogs: async () => {
+    const response = await api.get('/admin/moderation/logs');
+    return response.data;
+  },
+
+  respondToAppeal: async (logId: string, action: string) => {
+    const response = await api.post('/admin/moderation/appeal', { logId, action });
+    return response.data;
+  },
+
+  scheduleNotification: async (data: any) => {
+    const response = await api.post('/admin/notifications/schedule', data);
+    return response.data;
+  },
+
+  getReportsData: async () => {
+    const response = await api.get('/admin/analytics/reports');
+    return response.data;
+  },
+
+  getSystemHealthStatus: async () => {
+    const response = await api.get('/admin/system/health');
+    return response.data;
+  },
+
+  getAdminSettings: async () => {
+    const response = await api.get('/admin/settings/config');
+    return response.data;
+  },
+
+  saveAdminSettings: async (settingsData: any) => {
+    const response = await api.post('/admin/settings/config', settingsData);
     return response.data;
   },
 

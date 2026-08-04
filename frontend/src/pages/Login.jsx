@@ -8,11 +8,7 @@ import {
   Globe,
   ChevronDown,
   Eye,
-  EyeOff,
-  GraduationCap,
-  Users,
-  UserCheck,
-  ShieldAlert } from
+  EyeOff } from
 "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../context/AuthContext";
@@ -34,17 +30,31 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student");
+  const role = "student";
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const roles = [
-  { id: "student", label: "Student", icon: GraduationCap, color: "from-primary to-primary", shadow: "shadow-primary/50" },
-  { id: "teacher", label: "Teacher", icon: Users, color: "from-ai-accent to-ai-accent", shadow: "shadow-ai-accent/50" },
-  { id: "parent", label: "Parent", icon: UserCheck, color: "from-secondary to-secondary", shadow: "shadow-secondary/50" },
-  { id: "admin", label: "Admin", icon: ShieldAlert, color: "from-red-600 to-red-700", shadow: "shadow-red-500/50" }];
+  const [devCreds, setDevCreds] = useState({
+    student: { email: "student@eduai.com", password: "student123" },
+    teacher: { email: "teacher@eduai.com", password: "teacher123" },
+    parent: { email: "parent@eduai.com", password: "parent123" },
+    admin: { email: "admin@eduai.com", password: "admin123" }
+  });
 
+  useEffect(() => {
+    const fetchDevCreds = async () => {
+      try {
+        const res = await authAPI.getDevCredentials();
+        if (res?.success && res?.credentials) {
+          setDevCreds(res.credentials);
+        }
+      } catch (err) {
+        console.log("Using default developer credentials", err);
+      }
+    };
+    fetchDevCreds();
+  }, []);
 
   useEffect(() => {
     if (location.state?.message) {
@@ -145,26 +155,6 @@ const Login = () => {
           {/* Subtle Accent Line */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
           
-          <div className="mb-8 overflow-x-auto pb-4 scrollbar-none">
-            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4 ml-1">Select Access Portal</p>
-            <div className="flex gap-4 min-w-max">
-              {roles.map((r) =>
-              <button
-                key={r.id}
-                onClick={() => setRole(r.id)}
-                className={`
-                    flex flex-col items-center gap-3 px-6 py-5 rounded-3xl transition-all duration-300 border-2
-                    ${role === r.id ?
-                `bg-gradient-to-br ${r.color} border-transparent text-white shadow-lg ${r.shadow} scale-105` :
-                'bg-gray-50 border-gray-100 text-gray-400 hover:border-primary/20 hover:text-primary'}
-                  `}>
-                
-                  <r.icon size={24} className={role === r.id ? 'animate-bounce' : ''} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">{r.label}</span>
-                </button>
-              )}
-            </div>
-          </div>
 
           <div className="mb-8">
             <div className="relative group">
@@ -204,6 +194,47 @@ const Login = () => {
               <FcGoogle size={20} />
               Continue with Google
             </button>
+          </div>
+
+          <div className="mb-8 p-6 bg-primary/5 rounded-3xl border border-primary/20 space-y-4">
+            <h4 className="text-[10px] font-black text-primary uppercase tracking-widest text-center">
+              Developer Quick Login
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {Object.keys(devCreds).map((roleKey) => {
+                const creds = devCreds[roleKey];
+                return (
+                  <button
+                    key={roleKey}
+                    type="button"
+                    onClick={async () => {
+                      setEmail(creds.email);
+                      setPassword(creds.password);
+                      setLoading(true);
+                      setErrorMessage("");
+                      try {
+                        const response = await authAPI.login(creds.email, creds.password);
+                        if (response?.success) {
+                          login({
+                            token: response?.token,
+                            user: { ...response?.user, role: response?.user?.role || roleKey }
+                          });
+                          navigate("/", { replace: true });
+                        } else {
+                          setErrorMessage(response?.error || "Login failed.");
+                        }
+                      } catch (error) {
+                        setErrorMessage(error?.response?.data?.error || error?.message || "Login failed.");
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                    className="py-3 px-2 bg-white border border-gray-200 hover:border-primary rounded-xl text-[9px] font-black uppercase text-center tracking-wider text-gray-700 hover:text-primary transition-all active:scale-95 shadow-sm">
+                    {roleKey}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="flex items-center gap-4 mb-8">

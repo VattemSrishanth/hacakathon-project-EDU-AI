@@ -39,7 +39,7 @@ const openDB = (): Promise<IDBDatabase> => {
 
     request.onupgradeneeded = (event: any) => {
       const db = event.target.result;
-      
+
       // If version 3 upgrade, recreate store with composite key
       if (db.objectStoreNames.contains(STORE_NAME)) {
         db.deleteObjectStore(STORE_NAME);

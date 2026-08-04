@@ -27,6 +27,7 @@ const Navbar = () => {
   const [isFullscreen, setIsFullscreen] = useState(() => !!document.fullscreenElement);
   const [notifications, setNotifications] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [activeToast, setActiveToast] = useState(null);
   const { auth, isAuthenticated, isGuest, logout } = useAuth();
   const { t, isDark } = useSettings();
   const navigate = useNavigate();
@@ -37,11 +38,35 @@ const Navbar = () => {
   };
 
   useEffect(() => {
+    let previousNotifications = [];
     const fetchNotifs = async () => {
       if (auth?.user?.id) {
         try {
           const res = await userDataAPI.getNotifications(String(auth.user.id));
-          if (res.success) setNotifications(res.notifications);
+          if (res.success) {
+            const currentNotifs = res.notifications || [];
+            const unreadList = currentNotifs.filter((n) => !n.is_read);
+            
+            if (unreadList.length > 0) {
+              const latestUnread = unreadList[0];
+              const isNewlyPolled = previousNotifications.length > 0 && 
+                                    !previousNotifications.some((p) => p.id === latestUnread.id);
+              const isFirstFetch = previousNotifications.length === 0;
+              
+              if (isNewlyPolled || isFirstFetch) {
+                const sessionKey = `shown_toast_${latestUnread.id}`;
+                if (!sessionStorage.getItem(sessionKey)) {
+                  setActiveToast(latestUnread);
+                  sessionStorage.setItem(sessionKey, 'true');
+                  setTimeout(() => {
+                    setActiveToast((curr) => (curr?.id === latestUnread.id ? null : curr));
+                  }, 8000);
+                }
+              }
+            }
+            previousNotifications = currentNotifs;
+            setNotifications(currentNotifs);
+          }
         } catch (e) {
           console.error('Failed to fetch notifs');
         }
@@ -333,6 +358,50 @@ const Navbar = () => {
         </div>
         }
     </div>
+
+    {/* Toast Notification Card - Premium Slide-in Message Popup */}
+    {activeToast && (
+      <div className="fixed top-24 right-6 z-[9999] max-w-sm w-full bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl border-2 border-primary/20 rounded-2xl shadow-2xl p-5 flex gap-4 items-start animate-in slide-in-from-top-4 duration-300 transition-all hover:scale-[1.02] shadow-primary/10">
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border-2 ${
+          activeToast.priority === 'high' ? 'bg-red-500/10 border-red-500/20 text-red-500 animate-pulse' : 'bg-primary/10 border-primary/20 text-primary'
+        }`}>
+          <Bell size={22} className="animate-bounce" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-1.5">
+              {activeToast.priority === 'high' && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />}
+              {activeToast.priority === 'high' ? 'URGENT NOTIFICATION' : 'NEW UPDATE'}
+            </span>
+          </div>
+          <h4 className="text-sm font-black text-app-text-main uppercase tracking-tight">{activeToast.title}</h4>
+          <p className="text-xs font-bold text-app-text-sub mt-1.5 leading-relaxed opacity-85 uppercase tracking-wider">{activeToast.message}</p>
+          <div className="flex gap-2.5 mt-4">
+            <button 
+              onClick={() => {
+                setActiveToast(null);
+                navigate('/notifications');
+              }}
+              className="px-4 py-2.5 bg-primary hover:bg-primary/95 text-white font-black rounded-xl text-[9px] uppercase tracking-widest transition-all shadow-md shadow-primary/15"
+            >
+              View Gazette
+            </button>
+            <button 
+              onClick={() => setActiveToast(null)} 
+              className="px-4 py-2.5 bg-app-bg-alt hover:bg-gray-100 dark:hover:bg-gray-800 border border-app-border text-app-text-main font-black rounded-xl text-[9px] uppercase tracking-widest transition-all"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+        <button 
+          onClick={() => setActiveToast(null)} 
+          className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-xl font-bold leading-none p-1"
+        >
+          &times;
+        </button>
+      </div>
+    )}
   </nav>);
 
 };

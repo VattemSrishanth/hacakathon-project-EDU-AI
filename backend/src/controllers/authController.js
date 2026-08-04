@@ -62,4 +62,16 @@ const me = asyncHandler(async (req, res) => {
   return res.json({ status: "ok", user: toUserPayload(user) });
 });
 
-module.exports = { register, login, me };
+const getDevCredentials = (req, res) => {
+  return res.json({
+    success: true,
+    credentials: {
+      student: { email: process.env.STUDENT_EMAIL || "student@eduai.com", password: process.env.STUDENT_PASSWORD || "student123" },
+      teacher: { email: process.env.TEACHER_EMAIL || "teacher@eduai.com", password: process.env.TEACHER_PASSWORD || "teacher123" },
+      parent: { email: process.env.PARENT_EMAIL || "parent@eduai.com", password: process.env.PARENT_PASSWORD || "parent123" },
+      admin: { email: process.env.ADMIN_EMAIL || "admin@eduai.com", password: process.env.ADMIN_PASSWORD || "admin123" }
+    }
+  });
+};
+
+module.exports = { register, login, me, getDevCredentials };

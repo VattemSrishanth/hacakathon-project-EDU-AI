@@ -130,9 +130,20 @@ const getNotifications = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, error: "user_id is required" });
   }
 
-  const notifications = await Notification.find({ user_id: userId })
+  const rawNotifications = await Notification.find({ user_id: userId })
     .sort({ createdAt: -1 })
     .lean();
+
+  const notifications = rawNotifications.map((n) => ({
+    id: n._id.toString(),
+    user_id: n.user_id,
+    title: n.title,
+    message: n.message,
+    is_read: n.read,
+    created_at: n.createdAt,
+    type: n.type || "system",
+    priority: n.priority || "normal"
+  }));
 
   return res.json({ success: true, notifications });
 });
