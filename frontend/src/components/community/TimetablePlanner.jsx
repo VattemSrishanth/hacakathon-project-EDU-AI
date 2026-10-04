@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Calendar, BookOpen, Clock, AlertCircle, Plus, Trash2, CheckCircle2 } from "lucide-react";
 import Button from "../Button";
 import Card from "../Card";
+import { api } from "../../services/api";
 
 const TimetablePlanner = ({ auth }) => {
   const [college, setCollege] = useState("");
@@ -21,10 +22,8 @@ const TimetablePlanner = ({ auth }) => {
 
   const fetchTimetable = async () => {
     try {
-      const response = await fetch("http://localhost:4000/timetable/me", {
-        headers: { Authorization: `Bearer ${auth?.token}` }
-      });
-      const data = await response.json();
+      const response = await api.get("/timetable/me");
+      const data = response.data;
       if (data.success && data.timetable) {
         setTimetable(data.timetable);
         setCollege(data.timetable.college);
@@ -54,15 +53,8 @@ const TimetablePlanner = ({ auth }) => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:4000/timetable/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${auth?.token}`
-        },
-        body: JSON.stringify({ college, branch, semester, subjects })
-      });
-      const data = await response.json();
+      const response = await api.post("/timetable/generate", { college, branch, semester, subjects });
+      const data = response.data;
       if (data.success) {
         setTimetable(data.timetable);
       }

@@ -10,22 +10,6 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import { useProgress } from '../context/ProgressContext';
 import { quizAPI } from '../services/api';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const PdfQuiz = () => {
   const navigate = useNavigate();
   const { recordQuizScore } = useProgress();

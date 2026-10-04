@@ -27,27 +27,6 @@ import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { useOffline } from '../context/OfflineContext';
 import Button from '../components/Button';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const SidebarItem = ({
   id,
   label,
@@ -617,44 +596,34 @@ const Settings = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <ThemeCard
-                    id={"Academic Maroon"}
-                    title="Academic Maroon"
-                    desc="Our signature institutional theme with deep maroon accents"
-                    icon={Moon}
-                    current={settings.themeAccessibility.theme}
-                    onClick={(id) => updateThemeAccessibility({ theme: id })}
-                    previewClass="bg-red-900"
-                    accentClass="bg-red-700" />
-                  
-                    <ThemeCard
-                    id={"Harry Potter"}
-                    title="Harry Potter"
-                    desc="Authentic cinematic wizarding academy theme"
+                    id={"Crystal Light"}
+                    title="Crystal Light"
+                    desc="Pristine white and blue clarity theme"
                     icon={Sparkles}
                     current={settings.themeAccessibility.theme}
                     onClick={(id) => updateThemeAccessibility({ theme: id })}
-                    previewClass="bg-[#0b0c10]"
-                    accentClass="bg-[#d9b25f]" />
-                  
+                    previewClass="bg-[#ffffff]"
+                    accentClass="bg-[#2563eb]" />
+
                     <ThemeCard
-                    id={"Premium Dark"}
-                    title="Premium Dark"
-                    desc="Modern, high-end professional dark workspace"
-                    icon={Shield}
+                    id={"Crystal Glass"}
+                    title="Crystal Glass"
+                    desc="Light glass elements with rich glowing gradients"
+                    icon={Sparkles}
                     current={settings.themeAccessibility.theme}
                     onClick={(id) => updateThemeAccessibility({ theme: id })}
-                    previewClass="bg-[#0B0F14]"
-                    accentClass="bg-[#B45309]" />
-                  
+                    previewClass="bg-[#ffffff]/60 border border-white/40 backdrop-blur-md"
+                    accentClass="bg-[#06b6d4]" />
+
                     <ThemeCard
-                    id={"WEDNESDAY"}
-                    title="Wednesday"
-                    desc="Gothic Nevermore Academy aesthetic"
-                    icon={Moon}
+                    id={"Glass Frost"}
+                    title="Glass Frost"
+                    desc="Frosted glass elements with rich radial glows"
+                    icon={Sparkles}
                     current={settings.themeAccessibility.theme}
                     onClick={(id) => updateThemeAccessibility({ theme: id })}
-                    previewClass="bg-[#0a0a0c]"
-                    accentClass="bg-[#a78bfa]" />
+                    previewClass="bg-[#030712] border border-white/20 backdrop-blur-md"
+                    accentClass="bg-[#38bdf8]" />
                   
                     <ThemeCard
                     id={"Midnight Void"}
@@ -665,16 +634,16 @@ const Settings = () => {
                     onClick={(id) => updateThemeAccessibility({ theme: id })}
                     previewClass="bg-[#020617]"
                     accentClass="bg-[#3b82f6]" />
-                  
+
                     <ThemeCard
-                    id={"Crystal Light"}
-                    title="Crystal Light"
-                    desc="Pristine white and blue clarity theme"
+                    id={"Harry Potter"}
+                    title="Harry Potter"
+                    desc="Authentic cinematic wizarding academy theme"
                     icon={Sparkles}
                     current={settings.themeAccessibility.theme}
                     onClick={(id) => updateThemeAccessibility({ theme: id })}
-                    previewClass="bg-[#ffffff]"
-                    accentClass="bg-[#2563eb]" />
+                    previewClass="bg-[#0b0c10]"
+                    accentClass="bg-[#d9b25f]" />
                   
                   </div>
                 </section>

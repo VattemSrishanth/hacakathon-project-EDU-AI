@@ -4,21 +4,6 @@ import Button from '../Button';
 import Card from '../Card';
 import { useExam } from '../../context/ExamContext';
 import { useSettings } from '../../context/SettingsContext';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const ExamMode = ({ examTitle, questions, durationMinutes, onComplete }) => {
   const { endExam } = useExam();
   const { settings } = useSettings();

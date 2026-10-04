@@ -19,29 +19,7 @@ import Button from '../Button';
 import Card from '../Card';
 import { useAccessibility } from '../../context/AccessibilityContext';
 import { useOffline } from '../../context/OfflineContext';
-
 import SignLanguagePanel from './SignLanguagePanel';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const LessonViewer = ({
   lesson,
   generating,

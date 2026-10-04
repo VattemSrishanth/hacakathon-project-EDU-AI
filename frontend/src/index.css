@@ -619,13 +619,6 @@ select {
   font-size: 12px;
 }
 
-/* Transitions */
-.theme-premium-dark * {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* ==================== Additional Themes from Migration ==================== */
-
 .theme-crystal {
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
@@ -678,42 +671,6 @@ select {
   --color-secondary: #22d3ee;
 }
 
-/* ==================== Wednesday (Nevermore Academy) Theme ==================== */
-.theme-wednesday {
-  --bg-primary: #0a0a0c;
-  --bg-secondary: #0d0d10;
-  --bg-card: #141418;
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0a0b0;
-  --text-muted: #6b7280;
-  --border-color: #27272a;
-
-  --color-primary: #a78bfa;
-  --color-primary-hover: #c4b5fd;
-  --color-secondary: #4b5563;
-
-  --font-heading: 'Uncial Antiqua', cursive;
-}
-
-.theme-wednesday body {
-  background-color: var(--bg-primary);
-  background-image:
-    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.05), transparent 70%);
-}
-
-.theme-wednesday h1,
-.theme-wednesday h2,
-.theme-wednesday h3 {
-  font-family: var(--font-heading) !important;
-  color: #f3f4f6;
-  text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
-}
-
-.theme-wednesday .card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-}
-
 .gradient-crystal {
   background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
 }
@@ -730,8 +687,161 @@ select {
   background: linear-gradient(135deg, #4c1d95 0%, #06b6d4 100%);
 }
 
-.gradient-wednesday {
-  background: linear-gradient(135deg, #0a0a0c 0%, #141418 100%);
+/* ==================== Crystal Glass (Light Glassmorphism) Theme ==================== */
+.theme-crystal-glass {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.45);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --border-color: rgba(255, 255, 255, 0.3);
+
+  --color-primary: #06b6d4;
+  --color-primary-hover: #0891b2;
+  --color-secondary: #3b82f6;
+}
+
+.theme-crystal-glass body {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(circle at 12% 18%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 88% 82%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.theme-crystal-glass .card,
+.theme-crystal-glass [class*="rounded-3xl"],
+.theme-crystal-glass [class*="rounded-[2.5rem]"],
+.theme-crystal-glass [class*="bg-app-bg-alt"] {
+  background: rgba(255, 255, 255, 0.45) !important;
+  backdrop-filter: blur(20px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04) !important;
+}
+
+.theme-crystal-glass .sidebar,
+.theme-crystal-glass nav,
+.theme-crystal-glass aside {
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(24px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+.theme-crystal-glass .sidebar a,
+.theme-crystal-glass aside a,
+.theme-crystal-glass nav a {
+  color: #334155 !important;
+}
+
+.theme-crystal-glass .sidebar a:hover,
+.theme-crystal-glass aside a:hover,
+.theme-crystal-glass nav a:hover {
+  color: #06b6d4 !important;
+}
+
+.theme-crystal-glass .sidebar a.active,
+.theme-crystal-glass aside a.active,
+.theme-crystal-glass nav a.active {
+  background-color: rgba(6, 182, 212, 0.1) !important;
+  color: #0891b2 !important;
+}
+
+.theme-crystal-glass .btn-magic {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.8) 0%, rgba(59, 130, 246, 0.8) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.15) !important;
+  color: white !important;
+}
+
+.theme-crystal-glass h1,
+.theme-crystal-glass h2,
+.theme-crystal-glass h3 {
+  text-shadow: 0 0 20px rgba(6, 182, 212, 0.1) !important;
+}
+
+/* ==================== Glass Frost (Dark Glassmorphism) Theme ==================== */
+.theme-glass {
+  --bg-primary: #030712;
+  --bg-secondary: #0b0f19;
+  --bg-card: rgba(17, 24, 39, 0.55);
+  --text-primary: #f9fafb;
+  --text-secondary: #cbd5e1;
+  --text-muted: #9ca3af;
+  --border-color: rgba(255, 255, 255, 0.08);
+
+  --color-primary: #38bdf8;
+  --color-primary-hover: #7dd3fc;
+  --color-secondary: #c084fc;
+}
+
+.theme-glass body {
+  background-color: #030712;
+  background-image: 
+    radial-gradient(circle at 15% 25%, rgba(56, 189, 248, 0.09) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(192, 132, 252, 0.09) 0%, transparent 45%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.theme-glass .card,
+.theme-glass [class*="rounded-3xl"],
+.theme-glass [class*="rounded-[2.5rem]"],
+.theme-glass [class*="bg-app-bg-alt"] {
+  background: rgba(17, 24, 39, 0.55) !important;
+  backdrop-filter: blur(20px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(120%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-glass .sidebar,
+.theme-glass nav,
+.theme-glass aside {
+  background: rgba(17, 24, 39, 0.6) !important;
+  backdrop-filter: blur(24px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(120%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.09) !important;
+}
+
+.theme-glass .sidebar a,
+.theme-glass aside a,
+.theme-glass nav a {
+  color: #cbd5e1 !important;
+}
+
+.theme-glass .sidebar a:hover,
+.theme-glass aside a:hover,
+.theme-glass nav a:hover {
+  color: #38bdf8 !important;
+}
+
+.theme-glass .sidebar a.active,
+.theme-glass aside a.active,
+.theme-glass nav a.active {
+  background-color: rgba(56, 189, 248, 0.15) !important;
+  color: #7dd3fc !important;
+}
+
+.theme-glass .btn-magic {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.8) 0%, rgba(192, 132, 252, 0.8) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25) !important;
+}
+
+.theme-glass h1,
+.theme-glass h2,
+.theme-glass h3 {
+  text-shadow: 0 0 25px rgba(56, 189, 248, 0.25) !important;
+}
+
+.gradient-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(241, 245, 249, 0.5) 100%);
 }
 
 /* Global custom scrollbar for clean premium feel on all themes */

@@ -7,13 +7,6 @@ import {
   Languages } from
 'lucide-react';
 import Card from '../Card';
-
-
-
-
-
-
-
 const subjectIcons = {
   Maths: Calculator,
   Mathematics: Calculator,

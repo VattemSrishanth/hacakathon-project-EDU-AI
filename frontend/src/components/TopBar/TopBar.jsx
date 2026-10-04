@@ -10,9 +10,9 @@ import {
   User,
   Wifi,
   WifiOff,
-  Menu,
-  Bell } from
+  Menu } from
 'lucide-react';
+import NotificationBell from '../notifications/NotificationBell';
 
 
 
@@ -51,7 +51,7 @@ const TopBar = ({ onOpenMobileMenu }) => {
 
   const toggleTheme = () => {
     updateThemeAccessibility({
-      theme: isDark ? 'Crystal Light' : 'Academic Maroon'
+      theme: isDark ? 'Crystal Light' : 'Midnight Void'
     });
   };
 
@@ -123,13 +123,7 @@ const TopBar = ({ onOpenMobileMenu }) => {
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
           
-          <button
-            onClick={() => navigate('/notifications')}
-            className="p-2 hover:bg-app-accent/10 rounded-lg text-app-text-muted hover:text-app-primary transition-all relative">
-            
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-app-primary rounded-full" />
-          </button>
+          <NotificationBell />
         </div>
 
         <div className="h-6 w-px bg-app-border mx-1"></div>

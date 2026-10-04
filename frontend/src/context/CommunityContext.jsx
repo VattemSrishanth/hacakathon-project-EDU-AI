@@ -3,14 +3,6 @@ import { useAuth } from './AuthContext';
 import { useOffline } from './OfflineContext';
 import { offlineSyncService } from '../services/offlineSync';
 import { offlineContentService } from '../services/offlineContent';
-
-
-
-
-
-
-
-
 const CommunityContext = createContext(undefined);
 
 export const CommunityProvider = ({ children }) => {

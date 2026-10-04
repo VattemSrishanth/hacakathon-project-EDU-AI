@@ -55,7 +55,7 @@ const TeacherDashboard = ({ auth, socket, onJoinSession }) => {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch("http://localhost:4000/verification/status", {
+      const response = await fetch("http://localhost:5000/verification/status", {
         headers: { Authorization: `Bearer ${auth?.token}` }
       });
       const data = await response.json();
@@ -71,7 +71,7 @@ const TeacherDashboard = ({ auth, socket, onJoinSession }) => {
 
   const fetchHistory = async () => {
     try {
-      const response = await fetch("http://localhost:4000/doubt/history", {
+      const response = await fetch("http://localhost:5000/doubt/history", {
         headers: { Authorization: `Bearer ${auth?.token}` }
       });
       const data = await response.json();
@@ -100,7 +100,7 @@ const TeacherDashboard = ({ auth, socket, onJoinSession }) => {
     setApplying(true);
 
     try {
-      const response = await fetch("http://localhost:4000/verification/apply", {
+      const response = await fetch("http://localhost:5000/verification/apply", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -167,7 +167,7 @@ const TeacherDashboard = ({ auth, socket, onJoinSession }) => {
             <button
               onClick={async () => {
                 try {
-                  const res = await fetch("http://localhost:4000/verification/dev-verify", {
+                  const res = await fetch("http://localhost:5000/verification/dev-verify", {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",

@@ -5,14 +5,6 @@ import Button from '../components/Button';
 import { useOffline } from '../context/OfflineContext';
 import { useAuth } from '../context/AuthContext';
 import { offlineContentService } from '../services/offlineContent';
-
-
-
-
-
-
-
-
 const UploadedPdf = () => {
   const navigate = useNavigate();
   const location = useLocation();

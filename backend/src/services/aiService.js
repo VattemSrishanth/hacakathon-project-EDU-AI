@@ -27,7 +27,7 @@ const callGemini = async ({ prompt, image, systemPrompt }) => {
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is missing");
   }
-  const model = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
   const parts = [{ text: `${systemPrompt}\n\n${prompt}`.trim() }];
   if (image) {

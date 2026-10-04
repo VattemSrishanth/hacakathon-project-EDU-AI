@@ -1,37 +1,6 @@
 import { createContext, useContext, useMemo, useEffect } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { api } from '../services/api';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const AuthContext = createContext(undefined);
 
 const getInitials = (user) => {

@@ -1,11 +1,5 @@
 import { GraduationCap } from 'lucide-react';
 import Card from '../Card';
-
-
-
-
-
-
 const ClassList = ({ onSelectClass, selectedGrade }) => {
   const grades = Array.from({ length: 10 }, (_, i) => (i + 1).toString());
 

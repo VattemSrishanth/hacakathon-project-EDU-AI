@@ -1,29 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-
 /**
  * Interface for Accessibility State
  */
-
-
-
-
-
-
-
-
 /**
  * Interface for Context Value
  */
-
-
-
-
-
-
-
-
-
 // Local storage key
 const STORAGE_KEY = 'learnbridge_accessibility';
 

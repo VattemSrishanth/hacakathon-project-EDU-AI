@@ -19,76 +19,85 @@ import {
 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-
-
-// Mock Data
-const MOCK_CERTIFICATES = [
-{
-  id: '1',
-  courseName: 'AI Fundamentals: Foundations of Machine Learning',
-  completionDate: '2026-02-15',
-  score: '96%',
-  grade: 'A+',
-  courseImage: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?q=80&w=1974&auto=format&fit=crop'
-},
-{
-  id: '2',
-  courseName: 'Python for Data Science: Intermediate Level',
-  completionDate: '2026-01-20',
-  score: '88%',
-  grade: 'A',
-  courseImage: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2070&auto=format&fit=crop'
-}];
-
-
-const MOCK_IN_PROGRESS = [
-{
-  id: '3',
-  courseName: 'Natural Language Processing Masterclass',
-  progress: 75,
-  lessonsRemaining: 3,
-  totalLessons: 12,
-  courseImage: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop',
-  tasks: {
-    lessonsCompleted: false,
-    assignmentsSubmitted: true,
-    quizAccuracyMet: true,
-    finalAssessmentCompleted: false
-  }
-},
-{
-  id: '4',
-  courseName: 'Advanced Computer Vision with AI',
-  progress: 90,
-  lessonsRemaining: 1,
-  totalLessons: 14,
-  courseImage: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?q=80&w=2070&auto=format&fit=crop',
-  tasks: {
-    lessonsCompleted: false,
-    assignmentsSubmitted: true,
-    quizAccuracyMet: true,
-    finalAssessmentCompleted: false
-  }
-}];
-
-
-const MOCK_BADGES = [
-{ id: 'b1', name: 'First Lesson', description: 'Completed your very first lesson', iconName: 'Rocket', isUnlocked: true, earnedDate: '2026-01-05' },
-{ id: 'b2', name: '3 Day Streak', description: 'Learned for 3 consecutive days', iconName: 'Flame', isUnlocked: true, earnedDate: '2026-01-08' },
-{ id: 'b3', name: 'Quiz Master', description: 'Scored 100% on 5 different quizzes', iconName: 'Star', isUnlocked: true, earnedDate: '2026-02-10' },
-{ id: 'b4', name: 'Consistent Learner', description: 'Maintain a 7-day learning streak', iconName: 'Target', isUnlocked: false },
-{ id: 'b5', name: 'Code Ninja', description: 'Successfully write 50 snippets', iconName: 'Zap', isUnlocked: false },
-{ id: 'b6', name: 'Deep Thinker', description: 'Spent over 10 hours on complex topics', iconName: 'Medal', isUnlocked: false }];
-
-
-const MILESTONES = {
-  lessonsCompleted: 42,
-  quizAccuracy: 92,
-  learningStreak: 5
-};
+import { useProgress } from '../../context/ProgressContext';
 
 const Certificates = () => {
   const [activeTab, setActiveTab] = useState('certificates');
+  const { progress } = useProgress();
+
+  const totalCompleted = progress.lessonsCompleted?.length || 0;
+  const quizScores = progress.quizScores || [];
+
+  // Calculate average quiz accuracy percentage
+  const quizAccuracyVal = quizScores.length > 0
+    ? Math.round(quizScores.reduce((acc, curr) => acc + (typeof curr.score === 'number' ? curr.score : 85), 0) / quizScores.length)
+    : 0;
+
+  // Streak days based on activity log size
+  const learningStreakDays = progress.activityLog?.length || 0;
+
+  const milestones = {
+    lessonsCompleted: totalCompleted,
+    quizAccuracy: quizAccuracyVal || 90,
+    learningStreak: learningStreakDays || 1
+  };
+
+  // Define Certificates dynamically
+  const certificatesEarned = [];
+  const inProgressCerts = [];
+
+  const certDefinitions = [
+    {
+      id: '1',
+      courseName: 'AI Fundamentals: Foundations of Machine Learning',
+      requiredLessons: 3,
+      courseImage: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?q=80&w=1974&auto=format&fit=crop'
+    },
+    {
+      id: '2',
+      courseName: 'Python for Data Science: Intermediate Level',
+      requiredLessons: 7,
+      courseImage: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2070&auto=format&fit=crop'
+    }
+  ];
+
+  certDefinitions.forEach(c => {
+    if (totalCompleted >= c.requiredLessons) {
+      certificatesEarned.push({
+        id: c.id,
+        courseName: c.courseName,
+        completionDate: new Date(progress.lastActivityTimestamp || Date.now()).toISOString().split('T')[0],
+        score: `${quizAccuracyVal || 92}%`,
+        grade: (quizAccuracyVal || 92) >= 90 ? 'A+' : 'A',
+        courseImage: c.courseImage
+      });
+    } else {
+      const progPct = Math.round((totalCompleted / c.requiredLessons) * 100);
+      inProgressCerts.push({
+        id: c.id,
+        courseName: c.courseName,
+        progress: progPct,
+        lessonsRemaining: c.requiredLessons - totalCompleted,
+        totalLessons: c.requiredLessons,
+        courseImage: c.courseImage,
+        tasks: {
+          lessonsCompleted: totalCompleted > 0,
+          assignmentsSubmitted: totalCompleted > 1,
+          quizAccuracyMet: quizAccuracyVal >= 80 || totalCompleted > 0,
+          finalAssessmentCompleted: totalCompleted >= c.requiredLessons
+        }
+      });
+    }
+  });
+
+  const badges = [
+    { id: 'b1', name: 'First Lesson', description: 'Completed your very first lesson', iconName: 'Rocket', isUnlocked: totalCompleted >= 1, earnedDate: totalCompleted >= 1 ? 'Unlocked' : null },
+    { id: 'b2', name: '3 Day Streak', description: 'Learned for 3 consecutive days', iconName: 'Flame', isUnlocked: learningStreakDays >= 3, earnedDate: learningStreakDays >= 3 ? 'Unlocked' : null },
+    { id: 'b3', name: 'Quiz Master', description: 'Scored 100% on a study quiz', iconName: 'Star', isUnlocked: quizScores.filter(q => q.score === 100).length >= 1, earnedDate: quizScores.filter(q => q.score === 100).length >= 1 ? 'Unlocked' : null },
+    { id: 'b4', name: 'Consistent Learner', description: 'Maintain a 7-day learning streak', iconName: 'Target', isUnlocked: learningStreakDays >= 7, earnedDate: learningStreakDays >= 7 ? 'Unlocked' : null },
+    { id: 'b5', name: 'Code Ninja', description: 'Successfully ask 5 or more AI doubt questions', iconName: 'Zap', isUnlocked: (progress.questionsAsked || 0) >= 5, earnedDate: (progress.questionsAsked || 0) >= 5 ? 'Unlocked' : null },
+    { id: 'b6', name: 'Deep Thinker', description: 'Spent over 2 hours studying modules', iconName: 'Medal', isUnlocked: (progress.timeSpent?.totalMinutes || 0) >= 120, earnedDate: (progress.timeSpent?.totalMinutes || 0) >= 120 ? 'Unlocked' : null }
+  ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -126,13 +135,11 @@ const Certificates = () => {
               <button
                 onClick={() => setActiveTab('certificates')}
                 className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'certificates' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-app-text-sub hover:bg-app-bg-alt'}`}>
-                
                 Certificates
               </button>
               <button
                 onClick={() => setActiveTab('achievements')}
                 className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'achievements' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-app-text-sub hover:bg-app-bg-alt'}`}>
-                
                 Badges
               </button>
             </div>
@@ -142,21 +149,20 @@ const Certificates = () => {
             <StatsCard
               icon={<Award className="text-primary" size={24} />}
               label="Certificates"
-              value={MOCK_CERTIFICATES.length}
+              value={certificatesEarned.length}
               subValue="Global Standards" />
             
             <StatsCard
               icon={<Zap className="text-amber-500" size={24} />}
               label="Quiz Accuracy"
-              value={`${MILESTONES.quizAccuracy}%`}
+              value={`${milestones.quizAccuracy}%`}
               subValue="Top 5% Student" />
             
             <StatsCard
               icon={<Flame className="text-secondary" size={24} />}
               label="Learning Streak"
-              value={`${MILESTONES.learningStreak} Days`}
+              value={`${milestones.learningStreak} Days`}
               subValue="Consistent Progress" />
-            
           </div>
         </div>
       </div>
@@ -183,18 +189,16 @@ const Certificates = () => {
                   </span>
                 </div>
 
-                {MOCK_CERTIFICATES.length > 0 ?
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {MOCK_CERTIFICATES.map((cert) =>
-                <CertificateCard key={cert.id} certificate={cert} variants={itemVariants} />
-                )}
-                  </div> :
-
-              <EmptyState
-                message="You're on your way to earning certificates!"
-                subtext="Every lesson completed brings you closer. Check your eligibility tracker below to see your path to certification." />
-
-              }
+                {certificatesEarned.length > 0 ?
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {certificatesEarned.map((cert) =>
+                    <CertificateCard key={cert.id} certificate={cert} variants={itemVariants} />
+                  )}
+                </div> :
+                <EmptyState
+                  message="You're on your way to earning certificates!"
+                  subtext="Every lesson completed brings you closer. Check your eligibility tracker below to see your path to certification." />
+                }
               </section>
 
               {/* In-Progress Certs */}
@@ -210,9 +214,9 @@ const Certificates = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {MOCK_IN_PROGRESS.map((cert) =>
-                <InProgressCard key={cert.id} certificate={cert} variants={itemVariants} />
-                )}
+                  {inProgressCerts.map((cert) =>
+                    <InProgressCard key={cert.id} certificate={cert} variants={itemVariants} />
+                  )}
                 </div>
               </section>
 
@@ -229,25 +233,24 @@ const Certificates = () => {
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <HowToStep
-                    number="01"
-                    title="Master All Lessons"
-                    desc="Watch all video content and interact with the modules until 100% completion." />
+                      number="01"
+                      title="Master All Lessons"
+                      desc="Watch all video content and interact with the modules until 100% completion." />
                   
                     <HowToStep
-                    number="02"
-                    title="Submit Assignments"
-                    desc="Practical application of your skills through course assignments and projects." />
+                      number="02"
+                      title="Submit Assignments"
+                      desc="Practical application of your skills through course assignments and projects." />
                   
                     <HowToStep
-                    number="03"
-                    title="Meet Quiz Accuracy"
-                    desc="Demonstrate mastery by scoring at least 80% accuracy across all module quizzes." />
+                      number="03"
+                      title="Meet Quiz Accuracy"
+                      desc="Demonstrate mastery by scoring at least 80% accuracy across all module quizzes." />
                   
                     <HowToStep
-                    number="04"
-                    title="Final Assessment"
-                    desc="Pass the comprehensive final exam to verify your knowledge and unlock your certificate." />
-                  
+                      number="04"
+                      title="Final Assessment"
+                      desc="Pass the comprehensive final exam to verify your knowledge and unlock your certificate." />
                   </div>
 
                   <Link to="/lessons" className="mt-12 inline-flex items-center gap-3 px-10 py-5 bg-primary text-white font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:scale-105 transition-all">
@@ -267,9 +270,9 @@ const Certificates = () => {
               {/* Badges Section */}
               <section>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8">
-                  {MOCK_BADGES.map((badge) =>
-                <BadgeIcon key={badge.id} badge={badge} variants={itemVariants} />
-                )}
+                  {badges.map((badge) =>
+                    <BadgeIcon key={badge.id} badge={badge} variants={itemVariants} />
+                  )}
                 </div>
               </section>
 
@@ -284,11 +287,11 @@ const Certificates = () => {
                        <p className="text-xs font-bold text-white/70 uppercase tracking-widest mb-10">Your learning impact by the numbers</p>
                        <div className="grid grid-cols-2 gap-8 pt-6 border-t border-white/10">
                           <div>
-                             <div className="text-4xl font-black text-primary mb-1">{MILESTONES.lessonsCompleted}</div>
+                             <div className="text-4xl font-black text-primary mb-1">{milestones.lessonsCompleted}</div>
                              <div className="text-[10px] font-black uppercase tracking-widest text-white/50">Lessons Finished</div>
                           </div>
                           <div>
-                             <div className="text-4xl font-black text-secondary mb-1">{MILESTONES.quizAccuracy}%</div>
+                             <div className="text-4xl font-black text-secondary mb-1">{milestones.quizAccuracy}%</div>
                              <div className="text-[10px] font-black uppercase tracking-widest text-white/50">Average Accuracy</div>
                           </div>
                        </div>
@@ -310,14 +313,14 @@ const Certificates = () => {
           }
         </AnimatePresence>
       </main>
-    </div>);
-
+    </div>
+  );
 };
 
 // --- Subsections ---
 
-const StatsCard = ({ icon, label, value, subValue }) =>
-<div className="bg-app-bg-alt border border-app-border p-6 rounded-3xl group hover:border-primary/50 transition-all flex items-center gap-6">
+const StatsCard = ({ icon, label, value, subValue }) => (
+  <div className="bg-app-bg-alt border border-app-border p-6 rounded-3xl group hover:border-primary/50 transition-all flex items-center gap-6">
     <div className="w-14 h-14 rounded-2xl bg-app-bg border border-app-border flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
       {icon}
     </div>
@@ -326,15 +329,15 @@ const StatsCard = ({ icon, label, value, subValue }) =>
       <div className="text-2xl font-black text-app-text-main uppercase leading-none mb-1">{value}</div>
       <div className="text-[9px] font-bold text-primary/70 uppercase tracking-tight">{subValue}</div>
     </div>
-  </div>;
+  </div>
+);
 
-
-const CertificateCard = ({ certificate, variants }) =>
-<motion.div
-  variants={variants}
-  whileHover={{ y: -8 }}
-  className="group bg-app-bg-alt border-2 border-app-border rounded-[40px] overflow-hidden flex flex-col hover:border-emerald-500/50 transition-all duration-500 shadow-xl shadow-black/5">
-  
+const CertificateCard = ({ certificate, variants }) => (
+  <motion.div
+    variants={variants}
+    whileHover={{ y: -8 }}
+    className="group bg-app-bg-alt border-2 border-app-border rounded-[40px] overflow-hidden flex flex-col hover:border-emerald-500/50 transition-all duration-500 shadow-xl shadow-black/5">
+    
     <div className="relative h-48 overflow-hidden">
       <img src={certificate.courseImage} alt={certificate.courseName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
       <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60" />
@@ -381,8 +384,8 @@ const CertificateCard = ({ certificate, variants }) =>
           </button>
        </div>
     </div>
-  </motion.div>;
-
+  </motion.div>
+);
 
 const InProgressCard = ({ certificate, variants }) => {
   const pendingTasksCount = Object.values(certificate.tasks || {}).filter((v) => !v).length;
@@ -394,8 +397,8 @@ const InProgressCard = ({ certificate, variants }) => {
       className={`bg-app-bg-alt/50 border ${isNearlyComplete ? 'border-amber-500/50 ring-1 ring-amber-500/20' : 'border-app-border'} rounded-[40px] p-8 group hover:bg-app-bg-alt transition-all duration-300 relative overflow-hidden`}>
       
       {isNearlyComplete &&
-      <div className="absolute top-0 right-0 px-4 py-1.5 bg-amber-500 text-white text-[9px] font-black uppercase tracking-widest rounded-bl-2xl">
-           Nearly Certified!
+        <div className="absolute top-0 right-0 px-4 py-1.5 bg-amber-500 text-white text-[9px] font-black uppercase tracking-widest rounded-bl-2xl">
+          Nearly Certified!
         </div>
       }
 
@@ -429,11 +432,10 @@ const InProgressCard = ({ certificate, variants }) => {
             </div>
             <div className="h-3 w-full bg-app-border rounded-full p-0.5 overflow-hidden">
                <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${certificate.progress}%` }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="h-full bg-linear-to-r from-primary via-secondary to-primary rounded-full relative">
-              
+                initial={{ width: 0 }}
+                animate={{ width: `${certificate.progress}%` }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="h-full bg-linear-to-r from-primary via-secondary to-primary rounded-full relative">
                   <div className="absolute inset-0 bg-white/20 animate-pulse" />
                </motion.div>
             </div>
@@ -449,10 +451,10 @@ const InProgressCard = ({ certificate, variants }) => {
 
          <div className="bg-app-bg rounded-2xl p-4 border border-app-border">
             <p className="text-[10px] font-bold text-app-text-sub uppercase tracking-widest italic opacity-80 leading-relaxed text-center">
-               {isNearlyComplete ?
-            "🎯 You're just one step away! Complete the final requirement to unlock your global certificate." :
-            `🚀 Great progress! Finish the remaining tasks to earn your credential.`
-            }
+              {isNearlyComplete ?
+                "🎯 You're just one step away! Complete the final requirement to unlock your global certificate." :
+                `🚀 Great progress! Finish the remaining tasks to earn your credential.`
+              }
             </p>
          </div>
       </div>
@@ -460,12 +462,12 @@ const InProgressCard = ({ certificate, variants }) => {
       <button className="w-full mt-8 py-4 bg-app-bg border border-app-border rounded-2xl text-[9px] font-black text-app-text-main uppercase tracking-[0.2em] group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
          Continue Course Tasks
       </button>
-    </motion.div>);
-
+    </motion.div>
+  );
 };
 
-const TaskItem = ({ label, completed }) =>
-<div className="flex items-center gap-2">
+const TaskItem = ({ label, completed }) => (
+  <div className="flex items-center gap-2">
     <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${completed ? 'bg-emerald-500 text-white' : 'border border-app-text-muted/30'}`}>
       {completed ? <CheckCircle2 size={10} /> : <div className="w-1.5 h-1.5 rounded-full bg-app-text-muted/20" />}
     </div>
@@ -473,15 +475,15 @@ const TaskItem = ({ label, completed }) =>
       {label}
       {!completed && <span className="ml-1 text-[8px] opacity-40 italic">(Pending)</span>}
     </span>
-  </div>;
-
+  </div>
+);
 
 const BadgeIcon = ({ badge, variants }) => {
   const Icon = badge.iconName === 'Rocket' ? Rocket :
-  badge.iconName === 'Flame' ? Flame :
-  badge.iconName === 'Star' ? Star :
-  badge.iconName === 'Target' ? Target :
-  badge.iconName === 'Zap' ? Zap : Medal;
+    badge.iconName === 'Flame' ? Flame :
+    badge.iconName === 'Star' ? Star :
+    badge.iconName === 'Target' ? Target :
+    badge.iconName === 'Zap' ? Zap : Medal;
 
   return (
     <motion.div
@@ -490,46 +492,45 @@ const BadgeIcon = ({ badge, variants }) => {
       
       <div className={`relative w-24 h-24 md:w-32 md:h-32 rounded-full border-2 flex items-center justify-center transition-all duration-500 mb-4 
         ${badge.isUnlocked ?
-      'bg-app-bg border-secondary/30 shadow-xl shadow-secondary/5 rotate-0' :
-      'bg-app-bg-alt border-app-border greyscale opacity-40 grayscale rotate-12'}`}>
+          'bg-app-bg border-secondary/30 shadow-xl shadow-secondary/5 rotate-0' :
+          'bg-app-bg-alt border-app-border greyscale opacity-40 grayscale rotate-12'}`}>
         
         <div className={`w-20 h-20 md:w-28 md:h-28 rounded-full flex items-center justify-center 
           ${badge.isUnlocked ? 'bg-linear-to-br from-secondary/10 to-primary/5' : 'bg-transparent'}`}>
-          
           <Icon className={badge.isUnlocked ? 'text-secondary w-10 h-10 md:w-14 md:h-14' : 'text-app-text-muted w-10 h-10 md:w-14 md:h-14'} />
         </div>
         
         {badge.isUnlocked &&
-        <div className="absolute -top-1 -right-1 w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center border-4 border-app-bg scale-90">
+          <div className="absolute -top-1 -right-1 w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center border-4 border-app-bg scale-90">
              <CheckCircle2 size={16} fill="currentColor" />
           </div>
         }
       </div>
       <h4 className="text-[10px] font-black text-app-text-main uppercase tracking-widest text-center">{badge.name}</h4>
       {badge.earnedDate &&
-      <span className="text-[8px] font-bold text-secondary uppercase tracking-tight mt-1">{badge.earnedDate}</span>
+        <span className="text-[8px] font-bold text-secondary uppercase tracking-tight mt-1">{badge.earnedDate}</span>
       }
       {!badge.isUnlocked &&
-      <div className="mt-2 text-[8px] font-bold text-app-text-muted uppercase tracking-widest text-center max-w-20 leading-tight">
+        <div className="mt-2 text-[8px] font-bold text-app-text-muted uppercase tracking-widest text-center max-w-20 leading-tight">
           {badge.description}
         </div>
       }
-    </motion.div>);
-
+    </motion.div>
+  );
 };
 
-const HowToStep = ({ number, title, desc }) =>
-<div className="flex gap-5">
+const HowToStep = ({ number, title, desc }) => (
+  <div className="flex gap-5">
     <div className="text-3xl font-black text-primary/20 italic select-none">{number}</div>
     <div>
       <h4 className="text-xs font-black text-app-text-main uppercase tracking-widest mb-1">{title}</h4>
       <p className="text-[10px] font-bold text-app-text-sub uppercase tracking-tight opacity-60 leading-relaxed">{desc}</p>
     </div>
-  </div>;
+  </div>
+);
 
-
-const EmptyState = ({ message, subtext }) =>
-<div className="py-20 text-center border-2 border-dashed border-app-border rounded-[40px] bg-app-bg-alt/30">
+const EmptyState = ({ message, subtext }) => (
+  <div className="py-20 text-center border-2 border-dashed border-app-border rounded-[40px] bg-app-bg-alt/30">
     <Medal className="mx-auto text-app-border mb-6" size={64} />
     <h3 className="text-2xl font-black text-app-text-main uppercase tracking-tight mb-2">{message}</h3>
     <p className="text-xs font-bold text-app-text-sub uppercase tracking-widest opacity-60 max-w-sm mx-auto mb-8">
@@ -538,7 +539,7 @@ const EmptyState = ({ message, subtext }) =>
     <Link to="/lessons" className="px-10 py-4 bg-primary text-white font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-105 transition-all">
        Continue Learning
     </Link>
-  </div>;
-
+  </div>
+);
 
 export default Certificates;

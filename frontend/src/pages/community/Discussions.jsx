@@ -9,32 +9,6 @@ import { useAuth } from '../../context/AuthContext';
 import { useOffline } from '../../context/OfflineContext';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const Discussions = () => {
   const { id } = useParams();
   const navigate = useNavigate();

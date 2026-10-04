@@ -21,6 +21,8 @@ import ComingSoon from './pages/ComingSoon';
 // New Feature Pages
 import CommunityHome from './pages/community/CommunityHome';
 import Exams from './pages/assessments/Exams';
+import AttemptExam from './pages/assessments/AttemptExam';
+import Results from './pages/assessments/Results';
 import Certificates from './pages/certification/Certificates';
 import Notifications from './pages/notifications/Notifications';
 import Insights from './pages/analytics/Insights';
@@ -255,6 +257,8 @@ function AppContent() {
       <Route path="/community/ask" element={<ProtectedRoute><AskDoubt /></ProtectedRoute>} />
       <Route path="/community/discussion/:id" element={<ProtectedRoute><Discussions /></ProtectedRoute>} />
       <Route path="/exams" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><Exams /></ProtectedRoute>} />
+      <Route path="/exams/attempt/:examId" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><AttemptExam /></ProtectedRoute>} />
+      <Route path="/exams/results" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><Results /></ProtectedRoute>} />
       <Route path="/certificates" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><Certificates /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/insights" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'parent', 'admin', 'user']}><Insights /></ProtectedRoute>} />

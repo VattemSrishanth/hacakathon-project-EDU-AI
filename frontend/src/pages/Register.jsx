@@ -13,9 +13,6 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 import { authAPI } from '../services/api';
 import { useSettings } from '../context/SettingsContext';
-
-
-
 const Register = () => {
   const { settings, updateLearning, updateThemeAccessibility } = useSettings();
 

@@ -1,17 +1,5 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, PlayCircle, BookOpen } from 'lucide-react';
-
-
-
-
-
-
-
-
-
-
-
-
 const UnitAccordion = ({ units, onSelectTopic, selectedTopic }) => {
   const [expandedUnit, setExpandedUnit] = useState(units[0]?.unit || null);
 

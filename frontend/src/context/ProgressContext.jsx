@@ -3,51 +3,6 @@ import { useAuth } from './AuthContext';
 import { userDataAPI } from '../services/api';
 
 // ==================== Types ====================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ==================== Constants ====================
 const PROGRESS_KEY = 'learnbridge_progress_v1';
 

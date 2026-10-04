@@ -1,22 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { offlineSyncService } from '../services/offlineSync';
 import { offlineContentService } from '../services/offlineContent';
-
 import { useAuth } from './AuthContext';
 import { lessonsAPI } from '../services/api';
-
-
-
-
-
-
-
-
-
-
-
-
-
 const OfflineContext = createContext(undefined);
 
 export const OfflineProvider = ({ children }) => {

@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 const Card = ({ children, className = '', hover = false, onClick, variant = 'default' }) => {
   const themeHookClass = variant === 'magic' ? 'magic-card' : 'card';
 

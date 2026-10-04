@@ -5,64 +5,6 @@ import { userDataAPI } from '../services/api';
 import { useAuth } from './AuthContext';
 
 // ==================== Types ====================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ==================== Constants ====================
 const SETTINGS_KEY = 'settings';
 const AUTH_KEY = 'auth';
@@ -92,7 +34,7 @@ export const defaultSettings = {
     reminderFrequency: 'Weekly'
   },
   themeAccessibility: {
-    theme: 'Academic Maroon',
+    theme: 'Crystal Light',
     fontSize: 'Medium',
     highContrast: false,
     reduceMotion: false,
@@ -155,8 +97,7 @@ const loadSettingsFromStorage = () => {
         ...(storedSettings?.themeAccessibility || {}),
         // Fallback for valid themes only
         theme: [
-        'Academic Maroon', 'Harry Potter', 'Premium Dark',
-        'Midnight Void', 'Crystal Light', 'WEDNESDAY'].
+        'Harry Potter', 'Midnight Void', 'Crystal Light', 'Crystal Glass', 'Glass Frost'].
         includes(storedSettings?.themeAccessibility?.theme) ?
         storedSettings?.themeAccessibility?.theme :
         defaultSettings.themeAccessibility.theme
@@ -187,12 +128,14 @@ const applyTheme = (theme) => {
   'theme-premium-dark',
   'theme-midnight',
   'theme-crystal',
-  'theme-wednesday'];
+  'theme-wednesday',
+  'theme-glass',
+  'theme-crystal-glass'];
 
   root.classList.remove(...themeClasses);
   body.classList.remove(...themeClasses);
 
-  if (theme === 'Academic Maroon' || theme === 'Midnight Void' || theme === 'Premium Dark') {
+  if (theme === 'Midnight Void' || theme === 'Glass Frost' || theme === 'Harry Potter') {
     root.classList.add('dark');
     body.classList.add('dark');
   }
@@ -200,8 +143,8 @@ const applyTheme = (theme) => {
   if (theme === 'Midnight Void') root.classList.add('theme-midnight');
   if (theme === 'Crystal Light') root.classList.add('theme-crystal');
   if (theme === 'Harry Potter') root.classList.add('theme-harry-potter');
-  if (theme === 'WEDNESDAY') root.classList.add('theme-wednesday');
-  if (theme === 'Premium Dark') root.classList.add('theme-premium-dark');
+  if (theme === 'Glass Frost') root.classList.add('theme-glass');
+  if (theme === 'Crystal Glass') root.classList.add('theme-crystal-glass');
 };
 
 const applyFontSize = (fontSize) => {

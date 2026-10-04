@@ -19,21 +19,6 @@ import ClassList from '../components/Syllabus/ClassList';
 import SubjectList from '../components/Syllabus/SubjectList';
 import UnitAccordion from '../components/Syllabus/UnitAccordion';
 import LessonViewer from '../components/Syllabus/LessonViewer';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const Lessons = () => {
   const { t, settings } = useSettings();
   const { auth } = useAuth();

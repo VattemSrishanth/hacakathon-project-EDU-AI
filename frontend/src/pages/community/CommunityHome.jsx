@@ -18,7 +18,7 @@ import SessionConsole from "../../components/community/SessionConsole";
 import TimetablePlanner from "../../components/community/TimetablePlanner";
 import TeacherDashboard from "../../components/community/TeacherDashboard";
 
-const socket = io("http://localhost:4000");
+const socket = io("http://localhost:5000");
 
 const CommunityHome = () => {
   const navigate = useNavigate();
