@@ -20,6 +20,13 @@ const searchVideo = asyncHandler(async (req, res) => {
     key: apiKey
   });
 
+  // Sign-language learning results must come from ISLRTC, the Government of
+  // India's Indian Sign Language Research and Training Centre. This avoids
+  // presenting an arbitrary search result as a trustworthy sign translation.
+  if (req.query.source === "islrtc") {
+    params.set("channelId", "UC3AcGIlqVI4nJWCwHgHFXtg");
+  }
+
   const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${params.toString()}`);
   if (!response.ok) {
     const text = await response.text();

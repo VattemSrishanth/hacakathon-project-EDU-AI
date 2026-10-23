@@ -17,6 +17,8 @@ Set these in `.env`:
 - `GEMINI_MODEL` (default: `gemini-1.5-flash`)
 - `GROQ_API_KEY` (fallback)
 - `GROQ_MODEL` (default: `llama-3.3-70b-versatile`)
+- `YOUTUBE_API_KEY` (required for in-app sign video search; results are limited to the ISLRTC channel)
+- `PORT` (backend port; use `5000` to match the frontend's default API URL)
 
 ## Endpoints
 

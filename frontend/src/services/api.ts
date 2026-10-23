@@ -32,7 +32,9 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       try {
         window.localStorage.removeItem('auth');
-      } catch (e) {}
+      } catch (e) {
+        // Ignore storage failures; the original API error is still returned.
+      }
       window.location.href = '/login';
     }
     return Promise.reject(error);

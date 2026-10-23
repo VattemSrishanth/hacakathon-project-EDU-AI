@@ -19,7 +19,7 @@ export const generateSearchQuery = (lesson: Lesson): string => {
   // Sanitize title by removing slashes and brackets which can confuse search
   const cleanTitle = lesson.title.replace(/[\/\\()]/g, ' ').replace(/\s+/g, ' ').trim();
   // Adding "ISL" or "Indian Sign Language" as the curriculum suggests Indian users
-  return `${cleanTitle} ISL sign language explanation`;
+  return `${cleanTitle} Indian Sign Language ISL`;
 };
 
 /**
@@ -32,7 +32,7 @@ export const youtubeService = {
   searchSignLanguageVideo: async (query: string): Promise<YouTubeVideoResult> => {
     try {
       const response = await axios.get(`${API_BASE_URL}/youtube-search`, {
-        params: { q: query }
+        params: { q: query, source: 'islrtc' }
       });
 
       if (response.data && response.data.videoId) {
