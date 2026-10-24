@@ -1,44 +1,147 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  Bell,
-  Clock,
-  Newspaper,
-  CheckCircle2,
-  AlertCircle,
-  Info,
-  Zap,
-  BookOpen,
-  ChevronRight,
-  TrendingUp,
-  Heart,
-  Share2,
-  BookMarked,
-  Filter,
-  MapPin,
-  CloudSun,
-  LayoutGrid,
-  List,
   ChevronLeft,
-  ChevronRight as ChevronRightIcon } from
-'lucide-react';
+  ChevronRight,
+  Sparkles,
+  Send,
+  Zap,
+  FileText,
+  CheckSquare,
+  GraduationCap,
+  Trophy,
+  BookOpen,
+  Bell,
+  Bookmark,
+  TrendingUp,
+  User,
+  List,
+  LayoutGrid,
+  ListTodo,
+  Database,
+  Calendar,
+  BarChart3,
+  Compass,
+  AlertCircle,
+  CheckCircle2,
+  Info,
+  X,
+  ExternalLink,
+  RefreshCw
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { userDataAPI } from '../../services/api';
 
+// Curated default academic items matching reference design
+const DEFAULT_HERO_SLIDES = [
+  {
+    id: 'hero-1',
+    badge: 'LATEST UPDATE',
+    title: 'ISRO Assistant, JPA Result 2026 Declared at isro.gov.in',
+    subtitle: 'Skill Test on November 1 | Direct link to download scorecards available now.',
+    url: 'https://www.isro.gov.in',
+    image: 'https://images.unsplash.com/photo-1517976487507-5b3df1182e32?q=80&w=1200'
+  },
+  {
+    id: 'hero-2',
+    badge: 'EXAM ALERT',
+    title: 'GATE 2027 Registration Portal Officially Live',
+    subtitle: 'Check eligibility, paper combinations, and online application guidelines.',
+    url: 'https://gate.iitk.ac.in',
+    image: 'https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?q=80&w=1200'
+  },
+  {
+    id: 'hero-3',
+    badge: 'SCHOLARSHIP',
+    title: 'National Scholarship Scheme 2026 For STEM Undergrads',
+    subtitle: 'Direct financial assistance up to ₹50,000 for top performing students.',
+    url: 'https://scholarships.gov.in',
+    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200'
+  }
+];
 
-// Mock additional data for the enhanced layout
-const CATEGORIES = ['All', 'Exams', 'Scholarships', 'Policies', 'Opportunities', 'Career Tips'];
+const DEFAULT_ARTICLES = [
+  {
+    id: 'art-1',
+    title: 'ISRO Assistant, JPA Result 2026 Declared at isro.gov.in',
+    description: 'Skill Test on November 1. Direct link to download scorecards here.',
+    url: 'https://www.isro.gov.in',
+    image: 'https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?q=80&w=800',
+    timeAgo: '2 hours ago',
+    tag: 'Results',
+    tagColor: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
+  },
+  {
+    id: 'art-2',
+    title: 'TS Intermediate Supplementary Results 2026',
+    description: 'Check complete details, important dates and direct links.',
+    url: 'https://tsbie.cgg.gov.in',
+    image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800',
+    timeAgo: '5 hours ago',
+    tag: 'Exam',
+    tagColor: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300'
+  },
+  {
+    id: 'art-3',
+    title: 'JNTUH B.Tech Admissions 2026 – Important Dates',
+    description: 'Application process, eligibility, counselling details and more.',
+    url: 'https://jntuh.ac.in',
+    image: 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800',
+    timeAgo: '1 day ago',
+    tag: 'Admission',
+    tagColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+  }
+];
+
+const DEFAULT_BRIEFINGS = [
+  {
+    id: 'brief-1',
+    title: 'TS EAMCET 2026: Web Options Entry Schedule Released',
+    description: 'Complete schedule and instructions for option entry process.',
+    url: 'https://eamcet.tsche.ac.in',
+    timeAgo: '3h ago',
+    dotColor: 'bg-emerald-500'
+  },
+  {
+    id: 'brief-2',
+    title: 'GATE 2027: Application Process to Begin in August',
+    description: 'Check eligibility, important dates and exam pattern.',
+    url: 'https://gate.iitk.ac.in',
+    timeAgo: '5h ago',
+    dotColor: 'bg-amber-500'
+  },
+  {
+    id: 'brief-3',
+    title: 'UPSC Civil Services 2026: Notification Expected Soon',
+    description: 'Stay updated with latest news and preparation resources.',
+    url: 'https://upsc.gov.in',
+    timeAgo: '1d ago',
+    dotColor: 'bg-rose-500'
+  },
+  {
+    id: 'brief-4',
+    title: 'Recent Scholarship Opportunities for Engineering Students',
+    description: 'Explore government and private scholarships with deadlines.',
+    url: 'https://scholarships.gov.in',
+    timeAgo: '2d ago',
+    dotColor: 'bg-purple-500'
+  }
+];
 
 const Notifications = () => {
   const { auth } = useAuth();
+  const navigate = useNavigate();
 
   const [notifications, setNotifications] = useState([]);
   const [news, setNews] = useState([]);
   const [loadingNotifs, setLoadingNotifs] = useState(true);
   const [loadingNews, setLoadingNews] = useState(true);
   const [error, setError] = useState(null);
-  const [activeCategory, setActiveCategory] = useState('All');
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [aiQuery, setAiQuery] = useState('');
+  const [savedArticles, setSavedArticles] = useState([]);
+  const [showNotifModal, setShowNotifModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,20 +152,20 @@ const Notifications = () => {
 
       try {
         const [notifData, newsData] = await Promise.all([
-        userDataAPI.getNotifications(String(auth.user.id)),
-        userDataAPI.getEducationNews()]
-        );
+          userDataAPI.getNotifications(String(auth.user.id)),
+          userDataAPI.getEducationNews()
+        ]);
 
         if (notifData.success) {
-          setNotifications(notifData.notifications);
+          setNotifications(notifData.notifications || []);
         }
 
-        if (newsData.success) {
+        if (newsData.success && Array.isArray(newsData.news) && newsData.news.length > 0) {
           setNews(newsData.news);
         }
       } catch (err) {
-        console.error('Failed to fetch notifications page data', err);
-        setError('Failed to load information. Please try again.');
+        console.error('Failed to fetch education page data', err);
+        setError('Failed to load real-time updates. Default academic resources are active.');
       } finally {
         setLoadingNotifs(false);
         setLoadingNews(false);
@@ -72,484 +175,755 @@ const Notifications = () => {
     fetchData();
   }, [auth]);
 
-  // Featured news for carousel (top 3)
-  const featuredNews = useMemo(() => news.slice(0, 3), [news]);
-
-  // Trending news (the rest)
-  const filteredNews = useMemo(() => {
-    let result = news;
-    if (activeCategory !== 'All') {
-      result = news.filter((item) =>
-      item.title.toLowerCase().includes(activeCategory.toLowerCase()) ||
-      item.description.toLowerCase().includes(activeCategory.toLowerCase())
-      );
+  // Slides for Hero carousel
+  const heroSlides = useMemo(() => {
+    if (news.length >= 3) {
+      return news.slice(0, 3).map((item, idx) => ({
+        id: item.id || `news-${idx}`,
+        badge: idx === 0 ? 'LATEST UPDATE' : idx === 1 ? 'EXAM ALERT' : 'TRENDING NOW',
+        title: item.title,
+        subtitle: item.description || DEFAULT_HERO_SLIDES[idx].subtitle,
+        url: item.url,
+        image: item.image || DEFAULT_HERO_SLIDES[idx].image
+      }));
     }
-    return result;
-  }, [news, activeCategory]);
+    return DEFAULT_HERO_SLIDES;
+  }, [news]);
 
-  const latestAlert = useMemo(() => {
-    return notifications.find((n) => !n.is_read) || notifications[0];
-  }, [notifications]);
+  // Auto-advance hero carousel
+  useEffect(() => {
+    if (heroSlides.length <= 1) return;
+    const timer = setInterval(() => {
+      setCarouselIndex((prev) => (prev + 1) % heroSlides.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
 
-  const nextCarousel = () => setCarouselIndex((prev) => (prev + 1) % featuredNews.length);
-  const prevCarousel = () => setCarouselIndex((prev) => (prev - 1 + featuredNews.length) % featuredNews.length);
+  // Latest 3 Articles for Row 3
+  const articlesList = useMemo(() => {
+    if (news.length >= 3) {
+      const tags = [
+        { tag: 'Results', color: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300' },
+        { tag: 'Exam', color: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300' },
+        { tag: 'Admission', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' }
+      ];
+      return news.slice(0, 3).map((item, idx) => ({
+        id: item.id || `art-${idx}`,
+        title: item.title,
+        description: item.description || DEFAULT_ARTICLES[idx].description,
+        url: item.url,
+        image: item.image || DEFAULT_ARTICLES[idx].image,
+        timeAgo: item.publishedAt ? new Date(item.publishedAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : `${idx * 3 + 2} hours ago`,
+        tag: tags[idx % tags.length].tag,
+        tagColor: tags[idx % tags.length].color
+      }));
+    }
+    return DEFAULT_ARTICLES;
+  }, [news]);
 
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center animate-in fade-in zoom-in duration-500">
-        <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
-          <AlertCircle className="text-red-500" size={32} />
-        </div>
-        <h2 className="text-xl font-black text-app-text-main uppercase tracking-tight">Something went wrong</h2>
-        <p className="text-app-text-sub mt-2 max-w-xs font-bold text-xs uppercase tracking-widest">{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="mt-6 px-6 py-3 bg-primary text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 transition-all">
-          
-          Try Again
-        </button>
-      </div>);
+  // Briefings List for Row 4
+  const briefingsList = useMemo(() => {
+    if (news.length > 3) {
+      const dots = ['bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'bg-purple-500'];
+      return news.slice(3, 7).map((item, idx) => ({
+        id: item.id || `brief-${idx}`,
+        title: item.title,
+        description: item.description || 'Check eligibility, guidelines, and direct portals.',
+        url: item.url,
+        timeAgo: item.publishedAt ? new Date(item.publishedAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : `${(idx + 1) * 3}h ago`,
+        dotColor: dots[idx % dots.length]
+      }));
+    }
+    return DEFAULT_BRIEFINGS;
+  }, [news]);
 
-  }
+  const activeHero = heroSlides[carouselIndex] || heroSlides[0];
+
+  const handleAiSubmit = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const query = aiQuery.trim();
+    if (!query) {
+      navigate('/ai-tutor');
+      return;
+    }
+    navigate('/ai-tutor', { state: { initialPrompt: query } });
+  };
+
+  const handleAiChipClick = (chip) => {
+    navigate('/ai-tutor', { state: { initialPrompt: `Tell me about ${chip}` } });
+  };
+
+  const handleQuickAccess = (id) => {
+    switch (id) {
+      case 'results':
+        navigate('/exams/results');
+        break;
+      case 'syllabus':
+        navigate('/lessons/uploaded');
+        break;
+      case 'admissions':
+        navigate('/lessons');
+        break;
+      case 'scholarships':
+        navigate('/ai-tutor', { state: { initialPrompt: 'Show me available educational scholarships and eligibility criteria.' } });
+        break;
+      case 'notifications':
+        setShowNotifModal(true);
+        break;
+      case 'updates':
+      default:
+        window.scrollTo({ top: 350, behavior: 'smooth' });
+        break;
+    }
+  };
+
+  const toggleSaveArticle = (articleId) => {
+    setSavedArticles((prev) =>
+      prev.includes(articleId) ? prev.filter((id) => id !== articleId) : [...prev, articleId]
+    );
+  };
+
+  const quickAccessCards = [
+    {
+      id: 'updates',
+      label: 'Latest Updates',
+      sub: 'Government & Private',
+      icon: FileText,
+      iconColor: 'text-rose-600 dark:text-rose-400',
+      bgClass: 'bg-rose-50/80 dark:bg-rose-950/25 border-rose-200/70 dark:border-rose-900/40 hover:border-rose-300 dark:hover:border-rose-700'
+    },
+    {
+      id: 'results',
+      label: 'Results',
+      sub: 'Check Exam Results',
+      icon: CheckSquare,
+      iconColor: 'text-sky-600 dark:text-sky-400',
+      bgClass: 'bg-sky-50/80 dark:bg-sky-950/25 border-sky-200/70 dark:border-sky-900/40 hover:border-sky-300 dark:hover:border-sky-700'
+    },
+    {
+      id: 'admissions',
+      label: 'Admissions',
+      sub: 'Colleges & Courses',
+      icon: GraduationCap,
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      bgClass: 'bg-emerald-50/80 dark:bg-emerald-950/25 border-emerald-200/70 dark:border-emerald-900/40 hover:border-emerald-300 dark:hover:border-emerald-700'
+    },
+    {
+      id: 'scholarships',
+      label: 'Scholarships',
+      sub: 'Find Opportunities',
+      icon: Trophy,
+      iconColor: 'text-amber-600 dark:text-amber-400',
+      bgClass: 'bg-amber-50/80 dark:bg-amber-950/25 border-amber-200/70 dark:border-amber-900/40 hover:border-amber-300 dark:hover:border-amber-700'
+    },
+    {
+      id: 'syllabus',
+      label: 'Syllabus',
+      sub: 'Download PDFs',
+      icon: BookOpen,
+      iconColor: 'text-purple-600 dark:text-purple-400',
+      bgClass: 'bg-purple-50/80 dark:bg-purple-950/25 border-purple-200/70 dark:border-purple-900/40 hover:border-purple-300 dark:hover:border-purple-700'
+    },
+    {
+      id: 'notifications',
+      label: 'Notifications',
+      sub: 'Important Alerts',
+      icon: Bell,
+      iconColor: 'text-blue-600 dark:text-blue-400',
+      bgClass: 'bg-blue-50/80 dark:bg-blue-950/25 border-blue-200/70 dark:border-blue-900/40 hover:border-blue-300 dark:hover:border-blue-700'
+    }
+  ];
+
+  const personalItems = [
+    {
+      id: 'my-exams',
+      title: 'My Exams',
+      sub: 'Manage your exam dates',
+      icon: FileText,
+      iconBg: 'bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400',
+      onClick: () => navigate('/exams')
+    },
+    {
+      id: 'saved-articles',
+      title: 'Saved Articles',
+      sub: `${savedArticles.length > 0 ? savedArticles.length : 'Your'} bookmarked content`,
+      icon: Bookmark,
+      iconBg: 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400',
+      onClick: () => setShowNotifModal(true)
+    },
+    {
+      id: 'my-certificates',
+      title: 'My Certificates',
+      sub: 'View and download',
+      icon: Trophy,
+      iconBg: 'bg-sky-100 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400',
+      onClick: () => navigate('/certificates')
+    },
+    {
+      id: 'study-progress',
+      title: 'Study Progress',
+      sub: 'Track your learning journey',
+      icon: TrendingUp,
+      iconBg: 'bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400',
+      onClick: () => navigate('/dashboard')
+    },
+    {
+      id: 'notifications-item',
+      title: 'Notifications',
+      sub: `${notifications.filter((n) => !n.is_read).length || 'Latest'} updates and alerts`,
+      icon: Bell,
+      iconBg: 'bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400',
+      onClick: () => setShowNotifModal(true)
+    }
+  ];
+
+  const toolsCards = [
+    {
+      id: 'previous-papers',
+      label: 'Previous Papers',
+      icon: ListTodo,
+      iconColor: 'text-rose-600 dark:text-rose-400',
+      bgClass: 'bg-rose-50/80 dark:bg-rose-950/25 border-rose-200/70 dark:border-rose-900/40 hover:border-rose-300 dark:hover:border-rose-700',
+      route: '/exams'
+    },
+    {
+      id: 'question-banks',
+      label: 'Question Banks',
+      icon: Database,
+      iconColor: 'text-sky-600 dark:text-sky-400',
+      bgClass: 'bg-sky-50/80 dark:bg-sky-950/25 border-sky-200/70 dark:border-sky-900/40 hover:border-sky-300 dark:hover:border-sky-700',
+      route: '/lessons/quiz'
+    },
+    {
+      id: 'study-material',
+      label: 'Study Material',
+      icon: BookOpen,
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      bgClass: 'bg-emerald-50/80 dark:bg-emerald-950/25 border-emerald-200/70 dark:border-emerald-900/40 hover:border-emerald-300 dark:hover:border-emerald-700',
+      route: '/lessons'
+    },
+    {
+      id: 'exam-calendar',
+      label: 'Exam Calendar',
+      icon: Calendar,
+      iconColor: 'text-purple-600 dark:text-purple-400',
+      bgClass: 'bg-purple-50/80 dark:bg-purple-950/25 border-purple-200/70 dark:border-purple-900/40 hover:border-purple-300 dark:hover:border-purple-700',
+      route: '/exams'
+    },
+    {
+      id: 'college-predictor',
+      label: 'College Predictor',
+      icon: BarChart3,
+      iconColor: 'text-amber-600 dark:text-amber-400',
+      bgClass: 'bg-amber-50/80 dark:bg-amber-950/25 border-amber-200/70 dark:border-amber-900/40 hover:border-amber-300 dark:hover:border-amber-700',
+      route: '/insights'
+    },
+    {
+      id: 'career-guidance',
+      label: 'Career Guidance',
+      icon: Compass,
+      iconColor: 'text-orange-600 dark:text-orange-400',
+      bgClass: 'bg-orange-50/80 dark:bg-orange-950/25 border-orange-200/70 dark:border-orange-900/40 hover:border-orange-300 dark:hover:border-orange-700',
+      route: '/ai-tutor',
+      prompt: 'Provide career guidance and roadmap for my studies.'
+    }
+  ];
 
   return (
-    <div className="min-h-screen bg-app-bg transition-colors duration-300">
-      {/* Dynamic News Ticker */}
-      <div className="w-full bg-app-bg-alt border-b border-app-border/50 py-2 overflow-hidden whitespace-nowrap">
-        <div className="max-w-7xl mx-auto px-4 flex items-center gap-8 animate-in slide-in-from-right-full duration-[40s] repeat-infinite">
-          {!loadingNews && news.length > 0 ?
-          news.slice(0, 10).map((n, i) =>
-          <div key={i} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                {n.title.toUpperCase()}
+    <div className="w-full max-w-7xl mx-auto space-y-6 pb-12 transition-colors duration-300">
+      {/* Page Header */}
+      <header className="space-y-1">
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider hover:underline transition-all cursor-pointer"
+        >
+          <ChevronLeft size={14} />
+          <span>EDUCATION HUB</span>
+        </button>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-app-text-main tracking-tight">
+          Educ<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400">ation</span>
+        </h1>
+        <p className="text-xs md:text-sm text-app-text-muted">
+          All your academic resources, updates and tools in one place
+        </p>
+      </header>
+
+      {/* Row 1: Hero Carousel Banner (8 cols) + AI Assistant Card (4 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        {/* Left: Hero Carousel Banner */}
+        <div className="lg:col-span-8 flex flex-col justify-between">
+          <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#0B1021] border border-slate-800 p-6 md:p-8 flex flex-col justify-between min-h-[240px] shadow-sm group">
+            {/* Background Graphic: Space/Rocket visual on right with gradient fade */}
+            <div className="absolute right-0 top-0 bottom-0 w-3/5 md:w-1/2 overflow-hidden pointer-events-none select-none">
+              <img
+                src={activeHero.image}
+                alt={activeHero.title}
+                className="w-full h-full object-cover object-center opacity-85 transition-opacity duration-700"
+                onError={(e) => {
+                  e.target.src = 'https://images.unsplash.com/photo-1517976487507-5b3df1182e32?q=80&w=1200';
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0B1021] via-[#0B1021]/80 to-transparent" />
+            </div>
+
+            {/* Banner Content (Locked dark theme colors to guarantee contrast on cosmic card) */}
+            <div className="relative z-10 max-w-lg space-y-2.5">
+              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-pink-600 text-white shadow-xs">
+                {activeHero.badge}
+              </span>
+              <h2 className="text-lg md:text-2xl font-extrabold text-white leading-snug line-clamp-2">
+                {activeHero.title}
+              </h2>
+              <p className="text-xs md:text-sm text-slate-200 line-clamp-2 leading-relaxed">
+                {activeHero.subtitle}
+              </p>
+            </div>
+
+            {/* Banner Actions & Pagination Dots */}
+            <div className="relative z-10 flex items-center justify-between pt-5 mt-auto">
+              <a
+                href={activeHero.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-xs px-4 py-2 rounded-full inline-flex items-center gap-1.5 shadow-md hover:scale-105 transition-all cursor-pointer"
+                style={{ backgroundColor: '#ffffff', color: '#0f172a' }}
+              >
+                <span>Read Full Article</span>
+                <ChevronRight size={13} />
+              </a>
+
+              {/* Dots */}
+              <div className="flex items-center gap-1.5">
+                {heroSlides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCarouselIndex(i)}
+                    aria-label={`Slide ${i + 1}`}
+                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                      carouselIndex === i ? 'w-6 bg-white' : 'w-2 bg-white/40 hover:bg-white/70'
+                    }`}
+                  />
+                ))}
               </div>
-          ) :
-
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-app-text-muted">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              LIVE UPDATES LOADING
             </div>
-          }
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        {/* Header Section */}
-        <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-primary font-black text-[10px] tracking-[0.3em] uppercase mb-2">
-              <span className="w-8 h-px bg-primary" />
-              Intelligence Hub
-            </div>
-            <h1 className="text-4xl md:text-6xl font-black text-app-text-main dark:text-white tracking-tight uppercase leading-none">
-              The <span className="text-primary italic">Education</span> Gazette
-            </h1>
           </div>
-          
-          <div className="flex items-center gap-4">
-             <div className="text-right hidden sm:block">
-                <div className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">
-                  {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+        </div>
+
+        {/* Right: AI Assistant Card */}
+        <div className="lg:col-span-4 flex flex-col justify-between">
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-5 flex flex-col justify-between shadow-sm h-full">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={18} className="text-purple-600 dark:text-purple-400" />
+                  <h3 className="font-bold text-sm md:text-base text-app-text-main">AI Assistant</h3>
                 </div>
-                <div className="text-xs font-bold text-app-text-main uppercase tracking-tight">Student Edition</div>
-             </div>
-             <div className="w-px h-10 bg-app-border" />
-             <div className="flex items-center gap-2 px-4 py-2 bg-app-bg-alt rounded-2xl border border-app-border">
-                <CloudSun size={18} className="text-amber-500" />
-                <span className="text-xs font-black text-app-text-main">24°C</span>
-             </div>
-          </div>
-        </header>
-
-        {/* Quick Alert Panel */}
-        {latestAlert &&
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8 p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-between gap-4 group cursor-pointer hover:bg-primary/15 transition-all">
-          
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shrink-0">
-                <Bell size={16} className="text-white" />
-              </div>
-              <div className="min-w-0">
-                <span className="block text-[10px] font-black text-primary uppercase tracking-widest mb-0.5">1 New Alert</span>
-                <p className="text-xs font-bold text-app-text-main truncate">{latestAlert.title}</p>
-              </div>
-            </div>
-            <button className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-1 group-hover:gap-2 transition-all">
-              View <ChevronRight size={12} />
-            </button>
-          </motion.div>
-        }
-
-        {/* Section 1: Featured Carousel */}
-        <section className="mb-12">
-          {!loadingNews && featuredNews.length > 0 ?
-          <div className="relative h-100 md:h-125 w-full rounded-[40px] overflow-hidden group shadow-2xl shadow-primary/10">
-              <AnimatePresence mode="wait">
-                <motion.div
-                key={carouselIndex}
-                initial={{ opacity: 0, scale: 1.05 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.7 }}
-                className="absolute inset-0">
-                
-                  <img
-                  src={featuredNews[carouselIndex].image || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070'}
-                  alt={featuredNews[carouselIndex].title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070';
-                  }} />
-                
-                   <div className="absolute inset-0 bg-black/40 pointer-events-none" />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-transparent pointer-events-none" />
-                  
-                  <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full max-w-4xl space-y-4">
-                    <div className="flex items-center gap-3">
-                      <span className="px-3 py-1 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-lg">
-                        Featured
-                      </span>
-                      <span className="flex items-center gap-1 text-[10px] font-black text-white uppercase tracking-widest">
-                        <TrendingUp size={12} className="text-secondary" />
-                        Trending Now
-                      </span>
-                    </div>
-                    <h2 
-                      className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]"
-                      style={{ textShadow: '0 2px 10px rgba(0,0,0,0.95), 0 1px 4px rgba(0,0,0,0.9)' }}
-                    >
-                      {featuredNews[carouselIndex].title}
-                    </h2>
-                    <div className="flex items-center gap-4 text-xs font-bold text-white/70 uppercase tracking-widest">
-                      <span className="flex items-center gap-1.5 font-black text-amber-400 uppercase">
-                        <Newspaper size={14} />
-                        {featuredNews[carouselIndex].source}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <Clock size={14} />
-                        {new Date(featuredNews[carouselIndex].publishedAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="pt-4 flex items-center gap-4">
-                       <a
-                      href={featuredNews[carouselIndex].url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-8 py-4 font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-xl hover:scale-105 transition-all inline-flex items-center justify-center cursor-pointer"
-                      style={{ backgroundColor: '#ffffff', color: '#0f172a' }}>
-                      
-                         Read Full Story
-                       </a>
-                       <button className="p-4 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-2xl hover:bg-white/20 transition-all">
-                          <Share2 size={20} />
-                       </button>
-                    </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Navigation Arrows */}
-              <div className="absolute top-1/2 -translate-y-1/2 w-full px-6 flex justify-between pointer-events-none">
                 <button
-                onClick={prevCarousel}
-                className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white pointer-events-auto hover:bg-primary transition-all group/btn">
-                
-                  <ChevronLeft className="group-hover/btn:-translate-x-1 transition-transform" />
-                </button>
-                <button
-                onClick={nextCarousel}
-                className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white pointer-events-auto hover:bg-primary transition-all group/btn">
-                
-                  <ChevronRightIcon className="group-hover/btn:translate-x-1 transition-transform" />
+                  onClick={() => navigate('/ai-tutor')}
+                  className="text-xs font-semibold px-3 py-1 rounded-full border border-app-border text-app-text-sub hover:text-primary hover:border-primary transition-all cursor-pointer"
+                >
+                  Try Now
                 </button>
               </div>
+              <p className="text-xs text-app-text-muted leading-relaxed mb-4">
+                Ask any educational query, get instant answers, study materials, and more.
+              </p>
 
-              {/* Indicators */}
-              <div className="absolute top-8 right-8 flex gap-2">
-                 {featuredNews.map((_, i) =>
-              <button
-                key={i}
-                onClick={() => setCarouselIndex(i)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${carouselIndex === i ? 'w-8 bg-primary' : 'bg-white/30'}`} />
-
-              )}
-              </div>
-            </div> :
-
-          <div className="h-100 w-full rounded-[40px] bg-app-bg-alt animate-pulse flex items-center justify-center">
-               <Newspaper className="text-app-border animate-bounce" size={48} />
-            </div>
-          }
-        </section>
-
-        {/* Section: Category Filters */}
-        <section className="mb-10">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-black text-app-text-main dark:text-white uppercase tracking-tight flex items-center gap-3">
-               <Filter size={20} className="text-primary" />
-               Browse News
-            </h3>
-            <div className="flex items-center gap-1 text-[10px] font-black text-app-text-muted uppercase tracking-widest">
-               <LayoutGrid size={14} className="text-primary" />
-               Grid View
-            </div>
-          </div>
-          <div className="flex items-center gap-3 overflow-x-auto pb-4 scrollbar-hide">
-            {CATEGORIES.map((cat) =>
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`
-                  px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border
-                  ${activeCategory === cat ?
-              'bg-primary border-primary text-white shadow-lg shadow-primary/20' :
-              'bg-app-bg-alt border-app-border text-app-text-sub hover:border-primary/50'}
-                `}>
-              
-                {cat}
-              </button>
-            )}
-          </div>
-        </section>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
-          {/* Main Content Column */}
-          <div className="lg:col-span-8 space-y-12">
-            
-            {/* Section 2: Trending News Grid */}
-            <section className="space-y-6">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 {loadingNews ?
-                Array.from({ length: 4 }).map((_, i) =>
-                <div key={i} className="h-80 bg-app-bg-alt rounded-3xl animate-pulse" />
-                ) :
-                filteredNews.slice(0, 4).map((item, i) =>
-                <NewsItemCard key={item.id || i} item={item} />
-                )}
-               </div>
-            </section>
-
-            {/* Section 4: Top Stories List (Scholarships, etc) */}
-            <section className="space-y-6">
-               <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-black text-app-text-main uppercase tracking-tight flex items-center gap-3">
-                     <List size={22} className="text-secondary" />
-                     Briefings & Updates
-                  </h3>
-                  <button className="text-[10px] font-black text-secondary uppercase tracking-[0.2em]">View All</button>
-               </div>
-               <div className="space-y-4">
-                  {!loadingNews && filteredNews.length > 4 ?
-                filteredNews.slice(4, 9).map((story, idx) =>
-                <motion.div
-                  key={idx}
-                  whileHover={{ x: 10 }}
-                  onClick={() => window.open(story.url, '_blank')}
-                  className="group p-5 bg-app-bg-alt/50 border border-app-border rounded-2xl flex items-center justify-between gap-4 cursor-pointer hover:bg-app-bg-alt transition-all">
-                  
-                        <div className="flex items-center gap-4">
-                          <div className={`w-1.5 h-10 rounded-full ${['bg-emerald-500', 'bg-blue-500', 'bg-amber-500', 'bg-purple-500'][idx % 4]}`} />
-                          <div>
-                            <span className={`text-[10px] font-black uppercase tracking-widest ${['text-emerald-500', 'text-blue-500', 'text-amber-500', 'text-purple-500'][idx % 4]}`}>{story.source}</span>
-                            <h4 className="text-sm font-black text-app-text-main uppercase tracking-tight group-hover:text-primary transition-colors">{story.title}</h4>
-                          </div>
-                        </div>
-                        <span className="text-[10px] font-bold text-app-text-muted uppercase tracking-widest">
-                           {new Date(story.publishedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                        </span>
-                      </motion.div>
-                ) :
-
-                <div className="py-6 text-center text-[10px] font-black uppercase tracking-widest opacity-40">No additional updates</div>
-                }
-               </div>
-            </section>
-
-            {/* Load More Button */}
-            <div className="pt-8 text-center">
-               <button className="px-12 py-5 bg-app-bg-alt border border-app-border rounded-[28px] text-xs font-black text-app-text-main uppercase tracking-[0.3em] hover:bg-primary hover:text-white hover:border-primary transition-all shadow-xl shadow-black/5 flex items-center gap-3 mx-auto">
-                  <Zap size={16} />
-                  See More Updates
-               </button>
+              {/* Prompt Input */}
+              <form onSubmit={handleAiSubmit} className="relative mb-3">
+                <input
+                  type="text"
+                  value={aiQuery}
+                  onChange={(e) => setAiQuery(e.target.value)}
+                  placeholder="Ask about exams, results, syllabus..."
+                  className="w-full bg-app-bg border border-app-border rounded-xl pl-3.5 pr-11 py-2.5 text-xs text-app-text-main placeholder:text-app-text-muted focus:outline-none focus:border-primary transition-all"
+                />
+                <button
+                  type="submit"
+                  aria-label="Send query"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-sm"
+                >
+                  <Send size={12} className="translate-x-[-1px] translate-y-[-1px] rotate-45" />
+                </button>
+              </form>
             </div>
 
+            {/* Suggestion Chips */}
+            <div className="flex items-center gap-1.5 flex-wrap pt-1">
+              {['Exam Info', 'Syllabus', 'Scholarships', 'Results', 'Study Tips'].map((chip) => (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => handleAiChipClick(chip)}
+                  className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-app-bg border border-app-border text-app-text-sub hover:text-primary hover:border-primary transition-all cursor-pointer"
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
           </div>
+        </div>
+      </div>
 
-          {/* Right Sidebar Column */}
-          <div className="lg:col-span-4 space-y-10 lg:sticky lg:top-8">
-            
-            {/* Sidebar Widget 1: Notifications */}
-            <section className="bg-app-bg-alt rounded-[40px] border border-app-border p-8 shadow-sm">
-               <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-xl font-black text-app-text-main uppercase tracking-tight flex items-center gap-3">
-                    <Bell className="text-primary" size={24} />
-                    Personal
-                  </h2>
-                  <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-lg">
-                    {notifications.filter((n) => !n.is_read).length} New
-                  </span>
-               </div>
-               
-               <div className="space-y-6 max-h-125 overflow-y-auto pr-2 custom-scrollbar">
-                  {loadingNotifs ?
-                Array.from({ length: 3 }).map((_, i) =>
-                <div key={i} className="flex gap-4 animate-pulse">
-                          <div className="w-10 h-10 bg-app-border rounded-xl" />
-                          <div className="flex-1 space-y-2">
-                             <div className="h-3 bg-app-border rounded-full w-2/3" />
-                             <div className="h-2 bg-app-border rounded-full w-full" />
-                          </div>
-                       </div>
-                ) :
-                notifications.length === 0 ?
-                <div className="py-12 text-center opacity-40">
-                       <Zap size={40} className="mx-auto mb-4" />
-                       <p className="text-[10px] font-black uppercase tracking-widest">No Alerts</p>
-                    </div> :
+      {/* Row 2: Quick Access (6 Pastel Cards) */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Zap size={16} className="text-amber-500 fill-amber-500" />
+            <h3 className="text-sm font-bold text-app-text-main">Quick Access</h3>
+          </div>
+          <button
+            onClick={() => handleQuickAccess('updates')}
+            className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+          >
+            View All <ChevronRight size={12} />
+          </button>
+        </div>
 
-                notifications.slice(0, 5).map((notif) =>
-                <div key={notif.id} className="relative group flex gap-4 cursor-pointer">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm border ${notif.is_read ? 'bg-app-bg border-app-border' : 'bg-primary/10 border-primary/20'}`}>
-                             {getNotifIcon(notif.type, notif.priority)}
-                          </div>
-                          <div className="min-w-0">
-                             <div className="flex items-center justify-between gap-2">
-                                <h4 className={`text-xs font-black uppercase tracking-tight truncate ${!notif.is_read ? 'text-app-text-main' : 'text-app-text-sub'}`}>
-                                   {notif.title}
-                                </h4>
-                                <span className="text-[8px] font-bold text-app-text-muted uppercase tracking-widest whitespace-nowrap">
-                                   {new Date(notif.timestamp || notif.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                                </span>
-                             </div>
-                             <p className="text-[10px] font-bold text-app-text-sub uppercase tracking-widest line-clamp-2 mt-1 opacity-60">
-                                {notif.message}
-                             </p>
-                          </div>
-                       </div>
-                )
-                }
-               </div>
-               
-               <button className="w-full mt-8 py-4 border-2 border-dashed border-app-border rounded-2xl text-[9px] font-black text-app-text-muted uppercase tracking-[0.2em] hover:border-primary hover:text-primary transition-all">
-                  Open Inbox
-               </button>
-            </section>
-
-            {/* Sidebar Widget 2: Local Academic Updates */}
-            <section className="bg-secondary/5 rounded-[40px] border border-secondary/10 p-8">
-               <div className="flex items-center gap-3 mb-6">
-                  <MapPin className="text-secondary" size={24} />
-                  <h2 className="text-xl font-black text-app-text-main uppercase tracking-tight">Local Alerts</h2>
-               </div>
-               <div className="space-y-5">
-                  {[
-                { title: "District Science Fair 2026 starts tomorrow", time: "Local Event" },
-                { title: "Monsoon schedule for schools in your area", time: "Admin Update" }].
-                map((local, i) =>
-                <div key={i} className="flex gap-4 items-start group cursor-pointer">
-                       <div className="w-2 h-2 rounded-full bg-secondary mt-1.5 group-hover:scale-150 transition-transform" />
-                       <div>
-                          <p className="text-xs font-black text-app-text-main uppercase tracking-tight leading-tight group-hover:text-secondary transition-colors">{local.title}</p>
-                          <span className="text-[9px] font-bold text-app-text-muted uppercase tracking-widest">{local.time}</span>
-                       </div>
-                    </div>
-                )}
-               </div>
-            </section>
-
-            {/* Sidebar Widget 3: AI Learning Insight */}
-            <div 
-              className="relative p-8 rounded-[40px] text-white overflow-hidden shadow-2xl border border-app-border/30"
-              style={{ backgroundColor: '#0f172a', color: '#ffffff' }}
-            >
-               <div className="absolute top-0 right-0 p-6 opacity-10">
-                  <Zap size={100} fill="currentColor" />
-               </div>
-               <div className="relative z-10 space-y-4">
-                  <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20">
-                     <BookOpen className="text-primary" size={24} />
-                  </div>
-                  <h4 className="text-xl font-black uppercase tracking-tight italic">Learn Smarter</h4>
-                  <p className="text-xs font-bold text-white/70 uppercase tracking-widest leading-relaxed">
-                     Students who check news daily are 40% more likely to discover exclusive scholarships.
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {quickAccessCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={card.id}
+                onClick={() => handleQuickAccess(card.id)}
+                className={`p-3.5 rounded-2xl border transition-all cursor-pointer group hover:-translate-y-0.5 hover:shadow-xs flex flex-col justify-between ${card.bgClass}`}
+              >
+                <div className="w-8 h-8 rounded-xl bg-white dark:bg-black/20 flex items-center justify-center mb-3 shadow-xs">
+                  <Icon size={16} className={card.iconColor} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-app-text-main group-hover:text-primary transition-colors leading-tight">
+                    {card.label}
+                  </h4>
+                  <p className="text-[10px] text-app-text-muted mt-0.5 truncate">
+                    {card.sub}
                   </p>
-                  <button className="w-full py-4 bg-primary text-white font-black rounded-2xl text-[10px] uppercase tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all">
-                     View Recommended
-                  </button>
-               </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Row 3: Latest Articles (8 cols) + Personal (4 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        {/* Latest Articles (3 Cards) */}
+        <div className="lg:col-span-8 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <BookOpen size={16} className="text-blue-600 dark:text-blue-400" />
+                <h3 className="text-sm font-bold text-app-text-main">Latest Articles</h3>
+              </div>
+              <button
+                onClick={() => handleQuickAccess('updates')}
+                className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+              >
+                View All <ChevronRight size={12} />
+              </button>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {articlesList.map((item) => (
+                <article
+                  key={item.id}
+                  className="bg-app-bg-alt border border-app-border rounded-2xl overflow-hidden flex flex-col hover:border-primary/40 hover:shadow-sm transition-all group"
+                >
+                  <div className="relative aspect-video w-full overflow-hidden bg-app-bg">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?q=80&w=800';
+                      }}
+                    />
+                  </div>
+                  <div className="p-3.5 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${item.tagColor}`}>
+                          {item.tag}
+                        </span>
+                        <span className="text-[10px] text-app-text-muted font-medium">
+                          {item.timeAgo}
+                        </span>
+                      </div>
+                      <h4 className="font-bold text-xs text-app-text-main line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                        {item.title}
+                      </h4>
+                      <p className="text-[11px] text-app-text-muted line-clamp-2 mt-1 leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2 border-t border-app-border/40 flex items-center justify-between">
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        Read More <ChevronRight size={12} />
+                      </a>
+                      <button
+                        onClick={() => toggleSaveArticle(item.id)}
+                        aria-label="Save article"
+                        className={`p-1 rounded-md transition-colors ${
+                          savedArticles.includes(item.id)
+                            ? 'text-emerald-600 fill-emerald-600'
+                            : 'text-app-text-muted hover:text-app-text-main'
+                        }`}
+                      >
+                        <Bookmark size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
+        </div>
 
+        {/* Personal Card */}
+        <div className="lg:col-span-4 flex flex-col justify-between">
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-4 md:p-5 shadow-sm h-full flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-2 border-b border-app-border/50">
+                <div className="flex items-center gap-2">
+                  <User size={16} className="text-blue-600 dark:text-blue-400" />
+                  <h3 className="font-bold text-sm md:text-base text-app-text-main">Personal</h3>
+                </div>
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="text-xs font-semibold text-primary hover:underline cursor-pointer"
+                >
+                  View Profile
+                </button>
+              </div>
+
+              <div className="space-y-1">
+                {personalItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={item.onClick}
+                      className="flex items-center justify-between p-2 rounded-xl hover:bg-app-bg transition-all cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.iconBg}`}>
+                          <Icon size={15} />
+                        </div>
+                        <div className="min-w-0">
+                          <h5 className="text-xs font-bold text-app-text-main group-hover:text-primary transition-colors leading-tight truncate">
+                            {item.title}
+                          </h5>
+                          <p className="text-[10px] text-app-text-muted truncate mt-0.5">
+                            {item.sub}
+                          </p>
+                        </div>
+                      </div>
+                      <ChevronRight size={14} className="text-app-text-muted group-hover:text-app-text-main group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>);
 
-};
+      {/* Row 4: Briefings & Updates (8 cols) + Tools & Resources (4 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        {/* Briefings & Updates */}
+        <div className="lg:col-span-8 flex flex-col justify-between">
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-4 md:p-5 shadow-sm h-full flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-2 border-b border-app-border/50">
+                <div className="flex items-center gap-2">
+                  <List size={16} className="text-blue-600 dark:text-blue-400" />
+                  <h3 className="text-sm font-bold text-app-text-main">Briefings & Updates</h3>
+                </div>
+                <button
+                  onClick={() => handleQuickAccess('updates')}
+                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                >
+                  View All <ChevronRight size={12} />
+                </button>
+              </div>
 
-const NewsItemCard = ({ item }) =>
-<motion.div
-  whileHover={{ y: -5 }}
-  className="group bg-app-bg-alt border border-app-border rounded-4xl overflow-hidden flex flex-col shadow-sm hover:shadow-xl transition-all duration-500">
-  
-    <div className="relative h-48 overflow-hidden">
-      <img
-      src={item.image || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070'}
-      alt={item.title}
-      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-      onError={(e) => {
-        e.target.src = 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070';
-      }} />
-    
-      <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-         <div className="flex gap-4">
-            <button className="p-2 bg-white/20 backdrop-blur-md text-white rounded-lg hover:bg-white/40"><Heart size={16} /></button>
-            <button className="p-2 bg-white/20 backdrop-blur-md text-white rounded-lg hover:bg-white/40"><BookMarked size={16} /></button>
-         </div>
-      </div>
-      <div className="absolute top-4 left-4 flex gap-2">
-         <div className="px-3 py-1 bg-black/40 backdrop-blur-md border border-white/20 text-white text-[8px] font-black uppercase tracking-widest rounded-lg">
-           {item.source}
-         </div>
-      </div>
-    </div>
-    <div className="p-6 flex-1 flex flex-col">
-      <h3 className="text-sm font-black text-app-text-main uppercase tracking-tight group-hover:text-primary transition-colors line-clamp-2 leading-relaxed mb-3">
-        {item.title}
-      </h3>
-      <div className="mt-auto flex items-center justify-between border-t border-app-border pt-4">
-        <div className="flex items-center gap-2 text-[9px] font-bold text-app-text-muted uppercase tracking-widest">
-           <Clock size={12} />
-           {new Date(item.publishedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+              <div className="space-y-3">
+                {briefingsList.map((briefing) => (
+                  <div
+                    key={briefing.id}
+                    onClick={() => briefing.url && window.open(briefing.url, '_blank')}
+                    className="flex items-start justify-between gap-3 p-1 rounded-xl hover:bg-app-bg transition-all cursor-pointer group border-b border-app-border/40 last:border-b-0 pb-3 last:pb-1"
+                  >
+                    <div className="flex items-start gap-3 min-w-0">
+                      <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${briefing.dotColor}`} />
+                      <div className="min-w-0">
+                        <h4 className="text-xs font-bold text-app-text-main group-hover:text-primary transition-colors leading-snug">
+                          {briefing.title}
+                        </h4>
+                        <p className="text-[11px] text-app-text-muted mt-0.5 line-clamp-1">
+                          {briefing.description}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-medium text-app-text-muted group-hover:text-primary transition-colors whitespace-nowrap flex items-center gap-0.5 shrink-0 pt-0.5">
+                      {briefing.timeAgo} <ChevronRight size={11} />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-        <a
-        href={item.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-[9px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-1 group-hover:gap-2 transition-all">
-        
-          View Story <ChevronRight size={12} />
-        </a>
+
+        {/* Tools & Resources (6 Grid Buttons) */}
+        <div className="lg:col-span-4 flex flex-col justify-between">
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-4 md:p-5 shadow-sm h-full flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-2 border-b border-app-border/50">
+                <div className="flex items-center gap-2">
+                  <LayoutGrid size={16} className="text-purple-600 dark:text-purple-400" />
+                  <h3 className="text-sm font-bold text-app-text-main">Tools & Resources</h3>
+                </div>
+                <button
+                  onClick={() => navigate('/lessons')}
+                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                >
+                  View All <ChevronRight size={12} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2.5">
+                {toolsCards.map((tool) => {
+                  const Icon = tool.icon;
+                  return (
+                    <div
+                      key={tool.id}
+                      onClick={() => {
+                        if (tool.prompt) {
+                          navigate(tool.route, { state: { initialPrompt: tool.prompt } });
+                        } else {
+                          navigate(tool.route);
+                        }
+                      }}
+                      className={`p-3 rounded-xl border transition-all cursor-pointer group hover:-translate-y-0.5 hover:shadow-xs flex flex-col items-center justify-center text-center ${tool.bgClass}`}
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-white dark:bg-black/20 flex items-center justify-center mb-1.5 shadow-xs">
+                        <Icon size={14} className={tool.iconColor} />
+                      </div>
+                      <span className="text-xs font-bold text-app-text-main group-hover:text-primary transition-colors leading-tight">
+                        {tool.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Notifications Modal */}
+      <AnimatePresence>
+        {showNotifModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="w-full max-w-lg bg-app-bg border border-app-border rounded-3xl p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-app-border">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    <Bell size={18} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-app-text-main">Academic Notifications</h3>
+                    <p className="text-[11px] text-app-text-muted">
+                      {notifications.filter((n) => !n.is_read).length} unread updates
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowNotifModal(false)}
+                  className="p-1.5 rounded-xl hover:bg-app-bg-alt text-app-text-muted hover:text-app-text-main transition-colors cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar">
+                {loadingNotifs ? (
+                  <div className="py-8 text-center text-xs text-app-text-muted flex items-center justify-center gap-2">
+                    <RefreshCw size={14} className="animate-spin" />
+                    <span>Loading your notifications...</span>
+                  </div>
+                ) : notifications.length === 0 ? (
+                  <div className="py-12 text-center text-app-text-muted">
+                    <Bell size={32} className="mx-auto mb-2 opacity-30" />
+                    <p className="text-xs font-semibold">No notifications at the moment</p>
+                    <p className="text-[10px] mt-0.5 opacity-70">You're completely caught up with all academic alerts!</p>
+                  </div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      className={`p-3 rounded-2xl border transition-all flex items-start gap-3 ${
+                        notif.is_read
+                          ? 'bg-app-bg-alt/50 border-app-border/60'
+                          : 'bg-primary/5 border-primary/20'
+                      }`}
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-app-bg flex items-center justify-center shrink-0 mt-0.5 border border-app-border">
+                        {notif.priority === 'high' ? (
+                          <AlertCircle size={14} className="text-red-500" />
+                        ) : notif.type === 'assignment' ? (
+                          <BookOpen size={14} className="text-blue-500" />
+                        ) : (
+                          <Bell size={14} className="text-primary" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <h4 className="text-xs font-bold text-app-text-main truncate">
+                            {notif.title}
+                          </h4>
+                          <span className="text-[10px] text-app-text-muted shrink-0">
+                            {new Date(notif.timestamp || notif.created_at || Date.now()).toLocaleDateString([], {
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-app-text-sub mt-0.5 leading-relaxed">
+                          {notif.message}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="pt-2 border-t border-app-border flex justify-end">
+                <button
+                  onClick={() => setShowNotifModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-white hover:opacity-90 transition-all cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
-  </motion.div>;
-
-
-const getNotifIcon = (type, priority) => {
-  if (priority === 'high') return <AlertCircle className="text-red-500" size={18} />;
-
-  switch (type) {
-    case 'assignment':return <BookOpen className="text-blue-500" size={18} />;
-    case 'info':return <Info className="text-secondary" size={18} />;
-    case 'success':return <CheckCircle2 className="text-emerald-500" size={18} />;
-    case 'system':return <Zap className="text-amber-500" size={18} />;
-    default:return <Bell className="text-app-text-muted" size={18} />;
-  }
+  );
 };
 
 export default Notifications;

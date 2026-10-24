@@ -260,6 +260,7 @@ function AppContent() {
       <Route path="/exams/attempt/:examId" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><AttemptExam /></ProtectedRoute>} />
       <Route path="/exams/results" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><Results /></ProtectedRoute>} />
       <Route path="/certificates" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><Certificates /></ProtectedRoute>} />
+      <Route path="/education" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/insights" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'parent', 'admin', 'user']}><Insights /></ProtectedRoute>} />
       <Route path="/onboarding" element={<GettingStarted />} />
