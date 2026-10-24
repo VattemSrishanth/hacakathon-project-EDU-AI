@@ -205,7 +205,8 @@ const Notifications = () => {
                     e.target.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070';
                   }} />
                 
-                   <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent" />
+                   <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-transparent pointer-events-none" />
                   
                   <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full max-w-4xl space-y-4">
                     <div className="flex items-center gap-3">
@@ -217,11 +218,14 @@ const Notifications = () => {
                         Trending Now
                       </span>
                     </div>
-                    <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight leading-tight">
+                    <h2 
+                      className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]"
+                      style={{ textShadow: '0 2px 10px rgba(0,0,0,0.95), 0 1px 4px rgba(0,0,0,0.9)' }}
+                    >
                       {featuredNews[carouselIndex].title}
                     </h2>
                     <div className="flex items-center gap-4 text-xs font-bold text-white/70 uppercase tracking-widest">
-                      <span className="flex items-center gap-1.5 font-black text-primary uppercase">
+                      <span className="flex items-center gap-1.5 font-black text-amber-400 uppercase">
                         <Newspaper size={14} />
                         {featuredNews[carouselIndex].source}
                       </span>
@@ -235,7 +239,8 @@ const Notifications = () => {
                       href={featuredNews[carouselIndex].url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-8 py-4 bg-white text-app-bg font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-xl hover:scale-105 transition-all">
+                      className="px-8 py-4 font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-xl hover:scale-105 transition-all inline-flex items-center justify-center cursor-pointer"
+                      style={{ backgroundColor: '#ffffff', color: '#0f172a' }}>
                       
                          Read Full Story
                        </a>
@@ -458,7 +463,10 @@ const Notifications = () => {
             </section>
 
             {/* Sidebar Widget 3: AI Learning Insight */}
-            <div className="relative p-8 bg-app-text-main rounded-[40px] text-white overflow-hidden shadow-2xl">
+            <div 
+              className="relative p-8 rounded-[40px] text-white overflow-hidden shadow-2xl border border-app-border/30"
+              style={{ backgroundColor: '#0f172a', color: '#ffffff' }}
+            >
                <div className="absolute top-0 right-0 p-6 opacity-10">
                   <Zap size={100} fill="currentColor" />
                </div>

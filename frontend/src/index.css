@@ -19,6 +19,8 @@
   --color-sidebar-hover-bg: #F3F4F6;
 
   /* Semantic Theme Colors */
+  --color-app-text: var(--text-primary);
+  --color-app-primary: var(--color-primary);
   --color-app-text-main: var(--text-primary);
   --color-app-text-sub: var(--text-secondary);
   --color-app-text-muted: var(--text-muted);
