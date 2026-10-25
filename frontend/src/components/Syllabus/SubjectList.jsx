@@ -4,9 +4,9 @@ import {
   BookOpen,
   Globe2,
   Leaf,
-  Languages } from
-'lucide-react';
-import Card from '../Card';
+  Languages
+} from 'lucide-react';
+
 const subjectIcons = {
   Maths: Calculator,
   Mathematics: Calculator,
@@ -22,41 +22,44 @@ const subjectIcons = {
 
 const SubjectList = ({ subjects, onSelectSubject, selectedSubject }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 gap-2.5">
       {subjects.map((subject) => {
         const Icon = subjectIcons[subject] || BookOpen;
-        const colorClass =
-        subject.includes('Math') ? 'bg-primary/10 text-primary' :
-        subject.includes('Sci') ? 'bg-secondary/20 text-secondary' :
-        subject.includes('Soc') ? 'bg-primary/10 text-primary' :
-        subject.includes('Eng') ? 'bg-purple-500/10 text-purple-600' :
-        subject === 'Telugu' ? 'bg-orange-500/10 text-orange-600' :
-        subject === 'Hindi' ? 'bg-rose-500/10 text-rose-600' :
-        'bg-primary/5 text-primary';
+        const isSelected = selectedSubject === subject;
 
         return (
-          <Card
+          <div
             key={subject}
             onClick={() => onSelectSubject(subject)}
-            className={`cursor-pointer transition-all duration-300 rounded-4xl border-2 group p-6 active:scale-95 ${
-            selectedSubject === subject ?
-            'bg-app-bg border-primary shadow-xl ring-4 ring-primary/10' :
-            'bg-app-bg border-app-border hover:border-primary/30'}`
-            }>
-            
-            <div className="flex flex-col items-center gap-4">
-              <div className={`p-4 rounded-3xl ${colorClass.split(' ')[0]} transition-transform group-hover:scale-110`}>
-                <Icon size={32} />
-              </div>
-              <span className="text-lg font-black text-app-text-main text-center leading-tight">
-                {subject}
-              </span>
+            className={`cursor-pointer transition-all duration-200 rounded-2xl border p-4 flex items-center gap-3.5 group active:scale-[0.99] ${
+              isSelected
+                ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-500 shadow-xs'
+                : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-slate-50/50'
+            }`}
+          >
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${
+                isSelected
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'
+              }`}
+            >
+              <Icon size={20} />
             </div>
-          </Card>);
-
+            <span
+              className={`text-sm font-bold leading-tight ${
+                isSelected
+                  ? 'text-blue-600 dark:text-blue-400'
+                  : 'text-slate-900 dark:text-white'
+              }`}
+            >
+              {subject}
+            </span>
+          </div>
+        );
       })}
-    </div>);
-
+    </div>
+  );
 };
 
 export default SubjectList;
