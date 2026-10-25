@@ -6,6 +6,8 @@
 /* Wizarding fonts */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+SC:wght@400;600;700&family=Uncial+Antiqua&display=swap');
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ==================== Tailwind v4 Theme Configuration ==================== */
 @theme {
   --color-primary: #7F1D1D;
