@@ -6,8 +6,8 @@ import {
   CheckCircle2,
   ChevronRight,
   ChevronLeft,
+  ArrowRight,
   Wifi,
-  WifiOff,
   RefreshCw,
   Award,
   BookOpen,
@@ -21,10 +21,10 @@ import {
   Download,
   Shield,
   User,
-  Globe,
+  Quote,
+  Calculator,
   Hand,
-  Type,
-  Volume2
+  Mic
 } from 'lucide-react';
 import {
   LineChart,
@@ -43,56 +43,79 @@ import { useAccessibility } from '../context/AccessibilityContext';
 import { useOffline } from '../context/OfflineContext';
 import { syllabusAPI } from '../services/api';
 
-// Vector 3D Graduation Cap on Stack of Books Illustration matching the reference design
+// Vector 3D Graduation Cap on Stack of Books with Play Tile and Notes
 const GraduationIllustration = () => (
   <svg
-    viewBox="0 0 180 140"
-    className="w-full h-full drop-shadow-md select-none"
+    viewBox="0 0 220 160"
+    className="w-full h-full drop-shadow-lg select-none"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     {/* Floating Stars / Sparkles */}
-    <path d="M35 25L37 32L44 34L37 36L35 43L33 36L26 34L33 32L35 25Z" fill="white" opacity="0.9" />
-    <path d="M155 18L156.5 23L162 24.5L156.5 26L155 31L153.5 26L148 24.5L153.5 23L155 18Z" fill="white" opacity="0.85" />
-    <path d="M140 60L141.5 64L146 65.5L141.5 67L140 71L138.5 67L134 65.5L138.5 64L140 60Z" fill="white" opacity="0.75" />
-    <circle cx="24" cy="55" r="1.5" fill="white" opacity="0.7" />
-    <circle cx="165" cy="48" r="2" fill="white" opacity="0.6" />
+    <path d="M42 28L44 35L51 37L44 39L42 46L40 39L33 37L40 35L42 28Z" fill="white" opacity="0.9" />
+    <path d="M190 20L191.5 25L197 26.5L191.5 28L190 33L188.5 28L183 26.5L188.5 25L190 20Z" fill="white" opacity="0.85" />
+    <path d="M110 75L111.5 79L116 80.5L111.5 82L110 86L108.5 82L104 80.5L108.5 79L110 75Z" fill="white" opacity="0.8" />
+    <circle cx="28" cy="60" r="1.5" fill="white" opacity="0.7" />
+    <circle cx="205" cy="52" r="2" fill="white" opacity="0.6" />
+
+    {/* Floating Play Button Tile (Left) */}
+    <g transform="translate(18, 55)">
+      <rect x="0" y="0" width="36" height="36" rx="10" fill="#0284C7" transform="rotate(-10)" />
+      <rect x="0" y="0" width="36" height="36" rx="10" fill="#38BDF8" opacity="0.9" transform="rotate(-10)" />
+      <path d="M14 11L25 18L14 25Z" fill="white" transform="rotate(-10 18 18)" />
+    </g>
+
+    {/* Floating Note 1 (Top Blue Document) */}
+    <g transform="translate(112, 16) rotate(15)">
+      <rect width="22" height="28" rx="4" fill="#38BDF8" opacity="0.9" />
+      <line x1="4" y1="7" x2="18" y2="7" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <line x1="4" y1="12" x2="16" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <line x1="4" y1="17" x2="12" y2="17" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    </g>
+
+    {/* Floating Note 2 (Top-Right Pink Document) */}
+    <g transform="translate(180, 22) rotate(-12)">
+      <rect width="20" height="26" rx="4" fill="#F43F5E" opacity="0.85" />
+      <line x1="4" y1="6" x2="16" y2="6" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <line x1="4" y1="11" x2="14" y2="11" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <line x1="4" y1="16" x2="10" y2="16" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    </g>
 
     {/* Stack of Books with Mortarboard */}
-    <g transform="translate(10, 10)">
+    <g transform="translate(48, 15)">
       {/* Bottom Book - Gold / Amber */}
-      <path d="M40 100L90 118L145 96L95 78L40 100Z" fill="#F59E0B" />
-      <path d="M40 100L40 108L90 126L90 118L40 100Z" fill="#D97706" />
-      <path d="M90 118L90 126L145 104L145 96L90 118Z" fill="#FDE68A" />
-      <path d="M42 101L90 119L143 97" stroke="white" strokeWidth="1.5" opacity="0.8" />
-      <path d="M42 104L90 122L143 100" stroke="white" strokeWidth="1.5" opacity="0.6" />
+      <path d="M40 102L90 120L145 98L95 80L40 102Z" fill="#F59E0B" />
+      <path d="M40 102L40 110L90 128L90 120L40 102Z" fill="#D97706" />
+      <path d="M90 120L90 128L145 106L145 98L90 120Z" fill="#FDE68A" />
+      <path d="M42 103L90 121L143 99" stroke="white" strokeWidth="1.5" opacity="0.8" />
+      <path d="M42 106L90 124L143 102" stroke="white" strokeWidth="1.5" opacity="0.6" />
 
-      {/* Middle Book - Cyan / Sky */}
-      <path d="M45 86L95 104L140 84L90 66L45 86Z" fill="#0284C7" />
-      <path d="M45 86L45 94L95 112L95 104L45 86Z" fill="#0369A1" />
-      <path d="M95 104L95 112L140 92L140 84L95 104Z" fill="#7DD3FC" />
-      <path d="M47 87L95 105L138 85" stroke="white" strokeWidth="1.5" opacity="0.8" />
+      {/* Middle Book - Pink / Magenta */}
+      <path d="M45 88L95 106L140 86L90 68L45 88Z" fill="#E11D48" />
+      <path d="M45 88L45 96L95 114L95 106L45 88Z" fill="#BE123C" />
+      <path d="M95 106L95 114L140 94L140 86L95 106Z" fill="#FDA4AF" />
+      <path d="M47 89L95 107L138 87" stroke="white" strokeWidth="1.5" opacity="0.8" />
 
       {/* Top Book - Royal Blue */}
-      <path d="M50 72L95 88L132 72L87 56L50 72Z" fill="#2563EB" />
-      <path d="M50 72L50 80L95 96L95 88L50 72Z" fill="#1D4ED8" />
-      <path d="M95 88L95 96L132 80L132 72L95 88Z" fill="#93C5FD" />
-      <path d="M52 73L95 89L130 73" stroke="white" strokeWidth="1.5" opacity="0.8" />
+      <path d="M50 74L95 90L132 74L87 58L50 74Z" fill="#2563EB" />
+      <path d="M50 74L50 82L95 98L95 90L50 74Z" fill="#1D4ED8" />
+      <path d="M95 90L95 98L132 82L132 74L95 90Z" fill="#93C5FD" />
+      <path d="M52 75L95 91L130 75" stroke="white" strokeWidth="1.5" opacity="0.8" />
 
       {/* Mortarboard Cap Base */}
-      <path d="M74 46C74 46 74 56 90 59C106 56 106 46 106 46" fill="#0F172A" />
+      <path d="M74 48C74 48 74 58 90 61C106 58 106 48 106 48" fill="#0F172A" />
 
       {/* Mortarboard Diamond Top */}
-      <path d="M90 22L128 37L90 52L52 37L90 22Z" fill="#1E293B" />
-      <path d="M90 22L128 37L90 39L52 37L90 22Z" fill="#334155" opacity="0.6" />
+      <path d="M90 24L128 39L90 54L52 39L90 24Z" fill="#1E293B" />
+      <path d="M90 24L128 39L90 41L52 39L90 24Z" fill="#334155" opacity="0.6" />
 
       {/* Gold Center Button on Cap */}
-      <ellipse cx="90" cy="37" rx="3" ry="2" fill="#FBBF24" />
+      <ellipse cx="90" cy="39" rx="3" ry="2" fill="#FBBF24" />
 
       {/* Gold Tassel String & Hanging Tassel */}
-      <path d="M90 37Q114 39 123 52" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
-      <path d="M123 52L121 66L125 66L123 52Z" fill="#F59E0B" />
-      <circle cx="123" cy="53" r="2" fill="#FBBF24" />
+      <path d="M90 39Q114 41 123 54" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
+      <path d="M123 54L121 68L125 68L123 54Z" fill="#F59E0B" />
+      <circle cx="123" cy="55" r="2" fill="#FBBF24" />
     </g>
   </svg>
 );
@@ -171,6 +194,7 @@ const Dashboard = () => {
   const percentage = getProgressPercentage();
   const timeData = getTimeSpentData();
   const completedCount = progress.lessonsCompleted.length;
+  const examsCount = progress.quizScores?.length || 2;
 
   const lastLesson = useMemo(() => {
     return progress.activityLog.find((a) => a.type === 'lesson');
@@ -245,17 +269,35 @@ const Dashboard = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6 pb-12 transition-colors duration-300">
-      {/* SECTION: WELCOME HEADER */}
-      <header className="space-y-1">
-        <h1 className="text-2xl md:text-3xl font-extrabold text-app-text-main tracking-tight flex items-center gap-2">
-          <span>Welcome back,</span>
-          <span className="text-blue-600 dark:text-blue-400">{name}!</span>
-          <span role="img" aria-label="wave">👋</span>
-        </h1>
-        <p className="text-xs md:text-sm text-app-text-muted">
-          Continue your learning journey with LearnBridge AI
-        </p>
-      </header>
+      
+      {/* HEADER ROW: WELCOME + RIGHT-SIDE INSPIRATIONAL QUOTE */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <header className="space-y-1">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-app-text-main tracking-tight flex items-center gap-2">
+            <span>Welcome back,</span>
+            <span className="text-blue-600 dark:text-blue-400">{name}!</span>
+            <span role="img" aria-label="wave">👋</span>
+          </h1>
+          <p className="text-xs md:text-sm text-app-text-muted">
+            Continue your learning journey with LearnBridge AI
+          </p>
+        </header>
+
+        {/* Top-Right Motivational Quote Card */}
+        <div className="w-full md:w-80 bg-[#EFF6FF] dark:bg-blue-950/25 border border-[#DBEAFE] dark:border-blue-900/30 rounded-2xl p-3 flex items-center gap-3 shadow-xs">
+          <div className="w-8 h-8 rounded-xl bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <Quote size={16} fill="currentColor" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-bold text-slate-800 dark:text-slate-100 leading-snug truncate">
+              “Small steps every day lead to big results.”
+            </p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+              Keep learning, keep growing!
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* MAIN TWO-COLUMN DASHBOARD GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -264,17 +306,17 @@ const Dashboard = () => {
         <div className="lg:col-span-8 space-y-6">
           
           {/* 1. HERO BANNER: "Start your first lesson" */}
-          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 p-6 md:p-8 text-white shadow-lg shadow-indigo-500/10">
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-600 p-6 md:p-8 text-white shadow-lg shadow-indigo-500/10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
               
               {/* Left Content */}
-              <div className="space-y-3.5 max-w-md">
+              <div className="space-y-3 max-w-md">
                 <div className="flex items-center gap-2.5">
                   <span className="px-3 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">
                     GET STARTED
                   </span>
                   <span className="text-xs text-white/90 font-medium flex items-center gap-1.5">
-                    <Star size={12} fill="currentColor" className="text-amber-300" />
+                    <span role="img" aria-label="sun">☀️</span>
                     Start your learning journey
                   </span>
                 </div>
@@ -306,7 +348,7 @@ const Dashboard = () => {
 
               {/* Right Illustration & Button */}
               <div className="flex flex-col items-center md:items-end justify-center gap-3">
-                <div className="w-36 h-28 md:w-44 md:h-32 flex items-center justify-center">
+                <div className="w-40 h-32 md:w-48 md:h-36 flex items-center justify-center">
                   <GraduationIllustration />
                 </div>
 
@@ -326,9 +368,17 @@ const Dashboard = () => {
 
           {/* 2. AI STUDY SUGGESTIONS */}
           <section className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Lightbulb size={18} className="text-amber-500 fill-amber-500" />
-              <h3 className="text-sm font-bold text-app-text-main">AI Study Suggestions</h3>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Lightbulb size={18} className="text-amber-500 fill-amber-500" />
+                <h3 className="text-sm font-bold text-app-text-main">AI Study Suggestions</h3>
+              </div>
+              <button
+                onClick={() => navigate('/ai-tutor')}
+                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 cursor-pointer"
+              >
+                View All <ChevronRight size={13} />
+              </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
@@ -339,13 +389,20 @@ const Dashboard = () => {
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-8 h-8 rounded-xl bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <FileText size={16} />
+                    <BookOpen size={16} />
                   </div>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug truncate">
-                    Next: Intro to Algebraic Equations
-                  </p>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug truncate">
+                      Next: Intro to Algebraic Equations
+                    </p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                      Based on your learning goals
+                    </p>
+                  </div>
                 </div>
-                <ChevronRight size={15} className="text-blue-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                <div className="w-6 h-6 rounded-full border border-blue-200 dark:border-blue-800 text-blue-500 flex items-center justify-center shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                  <ArrowRight size={12} />
+                </div>
               </div>
 
               {/* Suggestion 2: Revision */}
@@ -355,13 +412,20 @@ const Dashboard = () => {
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <FileText size={16} />
+                    <Calculator size={16} />
                   </div>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors leading-snug truncate">
-                    Revise Rational Numbers
-                  </p>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors leading-snug truncate">
+                      Revise Rational Numbers
+                    </p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                      Strengthen your basics
+                    </p>
+                  </div>
                 </div>
-                <ChevronRight size={15} className="text-rose-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                <div className="w-6 h-6 rounded-full border border-rose-200 dark:border-rose-800 text-rose-500 flex items-center justify-center shrink-0 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                  <ArrowRight size={12} />
+                </div>
               </div>
 
               {/* Suggestion 3: Practice */}
@@ -373,11 +437,18 @@ const Dashboard = () => {
                   <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs">
                     <BarChart2 size={16} />
                   </div>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug truncate">
-                    5 Questions to Improve accuracy
-                  </p>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug truncate">
+                      5 Questions to Improve accuracy
+                    </p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                      Practice recommended for you
+                    </p>
+                  </div>
                 </div>
-                <ChevronRight size={15} className="text-emerald-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                <div className="w-6 h-6 rounded-full border border-emerald-200 dark:border-emerald-800 text-emerald-500 flex items-center justify-center shrink-0 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                  <ArrowRight size={12} />
+                </div>
               </div>
             </div>
           </section>
@@ -388,9 +459,17 @@ const Dashboard = () => {
             {/* Study Time This Week */}
             <div className="bg-app-bg-alt border border-app-border rounded-2xl p-5 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <BarChart2 size={17} className="text-blue-500" />
-                  <h3 className="text-sm font-bold text-app-text-main">Study Time This Week</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <BarChart2 size={17} className="text-blue-500" />
+                    <h3 className="text-sm font-bold text-app-text-main">Study Time This Week</h3>
+                  </div>
+                  <button
+                    onClick={() => navigate('/insights')}
+                    className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 cursor-pointer"
+                  >
+                    View Details <ChevronRight size={13} />
+                  </button>
                 </div>
 
                 <div className="h-44 w-full">
@@ -434,14 +513,19 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Bottom Tip */}
-              <div className="mt-4 p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/20 border border-blue-100/60 dark:border-blue-900/30 flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                  <Target size={14} />
+              {/* Bottom Tip with Clock Icon */}
+              <div className="mt-4 p-3 rounded-xl bg-[#F0F8FF] dark:bg-blue-950/20 border border-[#E0F2FE] dark:border-blue-900/30 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                  <Clock size={16} />
                 </div>
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                  Try a little every day for a long way!
-                </p>
+                <div>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                    Try a little every day for a long way!
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    Consistency leads to success.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -460,16 +544,16 @@ const Dashboard = () => {
                     <button
                       onClick={handlePrevMonth}
                       aria-label="Previous Month"
-                      className="p-1 rounded-lg hover:bg-app-bg text-app-text-muted hover:text-app-text-main transition-colors cursor-pointer"
+                      className="p-1 rounded-lg hover:bg-app-bg text-app-text-muted hover:text-app-text-main transition-colors cursor-pointer border border-app-border"
                     >
-                      <ChevronLeft size={16} />
+                      <ChevronLeft size={14} />
                     </button>
                     <button
                       onClick={handleNextMonth}
                       aria-label="Next Month"
-                      className="p-1 rounded-lg hover:bg-app-bg text-app-text-muted hover:text-app-text-main transition-colors cursor-pointer"
+                      className="p-1 rounded-lg hover:bg-app-bg text-app-text-muted hover:text-app-text-main transition-colors cursor-pointer border border-app-border"
                     >
-                      <ChevronRight size={16} />
+                      <ChevronRight size={14} />
                     </button>
                   </div>
                 </div>
@@ -506,13 +590,22 @@ const Dashboard = () => {
               {/* Calendar Footer Link */}
               <div
                 onClick={() => navigate('/lessons')}
-                className="mt-3 pt-3 border-t border-app-border/50 flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors"
+                className="mt-3 pt-3 border-t border-app-border/50 flex items-center justify-between text-xs cursor-pointer group transition-colors"
               >
-                <div className="flex items-center gap-2">
-                  <Target size={14} className="text-blue-500" />
-                  <span>Set a study goal for this month!</span>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                    <Target size={14} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                      Set a study goal for this month!
+                    </p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">
+                      Stay consistent and achieve more.
+                    </p>
+                  </div>
                 </div>
-                <ChevronRight size={14} />
+                <ChevronRight size={14} className="text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
               </div>
             </div>
 
@@ -533,7 +626,7 @@ const Dashboard = () => {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                    <Globe size={18} />
+                    <Hand size={18} />
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
@@ -553,8 +646,8 @@ const Dashboard = () => {
                 className="bg-[#F9F5FF] dark:bg-purple-950/20 border border-[#F3E8FF] dark:border-purple-900/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 transition-all group shadow-xs"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                    <Type size={18} />
+                  <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 font-bold text-xs tracking-tighter">
+                    CC
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
@@ -575,10 +668,10 @@ const Dashboard = () => {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-                    <Volume2 size={18} />
+                    <Mic size={18} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                    <h4 className="text-xs font-bold text-rose-600 dark:text-rose-400 leading-tight">
                       Speech Assist
                     </h4>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
@@ -593,14 +686,22 @@ const Dashboard = () => {
 
         </div>
 
-        {/* RIGHT COLUMN: LEARNING PULSE, ACHIEVEMENTS, OFFLINE LEARNING (4 COLS) */}
+        {/* RIGHT COLUMN: QUOTE, LEARNING PULSE, ACHIEVEMENTS, OFFLINE LEARNING (4 COLS) */}
         <div className="lg:col-span-4 space-y-6">
           
           {/* 1. LEARNING PULSE (2x2 STATS GRID) */}
           <div className="bg-app-bg-alt border border-app-border rounded-2xl p-5 shadow-xs">
-            <div className="flex items-center gap-2 mb-4">
-              <BarChart2 size={17} className="text-blue-500" />
-              <h3 className="text-sm font-bold text-app-text-main">Learning Pulse</h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <BarChart2 size={17} className="text-blue-500" />
+                <h3 className="text-sm font-bold text-app-text-main">Learning Pulse</h3>
+              </div>
+              <button
+                onClick={() => navigate('/insights')}
+                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 cursor-pointer"
+              >
+                View Details <ChevronRight size={13} />
+              </button>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -610,7 +711,7 @@ const Dashboard = () => {
                 className="bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100/60 dark:border-blue-900/30 rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:border-blue-300 transition-all shadow-xs"
               >
                 <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                  <FileText size={16} />
+                  <BookOpen size={16} />
                 </div>
                 <div>
                   <p className="text-lg font-extrabold text-slate-900 dark:text-white leading-none">
@@ -628,7 +729,7 @@ const Dashboard = () => {
                 className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100/60 dark:border-emerald-900/30 rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs"
               >
                 <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                  <CheckCircle2 size={16} />
+                  <FileText size={16} />
                 </div>
                 <div>
                   <p className="text-lg font-extrabold text-slate-900 dark:text-white leading-none">
@@ -650,7 +751,7 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <p className="text-lg font-extrabold text-slate-900 dark:text-white leading-none">
-                    {progress.quizScores?.length || 0}
+                    {examsCount}
                   </p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
                     Exams Taken
@@ -680,9 +781,17 @@ const Dashboard = () => {
 
           {/* 2. ACHIEVEMENTS */}
           <div className="bg-app-bg-alt border border-app-border rounded-2xl p-5 shadow-xs">
-            <div className="flex items-center gap-2 mb-4">
-              <Trophy size={17} className="text-amber-500" />
-              <h3 className="text-sm font-bold text-app-text-main">Achievements</h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Trophy size={17} className="text-amber-500" />
+                <h3 className="text-sm font-bold text-app-text-main">Achievements</h3>
+              </div>
+              <button
+                onClick={() => navigate('/certificates')}
+                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 cursor-pointer"
+              >
+                View All <ChevronRight size={13} />
+              </button>
             </div>
 
             <div className="py-5 text-center">
@@ -719,7 +828,7 @@ const Dashboard = () => {
                   <span>Sync Status</span>
                 </div>
                 <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
-                  <span className={`w-2 h-2 rounded-full ${isOffline ? 'bg-amber-500' : 'bg-amber-500'}`} />
+                  <span className="w-2 h-2 rounded-full bg-amber-500" />
                   <span>{isOffline ? "Pending Sync" : "Not Synced"}</span>
                 </div>
               </div>
@@ -748,6 +857,11 @@ const Dashboard = () => {
                 )}
                 <span>Sync for Offline Access</span>
               </button>
+
+              {/* Footer Subtext */}
+              <p className="text-[10px] text-slate-400 text-center pt-1">
+                Access your materials anytime, anywhere.
+              </p>
             </div>
           </div>
 
