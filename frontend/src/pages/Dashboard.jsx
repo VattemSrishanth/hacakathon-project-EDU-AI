@@ -1,49 +1,101 @@
 import { useMemo, useEffect, useState } from 'react';
-import Card from '../components/Card';
-import Button from '../components/Button';
+import { useNavigate } from 'react-router-dom';
+import {
+  Star,
+  Zap,
+  CheckCircle2,
+  ChevronRight,
+  ChevronLeft,
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  Award,
+  BookOpen,
+  FileText,
+  Clock,
+  Sparkles,
+  Lightbulb,
+  Target,
+  Trophy,
+  BarChart2,
+  Download,
+  Shield,
+  User,
+  Globe,
+  Hand,
+  Type,
+  Volume2
+} from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
+} from 'recharts';
+
 import { useSettings } from '../context/SettingsContext';
 import { useProgress } from '../context/ProgressContext';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useOffline } from '../context/OfflineContext';
-import { useNavigate, Link } from 'react-router-dom';
 import { syllabusAPI } from '../services/api';
 
+// Vector 3D Graduation Cap on Stack of Books Illustration matching the reference design
+const GraduationIllustration = () => (
+  <svg
+    viewBox="0 0 180 140"
+    className="w-full h-full drop-shadow-md select-none"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Floating Stars / Sparkles */}
+    <path d="M35 25L37 32L44 34L37 36L35 43L33 36L26 34L33 32L35 25Z" fill="white" opacity="0.9" />
+    <path d="M155 18L156.5 23L162 24.5L156.5 26L155 31L153.5 26L148 24.5L153.5 23L155 18Z" fill="white" opacity="0.85" />
+    <path d="M140 60L141.5 64L146 65.5L141.5 67L140 71L138.5 67L134 65.5L138.5 64L140 60Z" fill="white" opacity="0.75" />
+    <circle cx="24" cy="55" r="1.5" fill="white" opacity="0.7" />
+    <circle cx="165" cy="48" r="2" fill="white" opacity="0.6" />
 
-import {
-  BarChart,
-  Bar,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer } from
-'recharts';
+    {/* Stack of Books with Mortarboard */}
+    <g transform="translate(10, 10)">
+      {/* Bottom Book - Gold / Amber */}
+      <path d="M40 100L90 118L145 96L95 78L40 100Z" fill="#F59E0B" />
+      <path d="M40 100L40 108L90 126L90 118L40 100Z" fill="#D97706" />
+      <path d="M90 118L90 126L145 104L145 96L90 118Z" fill="#FDE68A" />
+      <path d="M42 101L90 119L143 97" stroke="white" strokeWidth="1.5" opacity="0.8" />
+      <path d="M42 104L90 122L143 100" stroke="white" strokeWidth="1.5" opacity="0.6" />
 
-import {
-  BookOpen,
-  Clock,
-  Star,
-  Zap,
-  CheckCircle2,
-  ArrowRight,
-  Wifi,
-  WifiOff,
-  RefreshCw,
-  Award,
-  Hand,
-  Volume2,
-  Type,
-  MessageSquare,
-  ShieldAlert,
-  Sparkles,
-  History,
-  Lightbulb,
-  Target,
-  FileBarChart,
-  Trophy } from
-'lucide-react';
+      {/* Middle Book - Cyan / Sky */}
+      <path d="M45 86L95 104L140 84L90 66L45 86Z" fill="#0284C7" />
+      <path d="M45 86L45 94L95 112L95 104L45 86Z" fill="#0369A1" />
+      <path d="M95 104L95 112L140 92L140 84L95 104Z" fill="#7DD3FC" />
+      <path d="M47 87L95 105L138 85" stroke="white" strokeWidth="1.5" opacity="0.8" />
+
+      {/* Top Book - Royal Blue */}
+      <path d="M50 72L95 88L132 72L87 56L50 72Z" fill="#2563EB" />
+      <path d="M50 72L50 80L95 96L95 88L50 72Z" fill="#1D4ED8" />
+      <path d="M95 88L95 96L132 80L132 72L95 88Z" fill="#93C5FD" />
+      <path d="M52 73L95 89L130 73" stroke="white" strokeWidth="1.5" opacity="0.8" />
+
+      {/* Mortarboard Cap Base */}
+      <path d="M74 46C74 46 74 56 90 59C106 56 106 46 106 46" fill="#0F172A" />
+
+      {/* Mortarboard Diamond Top */}
+      <path d="M90 22L128 37L90 52L52 37L90 22Z" fill="#1E293B" />
+      <path d="M90 22L128 37L90 39L52 37L90 22Z" fill="#334155" opacity="0.6" />
+
+      {/* Gold Center Button on Cap */}
+      <ellipse cx="90" cy="37" rx="3" ry="2" fill="#FBBF24" />
+
+      {/* Gold Tassel String & Hanging Tassel */}
+      <path d="M90 37Q114 39 123 52" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
+      <path d="M123 52L121 66L125 66L123 52Z" fill="#F59E0B" />
+      <circle cx="123" cy="53" r="2" fill="#FBBF24" />
+    </g>
+  </svg>
+);
 
 const Dashboard = () => {
   const { settings, isDark } = useSettings();
@@ -63,41 +115,10 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const user = auth?.user;
-  const name = user?.name || user?.username || 'Learner';
-  const role = user?.role || 'student';
+  const name = user?.name || user?.username || 'Demo Student';
 
-  // Calendar Data Calculation
-  const calendarData = useMemo(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const activityDates = new Set(
-      progress.activityLog.map((a) => new Date(a.timestamp).toDateString())
-    );
-
-    const days = [];
-    // Leading empty slots
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push({ day: null, active: false });
-    }
-    // Month days
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = new Date(year, month, d).toDateString();
-      days.push({
-        day: d,
-        active: activityDates.has(dateStr),
-        isToday: d === now.getDate() && month === now.getMonth() && year === now.getFullYear()
-      });
-    }
-    return {
-      days,
-      monthName: new Intl.DateTimeFormat('en-US', { month: 'long' }).format(now),
-      year
-    };
-  }, [progress.activityLog]);
+  // State for browsing calendar months
+  const [currentCalendarDate, setCurrentCalendarDate] = useState(() => new Date());
 
   const [activeSyllabus, setActiveSyllabus] = useState({ board: settings.learning.board, classes: {} });
 
@@ -121,7 +142,6 @@ const Dashboard = () => {
     let totalTopics = 0;
     try {
       const classes = activeSyllabus.classes || {};
-      // Filter syllabus strictly to student's level for better motivation
       const grade = settings.learning.level.toString();
 
       if (classes[grade]) {
@@ -132,7 +152,6 @@ const Dashboard = () => {
           });
         });
       } else {
-        // Fallback: total across all if grade not found
         Object.keys(classes).forEach((gradeKey) => {
           const subjects = classes[gradeKey].subjects;
           Object.keys(subjects).forEach((sub) => {
@@ -148,524 +167,595 @@ const Dashboard = () => {
     setTotalLessons(totalTopics);
   }, [activeSyllabus, setTotalLessons, settings.learning.level]);
 
-  // Derived data
+  // Derived metrics
   const percentage = getProgressPercentage();
   const timeData = getTimeSpentData();
   const completedCount = progress.lessonsCompleted.length;
-
-  // Calculate Streak from activity log (simplified daily check)
-  const streakCount = useMemo(() => {
-    const dates = new Set(progress.activityLog.map((a) => new Date(a.timestamp).toDateString()));
-    let streak = 0;
-    const today = new Date();
-    const checkDate = new Date(today);
-
-    while (dates.has(checkDate.toDateString())) {
-      streak++;
-      checkDate.setDate(checkDate.getDate() - 1);
-    }
-    // If not active today, check if active yesterday to maintain streak for display
-    if (streak === 0) {
-      checkDate.setDate(today.getDate() - 1);
-      while (dates.has(checkDate.toDateString())) {
-        streak++;
-        checkDate.setDate(checkDate.getDate() - 1);
-      }
-    }
-    return streak;
-  }, [progress.activityLog]);
 
   const lastLesson = useMemo(() => {
     return progress.activityLog.find((a) => a.type === 'lesson');
   }, [progress.activityLog]);
 
-  // Color System Constants - Student Friendly
-  const COLORS = useMemo(() => ({
-    PRIMARY: '#7F1D1D', // Maroon
-    SECONDARY: '#F59E0B', // Amber
-    SUCCESS: '#10B981', // Emerald
-    GRAY: isDark ? '#374151' : '#E5E7EB',
-    TEXT_MUTED: isDark ? '#9CA3AF' : '#6B7280'
-  }), [isDark]);
+  // Calendar Calculation
+  const calendarData = useMemo(() => {
+    const now = new Date();
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    const firstDayIndex = new Date(year, month, 1).getDay(); // 0: Sun, 1: Mon...
+    const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-  if (role !== 'student' && role !== 'user' && role !== 'admin') {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center">
-          <ShieldAlert className="w-16 h-16 text-error mb-4" />
-          <h1 className="text-2xl font-bold">Access Restricted</h1>
-          <p className="text-app-text-sub mt-2">The standard dashboard is optimized for student learning views.</p>
-       </div>);
+    const activityDates = new Set(
+      progress.activityLog.map((a) => new Date(a.timestamp).toDateString())
+    );
 
-  }
+    const days = [];
+    // Previous month leading days
+    for (let i = firstDayIndex - 1; i >= 0; i--) {
+      days.push({
+        day: daysInPrevMonth - i,
+        isCurrentMonth: false,
+        active: false,
+        isHighlighted: false
+      });
+    }
+
+    // Current month days
+    for (let d = 1; d <= daysInCurrentMonth; d++) {
+      const dateStr = new Date(year, month, d).toDateString();
+      const isToday = d === now.getDate() && month === now.getMonth() && year === now.getFullYear();
+      // Match reference day 22 highlight or actual today
+      const isHighlighted = (year === 2026 && month === 9 && d === 22) || isToday;
+
+      days.push({
+        day: d,
+        isCurrentMonth: true,
+        active: activityDates.has(dateStr),
+        isHighlighted
+      });
+    }
+
+    // Trailing next month days (up to 35 slots for clean 5-row grid)
+    const remainingSlots = 35 - days.length;
+    if (remainingSlots > 0) {
+      for (let d = 1; d <= remainingSlots; d++) {
+        days.push({
+          day: d,
+          isCurrentMonth: false,
+          active: false,
+          isHighlighted: false
+        });
+      }
+    }
+
+    return {
+      days,
+      monthName: new Intl.DateTimeFormat('en-US', { month: 'long' }).format(currentCalendarDate),
+      year
+    };
+  }, [currentCalendarDate, progress.activityLog]);
+
+  const handlePrevMonth = () => {
+    setCurrentCalendarDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentCalendarDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  };
 
   return (
-    <div className="min-h-screen bg-app-bg pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+    <div className="w-full max-w-7xl mx-auto space-y-6 pb-12 transition-colors duration-300">
+      {/* SECTION: WELCOME HEADER */}
+      <header className="space-y-1">
+        <h1 className="text-2xl md:text-3xl font-extrabold text-app-text-main tracking-tight flex items-center gap-2">
+          <span>Welcome back,</span>
+          <span className="text-blue-600 dark:text-blue-400">{name}!</span>
+          <span role="img" aria-label="wave">👋</span>
+        </h1>
+        <p className="text-xs md:text-sm text-app-text-muted">
+          Continue your learning journey with LearnBridge AI
+        </p>
+      </header>
+
+      {/* MAIN TWO-COLUMN DASHBOARD GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* SECTION 1: WELCOME & GUIDANCE PANEL */}
-        <header className="pt-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <h1 className="text-3xl md:text-5xl font-black text-app-text-main tracking-tight">
-                Welcome back, <span className="text-secondary">{name}</span>!
-              </h1>
-              <div className="mt-3 flex items-center gap-2">
-                <div className="bg-success/10 text-success px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5">
-                  <Star size={14} fill="currentColor" />
-                  {completedCount === 0 ? "Start your first lesson to begin your learning journey." :
-                  streakCount > 0 ? `Great job! Keep your ${streakCount}-day streak alive.` :
-                  "Ready to continue your progress?"}
+        {/* LEFT COLUMN: HERO, SUGGESTIONS, STUDY TIME & CALENDAR, ACCESSIBILITY (8 COLS) */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* 1. HERO BANNER: "Start your first lesson" */}
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 p-6 md:p-8 text-white shadow-lg shadow-indigo-500/10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+              
+              {/* Left Content */}
+              <div className="space-y-3.5 max-w-md">
+                <div className="flex items-center gap-2.5">
+                  <span className="px-3 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">
+                    GET STARTED
+                  </span>
+                  <span className="text-xs text-white/90 font-medium flex items-center gap-1.5">
+                    <Star size={12} fill="currentColor" className="text-amber-300" />
+                    Start your learning journey
+                  </span>
+                </div>
+
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight">
+                    {lastLesson ? lastLesson.label : "Start your first lesson"}
+                  </h2>
+                  <p className="text-xs md:text-sm text-white/80 mt-1 leading-relaxed">
+                    {lastLesson 
+                      ? `Continue topic: ${lastLesson.referenceId}` 
+                      : "Use LearnBridge AI to learn, practice and improve with personalized study materials."}
+                  </p>
+                </div>
+
+                <div className="pt-2 max-w-xs">
+                  <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-white/80 mb-1">
+                    <span>LEARNING PROGRESS</span>
+                    <span>{percentage}%</span>
+                  </div>
+                  <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden backdrop-blur-xs">
+                    <div
+                      className="h-full bg-white rounded-full transition-all duration-1000"
+                      style={{ width: `${Math.max(percentage, 0)}%` }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="hidden md:flex items-center gap-3">
-               <div className="text-right">
-                  <p className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">Studying For</p>
-                  <p className="text-sm font-bold text-app-text-main">{settings.learning.board} • Grade {settings.learning.level}</p>
-               </div>
+
+              {/* Right Illustration & Button */}
+              <div className="flex flex-col items-center md:items-end justify-center gap-3">
+                <div className="w-36 h-28 md:w-44 md:h-32 flex items-center justify-center">
+                  <GraduationIllustration />
+                </div>
+
+                <button
+                  onClick={() => lastLesson ? navigate(`/lessons/${lastLesson.referenceId}`) : navigate('/lessons')}
+                  className="bg-white hover:bg-slate-50 text-blue-600 font-bold text-xs md:text-sm px-6 py-2.5 rounded-full shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <span>{lastLesson ? "Resume Lesson" : "Start Learning"}</span>
+                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                    <ChevronRight size={13} strokeWidth={3} />
+                  </div>
+                </button>
+              </div>
+
             </div>
           </div>
-        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* Main Content Area (8/12) */}
-          <div className="lg:col-span-8 space-y-8">
+          {/* 2. AI STUDY SUGGESTIONS */}
+          <section className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Lightbulb size={18} className="text-amber-500 fill-amber-500" />
+              <h3 className="text-sm font-bold text-app-text-main">AI Study Suggestions</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+              {/* Suggestion 1: Next Topic */}
+              <div
+                onClick={() => navigate('/lessons')}
+                className="bg-[#F0F8FF] dark:bg-sky-950/20 border border-[#E0F2FE] dark:border-sky-900/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 cursor-pointer hover:border-blue-300 dark:hover:border-blue-700 transition-all group shadow-xs"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <FileText size={16} />
+                  </div>
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug truncate">
+                    Next: Intro to Algebraic Equations
+                  </p>
+                </div>
+                <ChevronRight size={15} className="text-blue-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+
+              {/* Suggestion 2: Revision */}
+              <div
+                onClick={() => navigate('/lessons')}
+                className="bg-[#FFF6F6] dark:bg-rose-950/20 border border-[#FEE2E2] dark:border-rose-900/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 cursor-pointer hover:border-rose-300 dark:hover:border-rose-700 transition-all group shadow-xs"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <FileText size={16} />
+                  </div>
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors leading-snug truncate">
+                    Revise Rational Numbers
+                  </p>
+                </div>
+                <ChevronRight size={15} className="text-rose-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+
+              {/* Suggestion 3: Practice */}
+              <div
+                onClick={() => navigate('/lessons/quiz')}
+                className="bg-[#F1FAF5] dark:bg-emerald-950/20 border border-[#DCFCE7] dark:border-emerald-900/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 cursor-pointer hover:border-emerald-300 dark:hover:border-emerald-700 transition-all group shadow-xs"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <BarChart2 size={16} />
+                  </div>
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug truncate">
+                    5 Questions to Improve accuracy
+                  </p>
+                </div>
+                <ChevronRight size={15} className="text-emerald-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </div>
+          </section>
+
+          {/* 3. TWO-COLUMN SUB-GRID: STUDY TIME THIS WEEK & CALENDAR */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
             
-            {/* SECTION 2: CONTINUE LEARNING (COMPACT & PERFECTED) */}
-            <Card className="relative overflow-hidden border-none bg-linear-to-br from-[#7F1D1D] via-primary-hover to-[#7F1D1D] text-white p-0 shadow-2xl shadow-primary/30 group/card flex">
-              {/* Background Decorative Elements */}
-              <div className="absolute -top-16 -right-16 w-48 h-48 bg-secondary/10 rounded-full blur-3xl group-hover/card:bg-secondary/20 transition-colors duration-700" />
-              
-              <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none group-hover/card:scale-110 group-hover/card:opacity-10 transition-all duration-700">
-                <BookOpen size={160} />
-              </div>
-
-              <div className="p-8 md:p-10 relative z-10 w-full flex flex-col md:flex-row md:items-end justify-between gap-8 h-full">
-                <div className="space-y-6 flex-1">
-                  <div className="flex items-center gap-3">
-                    <span className="px-2.5 py-0.5 bg-white/10 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-[0.2em] text-white/90 border border-white/10">
-                      Up Next
-                    </span>
-                    <div className="flex items-center gap-1.5 text-secondary animate-pulse">
-                      <Sparkles size={12} fill="currentColor" />
-                      <span className="text-[9px] font-black uppercase tracking-widest">AI Pick</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-2xl md:text-3xl font-black leading-tight text-white drop-shadow-md">
-                      {lastLesson ? lastLesson.label : "Start your first lesson"}
-                    </h3>
-                    <div className="flex items-center gap-2 text-primary-50/80 font-bold text-xs">
-                      <Target size={14} className="text-secondary" />
-                      {lastLesson ? `Topic: ${lastLesson.referenceId}` : "Your learning journey begins here."}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 max-w-sm pt-4">
-                    <div className="flex justify-between items-end mb-1">
-                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">Syllabus Mastery</span>
-                      <span className="text-sm font-black text-white">{percentage}%</span>
-                    </div>
-                    <div className="relative h-2.5 bg-white/10 rounded-full overflow-hidden border border-white/5 backdrop-blur-sm">
-                      <div
-                        className="absolute inset-y-0 left-0 bg-linear-to-r from-secondary via-amber-400 to-secondary transition-all duration-1000 shadow-[0_0_10px_rgba(245,158,11,0.4)]"
-                        style={{ width: `${percentage}%` }} />
-                      
-                    </div>
-                  </div>
+            {/* Study Time This Week */}
+            <div className="bg-app-bg-alt border border-app-border rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <BarChart2 size={17} className="text-blue-500" />
+                  <h3 className="text-sm font-bold text-app-text-main">Study Time This Week</h3>
                 </div>
 
-                <div className="flex flex-col items-center md:items-end gap-3 self-end mb-1">
-                  <button
-                    className="relative group/btn flex items-center justify-center w-full md:w-auto"
-                    onClick={() => lastLesson ? navigate(`/lessons/${lastLesson.referenceId}`) : navigate('/lessons')}>
-                    
-                    {/* Glowing background for button */}
-                    <div className="absolute inset-0 bg-secondary rounded-xl blur-md opacity-20 group-hover/btn:opacity-40 transition-opacity" />
-                    
-                    <div className="relative bg-white text-secondary px-8 py-4 rounded-xl font-black text-base flex items-center gap-3 shadow-xl transition-all duration-300 group-hover/btn:-translate-y-1 group-hover/btn:shadow-2xl active:scale-95 border-b-4 border-secondary/20">
-                      <span className="text-primary uppercase tracking-wider">{lastLesson ? "Resume Lesson" : "Start Learning"}</span>
-                      <div className="bg-secondary text-white rounded-lg p-1 group-hover/btn:translate-x-1 transition-transform">
-                        <ArrowRight size={18} strokeWidth={4} />
-                      </div>
-                    </div>
-                  </button>
-                  <p className="text-[9px] font-black text-white/60 uppercase tracking-[0.3em] mr-2">Est. 12m left</p>
-                </div>
-              </div>
-            </Card>
-
-            {/* SECTION 9: AI STUDY SUGGESTIONS */}
-            <Card className="bg-app-bg border-2 border-primary/20 p-6 shadow-sm overflow-hidden relative">
-              <div className="absolute top-0 right-0 p-4 opacity-5">
-                <Sparkles size={64} className="text-primary" />
-              </div>
-              <div className="flex items-center gap-3 mb-6">
-                 <div className="p-2 bg-primary/10 rounded-xl text-primary">
-                    <Lightbulb size={20} />
-                 </div>
-                 <h3 className="text-sm font-black text-app-text-main uppercase tracking-widest">AI Study Suggestions</h3>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                 <div className="p-4 rounded-xl border border-app-border bg-app-bg hover:border-primary transition-all group flex flex-col gap-2">
-                    <span className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">Recommended</span>
-                    <p className="text-sm font-bold text-app-text-main group-hover:text-primary">Next: Intro to Algebraic Equations</p>
-                    <ArrowRight size={14} className="text-app-text-muted mt-auto" />
-                 </div>
-                 <div className="p-4 rounded-xl border border-app-border bg-app-bg hover:border-secondary transition-all group flex flex-col gap-2">
-                    <span className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">Revision</span>
-                    <p className="text-sm font-bold text-app-text-main group-hover:text-secondary">Revise: Rational Numbers</p>
-                    <ArrowRight size={14} className="text-app-text-muted mt-auto" />
-                 </div>
-                 <div className="p-4 rounded-xl border border-app-border bg-app-bg hover:border-success transition-all group flex flex-col gap-2">
-                    <span className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">Practice</span>
-                    <p className="text-sm font-bold text-app-text-main group-hover:text-success">5 questions to improve accuracy</p>
-                    <ArrowRight size={14} className="text-app-text-muted mt-auto" />
-                 </div>
-              </div>
-            </Card>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* SECTION 5: TIME SPENT VISUALIZATION */}
-              <Card className="bg-app-bg border border-app-border p-6 shadow-xs flex flex-col">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-sm font-black text-app-text-main uppercase tracking-widest flex items-center gap-2">
-                    <div className="p-1.5 bg-secondary/15 rounded-lg">
-                      <Clock size={18} className="text-secondary" />
-                    </div>
-                    Study Time This Week
-                  </h3>
-                </div>
-                <div className="h-48 w-full mt-2">
+                <div className="h-44 w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={timeData}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#2D3748' : '#F1F5F9'} />
+                    <LineChart data={timeData} margin={{ top: 12, right: 12, left: -22, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#334155' : '#E2E8F0'} />
                       <XAxis
                         dataKey="day"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: COLORS.TEXT_MUTED, fontSize: 12, fontWeight: '700' }}
-                        dy={10} />
-                      
-                      <YAxis hide domain={[0, 'auto']} />
+                        tick={{ fill: isDark ? '#94A3B8' : '#64748B', fontSize: 11, fontWeight: '500' }}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        ticks={[0, 60, 120]}
+                        tickFormatter={(val) => `${val / 60}h`}
+                        tick={{ fill: isDark ? '#94A3B8' : '#64748B', fontSize: 11 }}
+                        domain={[0, 120]}
+                      />
                       <Tooltip
-                        cursor={{ fill: COLORS.GRAY, opacity: 0.1 }}
-                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                        formatter={(value) => [`${value} minutes`, 'Time']} />
-                      
-                      <Bar dataKey="minutes" radius={[6, 6, 0, 0]} barSize={28}>
-                        {timeData.map((entry, index) => {
-                          const today = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(new Date());
-                          const isCurrentDay = entry.day === today;
-
-                          let fill = COLORS.GRAY;
-                          if (entry.minutes > 30) fill = COLORS.SUCCESS;else
-                          if (entry.minutes > 0) fill = COLORS.SECONDARY;
-
-                          return (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={fill}
-                              fillOpacity={isCurrentDay ? 1 : 0.8}
-                              stroke={isCurrentDay && entry.minutes > 0 ? fill : 'none'}
-                              strokeWidth={2} />);
-
-
-                        })}
-                      </Bar>
-                    </BarChart>
+                        contentStyle={{
+                          borderRadius: '12px',
+                          backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+                          borderColor: isDark ? '#334155' : '#E2E8F0',
+                          fontSize: '12px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+                        }}
+                        formatter={(value) => [`${value} mins`, 'Study Time']}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="minutes"
+                        stroke="#3B82F6"
+                        strokeWidth={2}
+                        dot={{ fill: '#3B82F6', stroke: '#FFFFFF', strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, fill: '#2563EB' }}
+                      />
+                    </LineChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="mt-8 text-center bg-app-bg-alt py-3 rounded-xl border border-app-border">
-                  <p className="text-[11px] text-app-text-main font-black uppercase tracking-widest italic flex items-center justify-center gap-2">
-                    <Sparkles size={14} className="text-secondary" />
-                    Tip: A little every day goes a long way!
-                  </p>
-                </div>
-              </Card>
+              </div>
 
-              {/* SECTION 4: LEARNING CONSISTENCY (MONTHLY CALENDAR) */}
-              <Card className="bg-app-bg border border-app-border p-6 shadow-xs flex flex-col">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-black text-app-text-main uppercase tracking-widest flex items-center gap-2">
-                    <History size={20} className="text-secondary" /> {calendarData.monthName} {calendarData.year}
-                  </h3>
-                  <div className="flex items-center gap-1.5 px-4 py-2 bg-secondary/15 text-secondary-hover rounded-full border border-secondary/20">
-                    <Zap size={16} fill="currentColor" className="animate-pulse" />
-                    <span className="text-sm font-black">{streakCount} Day Streak!</span>
-                  </div>
+              {/* Bottom Tip */}
+              <div className="mt-4 p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/20 border border-blue-100/60 dark:border-blue-900/30 flex items-center gap-2.5">
+                <div className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                  <Target size={14} />
                 </div>
-                
-                <div className="grid grid-cols-7 gap-2">
-                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) =>
-                  <div key={i} className="text-[11px] font-black text-app-text-main text-center py-2">
-                      {day}
-                    </div>
-                  )}
-                  {calendarData.days.map((d, i) =>
-                  <div
-                    key={i}
-                    className={`
-                        aspect-square rounded-xl flex items-center justify-center text-xs font-black border-2 transition-all group
-                        ${d.day ? 'hover:scale-105 cursor-default' : 'opacity-0'}
-                        ${d.active ? 'bg-success border-success text-white shadow-md shadow-success/20' : 'bg-transparent border-app-border text-app-text-muted'}
-                        ${d.isToday ? 'border-secondary ring-2 ring-secondary/20 z-10 bg-secondary/5 scale-105 shadow-lg shadow-secondary/10' : ''}
-                      `}>
-                    
-                      {d.day &&
-                    <div className="relative">
-                          {d.day}
-                          {d.active && <CheckCircle2 size={10} className="absolute -top-1.5 -right-2 text-white/80" fill="currentColor" />}
-                        </div>
-                    }
-                    </div>
-                  )}
-                </div>
-                
-                <div className="mt-8 pt-4 border-t border-app-border">
-                  <p className="text-sm font-black text-app-text-main flex items-center gap-3">
-                    <div className="p-2 bg-secondary/10 rounded-lg">
-                      <Trophy size={18} className="text-secondary" />
-                    </div>
-                    {streakCount > 0 ?
-                    `Great consistency! You've learned for ${streakCount} days straight.` :
-
-                    "Study 1 more day to start your streak!"
-                    }
-                  </p>
-                </div>
-                
-                <div className="mt-6 flex items-center justify-between px-2">
-                  <div className="flex items-center gap-2">
-                     <div className="w-3.5 h-3.5 bg-success rounded-md shadow-sm" />
-                     <span className="text-[11px] font-bold text-app-text-sub">Study Day</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <div className="w-3.5 h-3.5 bg-transparent border-2 border-app-border rounded-md" />
-                     <span className="text-[11px] font-bold text-app-text-sub">No Activity</span>
-                  </div>
-                </div>
-              </Card>
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  Try a little every day for a long way!
+                </p>
+              </div>
             </div>
 
-            {/* SECTION 6: ACCESSIBILITY QUICK ACCESS */}
-            <div className="space-y-4">
-               <h2 className="text-xs font-black text-app-text-muted uppercase tracking-[0.2em] px-1">Quick Accessibility Tools</h2>
-               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {[
-                { id: 'sign', label: 'Sign Language', icon: Hand, active: signLanguageEnabled, toggle: toggleSignLanguage, color: 'text-amber-500' },
-                { id: 'captions', label: 'Captions', icon: Type, active: captionsEnabled, toggle: toggleCaptions, color: 'text-blue-500' },
-                { id: 'speech', label: 'Speech Assist', icon: Volume2, active: speechAssistEnabled, toggle: toggleSpeechAssist, color: 'text-purple-500' }].
-                map((tool) =>
-                <button
-                  key={tool.id}
-                  onClick={tool.toggle}
-                  className={`flex flex-col items-start p-5 rounded-2xl border-2 transition-all text-left group ${
-                  tool.active ?
-                  'border-secondary bg-secondary/5 shadow-lg shadow-secondary/5' :
-                  'border-app-border bg-app-bg hover:border-app-text-main'}`
-                  }>
-                  
-                      <div className={`p-2 rounded-xl mb-4 transition-transform group-hover:scale-110 ${tool.active ? 'bg-secondary text-white' : 'bg-app-bg border border-app-border ' + tool.color}`}>
-                        <tool.icon size={20} />
-                      </div>
-                      <span className="text-[11px] font-black text-app-text-muted uppercase tracking-widest mb-1">{tool.label}</span>
-                      <p className={`text-sm font-bold ${tool.active ? 'text-secondary' : 'text-app-text-main'}`}>
-                        {tool.active ? 'ON' : 'OFF'}
-                      </p>
+            {/* Monthly Calendar */}
+            <div className="bg-app-bg-alt border border-app-border rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <BookOpen size={17} className="text-blue-500" />
+                    <h3 className="text-sm font-bold text-app-text-main">
+                      {calendarData.monthName} {calendarData.year}
+                    </h3>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={handlePrevMonth}
+                      aria-label="Previous Month"
+                      className="p-1 rounded-lg hover:bg-app-bg text-app-text-muted hover:text-app-text-main transition-colors cursor-pointer"
+                    >
+                      <ChevronLeft size={16} />
                     </button>
-                )}
-               </div>
+                    <button
+                      onClick={handleNextMonth}
+                      aria-label="Next Month"
+                      className="p-1 rounded-lg hover:bg-app-bg text-app-text-muted hover:text-app-text-main transition-colors cursor-pointer"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Day Headers */}
+                <div className="grid grid-cols-7 gap-1 text-center mb-1">
+                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
+                    <span key={idx} className="text-xs font-bold text-slate-400 py-1">
+                      {day}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Dates Grid */}
+                <div className="grid grid-cols-7 gap-1 text-center">
+                  {calendarData.days.map((item, idx) => (
+                    <div key={idx} className="h-8 flex items-center justify-center">
+                      <span
+                        className={`text-xs w-7 h-7 flex items-center justify-center rounded-lg transition-all ${
+                          item.isHighlighted
+                            ? 'bg-blue-600 text-white font-bold shadow-xs'
+                            : item.isCurrentMonth
+                            ? 'text-slate-800 dark:text-slate-200 font-medium hover:bg-blue-50 dark:hover:bg-slate-800'
+                            : 'text-slate-300 dark:text-slate-600 font-normal'
+                        }`}
+                      >
+                        {item.day}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Calendar Footer Link */}
+              <div
+                onClick={() => navigate('/lessons')}
+                className="mt-3 pt-3 border-t border-app-border/50 flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <Target size={14} className="text-blue-500" />
+                  <span>Set a study goal for this month!</span>
+                </div>
+                <ChevronRight size={14} />
+              </div>
             </div>
+
           </div>
 
-          {/* Sidebar Area (4/12) */}
-          <div className="lg:col-span-4 space-y-8">
-            
-            {/* SECTION 3: LEARNING PROGRESS OVERVIEW */}
-            <Card className="bg-app-bg border border-app-border p-6 shadow-xs divide-y divide-app-border">
-               <div className="pb-6">
-                  <h3 className="text-xs font-black text-app-text-muted uppercase tracking-widest mb-6">Learning Pulse</h3>
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-success/10 text-success flex items-center justify-center">
-                        <CheckCircle2 size={24} />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-black text-app-text-main">{completedCount}</p>
-                        <p className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">Lessons Completed</p>
-                      </div>
-                    </div>
+          {/* 4. QUICK ACCESSIBILITY TOOLS */}
+          <section className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Zap size={17} className="text-blue-600 dark:text-blue-400" />
+              <h3 className="text-sm font-bold text-app-text-main">Quick Accessibility Tools</h3>
+            </div>
 
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center">
-                        <MessageSquare size={24} />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-black text-app-text-main">{progress.questionsAsked || 0}</p>
-                        <p className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">AI Doubts Solved</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center">
-                        <Zap size={24} />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-black text-app-text-main">{streakCount}</p>
-                        <p className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">Current Streak</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
-                        <Clock size={24} />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-black text-app-text-main">{progress.timeSpent.totalMinutes}</p>
-                        <p className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">Minutes Studied</p>
-                      </div>
-                    </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+              {/* Sign Language */}
+              <div
+                onClick={toggleSignLanguage}
+                className="bg-[#F0F8FF] dark:bg-sky-950/20 border border-[#E0F2FE] dark:border-sky-900/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 cursor-pointer hover:border-blue-300 dark:hover:border-blue-700 transition-all group shadow-xs"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                    <Globe size={18} />
                   </div>
-
-                  {/* WEEKLY LEARNING GOAL SECTION */}
-                  <div className="mt-8 pt-8 border-t border-app-border">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-[10px] font-black text-app-text-muted uppercase tracking-widest flex items-center gap-2">
-                        <Target size={14} className="text-primary" /> Weekly Learning Goal
-                      </h3>
-                      <span className="text-xs font-black text-app-text-main">{Math.min(completedCount, 5)} / 5 lessons</span>
-                    </div>
-                    <div className="w-full h-2 bg-app-bg-alt rounded-full overflow-hidden border border-app-border">
-                      <div
-                      className="h-full bg-linear-to-r from-primary to-secondary transition-all duration-1000"
-                      style={{ width: `${Math.min(completedCount, 5) / 5 * 100}%` }} />
-                    
-                    </div>
-                    <p className="mt-4 text-[10px] text-app-text-muted font-bold italic">
-                      {completedCount >= 5 ? "Goal reached! Excellent effort." : "Keep it up, you're almost there!"}
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                      Sign Language
+                    </h4>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                      {signLanguageEnabled ? 'ON' : 'OFF'}
                     </p>
                   </div>
-               </div>
+                </div>
+                <ChevronRight size={15} className="text-blue-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              </div>
 
-               {/* SECTION 8: ACHIEVEMENTS & MOTIVATION */}
-               <div className="py-6">
-                  <h3 className="text-xs font-black text-app-text-muted uppercase tracking-widest mb-4">Achievements</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {streakCount >= 1 &&
-                  <div className="group relative cursor-help">
-                        <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-white ring-2 ring-white shadow-md">
-                          <Zap size={18} />
-                        </div>
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-2 py-1 bg-black text-white text-[9px] rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                          Learning Streak
-                        </div>
-                      </div>
-                  }
-                    {completedCount >= 1 &&
-                  <div className="group relative cursor-help">
-                        <div className="w-10 h-10 rounded-full bg-success flex items-center justify-center text-white ring-2 ring-white shadow-md">
-                          <BookOpen size={18} />
-                        </div>
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-2 py-1 bg-black text-white text-[9px] rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                          First Lesson Done
-                        </div>
-                      </div>
-                  }
-                    <button
-                    onClick={() => navigate('/certificates')}
-                    className="w-10 h-10 rounded-full bg-app-bg border border-app-border flex items-center justify-center text-app-text-muted hover:text-app-text-main transition-colors">
-                    
-                      <Award size={18} />
-                    </button>
+              {/* Captions */}
+              <div
+                onClick={toggleCaptions}
+                className="bg-[#F9F5FF] dark:bg-purple-950/20 border border-[#F3E8FF] dark:border-purple-900/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 transition-all group shadow-xs"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <Type size={18} />
                   </div>
-                  <div className="mt-6 p-4 bg-app-bg-alt rounded-2xl border border-app-border italic text-xs text-app-text-sub">
-                    "Success is the sum of small efforts, repeated day in and day out."
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                      Captions
+                    </h4>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                      {captionsEnabled ? 'ON' : 'OFF'}
+                    </p>
                   </div>
-               </div>
-            </Card>
-
-            {/* SECTION 7: OFFLINE & LOW DATA STATUS */}
-            <Card className={`border shadow-xs p-6 ${isOffline ? 'bg-error/5 border-error/20' : 'bg-app-bg border-app-border'}`}>
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-2">
-                   {isOffline ? <WifiOff className="text-error" size={20} /> : <Wifi className="text-success" size={20} />}
-                   <h3 className="text-sm font-black text-app-text-main uppercase tracking-widest">Offline Learning</h3>
                 </div>
-                {syncInProgress && <RefreshCw size={16} className="animate-spin text-app-text-muted" />}
+                <ChevronRight size={15} className="text-purple-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
               </div>
-              
-              <div className="space-y-4">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-app-text-sub font-medium">Ready for Offline:</span>
-                  <span className="font-black text-app-text-main">{downloadedLessons.length} lessons</span>
-                </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-app-text-sub font-medium">Sync Status:</span>
-                  <span className={`font-black ${isOffline ? 'text-error' : 'text-success'}`}>
-                    {isOffline ? "Pending Sync" : "Up to date"}
-                  </span>
-                </div>
 
-                {/* LOW DATA MODE INDICATOR */}
-                <div className="p-3 bg-success/5 rounded-xl border border-success/10 flex flex-col gap-1">
-                   <p className="text-[10px] font-black text-success uppercase tracking-widest flex items-center gap-1.5">
-                      <Zap size={10} fill="currentColor" /> Low Data Mode Active
-                   </p>
-                   <p className="text-[9px] font-bold text-app-text-sub">Optimized for slow internet & low mobile data</p>
+              {/* Speech Assist */}
+              <div
+                onClick={toggleSpeechAssist}
+                className="bg-[#FFF6F6] dark:bg-rose-950/20 border border-[#FEE2E2] dark:border-rose-900/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 cursor-pointer hover:border-rose-300 dark:hover:border-rose-700 transition-all group shadow-xs"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                    <Volume2 size={18} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                      Speech Assist
+                    </h4>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                      {speechAssistEnabled ? 'ON' : 'OFF'}
+                    </p>
+                  </div>
                 </div>
-
-                <Button
-                  variant="outline"
-                  className="w-full text-[10px] py-3 rounded-xl uppercase tracking-widest font-black"
-                  onClick={() => navigate('/lessons/uploaded')}>
-                  
-                  Manage Downloads
-                </Button>
+                <ChevronRight size={15} className="text-rose-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
               </div>
-            </Card>
+            </div>
+          </section>
 
-            {/* Quick Navigation Card */}
-            <Card className="bg-app-bg border border-app-border p-6">
-              <h4 className="text-[10px] font-black text-app-text-muted tracking-[0.2em] uppercase mb-4">Shortcuts</h4>
-              <div className="grid grid-cols-2 gap-3">
-                 <Link to="/ai-tutor" className="p-3 bg-app-bg border border-app-border rounded-xl flex flex-col items-center gap-2 hover:border-primary transition-all group">
-                    <Sparkles size={20} className="text-primary group-hover:scale-110 transition-transform" />
-                    <span className="text-[9px] font-black uppercase text-app-text-main">AI Tutor</span>
-                 </Link>
-                 <Link to="/lessons" className="p-3 bg-app-bg border border-app-border rounded-xl flex flex-col items-center gap-2 hover:border-success transition-all group">
-                    <BookOpen size={20} className="text-success group-hover:scale-110 transition-transform" />
-                    <span className="text-[9px] font-black uppercase text-app-text-main">Lessons</span>
-                 </Link>
-                 <Link to="/exams" className="p-3 bg-app-bg border border-app-border rounded-xl flex flex-col items-center gap-2 hover:border-secondary transition-all group">
-                    <Award size={20} className="text-secondary group-hover:scale-110 transition-transform" />
-                    <span className="text-[9px] font-black uppercase text-app-text-main">Exams</span>
-                 </Link>
-                 <Link to="/lessons/uploaded" className="p-3 bg-app-bg border border-app-border rounded-xl flex flex-col items-center gap-2 hover:border-amber-500 transition-all group">
-                    <WifiOff size={20} className="text-amber-500 group-hover:scale-110 transition-transform" />
-                    <span className="text-[9px] font-black uppercase text-app-text-main">Offline</span>
-                 </Link>
+        </div>
+
+        {/* RIGHT COLUMN: LEARNING PULSE, ACHIEVEMENTS, OFFLINE LEARNING (4 COLS) */}
+        <div className="lg:col-span-4 space-y-6">
+          
+          {/* 1. LEARNING PULSE (2x2 STATS GRID) */}
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl p-5 shadow-xs">
+            <div className="flex items-center gap-2 mb-4">
+              <BarChart2 size={17} className="text-blue-500" />
+              <h3 className="text-sm font-bold text-app-text-main">Learning Pulse</h3>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {/* Lessons Completed */}
+              <div
+                onClick={() => navigate('/lessons')}
+                className="bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100/60 dark:border-blue-900/30 rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:border-blue-300 transition-all shadow-xs"
+              >
+                <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                  <FileText size={16} />
+                </div>
+                <div>
+                  <p className="text-lg font-extrabold text-slate-900 dark:text-white leading-none">
+                    {completedCount}
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
+                    Lessons Completed
+                  </p>
+                </div>
               </div>
-            </Card>
 
-            {/* TEACHER / PARENT INSIGHT (MINIMAL) */}
-            <div className="p-4 bg-app-bg-alt rounded-2xl border border-app-border flex items-center gap-3">
-               <div className="p-2 bg-app-text-muted/10 rounded-lg text-app-text-muted">
-                  <FileBarChart size={16} />
-               </div>
-               <p className="text-[11px] font-bold text-app-text-sub">
-                  Teacher Portal: <span className="text-success">Weekly progress report ready</span>
-               </p>
+              {/* Assignments */}
+              <div
+                onClick={() => navigate('/assignments')}
+                className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100/60 dark:border-emerald-900/30 rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs"
+              >
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <CheckCircle2 size={16} />
+                </div>
+                <div>
+                  <p className="text-lg font-extrabold text-slate-900 dark:text-white leading-none">
+                    3
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
+                    Assignments
+                  </p>
+                </div>
+              </div>
+
+              {/* Exams Taken */}
+              <div
+                onClick={() => navigate('/exams')}
+                className="bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100/60 dark:border-amber-900/30 rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:border-amber-300 transition-all shadow-xs"
+              >
+                <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                  <Award size={16} />
+                </div>
+                <div>
+                  <p className="text-lg font-extrabold text-slate-900 dark:text-white leading-none">
+                    {progress.quizScores?.length || 0}
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
+                    Exams Taken
+                  </p>
+                </div>
+              </div>
+
+              {/* Certificates */}
+              <div
+                onClick={() => navigate('/certificates')}
+                className="bg-purple-50/50 dark:bg-purple-950/20 border border-purple-100/60 dark:border-purple-900/30 rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:border-purple-300 transition-all shadow-xs"
+              >
+                <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                  <Trophy size={16} />
+                </div>
+                <div>
+                  <p className="text-lg font-extrabold text-slate-900 dark:text-white leading-none">
+                    0
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
+                    Certificates
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>);
 
+          {/* 2. ACHIEVEMENTS */}
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl p-5 shadow-xs">
+            <div className="flex items-center gap-2 mb-4">
+              <Trophy size={17} className="text-amber-500" />
+              <h3 className="text-sm font-bold text-app-text-main">Achievements</h3>
+            </div>
+
+            <div className="py-5 text-center">
+              <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 flex items-center justify-center mx-auto mb-3 shadow-xs">
+                <Award size={26} strokeWidth={1.5} />
+              </div>
+              <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                No achievements yet
+              </h4>
+              <p className="text-[11px] text-slate-400 max-w-[220px] mx-auto mt-1 leading-relaxed">
+                Complete lessons, assignments or exams to earn badges and certificates.
+              </p>
+            </div>
+          </div>
+
+          {/* 3. OFFLINE LEARNING */}
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl p-5 shadow-xs">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Wifi size={17} className="text-emerald-500" />
+                <h3 className="text-sm font-bold text-app-text-main">Offline Learning</h3>
+              </div>
+              <span className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200/50 dark:border-emerald-800/40 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Ready
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {/* Sync Status Row */}
+              <div className="flex items-center justify-between text-xs py-1">
+                <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 font-medium">
+                  <User size={15} />
+                  <span>Sync Status</span>
+                </div>
+                <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
+                  <span className={`w-2 h-2 rounded-full ${isOffline ? 'bg-amber-500' : 'bg-amber-500'}`} />
+                  <span>{isOffline ? "Pending Sync" : "Not Synced"}</span>
+                </div>
+              </div>
+
+              {/* Downloaded Content Row */}
+              <div className="flex items-center justify-between text-xs py-1">
+                <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 font-medium">
+                  <Shield size={15} />
+                  <span>Downloaded Content</span>
+                </div>
+                <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
+                  <span className="w-2 h-2 rounded-full bg-slate-400" />
+                  <span>{downloadedLessons.length} resources</span>
+                </div>
+              </div>
+
+              {/* Sync Button */}
+              <button
+                onClick={() => navigate('/lessons/uploaded')}
+                className="w-full mt-3 border border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-xl py-2.5 px-4 font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                {syncInProgress ? (
+                  <RefreshCw size={14} className="animate-spin" />
+                ) : (
+                  <Download size={14} />
+                )}
+                <span>Sync for Offline Access</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;

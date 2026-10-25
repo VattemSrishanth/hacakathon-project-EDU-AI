@@ -23,17 +23,14 @@ import {
   BarChart3,
   Compass,
   AlertCircle,
-  CheckCircle2,
-  Info,
   X,
-  ExternalLink,
   RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { userDataAPI } from '../../services/api';
 
-// Curated default academic items matching reference design
+// Reference academic slides with polished defaults
 const DEFAULT_HERO_SLIDES = [
   {
     id: 'hero-1',
@@ -70,7 +67,7 @@ const DEFAULT_ARTICLES = [
     image: 'https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?q=80&w=800',
     timeAgo: '2 hours ago',
     tag: 'Results',
-    tagColor: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
+    tagColor: 'bg-rose-50 text-rose-600 dark:bg-rose-950/30 dark:text-rose-400 border border-rose-200/40 dark:border-rose-900/30'
   },
   {
     id: 'art-2',
@@ -80,7 +77,7 @@ const DEFAULT_ARTICLES = [
     image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800',
     timeAgo: '5 hours ago',
     tag: 'Exam',
-    tagColor: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300'
+    tagColor: 'bg-sky-50 text-sky-600 dark:bg-sky-950/30 dark:text-sky-400 border border-sky-200/40 dark:border-sky-900/30'
   },
   {
     id: 'art-3',
@@ -90,7 +87,7 @@ const DEFAULT_ARTICLES = [
     image: 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800',
     timeAgo: '1 day ago',
     tag: 'Admission',
-    tagColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+    tagColor: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-200/40 dark:border-emerald-900/30'
   }
 ];
 
@@ -137,7 +134,6 @@ const Notifications = () => {
   const [news, setNews] = useState([]);
   const [loadingNotifs, setLoadingNotifs] = useState(true);
   const [loadingNews, setLoadingNews] = useState(true);
-  const [error, setError] = useState(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [aiQuery, setAiQuery] = useState('');
   const [savedArticles, setSavedArticles] = useState([]);
@@ -165,7 +161,6 @@ const Notifications = () => {
         }
       } catch (err) {
         console.error('Failed to fetch education page data', err);
-        setError('Failed to load real-time updates. Default academic resources are active.');
       } finally {
         setLoadingNotifs(false);
         setLoadingNews(false);
@@ -190,7 +185,7 @@ const Notifications = () => {
     return DEFAULT_HERO_SLIDES;
   }, [news]);
 
-  // Auto-advance hero carousel
+  // Auto-advance hero carousel with gentle pacing
   useEffect(() => {
     if (heroSlides.length <= 1) return;
     const timer = setInterval(() => {
@@ -203,9 +198,9 @@ const Notifications = () => {
   const articlesList = useMemo(() => {
     if (news.length >= 3) {
       const tags = [
-        { tag: 'Results', color: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300' },
-        { tag: 'Exam', color: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300' },
-        { tag: 'Admission', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' }
+        { tag: 'Results', color: 'bg-rose-50 text-rose-600 dark:bg-rose-950/30 dark:text-rose-400 border border-rose-200/40 dark:border-rose-900/30' },
+        { tag: 'Exam', color: 'bg-sky-50 text-sky-600 dark:bg-sky-950/30 dark:text-sky-400 border border-sky-200/40 dark:border-sky-900/30' },
+        { tag: 'Admission', color: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-200/40 dark:border-emerald-900/30' }
       ];
       return news.slice(0, 3).map((item, idx) => ({
         id: item.id || `art-${idx}`,
@@ -283,54 +278,55 @@ const Notifications = () => {
     );
   };
 
+  // Restrained, soft pastel color system matching the reference design
   const quickAccessCards = [
     {
       id: 'updates',
       label: 'Latest Updates',
       sub: 'Government & Private',
       icon: FileText,
-      iconColor: 'text-rose-600 dark:text-rose-400',
-      bgClass: 'bg-rose-50/80 dark:bg-rose-950/25 border-rose-200/70 dark:border-rose-900/40 hover:border-rose-300 dark:hover:border-rose-700'
+      iconColor: 'text-rose-500 dark:text-rose-400',
+      bgClass: 'bg-[#FFF6F6] dark:bg-rose-950/10 border-[#FEE2E2] dark:border-rose-900/20 hover:border-rose-300 dark:hover:border-rose-800'
     },
     {
       id: 'results',
       label: 'Results',
       sub: 'Check Exam Results',
       icon: CheckSquare,
-      iconColor: 'text-sky-600 dark:text-sky-400',
-      bgClass: 'bg-sky-50/80 dark:bg-sky-950/25 border-sky-200/70 dark:border-sky-900/40 hover:border-sky-300 dark:hover:border-sky-700'
+      iconColor: 'text-sky-500 dark:text-sky-400',
+      bgClass: 'bg-[#F0F8FF] dark:bg-sky-950/10 border-[#E0F2FE] dark:border-sky-900/20 hover:border-sky-300 dark:hover:border-sky-800'
     },
     {
       id: 'admissions',
       label: 'Admissions',
       sub: 'Colleges & Courses',
       icon: GraduationCap,
-      iconColor: 'text-emerald-600 dark:text-emerald-400',
-      bgClass: 'bg-emerald-50/80 dark:bg-emerald-950/25 border-emerald-200/70 dark:border-emerald-900/40 hover:border-emerald-300 dark:hover:border-emerald-700'
+      iconColor: 'text-emerald-500 dark:text-emerald-400',
+      bgClass: 'bg-[#F1FAF5] dark:bg-emerald-950/10 border-[#DCFCE7] dark:border-emerald-900/20 hover:border-emerald-300 dark:hover:border-emerald-800'
     },
     {
       id: 'scholarships',
       label: 'Scholarships',
       sub: 'Find Opportunities',
       icon: Trophy,
-      iconColor: 'text-amber-600 dark:text-amber-400',
-      bgClass: 'bg-amber-50/80 dark:bg-amber-950/25 border-amber-200/70 dark:border-amber-900/40 hover:border-amber-300 dark:hover:border-amber-700'
+      iconColor: 'text-amber-500 dark:text-amber-400',
+      bgClass: 'bg-[#FFFBF0] dark:bg-amber-950/10 border-[#FEF3C7] dark:border-amber-900/20 hover:border-amber-300 dark:hover:border-amber-800'
     },
     {
       id: 'syllabus',
       label: 'Syllabus',
       sub: 'Download PDFs',
       icon: BookOpen,
-      iconColor: 'text-purple-600 dark:text-purple-400',
-      bgClass: 'bg-purple-50/80 dark:bg-purple-950/25 border-purple-200/70 dark:border-purple-900/40 hover:border-purple-300 dark:hover:border-purple-700'
+      iconColor: 'text-purple-500 dark:text-purple-400',
+      bgClass: 'bg-[#F9F5FF] dark:bg-purple-950/10 border-[#F3E8FF] dark:border-purple-900/20 hover:border-purple-300 dark:hover:border-purple-800'
     },
     {
       id: 'notifications',
       label: 'Notifications',
       sub: 'Important Alerts',
       icon: Bell,
-      iconColor: 'text-blue-600 dark:text-blue-400',
-      bgClass: 'bg-blue-50/80 dark:bg-blue-950/25 border-blue-200/70 dark:border-blue-900/40 hover:border-blue-300 dark:hover:border-blue-700'
+      iconColor: 'text-blue-500 dark:text-blue-400',
+      bgClass: 'bg-[#F0F4FF] dark:bg-blue-950/10 border-[#DBEAFE] dark:border-blue-900/20 hover:border-blue-300 dark:hover:border-blue-800'
     }
   ];
 
@@ -340,7 +336,7 @@ const Notifications = () => {
       title: 'My Exams',
       sub: 'Manage your exam dates',
       icon: FileText,
-      iconBg: 'bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400',
+      iconBg: 'bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400',
       onClick: () => navigate('/exams')
     },
     {
@@ -348,7 +344,7 @@ const Notifications = () => {
       title: 'Saved Articles',
       sub: `${savedArticles.length > 0 ? savedArticles.length : 'Your'} bookmarked content`,
       icon: Bookmark,
-      iconBg: 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400',
+      iconBg: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400',
       onClick: () => setShowNotifModal(true)
     },
     {
@@ -356,7 +352,7 @@ const Notifications = () => {
       title: 'My Certificates',
       sub: 'View and download',
       icon: Trophy,
-      iconBg: 'bg-sky-100 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400',
+      iconBg: 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400',
       onClick: () => navigate('/certificates')
     },
     {
@@ -364,7 +360,7 @@ const Notifications = () => {
       title: 'Study Progress',
       sub: 'Track your learning journey',
       icon: TrendingUp,
-      iconBg: 'bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400',
+      iconBg: 'bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400',
       onClick: () => navigate('/dashboard')
     },
     {
@@ -372,58 +368,59 @@ const Notifications = () => {
       title: 'Notifications',
       sub: `${notifications.filter((n) => !n.is_read).length || 'Latest'} updates and alerts`,
       icon: Bell,
-      iconBg: 'bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400',
+      iconBg: 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400',
       onClick: () => setShowNotifModal(true)
     }
   ];
 
+  // Refined pastel cards for Tools & Resources matching the subtle aesthetic
   const toolsCards = [
     {
       id: 'previous-papers',
       label: 'Previous Papers',
       icon: ListTodo,
-      iconColor: 'text-rose-600 dark:text-rose-400',
-      bgClass: 'bg-rose-50/80 dark:bg-rose-950/25 border-rose-200/70 dark:border-rose-900/40 hover:border-rose-300 dark:hover:border-rose-700',
+      iconColor: 'text-rose-500 dark:text-rose-400',
+      bgClass: 'bg-[#FFF6F6] dark:bg-rose-950/10 border-[#FEE2E2] dark:border-rose-900/20 hover:border-rose-300 dark:hover:border-rose-800',
       route: '/exams'
     },
     {
       id: 'question-banks',
       label: 'Question Banks',
       icon: Database,
-      iconColor: 'text-sky-600 dark:text-sky-400',
-      bgClass: 'bg-sky-50/80 dark:bg-sky-950/25 border-sky-200/70 dark:border-sky-900/40 hover:border-sky-300 dark:hover:border-sky-700',
+      iconColor: 'text-sky-500 dark:text-sky-400',
+      bgClass: 'bg-[#F0F8FF] dark:bg-sky-950/10 border-[#E0F2FE] dark:border-sky-900/20 hover:border-sky-300 dark:hover:border-sky-800',
       route: '/lessons/quiz'
     },
     {
       id: 'study-material',
       label: 'Study Material',
       icon: BookOpen,
-      iconColor: 'text-emerald-600 dark:text-emerald-400',
-      bgClass: 'bg-emerald-50/80 dark:bg-emerald-950/25 border-emerald-200/70 dark:border-emerald-900/40 hover:border-emerald-300 dark:hover:border-emerald-700',
+      iconColor: 'text-emerald-500 dark:text-emerald-400',
+      bgClass: 'bg-[#F1FAF5] dark:bg-emerald-950/10 border-[#DCFCE7] dark:border-emerald-900/20 hover:border-emerald-300 dark:hover:border-emerald-800',
       route: '/lessons'
     },
     {
       id: 'exam-calendar',
       label: 'Exam Calendar',
       icon: Calendar,
-      iconColor: 'text-purple-600 dark:text-purple-400',
-      bgClass: 'bg-purple-50/80 dark:bg-purple-950/25 border-purple-200/70 dark:border-purple-900/40 hover:border-purple-300 dark:hover:border-purple-700',
+      iconColor: 'text-purple-500 dark:text-purple-400',
+      bgClass: 'bg-[#F9F5FF] dark:bg-purple-950/10 border-[#F3E8FF] dark:border-purple-900/20 hover:border-purple-300 dark:hover:border-purple-800',
       route: '/exams'
     },
     {
       id: 'college-predictor',
       label: 'College Predictor',
       icon: BarChart3,
-      iconColor: 'text-amber-600 dark:text-amber-400',
-      bgClass: 'bg-amber-50/80 dark:bg-amber-950/25 border-amber-200/70 dark:border-amber-900/40 hover:border-amber-300 dark:hover:border-amber-700',
+      iconColor: 'text-amber-500 dark:text-amber-400',
+      bgClass: 'bg-[#FFFBF0] dark:bg-amber-950/10 border-[#FEF3C7] dark:border-amber-900/20 hover:border-amber-300 dark:hover:border-amber-800',
       route: '/insights'
     },
     {
       id: 'career-guidance',
       label: 'Career Guidance',
       icon: Compass,
-      iconColor: 'text-orange-600 dark:text-orange-400',
-      bgClass: 'bg-orange-50/80 dark:bg-orange-950/25 border-orange-200/70 dark:border-orange-900/40 hover:border-orange-300 dark:hover:border-orange-700',
+      iconColor: 'text-rose-500 dark:text-rose-400',
+      bgClass: 'bg-[#FFF5F2] dark:bg-rose-950/10 border-[#FFE4E6] dark:border-rose-900/20 hover:border-rose-300 dark:hover:border-rose-800',
       route: '/ai-tutor',
       prompt: 'Provide career guidance and roadmap for my studies.'
     }
@@ -435,7 +432,7 @@ const Notifications = () => {
       <header className="space-y-1">
         <button
           onClick={() => navigate('/dashboard')}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider hover:underline transition-all cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider hover:underline transition-all cursor-pointer"
         >
           <ChevronLeft size={14} />
           <span>EDUCATION HUB</span>
@@ -452,29 +449,29 @@ const Notifications = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         {/* Left: Hero Carousel Banner */}
         <div className="lg:col-span-8 flex flex-col justify-between">
-          <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#0B1021] border border-slate-800 p-6 md:p-8 flex flex-col justify-between min-h-[240px] shadow-sm group">
+          <div className="relative rounded-2xl md:rounded-3xl overflow-hidden bg-[#0a0f1d] border border-slate-800/80 p-6 md:p-8 flex flex-col justify-between min-h-[235px] shadow-sm group">
             {/* Background Graphic: Space/Rocket visual on right with gradient fade */}
-            <div className="absolute right-0 top-0 bottom-0 w-3/5 md:w-1/2 overflow-hidden pointer-events-none select-none">
+            <div className="absolute right-0 top-0 bottom-0 w-3/5 sm:w-1/2 md:w-5/12 overflow-hidden pointer-events-none select-none">
               <img
                 src={activeHero.image}
                 alt={activeHero.title}
-                className="w-full h-full object-cover object-center opacity-85 transition-opacity duration-700"
+                className="w-full h-full object-cover object-center transition-opacity duration-700"
                 onError={(e) => {
                   e.target.src = 'https://images.unsplash.com/photo-1517976487507-5b3df1182e32?q=80&w=1200';
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0B1021] via-[#0B1021]/80 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f1d] via-[#0a0f1d]/75 to-transparent" />
             </div>
 
             {/* Banner Content (Locked dark theme colors to guarantee contrast on cosmic card) */}
-            <div className="relative z-10 max-w-lg space-y-2.5">
-              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-pink-600 text-white shadow-xs">
+            <div className="relative z-10 max-w-lg space-y-2">
+              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-pink-600 text-white shadow-xs">
                 {activeHero.badge}
               </span>
-              <h2 className="text-lg md:text-2xl font-extrabold text-white leading-snug line-clamp-2">
+              <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-snug line-clamp-2">
                 {activeHero.title}
               </h2>
-              <p className="text-xs md:text-sm text-slate-200 line-clamp-2 leading-relaxed">
+              <p className="text-xs md:text-sm text-slate-300 font-normal line-clamp-2 leading-relaxed">
                 {activeHero.subtitle}
               </p>
             </div>
@@ -485,7 +482,7 @@ const Notifications = () => {
                 href={activeHero.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold text-xs px-4 py-2 rounded-full inline-flex items-center gap-1.5 shadow-md hover:scale-105 transition-all cursor-pointer"
+                className="font-semibold text-xs px-4 py-2 rounded-full inline-flex items-center gap-1.5 shadow-sm hover:scale-105 transition-all cursor-pointer"
                 style={{ backgroundColor: '#ffffff', color: '#0f172a' }}
               >
                 <span>Read Full Article</span>
@@ -511,16 +508,16 @@ const Notifications = () => {
 
         {/* Right: AI Assistant Card */}
         <div className="lg:col-span-4 flex flex-col justify-between">
-          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-5 flex flex-col justify-between shadow-sm h-full">
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-5 flex flex-col justify-between shadow-xs h-full">
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <Sparkles size={18} className="text-purple-600 dark:text-purple-400" />
+                  <Sparkles size={17} className="text-purple-600 dark:text-purple-400" />
                   <h3 className="font-bold text-sm md:text-base text-app-text-main">AI Assistant</h3>
                 </div>
                 <button
                   onClick={() => navigate('/ai-tutor')}
-                  className="text-xs font-semibold px-3 py-1 rounded-full border border-app-border text-app-text-sub hover:text-primary hover:border-primary transition-all cursor-pointer"
+                  className="text-xs font-medium px-3 py-0.5 rounded-full border border-app-border text-app-text-sub hover:text-primary hover:border-primary transition-all cursor-pointer"
                 >
                   Try Now
                 </button>
@@ -536,12 +533,12 @@ const Notifications = () => {
                   value={aiQuery}
                   onChange={(e) => setAiQuery(e.target.value)}
                   placeholder="Ask about exams, results, syllabus..."
-                  className="w-full bg-app-bg border border-app-border rounded-xl pl-3.5 pr-11 py-2.5 text-xs text-app-text-main placeholder:text-app-text-muted focus:outline-none focus:border-primary transition-all"
+                  className="w-full bg-app-bg border border-app-border/80 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 rounded-xl pl-3.5 pr-11 py-2.5 text-xs text-app-text-main placeholder:text-app-text-muted transition-all"
                 />
                 <button
                   type="submit"
                   aria-label="Send query"
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-sm"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs"
                 >
                   <Send size={12} className="translate-x-[-1px] translate-y-[-1px] rotate-45" />
                 </button>
@@ -555,7 +552,7 @@ const Notifications = () => {
                   key={chip}
                   type="button"
                   onClick={() => handleAiChipClick(chip)}
-                  className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-app-bg border border-app-border text-app-text-sub hover:text-primary hover:border-primary transition-all cursor-pointer"
+                  className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-app-bg border border-app-border/80 text-app-text-sub hover:text-app-text-main hover:border-primary/50 transition-all cursor-pointer"
                 >
                   {chip}
                 </button>
@@ -565,16 +562,16 @@ const Notifications = () => {
         </div>
       </div>
 
-      {/* Row 2: Quick Access (6 Pastel Cards) */}
+      {/* Row 2: Quick Access (6 Subtle Pastel Cards) */}
       <section>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Zap size={16} className="text-amber-500 fill-amber-500" />
+            <Zap size={16} className="text-indigo-600 dark:text-indigo-400 fill-indigo-600 dark:fill-indigo-400" />
             <h3 className="text-sm font-bold text-app-text-main">Quick Access</h3>
           </div>
           <button
             onClick={() => handleQuickAccess('updates')}
-            className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+            className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5 cursor-pointer"
           >
             View All <ChevronRight size={12} />
           </button>
@@ -589,14 +586,14 @@ const Notifications = () => {
                 onClick={() => handleQuickAccess(card.id)}
                 className={`p-3.5 rounded-2xl border transition-all cursor-pointer group hover:-translate-y-0.5 hover:shadow-xs flex flex-col justify-between ${card.bgClass}`}
               >
-                <div className="w-8 h-8 rounded-xl bg-white dark:bg-black/20 flex items-center justify-center mb-3 shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-white/90 dark:bg-white/5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] flex items-center justify-center mb-2.5">
                   <Icon size={16} className={card.iconColor} />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-app-text-main group-hover:text-primary transition-colors leading-tight">
+                  <h4 className="text-xs font-semibold text-app-text-main group-hover:text-primary transition-colors leading-tight">
                     {card.label}
                   </h4>
-                  <p className="text-[10px] text-app-text-muted mt-0.5 truncate">
+                  <p className="text-[10px] text-app-text-muted mt-0.5 truncate font-normal">
                     {card.sub}
                   </p>
                 </div>
@@ -613,12 +610,12 @@ const Notifications = () => {
           <div>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <BookOpen size={16} className="text-blue-600 dark:text-blue-400" />
+                <BookOpen size={16} className="text-indigo-600 dark:text-indigo-400" />
                 <h3 className="text-sm font-bold text-app-text-main">Latest Articles</h3>
               </div>
               <button
                 onClick={() => handleQuickAccess('updates')}
-                className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5 cursor-pointer"
               >
                 View All <ChevronRight size={12} />
               </button>
@@ -628,9 +625,9 @@ const Notifications = () => {
               {articlesList.map((item) => (
                 <article
                   key={item.id}
-                  className="bg-app-bg-alt border border-app-border rounded-2xl overflow-hidden flex flex-col hover:border-primary/40 hover:shadow-sm transition-all group"
+                  className="bg-app-bg-alt border border-app-border rounded-2xl overflow-hidden flex flex-col hover:border-primary/40 hover:shadow-xs transition-all group"
                 >
-                  <div className="relative aspect-video w-full overflow-hidden bg-app-bg">
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-app-bg">
                     <img
                       src={item.image}
                       alt={item.title}
@@ -643,14 +640,14 @@ const Notifications = () => {
                   <div className="p-3.5 flex-1 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-2">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${item.tagColor}`}>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${item.tagColor}`}>
                           {item.tag}
                         </span>
-                        <span className="text-[10px] text-app-text-muted font-medium">
+                        <span className="text-[10px] text-app-text-muted font-normal">
                           {item.timeAgo}
                         </span>
                       </div>
-                      <h4 className="font-bold text-xs text-app-text-main line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                      <h4 className="font-semibold text-xs md:text-sm text-app-text-main line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                         {item.title}
                       </h4>
                       <p className="text-[11px] text-app-text-muted line-clamp-2 mt-1 leading-relaxed">
@@ -687,16 +684,16 @@ const Notifications = () => {
 
         {/* Personal Card */}
         <div className="lg:col-span-4 flex flex-col justify-between">
-          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-4 md:p-5 shadow-sm h-full flex flex-col justify-between">
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-4 md:p-5 shadow-xs h-full flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-app-border/50">
                 <div className="flex items-center gap-2">
-                  <User size={16} className="text-blue-600 dark:text-blue-400" />
+                  <User size={16} className="text-indigo-600 dark:text-indigo-400" />
                   <h3 className="font-bold text-sm md:text-base text-app-text-main">Personal</h3>
                 </div>
                 <button
                   onClick={() => navigate('/dashboard')}
-                  className="text-xs font-semibold text-primary hover:underline cursor-pointer"
+                  className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
                 >
                   View Profile
                 </button>
@@ -716,15 +713,15 @@ const Notifications = () => {
                           <Icon size={15} />
                         </div>
                         <div className="min-w-0">
-                          <h5 className="text-xs font-bold text-app-text-main group-hover:text-primary transition-colors leading-tight truncate">
+                          <h5 className="text-xs font-semibold text-app-text-main group-hover:text-primary transition-colors leading-tight truncate">
                             {item.title}
                           </h5>
-                          <p className="text-[10px] text-app-text-muted truncate mt-0.5">
+                          <p className="text-[10px] text-app-text-muted truncate mt-0.5 font-normal">
                             {item.sub}
                           </p>
                         </div>
                       </div>
-                      <ChevronRight size={14} className="text-app-text-muted group-hover:text-app-text-main group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                      <ChevronRight size={13} className="text-app-text-muted group-hover:text-app-text-main group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
                     </div>
                   );
                 })}
@@ -738,16 +735,16 @@ const Notifications = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         {/* Briefings & Updates */}
         <div className="lg:col-span-8 flex flex-col justify-between">
-          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-4 md:p-5 shadow-sm h-full flex flex-col justify-between">
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-4 md:p-5 shadow-xs h-full flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-app-border/50">
                 <div className="flex items-center gap-2">
-                  <List size={16} className="text-blue-600 dark:text-blue-400" />
+                  <List size={16} className="text-indigo-600 dark:text-indigo-400" />
                   <h3 className="text-sm font-bold text-app-text-main">Briefings & Updates</h3>
                 </div>
                 <button
                   onClick={() => handleQuickAccess('updates')}
-                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                  className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5 cursor-pointer"
                 >
                   View All <ChevronRight size={12} />
                 </button>
@@ -763,10 +760,10 @@ const Notifications = () => {
                     <div className="flex items-start gap-3 min-w-0">
                       <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${briefing.dotColor}`} />
                       <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-app-text-main group-hover:text-primary transition-colors leading-snug">
+                        <h4 className="text-xs font-semibold text-app-text-main group-hover:text-primary transition-colors leading-snug">
                           {briefing.title}
                         </h4>
-                        <p className="text-[11px] text-app-text-muted mt-0.5 line-clamp-1">
+                        <p className="text-[11px] text-app-text-muted mt-0.5 line-clamp-1 font-normal">
                           {briefing.description}
                         </p>
                       </div>
@@ -781,9 +778,9 @@ const Notifications = () => {
           </div>
         </div>
 
-        {/* Tools & Resources (6 Grid Buttons) */}
+        {/* Tools & Resources (6 Refined Pastel Grid Buttons) */}
         <div className="lg:col-span-4 flex flex-col justify-between">
-          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-4 md:p-5 shadow-sm h-full flex flex-col justify-between">
+          <div className="bg-app-bg-alt border border-app-border rounded-2xl md:rounded-3xl p-4 md:p-5 shadow-xs h-full flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-app-border/50">
                 <div className="flex items-center gap-2">
@@ -792,7 +789,7 @@ const Notifications = () => {
                 </div>
                 <button
                   onClick={() => navigate('/lessons')}
-                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                  className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5 cursor-pointer"
                 >
                   View All <ChevronRight size={12} />
                 </button>
@@ -813,10 +810,10 @@ const Notifications = () => {
                       }}
                       className={`p-3 rounded-xl border transition-all cursor-pointer group hover:-translate-y-0.5 hover:shadow-xs flex flex-col items-center justify-center text-center ${tool.bgClass}`}
                     >
-                      <div className="w-7 h-7 rounded-lg bg-white dark:bg-black/20 flex items-center justify-center mb-1.5 shadow-xs">
+                      <div className="w-7 h-7 rounded-lg bg-white/90 dark:bg-white/5 flex items-center justify-center mb-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
                         <Icon size={14} className={tool.iconColor} />
                       </div>
-                      <span className="text-xs font-bold text-app-text-main group-hover:text-primary transition-colors leading-tight">
+                      <span className="text-xs font-semibold text-app-text-main group-hover:text-primary transition-colors leading-tight">
                         {tool.label}
                       </span>
                     </div>
@@ -891,17 +888,17 @@ const Notifications = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <h4 className="text-xs font-bold text-app-text-main truncate">
+                          <h4 className="text-xs font-semibold text-app-text-main truncate">
                             {notif.title}
                           </h4>
-                          <span className="text-[10px] text-app-text-muted shrink-0">
+                          <span className="text-[10px] text-app-text-muted shrink-0 font-normal">
                             {new Date(notif.timestamp || notif.created_at || Date.now()).toLocaleDateString([], {
                               month: 'short',
                               day: 'numeric'
                             })}
                           </span>
                         </div>
-                        <p className="text-[11px] text-app-text-sub mt-0.5 leading-relaxed">
+                        <p className="text-[11px] text-app-text-sub mt-0.5 leading-relaxed font-normal">
                           {notif.message}
                         </p>
                       </div>
