@@ -130,7 +130,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen
       }
 
       {/* Sidebar Container */}
-      <nav className={`sidebar
+      <nav className={`
         fixed left-0 top-0 h-full bg-app-bg border-r border-app-border z-50 transition-all duration-300 ease-in-out
         ${sidebarWidth}
         ${isMobileOpen ? 'translate-x-0 w-70' : '-translate-x-full lg:translate-x-0'}

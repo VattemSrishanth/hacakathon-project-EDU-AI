@@ -13,7 +13,7 @@ export default {
         'ai-accent': '#397A78', // Mineral teal
       },
       boxShadow: {
-        'inst': '0 1px 2px rgba(24, 43, 40, 0.04), 0 8px 24px rgba(24, 43, 40, 0.035)',
+        'inst': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
       },
     },
   },

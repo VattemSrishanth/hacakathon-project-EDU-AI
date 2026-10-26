@@ -56,7 +56,7 @@ const TopBar = ({ onOpenMobileMenu }) => {
   };
 
   return (
-    <header className="topbar h-16 border-b border-app-border bg-app-bg/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 lg:px-8 transition-all">
+    <header className="h-16 border-b border-app-border bg-app-bg/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 lg:px-8 transition-all">
       {/* Left: Mobile Toggle & Search */}
       <div className="flex items-center gap-4 flex-1">
         <button
