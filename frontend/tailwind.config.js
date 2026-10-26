@@ -8,9 +8,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#24594F', // Evergreen
-        secondary: '#8E5A35', // Warm clay
-        'ai-accent': '#2F716A', // Mineral teal
+        primary: '#355A7A', // Slate blue
+        secondary: '#56718C', // Muted blue
+        'ai-accent': '#456987', // Steel blue
       },
       boxShadow: {
         'inst': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',

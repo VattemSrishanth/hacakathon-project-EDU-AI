@@ -10,15 +10,15 @@
 
 /* ==================== Tailwind v4 Theme Configuration ==================== */
 @theme {
-  --color-primary: #24594F;
-  --color-primary-hover: #19473F;
-  --color-secondary: #8E5A35;
-  --color-ai-accent: #2F716A;
+  --color-primary: #355A7A;
+  --color-primary-hover: #294865;
+  --color-secondary: #56718C;
+  --color-ai-accent: #456987;
   --color-error: #B91C1C;
 
-  --color-sidebar-active-bg: #E6F0EC;
-  --color-sidebar-active-text: #19473F;
-  --color-sidebar-hover-bg: #F0F4F1;
+  --color-sidebar-active-bg: #E8EFF5;
+  --color-sidebar-active-text: #294865;
+  --color-sidebar-hover-bg: #F1F4F7;
 
   /* Semantic Theme Colors */
   --color-app-text: var(--text-primary);
@@ -47,15 +47,15 @@
   --text-secondary: #43524E;
   --text-muted: #5E6D68;
   --border-color: #DCE4DE;
-  --color-primary: #24594F;
-  --color-primary-hover: #19473F;
-  --color-secondary: #8E5A35;
-  --color-ai-accent: #2F716A;
+  --color-primary: #355A7A;
+  --color-primary-hover: #294865;
+  --color-secondary: #56718C;
+  --color-ai-accent: #456987;
 
   /* Sidebar Specific */
-  --sidebar-active-bg: #E6F0EC;
-  --sidebar-active-text: #19473F;
-  --sidebar-hover-bg: #F0F4F1;
+  --sidebar-active-bg: #E8EFF5;
+  --sidebar-active-text: #294865;
+  --sidebar-hover-bg: #F1F4F7;
 
   /* Font Size */
   --font-size-base: 16px;
@@ -636,10 +636,10 @@ select {
   --text-secondary: #43524E;
   --text-muted: #5E6D68;
   --border-color: #DCE4DE;
-  --color-primary: #24594F;
-  --color-primary-hover: #19473F;
-  --color-secondary: #8E5A35;
-  --color-ai-accent: #2F716A;
+  --color-primary: #355A7A;
+  --color-primary-hover: #294865;
+  --color-secondary: #56718C;
+  --color-ai-accent: #456987;
 }
 
 .theme-midnight {
