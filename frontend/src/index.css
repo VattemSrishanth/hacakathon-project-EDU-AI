@@ -10,24 +10,25 @@
 
 /* ==================== Tailwind v4 Theme Configuration ==================== */
 @theme {
-  --color-primary: #7F1D1D;
-  --color-primary-hover: #991B1B;
-  --color-secondary: #F59E0B;
-  --color-ai-accent: #6D28D9;
+  --color-primary: #1F5B52;
+  --color-primary-hover: #17483F;
+  --color-secondary: #B77B45;
+  --color-ai-accent: #397A78;
   --color-error: #B91C1C;
 
-  --color-sidebar-active-bg: #FEF3C7;
-  --color-sidebar-active-text: #7F1D1D;
-  --color-sidebar-hover-bg: #F3F4F6;
+  --color-sidebar-active-bg: #E6F0EC;
+  --color-sidebar-active-text: #17483F;
+  --color-sidebar-hover-bg: #F0F4F1;
 
   /* Semantic Theme Colors */
   --color-app-text: var(--text-primary);
   --color-app-primary: var(--color-primary);
+  --color-app-accent: var(--color-ai-accent);
   --color-app-text-main: var(--text-primary);
   --color-app-text-sub: var(--text-secondary);
   --color-app-text-muted: var(--text-muted);
   --color-app-bg: var(--bg-primary);
-  --color-app-bg-alt: var(--bg-primary);
+  --color-app-bg-alt: var(--bg-secondary);
   --color-app-border: var(--border-color);
 
   --font-cinzel: "Cinzel Decorative", serif;
@@ -38,19 +39,23 @@
 
 /* ==================== CSS Variables ==================== */
 :root {
-  /* Theme Colors - Light Mode (Educational Maroon base) */
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F9FAFB;
+  /* Quiet paper, evergreen ink, and a single warm accent. */
+  --bg-primary: #F6F7F4;
+  --bg-secondary: #EDF1ED;
   --bg-card: #FFFFFF;
-  --text-primary: #111827;
-  --text-secondary: #374151;
-  --text-muted: #6B7280;
-  --border-color: #E5E7EB;
+  --text-primary: #1C2B28;
+  --text-secondary: #52615D;
+  --text-muted: #76827E;
+  --border-color: #DCE4DE;
+  --color-primary: #1F5B52;
+  --color-primary-hover: #17483F;
+  --color-secondary: #B77B45;
+  --color-ai-accent: #397A78;
 
   /* Sidebar Specific */
-  --sidebar-active-bg: #FEF3C7;
-  --sidebar-active-text: #7F1D1D;
-  --sidebar-hover-bg: #F3F4F6;
+  --sidebar-active-bg: #E6F0EC;
+  --sidebar-active-text: #17483F;
+  --sidebar-hover-bg: #F0F4F1;
 
   /* Font Size */
   --font-size-base: 16px;
@@ -113,8 +118,71 @@
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.55;
   transition: background-color var(--transition-speed), color var(--transition-speed);
   font-size: var(--font-size-base);
+}
+
+::selection {
+  color: #FFFFFF;
+  background: #397A78;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-ai-accent) 72%, white);
+  outline-offset: 3px;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  border-radius: 1.125rem;
+  box-shadow: 0 1px 2px rgba(24, 43, 40, 0.04), 0 8px 24px rgba(24, 43, 40, 0.035);
+}
+
+.sidebar {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: 1px 0 0 rgba(28, 43, 40, 0.015);
+}
+
+.topbar {
+  background-color: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  border-color: var(--border-color);
+}
+
+.hero-section h1 {
+  max-width: 15ch;
+  margin-inline: auto;
+  font-size: clamp(2.5rem, 5.4vw, 4.75rem);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 1.04;
+}
+
+.magic-card {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 16%, var(--border-color));
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, var(--bg-card), color-mix(in srgb, var(--color-primary) 6%, var(--bg-card)));
+  box-shadow: 0 12px 36px rgba(24, 43, 40, 0.07);
+}
+
+.magic-card h2 {
+  font-size: clamp(2.25rem, 5.5vw, 4.25rem) !important;
+  letter-spacing: -0.045em !important;
+  line-height: 1.08 !important;
+}
+
+@media (max-width: 640px) {
+  .magic-card {
+    padding: 2rem !important;
+  }
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Gentle site-wide transitions for color-related changes */
@@ -311,16 +379,16 @@ select {
 
 /* Fix Hero Section gradients */
 .from-indigo-50 {
-  --tw-gradient-from: #fdf2f2 !important;
+  --tw-gradient-from: #EAF2EE !important;
 }
 
 /* Very light primary tint */
 .via-white {
-  --tw-gradient-via: #ffffff !important;
+  --tw-gradient-via: #FAFBF8 !important;
 }
 
 .to-cyan-50 {
-  --tw-gradient-to: #fffbeb !important;
+  --tw-gradient-to: #F4EEE5 !important;
 }
 
 /* Very light secondary tint */
@@ -624,29 +692,31 @@ select {
 }
 
 .theme-crystal {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-card: #ffffff;
-  --text-primary: #020617;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-secondary: #0891b2;
+  --bg-primary: #F6F7F4;
+  --bg-secondary: #EDF1ED;
+  --bg-card: #FFFFFF;
+  --text-primary: #1C2B28;
+  --text-secondary: #52615D;
+  --text-muted: #76827E;
+  --border-color: #DCE4DE;
+  --color-primary: #1F5B52;
+  --color-primary-hover: #17483F;
+  --color-secondary: #B77B45;
+  --color-ai-accent: #397A78;
 }
 
 .theme-midnight {
-  --bg-primary: #020617;
-  --bg-secondary: #0f172a;
-  --bg-card: #1e293b;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border-color: #334155;
-  --color-primary: #3b82f6;
-  --color-primary-hover: #60a5fa;
-  --color-secondary: #22d3ee;
+  --bg-primary: #111B1A;
+  --bg-secondary: #182422;
+  --bg-card: #1D2B28;
+  --text-primary: #F1F5F1;
+  --text-secondary: #C1CDC7;
+  --text-muted: #91A19A;
+  --border-color: #30413C;
+  --color-primary: #79B7A8;
+  --color-primary-hover: #9ACBBC;
+  --color-secondary: #D3A16B;
+  --color-ai-accent: #79B7A8;
 }
 
 .theme-forest {
