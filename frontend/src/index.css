@@ -10,14 +10,14 @@
 
 /* ==================== Tailwind v4 Theme Configuration ==================== */
 @theme {
-  --color-primary: #1F5B52;
-  --color-primary-hover: #17483F;
-  --color-secondary: #B77B45;
-  --color-ai-accent: #397A78;
+  --color-primary: #24594F;
+  --color-primary-hover: #19473F;
+  --color-secondary: #8E5A35;
+  --color-ai-accent: #2F716A;
   --color-error: #B91C1C;
 
   --color-sidebar-active-bg: #E6F0EC;
-  --color-sidebar-active-text: #17483F;
+  --color-sidebar-active-text: #19473F;
   --color-sidebar-hover-bg: #F0F4F1;
 
   /* Semantic Theme Colors */
@@ -43,18 +43,18 @@
   --bg-primary: #F6F7F4;
   --bg-secondary: #EDF1ED;
   --bg-card: #FFFFFF;
-  --text-primary: #1C2B28;
-  --text-secondary: #52615D;
-  --text-muted: #76827E;
+  --text-primary: #1B2926;
+  --text-secondary: #43524E;
+  --text-muted: #5E6D68;
   --border-color: #DCE4DE;
-  --color-primary: #1F5B52;
-  --color-primary-hover: #17483F;
-  --color-secondary: #B77B45;
-  --color-ai-accent: #397A78;
+  --color-primary: #24594F;
+  --color-primary-hover: #19473F;
+  --color-secondary: #8E5A35;
+  --color-ai-accent: #2F716A;
 
   /* Sidebar Specific */
   --sidebar-active-bg: #E6F0EC;
-  --sidebar-active-text: #17483F;
+  --sidebar-active-text: #19473F;
   --sidebar-hover-bg: #F0F4F1;
 
   /* Font Size */
@@ -632,14 +632,14 @@ select {
   --bg-primary: #F6F7F4;
   --bg-secondary: #EDF1ED;
   --bg-card: #FFFFFF;
-  --text-primary: #1C2B28;
-  --text-secondary: #52615D;
-  --text-muted: #76827E;
+  --text-primary: #1B2926;
+  --text-secondary: #43524E;
+  --text-muted: #5E6D68;
   --border-color: #DCE4DE;
-  --color-primary: #1F5B52;
-  --color-primary-hover: #17483F;
-  --color-secondary: #B77B45;
-  --color-ai-accent: #397A78;
+  --color-primary: #24594F;
+  --color-primary-hover: #19473F;
+  --color-secondary: #8E5A35;
+  --color-ai-accent: #2F716A;
 }
 
 .theme-midnight {
