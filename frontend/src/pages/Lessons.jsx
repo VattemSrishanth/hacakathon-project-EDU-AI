@@ -317,12 +317,12 @@ const Lessons = () => {
         <div className="space-y-4 max-w-xl">
           {/* Top Badges */}
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider border border-blue-200/80 dark:border-blue-900/60 shadow-xs">
-              <Sparkles size={13} className="text-blue-500 fill-blue-500/20" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/5 dark:bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider border border-primary/20 shadow-xs">
+              <Sparkles size={13} className="text-primary fill-primary/20" />
               AI-Powered Learning
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider border border-emerald-200/80 dark:border-emerald-900/60 shadow-xs">
-              <Globe size={13} className="text-emerald-500" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/5 dark:bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider border border-primary/20 shadow-xs">
+              <Globe size={13} className="text-primary" />
               {settings.learning.board} Syllabus
             </span>
           </div>
@@ -330,7 +330,7 @@ const Lessons = () => {
           {/* Stylized Lessons Heading */}
           <h1 className="text-6xl sm:text-7xl md:text-8xl font-black tracking-tight leading-none italic select-none">
             <span className="text-slate-900 dark:text-white">LESS</span>
-            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">ONS</span>
+            <span className="text-primary">ONS</span>
           </h1>
 
           {/* Subtitle & Description */}
@@ -357,7 +357,7 @@ const Lessons = () => {
         <div className="flex items-center justify-between pb-2 border-b border-slate-200/80 dark:border-slate-800">
           <button
             onClick={resetToClass}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 font-bold text-xs shadow-xs hover:shadow-sm transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-primary hover:border-primary/40 font-bold text-xs shadow-xs hover:shadow-sm transition-all cursor-pointer"
           >
             <ArrowLeft size={14} />
             <span>Change Class (Class {selectedClass})</span>
@@ -372,8 +372,8 @@ const Lessons = () => {
           <div className="text-center space-y-1 pt-2">
             <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight">
               <span className="text-slate-900 dark:text-white">SELECT </span>
-              <span className="text-blue-600 dark:text-blue-400">YOUR </span>
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">GRADE</span>
+              <span className="text-primary">YOUR </span>
+              <span className="text-primary">GRADE</span>
             </h2>
             <p className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400">
               Choose a class to explore the full curriculum
@@ -400,7 +400,7 @@ const Lessons = () => {
             <div className="sidebar bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xs">
               {!selectedSubject ? (
                 <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-400">
-                  <div className="flex items-center gap-2.5 text-blue-600 dark:text-blue-400">
+                  <div className="flex items-center gap-2.5 text-primary">
                     <Layout size={22} />
                     <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Select Subject</h2>
                   </div>
@@ -413,7 +413,7 @@ const Lessons = () => {
               ) : (
                 <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-400">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5 text-blue-600 dark:text-blue-400">
+                    <div className="flex items-center gap-2.5 text-primary">
                       <BookOpen size={22} />
                       <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">{selectedSubject} Units</h2>
                     </div>

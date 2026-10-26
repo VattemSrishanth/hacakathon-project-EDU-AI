@@ -1,85 +1,11 @@
 import { GraduationCap, ArrowRight } from 'lucide-react';
 
-const GRADE_THEMES = {
-  // Column 1: Blue (Class 1 & 6)
-  '1': {
-    bg: 'bg-gradient-to-br from-white via-white to-blue-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/40',
-    border: 'border-slate-200/90 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600',
-    iconBg: 'bg-blue-50 dark:bg-blue-900/40 text-blue-500 dark:text-blue-400',
-    arrowBg: 'bg-blue-50 dark:bg-blue-900/50 text-blue-500 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white',
-    selected: 'ring-2 ring-blue-500 border-blue-500 shadow-md'
-  },
-  '6': {
-    bg: 'bg-gradient-to-br from-white via-white to-blue-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/40',
-    border: 'border-slate-200/90 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600',
-    iconBg: 'bg-blue-50 dark:bg-blue-900/40 text-blue-500 dark:text-blue-400',
-    arrowBg: 'bg-blue-50 dark:bg-blue-900/50 text-blue-500 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white',
-    selected: 'ring-2 ring-blue-500 border-blue-500 shadow-md'
-  },
-
-  // Column 2: Purple (Class 2 & 7)
-  '2': {
-    bg: 'bg-gradient-to-br from-white via-white to-purple-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-purple-950/40',
-    border: 'border-slate-200/90 dark:border-slate-800 hover:border-purple-400 dark:hover:border-purple-600',
-    iconBg: 'bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400',
-    arrowBg: 'bg-purple-50 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white',
-    selected: 'ring-2 ring-purple-500 border-purple-500 shadow-md'
-  },
-  '7': {
-    bg: 'bg-gradient-to-br from-white via-white to-purple-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-purple-950/40',
-    border: 'border-slate-200/90 dark:border-slate-800 hover:border-purple-400 dark:hover:border-purple-600',
-    iconBg: 'bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400',
-    arrowBg: 'bg-purple-50 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white',
-    selected: 'ring-2 ring-purple-500 border-purple-500 shadow-md'
-  },
-
-  // Column 3: Pink / Rose (Class 3 & 8)
-  '3': {
-    bg: 'bg-gradient-to-br from-white via-white to-rose-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-rose-950/40',
-    border: 'border-slate-200/90 dark:border-slate-800 hover:border-rose-400 dark:hover:border-rose-600',
-    iconBg: 'bg-rose-50 dark:bg-rose-900/40 text-rose-500 dark:text-rose-400',
-    arrowBg: 'bg-rose-50 dark:bg-rose-900/50 text-rose-500 dark:text-rose-400 group-hover:bg-rose-600 group-hover:text-white',
-    selected: 'ring-2 ring-rose-500 border-rose-500 shadow-md'
-  },
-  '8': {
-    bg: 'bg-gradient-to-br from-white via-white to-rose-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-rose-950/40',
-    border: 'border-slate-200/90 dark:border-slate-800 hover:border-rose-400 dark:hover:border-rose-600',
-    iconBg: 'bg-rose-50 dark:bg-rose-900/40 text-rose-500 dark:text-rose-400',
-    arrowBg: 'bg-rose-50 dark:bg-rose-900/50 text-rose-500 dark:text-rose-400 group-hover:bg-rose-600 group-hover:text-white',
-    selected: 'ring-2 ring-rose-500 border-rose-500 shadow-md'
-  },
-
-  // Column 4: Amber / Orange (Class 4 & 9)
-  '4': {
-    bg: 'bg-gradient-to-br from-white via-white to-amber-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-amber-950/40',
-    border: 'border-slate-200/90 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-600',
-    iconBg: 'bg-amber-50 dark:bg-amber-900/40 text-amber-500 dark:text-amber-400',
-    arrowBg: 'bg-amber-50 dark:bg-amber-900/50 text-amber-500 dark:text-amber-400 group-hover:bg-amber-600 group-hover:text-white',
-    selected: 'ring-2 ring-amber-500 border-amber-500 shadow-md'
-  },
-  '9': {
-    bg: 'bg-gradient-to-br from-white via-white to-amber-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-amber-950/40',
-    border: 'border-slate-200/90 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-600',
-    iconBg: 'bg-amber-50 dark:bg-amber-900/40 text-amber-500 dark:text-amber-400',
-    arrowBg: 'bg-amber-50 dark:bg-amber-900/50 text-amber-500 dark:text-amber-400 group-hover:bg-amber-600 group-hover:text-white',
-    selected: 'ring-2 ring-amber-500 border-amber-500 shadow-md'
-  },
-
-  // Column 5: Emerald / Teal (Class 5 & 10)
-  '5': {
-    bg: 'bg-gradient-to-br from-white via-white to-emerald-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/40',
-    border: 'border-slate-200/90 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-600',
-    iconBg: 'bg-emerald-50 dark:bg-emerald-900/40 text-emerald-500 dark:text-emerald-400',
-    arrowBg: 'bg-emerald-50 dark:bg-emerald-900/50 text-emerald-500 dark:text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white',
-    selected: 'ring-2 ring-emerald-500 border-emerald-500 shadow-md'
-  },
-  '10': {
-    bg: 'bg-gradient-to-br from-white via-white to-emerald-50/80 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/40',
-    border: 'border-slate-200/90 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-600',
-    iconBg: 'bg-emerald-50 dark:bg-emerald-900/40 text-emerald-500 dark:text-emerald-400',
-    arrowBg: 'bg-emerald-50 dark:bg-emerald-900/50 text-emerald-500 dark:text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white',
-    selected: 'ring-2 ring-emerald-500 border-emerald-500 shadow-md'
-  }
+const GRADE_THEME = {
+  bg: 'bg-gradient-to-br from-white via-white to-primary/5 dark:from-slate-900 dark:via-slate-900 dark:to-primary/10',
+  border: 'border-slate-200/90 dark:border-slate-800 hover:border-primary/60',
+  iconBg: 'bg-primary/10 text-primary',
+  arrowBg: 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white',
+  selected: 'ring-2 ring-primary border-primary shadow-md'
 };
 
 const ClassList = ({ onSelectClass, selectedGrade }) => {
@@ -88,7 +14,7 @@ const ClassList = ({ onSelectClass, selectedGrade }) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-5">
       {grades.map((grade) => {
-        const theme = GRADE_THEMES[grade] || GRADE_THEMES['1'];
+        const theme = GRADE_THEME;
         const isSelected = selectedGrade === grade;
 
         return (
