@@ -223,8 +223,18 @@ const AITutor = () => {
     setLoading(true);
 
     try {
+      // Build multi-turn conversation history for chat memory (like ChatGPT/Claude/Gemini)
+      const chatHistory = messages
+        .filter((m) => m && (m.role === 'user' || m.role === 'assistant'))
+        .map((m) => ({
+          role: m.role,
+          content: m.content || '',
+          imageUrl: m.imageUrl || undefined
+        }))
+        .slice(-20);
+
       /**
-       * Send unified request to backend.
+       * Send unified request to backend with multi-turn conversation history.
        */
       const response = await aiAPI.ask(
         activeInput,
@@ -232,7 +242,8 @@ const AITutor = () => {
         currentContext,
         true,
         settings.learning.language,
-        answerStyle
+        answerStyle,
+        chatHistory
       );
 
       let aiContent = response.answer || response.response || response.explanation || response.summary || t.aiTutor.errorMessage;

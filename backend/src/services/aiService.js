@@ -1,9 +1,14 @@
-const DEFAULT_TIMEOUT_MS = 20000;
+const DEFAULT_TIMEOUT_MS = 25000;
 
 const buildSystemPrompt = ({ language, answerStyle }) => {
   const lang = language || "English";
   const style = answerStyle || "Detailed";
-  return `You are an education tutor. Answer in ${lang}. Style: ${style}. Be clear and student-friendly.`;
+  return `You are an expert, encouraging, student-friendly AI education tutor.
+You are having an ongoing conversation with a student.
+Always remember and refer back to previous messages, questions, explanations, images, and context discussed in this conversation.
+Respond in ${lang}.
+Answer style: ${style}.
+Provide clear, accurate, conversational explanations. When the student makes a correction, refers to something mentioned earlier (e.g., using "it", "that", "why", "who", "they"), or asks follow-up questions, directly acknowledge and build on the previous turns of this conversation.`;
 };
 
 const extractText = (response) => {
@@ -22,20 +27,72 @@ const parseDataUrl = (dataUrl) => {
   return { mimeType: match[1], data: match[2] };
 };
 
-const callGemini = async ({ prompt, image, systemPrompt }) => {
+const buildGeminiContents = ({ prompt, history, image }) => {
+  const contents = [];
+
+  if (Array.isArray(history) && history.length > 0) {
+    // Keep up to the last 20 messages for rich multi-turn conversation memory
+    const recentHistory = history.slice(-20);
+    for (const item of recentHistory) {
+      if (!item) continue;
+      const role = item.role === "assistant" || item.role === "model" ? "model" : "user";
+      const text = typeof item.content === "string" ? item.content.trim() : String(item.content || "");
+      if (!text && !item.imageUrl) continue;
+
+      const parts = [];
+      if (text) {
+        parts.push({ text });
+      }
+      if (item.imageUrl) {
+        const parsedImg = parseDataUrl(item.imageUrl);
+        if (parsedImg) {
+          parts.push({ inlineData: parsedImg });
+        }
+      }
+
+      // Gemini requires contents to start with "user"
+      if (contents.length === 0 && role !== "user") {
+        continue; // Skip initial bot greeting if at the very start
+      }
+
+      // Gemini requires alternating roles (user, model, user, model...)
+      if (contents.length > 0 && contents[contents.length - 1].role === role) {
+        contents[contents.length - 1].parts.push(...parts);
+      } else {
+        contents.push({ role, parts });
+      }
+    }
+  }
+
+  // Now append current user turn
+  const currentParts = [{ text: prompt }];
+  if (image) {
+    currentParts.push({ inlineData: image });
+  }
+
+  if (contents.length > 0 && contents[contents.length - 1].role === "user") {
+    contents[contents.length - 1].parts.push(...currentParts);
+  } else {
+    contents.push({ role: "user", parts: currentParts });
+  }
+
+  return contents;
+};
+
+const callGemini = async ({ prompt, history, image, systemPrompt }) => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is missing");
   }
   const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
-  const parts = [{ text: `${systemPrompt}\n\n${prompt}`.trim() }];
-  if (image) {
-    parts.push({ inlineData: image });
-  }
+  const contents = buildGeminiContents({ prompt, history, image });
 
   const body = {
-    contents: [{ role: "user", parts }]
+    systemInstruction: {
+      parts: [{ text: systemPrompt }]
+    },
+    contents
   };
 
   const controller = new AbortController();
@@ -69,13 +126,37 @@ const callGemini = async ({ prompt, image, systemPrompt }) => {
   }
 };
 
-const callGroq = async ({ prompt, systemPrompt }) => {
+const buildGroqMessages = ({ prompt, history, systemPrompt }) => {
+  const msgs = [{ role: "system", content: systemPrompt }];
+
+  if (Array.isArray(history) && history.length > 0) {
+    const recentHistory = history.slice(-20);
+    for (const item of recentHistory) {
+      if (!item || !item.content) continue;
+      const role = item.role === "assistant" || item.role === "model" ? "assistant" : "user";
+      let content = typeof item.content === "string" ? item.content.trim() : String(item.content || "");
+      if (item.imageUrl && !content) {
+        content = "[User attached an image]";
+      }
+      if (content) {
+        msgs.push({ role, content });
+      }
+    }
+  }
+
+  msgs.push({ role: "user", content: prompt });
+  return msgs;
+};
+
+const callGroq = async ({ prompt, history, systemPrompt }) => {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     throw new Error("GROQ_API_KEY is missing");
   }
 
-  const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+  const model = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+  const messages = buildGroqMessages({ prompt, history, systemPrompt });
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
 
@@ -89,10 +170,7 @@ const callGroq = async ({ prompt, systemPrompt }) => {
       body: JSON.stringify({
         model,
         temperature: 0.4,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: prompt }
-        ]
+        messages
       }),
       signal: controller.signal
     });
@@ -114,17 +192,18 @@ const callGroq = async ({ prompt, systemPrompt }) => {
   }
 };
 
-const generateWithFallback = async ({ prompt, imageDataUrl, language, answerStyle }) => {
+const generateWithFallback = async ({ prompt, history = [], imageDataUrl, language, answerStyle }) => {
   const systemPrompt = buildSystemPrompt({ language, answerStyle });
   const image = parseDataUrl(imageDataUrl);
 
   try {
-    return await callGemini({ prompt, image, systemPrompt });
+    return await callGemini({ prompt, history, image, systemPrompt });
   } catch (geminiError) {
+    console.error("Gemini call failed, falling back to Groq:", geminiError.message);
     const fallbackPrompt = image
       ? `${prompt}\n\n[Note: Image input omitted in fallback.]`
       : prompt;
-    return await callGroq({ prompt: fallbackPrompt, systemPrompt });
+    return await callGroq({ prompt: fallbackPrompt, history, systemPrompt });
   }
 };
 

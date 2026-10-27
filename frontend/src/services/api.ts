@@ -69,14 +69,15 @@ export const aiAPI = {
   /**
    * Universal ask method that supports standard questions and persistent file context (Image/PDF).
    */
-  ask: async (question: string, mode: string = 'regular', context: any = null, online: boolean = true, language: string = 'English', answerStyle: string = 'Detailed') => {
+  ask: async (question: string, mode: string = 'regular', context: any = null, online: boolean = true, language: string = 'English', answerStyle: string = 'Detailed', history: any[] = []) => {
     const response = await api.post('/ask', { 
       question, 
       mode, 
       context, // Active file context (type, data, name)
       online,
       language,
-      answerStyle
+      answerStyle,
+      history
     });
     return response.data;
   },
