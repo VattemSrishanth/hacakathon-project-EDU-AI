@@ -71,6 +71,59 @@ import {
 
 const CHAT_SESSIONS_KEY = 'ai_chat_sessions';
 
+const renderInlineFormatting = (text, keyPrefix) =>
+  text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).filter(Boolean).map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={`${keyPrefix}-${index}`} className="font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return <code key={`${keyPrefix}-${index}`} className="rounded bg-black/5 px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/10">{part.slice(1, -1)}</code>;
+    }
+    return part;
+  });
+
+const renderTutorAnswer = (content) => {
+  const lines = String(content ?? '').split('\n');
+  const blocks = [];
+  let listItems = [];
+
+  const flushList = () => {
+    if (listItems.length) {
+      blocks.push(
+        <ul key={`list-${blocks.length}`} className="my-2 list-disc space-y-1 pl-5 marker:text-ai-accent">
+          {listItems.map((item, index) => (
+            <li key={index}>{renderInlineFormatting(item, `list-${blocks.length}-${index}`)}</li>
+          ))}
+        </ul>
+      );
+      listItems = [];
+    }
+  };
+
+  lines.forEach((line, index) => {
+    const trimmedLine = line.trim();
+    const listMatch = trimmedLine.match(/^(?:[-*]|\d+\.)\s+(.+)$/);
+    if (listMatch) {
+      listItems.push(listMatch[1]);
+      return;
+    }
+
+    flushList();
+    if (!trimmedLine) return;
+
+    const headingMatch = trimmedLine.match(/^#{1,3}\s+(.+)$/);
+    const paragraph = headingMatch ? headingMatch[1] : trimmedLine;
+    blocks.push(
+      headingMatch ?
+        <p key={`line-${index}`} className="mt-3 font-semibold text-app-text-main">{renderInlineFormatting(paragraph, `line-${index}`)}</p> :
+        <p key={`line-${index}`}>{renderInlineFormatting(paragraph, `line-${index}`)}</p>
+    );
+  });
+
+  flushList();
+  return <div className="space-y-2 [&>p+p]:mt-3">{blocks}</div>;
+};
+
 
 
 
@@ -936,7 +989,7 @@ const AITutor = () => {
                           <span className="text-xs font-black truncate">YouTube: {message.attachmentTitle}</span>
                         </div>
                     }
-                      {message.content}
+                      {message.role === 'assistant' ? renderTutorAnswer(message.content) : message.content}
                     </div>
                     <span className="text-[10px] font-bold text-app-text-muted mt-2 uppercase tracking-widest px-2">
                       {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
