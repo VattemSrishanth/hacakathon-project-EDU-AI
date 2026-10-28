@@ -102,7 +102,7 @@ const Assignments = () => {
     <div className="min-h-screen bg-app-bg pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* Header Section */}
-        <header className="pt-12 mb-10">
+        <header className="pt-10 mb-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-3">
@@ -113,7 +113,7 @@ const Assignments = () => {
                   Task <span className="text-primary-hover">Hub</span>
                 </h1>
               </div>
-              <p className="text-sm font-bold text-app-text-sub uppercase tracking-[0.2em] ml-1">
+              <p className="text-xs md:text-sm font-medium text-app-text-sub tracking-normal ml-1">
                 Personalized practice & assignments for your level
               </p>
             </div>
@@ -141,7 +141,7 @@ const Assignments = () => {
               </div>
               <div>
                  <p className="text-3xl font-black text-app-text-main">{summary.pending}</p>
-                 <p className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">Pending Tasks</p>
+                 <p className="text-xs font-bold text-app-text-muted uppercase tracking-wide">Pending Tasks</p>
               </div>
            </div>
 
@@ -154,7 +154,7 @@ const Assignments = () => {
               </div>
               <div>
                  <p className="text-3xl font-black text-app-text-main">{summary.completedThisWeek}</p>
-                 <p className="text-[10px] font-black text-app-text-muted uppercase tracking-widest">Completed This Week</p>
+                 <p className="text-xs font-bold text-app-text-muted uppercase tracking-wide">Completed This Week</p>
               </div>
            </div>
 
@@ -165,7 +165,7 @@ const Assignments = () => {
                     <div className="p-2 bg-secondary/10 rounded-xl text-secondary">
                         <Trophy size={20} strokeWidth={2.5} />
                     </div>
-                    <p className="text-[11px] font-black text-app-text-main uppercase tracking-widest">Weekly Goal</p>
+                    <p className="text-xs font-bold text-app-text-main uppercase tracking-wide">Weekly Goal</p>
                  </div>
                  <span className="text-sm font-black text-app-text-main">{summary.completedThisWeek} / {summary.totalThisWeek}</span>
               </div>
@@ -175,7 +175,7 @@ const Assignments = () => {
                 style={{ width: `${Math.min(summary.completedThisWeek, summary.totalThisWeek) / summary.totalThisWeek * 100}%` }} />
               
               </div>
-              <p className="text-[10px] font-bold text-app-text-sub italic">
+              <p className="text-xs font-medium text-app-text-sub">
                  {summary.completedThisWeek >= summary.totalThisWeek ? "Goal reached! Excellent effort." : "Almost there! Complete your pending tasks to hit the goal."}
               </p>
            </div>
@@ -218,7 +218,7 @@ const Assignments = () => {
                  <div className="space-y-6">
                     <div className="flex items-center gap-3 px-2">
                        <Sparkles size={18} className="text-primary" />
-                       <h3 className="text-sm font-black text-app-text-muted uppercase tracking-[0.2em]">Next Practice sessions</h3>
+                       <h3 className="text-sm font-bold text-app-text-muted uppercase tracking-wider">Next Practice sessions</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        {practiceSuggestions.map((p) =>
@@ -241,7 +241,7 @@ const Assignments = () => {
             /* SECTION 2: PENDING ASSIGNMENTS ACTIVE */
             <div className="space-y-6">
                 <div className="flex justify-between items-center px-2">
-                   <h3 className="text-sm font-black text-app-text-muted uppercase tracking-[0.2em] flex items-center gap-2">
+                   <h3 className="text-sm font-bold text-app-text-muted uppercase tracking-wider flex items-center gap-2">
                       <ListTodo size={20} className="text-primary" /> Pending Tasks
                    </h3>
                    <span className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">
@@ -253,17 +253,17 @@ const Assignments = () => {
                    {assignments.map((assignment) => {
                   const isUrgent = assignment.dueDate.includes("Today") || assignment.dueDate.includes("Tomorrow");
                   return (
-                    <Card key={assignment.id} className={`group relative flex flex-col h-full bg-app-bg border ${isUrgent ? 'border-error/40 ring-1 ring-error/10 shadow-error/5' : 'border-app-border'} rounded-3xl p-8 hover:shadow-2xl hover:border-primary/30 transition-all duration-500`}>
+                    <Card key={assignment.id} className={`group relative flex flex-col h-full bg-app-bg border ${isUrgent ? 'border-error/40 ring-1 ring-error/10 shadow-error/5' : 'border-app-border'} rounded-3xl p-6 md:p-7 hover:shadow-xl hover:border-primary/30 transition-all duration-300`}>
                            <div className="absolute top-0 right-0 p-4">
                               {isUrgent && <AlertCircle size={20} className="text-error animate-pulse" />}
                            </div>
                            
                            <div className="flex-1 space-y-6">
                               <div className="flex items-center gap-2">
-                                 <span className="px-2.5 py-1 bg-app-bg-alt rounded-lg text-[9px] font-black uppercase tracking-widest text-primary border border-app-border shadow-xs">
+                                 <span className="px-2.5 py-1 bg-app-bg-alt rounded-lg text-[10px] font-bold uppercase tracking-wide text-primary border border-app-border shadow-xs">
                                     {assignment.category}
                                  </span>
-                                 <div className="flex items-center gap-1 px-2.5 py-1 bg-secondary/10 rounded-lg text-[9px] font-black uppercase tracking-widest text-secondary border border-secondary/10 shadow-xs">
+                                 <div className="flex items-center gap-1 px-2.5 py-1 bg-secondary/10 rounded-lg text-[10px] font-bold uppercase tracking-wide text-secondary border border-secondary/10 shadow-xs">
                                     <Zap size={10} fill="currentColor" /> Difficulty: Medium
                                  </div>
                               </div>
@@ -276,13 +276,13 @@ const Assignments = () => {
                                  <div className="shrink-0 mt-1 text-app-text-muted">
                                     <FileText size={18} />
                                  </div>
-                                 <p className="text-[12px] font-bold text-app-text-muted leading-relaxed">
+                                 <p className="text-sm font-medium text-app-text-sub leading-relaxed">
                                     {assignment.description || "Incorporate concepts from the recent lessons into this project."}
                                  </p>
                               </div>
 
                               <div className="space-y-3">
-                                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-app-text-muted/60">
+                                 <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wide text-app-text-muted">
                                     <span>Task Progress</span>
                                     <span>35%</span>
                                  </div>
@@ -294,12 +294,12 @@ const Assignments = () => {
                            
                            <div className="mt-8 pt-6 border-t border-app-border flex items-center justify-between gap-4">
                               <div className="flex flex-col">
-                                 <span className="text-[9px] font-black text-app-text-muted/50 uppercase tracking-widest mb-0.5">Due Date</span>
+                                 <span className="text-[10px] font-bold text-app-text-muted uppercase tracking-wide mb-0.5">Due Date</span>
                                  <div className={`flex items-center gap-1.5 text-xs font-black ${isUrgent ? 'text-error' : 'text-app-text-main'}`}>
                                     <Calendar size={14} /> {assignment.dueDate}
                                  </div>
                               </div>
-                              <Button variant="primary" onClick={() => handleSubmit(assignment.id)} className="px-6 py-3.5 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-primary/20">
+                              <Button variant="primary" onClick={() => handleSubmit(assignment.id)} className="px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wide shadow-md shadow-primary/15">
                                  Continue
                               </Button>
                            </div>
@@ -315,8 +315,8 @@ const Assignments = () => {
           <div className="lg:col-span-4 space-y-10">
              
              {/* SECTION 3: UPCOMING DEADLINES */}
-             <Card className="bg-app-bg border border-app-border p-8 rounded-[2.5rem] shadow-xs">
-                 <h4 className="text-xs font-black text-app-text-muted uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+             <Card className="bg-app-bg border border-app-border p-6 rounded-3xl shadow-xs">
+                 <h4 className="text-sm font-bold text-app-text-muted uppercase tracking-wider mb-5 flex items-center gap-2">
                     <Calendar size={18} className="text-secondary" /> Due Soon
                  </h4>
                  <div className="space-y-4">
@@ -325,13 +325,13 @@ const Assignments = () => {
                 { day: "Tomorrow", task: "Math Project Submission", urgent: true },
                 { day: "Thu, Feb 23", task: "Science Practical", urgent: false }].
                 map((item, i) =>
-                <div key={i} className={`flex items-center gap-4 p-4 rounded-2xl border ${item.urgent ? 'bg-error/5 border-error/10' : 'bg-app-bg-alt border-app-border'} group hover:scale-[1.02] transition-transform cursor-pointer`}>
+                <div key={i} className={`flex items-center gap-3 p-3 rounded-2xl border ${item.urgent ? 'bg-error/5 border-error/10' : 'bg-app-bg-alt border-app-border'} group hover:border-primary/25 transition-colors cursor-pointer`}>
                           <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center font-black ${item.urgent ? 'bg-error text-white' : 'bg-app-bg-alt text-app-text-main shadow-xs border border-app-border'}`}>
                              <span className="text-[9px] uppercase tracking-tight opacity-80">{item.day.split(',')[0]}</span>
                           </div>
                           <div className="flex-1 overflow-hidden">
-                             <p className="text-[13px] font-black text-app-text-main truncate">{item.task}</p>
-                             <p className={`text-[10px] font-bold ${item.urgent ? 'text-error animate-pulse' : 'text-app-text-sub'}`}>
+                             <p className="text-sm font-bold text-app-text-main truncate">{item.task}</p>
+                             <p className={`text-xs font-medium ${item.urgent ? 'text-error' : 'text-app-text-sub'}`}>
                                 {item.urgent ? 'ACTION REQ' : 'Upcoming'}
                              </p>
                           </div>
@@ -341,8 +341,8 @@ const Assignments = () => {
              </Card>
 
              {/* SECTION 5: COMPLETED RECENTLY */}
-             <Card className="bg-app-bg border border-app-border p-8 rounded-[2.5rem] shadow-xs">
-                 <h4 className="text-xs font-black text-app-text-muted uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+             <Card className="bg-app-bg border border-app-border p-6 rounded-3xl shadow-xs">
+                 <h4 className="text-sm font-bold text-app-text-muted uppercase tracking-wider mb-5 flex items-center gap-2">
                     <Award size={18} className="text-success" /> Recent Wins
                  </h4>
                  <div className="space-y-6">
@@ -351,15 +351,15 @@ const Assignments = () => {
                 <div key={i} className="space-y-3">
                              <div className="flex justify-between items-start">
                                 <div>
-                                   <p className="text-sm font-black text-app-text-main leading-tight mb-1">{a.title}</p>
-                                   <p className="text-[9px] font-bold text-app-text-sub">Completed yesterday</p>
+                                   <p className="text-sm font-bold text-app-text-main leading-tight mb-1">{a.title}</p>
+                                   <p className="text-xs font-medium text-app-text-sub">Completed yesterday</p>
                                 </div>
                                 <div className="p-2 bg-success text-white rounded-lg font-black text-xs">
                                    95%
                                 </div>
                              </div>
                              <div className="p-3 bg-success/5 border border-success/10 rounded-xl">
-                                <p className="text-[10px] font-bold text-success leading-tight italic">
+                                <p className="text-xs font-medium text-success leading-relaxed">
                                    "Feedback: Excellent understanding of key topics. Try harder problems next!"
                                 </p>
                              </div>
@@ -367,7 +367,7 @@ const Assignments = () => {
                 ) :
 
                 <div className="text-center py-6 border border-dashed border-app-border rounded-2xl px-4">
-                          <p className="text-[11px] font-bold text-app-text-sub leading-loose italic">
+                          <p className="text-xs font-medium text-app-text-sub leading-relaxed">
                              "Your journey of excellence starts with the first completed task."
                           </p>
                        </div>
@@ -382,10 +382,10 @@ const Assignments = () => {
                       {isOffline ? <WifiOff size={24} /> : <Wifi size={24} />}
                    </div>
                    <div className="flex-1">
-                      <h4 className="text-[11px] font-black text-app-text-main uppercase tracking-widest mb-1">
+                   <h4 className="text-xs font-bold text-app-text-main uppercase tracking-wide mb-1">
                          {isOffline ? 'Offline Active' : 'Online Sync'}
                       </h4>
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-app-text-sub">
+                      <div className="flex items-center gap-1.5 text-xs font-medium text-app-text-sub">
                          <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
                          {isOffline ? 'Learning from local storage' : 'Tasks are up to date'}
                       </div>
@@ -394,7 +394,7 @@ const Assignments = () => {
                 
                 <button
                 onClick={() => navigate('/lessons/uploaded')}
-                className="w-full mt-4 flex items-center justify-center gap-2 py-4 rounded-2xl border border-app-border text-[10px] font-black uppercase tracking-widest text-app-text-muted hover:bg-app-bg-alt hover:text-app-text-main transition-all">
+                className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-2xl border border-app-border text-xs font-bold uppercase tracking-wide text-app-text-muted hover:bg-app-bg-alt hover:text-app-text-main transition-all">
                 
                    <Download size={14} /> Offline Access Settings
                 </button>
