@@ -222,6 +222,10 @@ export const userDataAPI = {
   getAssignments: async () => {
     const response = await api.get('/assignments');
     return response.data;
+  },
+  submitAssignment: async (id: string) => {
+    const response = await api.put(`/assignments/${id}/submit`);
+    return response.data;
   }
 };
 
