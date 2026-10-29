@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useMemo } from 'react';
-import Card from '../components/Card';
 import Button from '../components/Button';
 import { useProgress } from '../context/ProgressContext';
 import { useOffline } from '../context/OfflineContext';
@@ -20,8 +19,8 @@ import {
   WifiOff,
   ChevronRight,
   TrendingUp,
-  AlertCircle } from
-'lucide-react';
+  AlertCircle
+} from 'lucide-react';
 import { userDataAPI } from '../services/api';
 
 const Assignments = () => {
@@ -36,7 +35,6 @@ const Assignments = () => {
     try {
       const data = await userDataAPI.getAssignments();
       if (data.success) {
-        // Separate pending and completed for better organization
         const all = data.assignments || [];
         setAssignments(all.filter((a) => a.status !== 'Submitted'));
         setCompletedAssignments(all.filter((a) => a.status === 'Submitted'));
@@ -52,46 +50,79 @@ const Assignments = () => {
     fetchAssignments();
   }, []);
 
+  // Format due date from ISO string or human string to readable text
+  const formatDueDate = (dateStr) => {
+    if (!dateStr) return 'No due date';
+    if (typeof dateStr === 'string' && (dateStr.includes('Today') || dateStr.includes('Tomorrow'))) {
+      return dateStr;
+    }
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const target = new Date(d);
+      target.setHours(0, 0, 0, 0);
+      const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Tomorrow';
+      if (diffDays === -1) return 'Yesterday';
+      if (diffDays > 1 && diffDays <= 7) return `In ${diffDays} days`;
+
+      return d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const checkIsUrgent = (dateStr) => {
+    if (!dateStr) return false;
+    if (typeof dateStr === 'string' && (dateStr.includes('Today') || dateStr.includes('Tomorrow'))) {
+      return true;
+    }
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return false;
+      const diffDays = (d.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+      return diffDays <= 2 && diffDays >= -1;
+    } catch {
+      return false;
+    }
+  };
+
   // Summary Metrics
   const summary = useMemo(() => {
     const pending = assignments.length;
-    const completedThisWeek = completedAssignments.length; // Simplified
+    const completedThisWeek = completedAssignments.length;
 
-    // Mock upcoming deadlines logic
-    const today = new Date();
-    const urgentCount = assignments.filter((a) => {
-      const dueDate = new Date(a.dueDate);
-      const diffTime = Math.abs(dueDate.getTime() - today.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays <= 2;
-    }).length;
+    const urgentCount = assignments.filter((a) => checkIsUrgent(a.dueDate)).length;
 
     return {
       pending,
       completedThisWeek,
       urgentCount,
-      totalThisWeek: pending + completedThisWeek || 5 // Goal of 5
+      totalThisWeek: pending + completedThisWeek || 5
     };
   }, [assignments, completedAssignments]);
 
   const practiceSuggestions = [
-  { id: 1, title: 'Practice 5 questions on Real Numbers', type: 'practice', subject: 'Maths', color: 'bg-primary/10 border-primary/20 text-primary' },
-  { id: 2, title: 'Revise Rational Numbers concepts', type: 'revision', subject: 'Maths', color: 'bg-secondary/10 border-secondary/20 text-secondary' },
-  { id: 3, title: 'Solve Algebraic Word Problems', type: 'practice', subject: 'Maths', color: 'bg-success/10 border-success/20 text-success' }];
-
+    { id: 1, title: 'Practice 5 questions on Real Numbers', type: 'practice', subject: 'Maths' },
+    { id: 2, title: 'Revise Rational Numbers concepts', type: 'revision', subject: 'Maths' },
+    { id: 3, title: 'Solve Algebraic Word Problems', type: 'practice', subject: 'Maths' }
+  ];
 
   const handleSubmit = async (assignmentId) => {
     try {
       const authData = localStorage.getItem('auth');
       if (!authData) return;
 
-      // Notify the user
       alert(`Assignment ${assignmentId} submitted successfully!`);
-
-      // Log for progress dashboard
       logActivity('lesson', assignmentId, `Submitted assignment: ${assignmentId}`);
-
-      // Refresh list
       fetchAssignments();
     } catch (e) {
       console.error('Submission failed', e);
@@ -99,312 +130,423 @@ const Assignments = () => {
   };
 
   return (
-    <div className="min-h-screen bg-app-bg pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+    <div className="min-h-screen bg-app-bg pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <header className="pt-10 mb-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-2">
+        <header className="pt-8 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-primary/10 rounded-2xl text-primary shadow-sm">
-                  <ListTodo size={28} strokeWidth={2.5} />
+                <div className="p-2.5 bg-primary/10 rounded-2xl text-primary shadow-xs">
+                  <ListTodo size={26} strokeWidth={2.5} />
                 </div>
-                <h1 className="text-4xl md:text-5xl font-black text-app-text-main tracking-tight">
+                <h1 className="text-3xl sm:text-4xl font-black text-app-text-main tracking-tight">
                   Task <span className="text-primary-hover">Hub</span>
                 </h1>
               </div>
-              <p className="text-xs md:text-sm font-medium text-app-text-sub tracking-normal ml-1">
+              <p className="text-xs sm:text-sm font-medium text-app-text-sub tracking-normal ml-1">
                 Personalized practice & assignments for your level
               </p>
             </div>
-            
-            <div className="flex items-center gap-4">
-               <button
+
+            <div className="flex items-center gap-3">
+              <button
                 onClick={() => navigate('/lessons')}
-                className="group flex items-center gap-2 px-6 py-3.5 bg-app-bg-alt border border-app-border rounded-2xl text-xs font-black uppercase tracking-widest text-app-text-main hover:border-primary transition-all hover:-translate-y-0.5">
-                
-                  <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                  Back to Learning
-               </button>
+                className="group flex items-center gap-2 px-5 py-2.5 bg-app-bg border border-app-border rounded-xl text-xs font-bold uppercase tracking-wider text-app-text-main hover:border-primary hover:text-primary transition-all shadow-xs cursor-pointer"
+              >
+                <ArrowLeft size={15} className="group-hover:-translate-x-1 transition-transform" />
+                Back to Learning
+              </button>
             </div>
           </div>
         </header>
 
-        {/* SECTION 1: TASK SUMMARY & WEEKLY PROGRESS (Section 7) */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-           <div className="p-6 bg-app-bg border border-app-border rounded-4xl shadow-sm flex flex-col justify-between group hover:border-primary/20 transition-all">
-              <div className="flex justify-between items-start mb-6">
-                 <div className="p-3 bg-primary/10 rounded-2xl text-primary">
-                    <Clock size={24} strokeWidth={2.5} />
-                 </div>
-                 <AlertCircle size={20} className={summary.urgentCount > 0 ? "text-error" : "text-app-text-muted/20"} />
+        {/* SECTION 1: TASK SUMMARY & WEEKLY PROGRESS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="p-5 bg-app-bg border border-app-border rounded-2xl shadow-xs flex flex-col justify-between hover:border-primary/30 transition-all">
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
+                <Clock size={22} strokeWidth={2.5} />
               </div>
-              <div>
-                 <p className="text-3xl font-black text-app-text-main">{summary.pending}</p>
-                 <p className="text-xs font-bold text-app-text-muted uppercase tracking-wide">Pending Tasks</p>
-              </div>
-           </div>
+              <AlertCircle size={18} className={summary.urgentCount > 0 ? "text-error animate-pulse" : "text-app-text-muted/30"} />
+            </div>
+            <div>
+              <p className="text-2xl sm:text-3xl font-black text-app-text-main">{summary.pending}</p>
+              <p className="text-[11px] font-bold text-app-text-muted uppercase tracking-wider">Pending Tasks</p>
+            </div>
+          </div>
 
-           <div className="p-6 bg-app-bg border border-app-border rounded-4xl shadow-sm flex flex-col justify-between group hover:border-success/20 transition-all">
-              <div className="flex justify-between items-start mb-6">
-                 <div className="p-3 bg-success/10 rounded-2xl text-success">
-                    <CheckCircle2 size={24} strokeWidth={2.5} />
-                 </div>
-                 <TrendingUp size={20} className="text-success" />
+          <div className="p-5 bg-app-bg border border-app-border rounded-2xl shadow-xs flex flex-col justify-between hover:border-success/30 transition-all">
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-2.5 bg-success/10 rounded-xl text-success">
+                <CheckCircle2 size={22} strokeWidth={2.5} />
               </div>
-              <div>
-                 <p className="text-3xl font-black text-app-text-main">{summary.completedThisWeek}</p>
-                 <p className="text-xs font-bold text-app-text-muted uppercase tracking-wide">Completed This Week</p>
-              </div>
-           </div>
+              <TrendingUp size={18} className="text-success" />
+            </div>
+            <div>
+              <p className="text-2xl sm:text-3xl font-black text-app-text-main">{summary.completedThisWeek}</p>
+              <p className="text-[11px] font-bold text-app-text-muted uppercase tracking-wider">Completed This Week</p>
+            </div>
+          </div>
 
-           {/* SECTION 7: WEEKLY GOAL INDICATOR */}
-           <div className="md:col-span-2 p-6 bg-app-bg border border-app-border rounded-4xl shadow-sm flex flex-col justify-center">
-              <div className="flex justify-between items-center mb-4">
-                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-secondary/10 rounded-xl text-secondary">
-                        <Trophy size={20} strokeWidth={2.5} />
-                    </div>
-                    <p className="text-xs font-bold text-app-text-main uppercase tracking-wide">Weekly Goal</p>
-                 </div>
-                 <span className="text-sm font-black text-app-text-main">{summary.completedThisWeek} / {summary.totalThisWeek}</span>
+          {/* WEEKLY GOAL INDICATOR */}
+          <div className="sm:col-span-2 p-5 bg-app-bg border border-app-border rounded-2xl shadow-xs flex flex-col justify-center">
+            <div className="flex justify-between items-center mb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-secondary/10 rounded-xl text-secondary">
+                  <Trophy size={18} strokeWidth={2.5} />
+                </div>
+                <p className="text-xs font-bold text-app-text-main uppercase tracking-wider">Weekly Goal</p>
               </div>
-              <div className="w-full h-3 bg-app-bg-alt rounded-full overflow-hidden border border-app-border mb-3">
-                 <div
-                className="h-full bg-linear-to-r from-success to-primary-hover transition-all duration-1000 shadow-[0_0_10px_rgba(34,197,94,0.3)]"
-                style={{ width: `${Math.min(summary.completedThisWeek, summary.totalThisWeek) / summary.totalThisWeek * 100}%` }} />
-              
-              </div>
-              <p className="text-xs font-medium text-app-text-sub">
-                 {summary.completedThisWeek >= summary.totalThisWeek ? "Goal reached! Excellent effort." : "Almost there! Complete your pending tasks to hit the goal."}
-              </p>
-           </div>
+              <span className="text-xs sm:text-sm font-black text-app-text-main">{summary.completedThisWeek} / {summary.totalThisWeek}</span>
+            </div>
+            <div className="w-full h-2.5 bg-app-bg-alt rounded-full overflow-hidden border border-app-border mb-2.5">
+              <div
+                className="h-full bg-linear-to-r from-success to-primary-hover transition-all duration-1000 shadow-[0_0_10px_rgba(34,197,94,0.3)] rounded-full"
+                style={{ width: `${Math.min(summary.completedThisWeek, summary.totalThisWeek) / summary.totalThisWeek * 100}%` }}
+              />
+            </div>
+            <p className="text-[11px] font-medium text-app-text-sub">
+              {summary.completedThisWeek >= summary.totalThisWeek ? "Goal reached! Excellent effort." : "Almost there! Complete your pending tasks to hit the goal."}
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
+        {/* MAIN TWO-COLUMN CONTENT GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Main Task List Area (8/12) */}
-          <div className="lg:col-span-8 space-y-10">
-            
-            {loading ?
-            <div className="flex flex-col items-center justify-center py-20 gap-4">
-                 <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                 <p className="text-[10px] font-black uppercase tracking-widest text-app-text-muted">Loading your workspace...</p>
-              </div> :
-            assignments.length === 0 ? (
-            /* SECTION 6: IMPROVED EMPTY STATE */
-            <div className="space-y-8">
-                 <div className="p-12 md:p-16 bg-app-bg border border-app-border rounded-[3rem] text-center shadow-xs border-dashed relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
-                       <Sparkles size={160} className="text-primary" />
-                    </div>
-                    
-                    <div className="relative z-10">
-                       <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
-                          <CheckCircle2 size={40} className="text-success animate-bounce" />
-                       </div>
-                       <h3 className="text-3xl font-black text-app-text-main mb-4">You're all caught up!</h3>
-                       <p className="max-w-md mx-auto text-app-text-sub font-bold leading-relaxed mb-10">
-                          Great job! No pending assignments found. Stay sharp with some quick practice sessions below.
-                       </p>
-                       
-                       <Button variant="primary" onClick={() => navigate('/ai-tutor')} className="px-10 py-5 rounded-3xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-105 transition-transform flex items-center gap-3 mx-auto">
-                          <Zap size={18} fill="currentColor" /> Chat with AI Tutor
-                       </Button>
-                    </div>
-                 </div>
+          <div className="lg:col-span-8 space-y-6">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20 gap-4 bg-app-bg border border-app-border rounded-2xl">
+                <div className="w-9 h-9 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+                <p className="text-[11px] font-bold uppercase tracking-wider text-app-text-muted">Loading your workspace...</p>
+              </div>
+            ) : assignments.length === 0 ? (
+              /* EMPTY STATE */
+              <div className="space-y-6">
+                <div className="p-10 md:p-12 bg-app-bg border border-app-border rounded-3xl text-center shadow-xs border-dashed relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                    <Sparkles size={140} className="text-primary" />
+                  </div>
 
-                 {/* SECTION 4: PRACTICE SUGGESTIONS (Empty State fallback) */}
-                 <div className="space-y-6">
-                    <div className="flex items-center gap-3 px-2">
-                       <Sparkles size={18} className="text-primary" />
-                       <h3 className="text-sm font-bold text-app-text-muted uppercase tracking-wider">Next Practice sessions</h3>
+                  <div className="relative z-10">
+                    <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                      <CheckCircle2 size={32} className="text-success animate-bounce" />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       {practiceSuggestions.map((p) =>
-                  <button
+                    <h3 className="text-2xl font-black text-app-text-main mb-2">You're all caught up!</h3>
+                    <p className="max-w-md mx-auto text-app-text-sub font-medium text-xs md:text-sm leading-relaxed mb-6">
+                      Great job! No pending assignments found. Stay sharp with some quick practice sessions below.
+                    </p>
+
+                    <Button
+                      variant="primary"
+                      onClick={() => navigate('/ai-tutor')}
+                      className="px-8 py-3 rounded-xl font-bold uppercase tracking-wider text-xs shadow-lg shadow-primary/20 hover:scale-105 transition-transform flex items-center gap-2 mx-auto"
+                    >
+                      <Zap size={16} fill="currentColor" /> Chat with AI Tutor
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* PENDING ASSIGNMENTS ACTIVE */
+              <div className="space-y-4">
+                <div className="flex justify-between items-center px-1">
+                  <h3 className="text-sm font-bold text-app-text-main uppercase tracking-wider flex items-center gap-2">
+                    <ListTodo size={18} className="text-primary" /> Pending Tasks
+                  </h3>
+                  <span className="bg-primary/10 text-primary border border-primary/20 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                    {assignments.length} Action {assignments.length === 1 ? 'Item' : 'Items'}
+                  </span>
+                </div>
+
+                <div className={`grid grid-cols-1 ${assignments.length > 1 ? 'md:grid-cols-2' : ''} gap-4`}>
+                  {assignments.map((assignment) => {
+                    const isUrgent = checkIsUrgent(assignment.dueDate);
+                    const formattedDate = formatDueDate(assignment.dueDate);
+
+                    return (
+                      <div
+                        key={assignment.id || assignment._id}
+                        className={`group relative bg-app-bg border ${
+                          isUrgent ? 'border-error/40 ring-1 ring-error/15' : 'border-app-border'
+                        } rounded-2xl p-5 md:p-6 hover:shadow-lg hover:border-primary/40 transition-all duration-200 flex flex-col justify-between`}
+                      >
+                        <div>
+                          {/* Top row */}
+                          <div className="flex items-center justify-between gap-2 mb-3">
+                            <div className="flex items-center gap-2">
+                              <span className="px-2.5 py-1 bg-app-bg-alt rounded-lg text-[10px] font-bold uppercase tracking-wider text-primary border border-app-border">
+                                {assignment.subject || assignment.category || 'General'}
+                              </span>
+                              <span className="flex items-center gap-1 px-2.5 py-1 bg-secondary/10 rounded-lg text-[10px] font-bold uppercase tracking-wider text-secondary border border-secondary/20">
+                                <Zap size={11} fill="currentColor" /> Difficulty: Medium
+                              </span>
+                            </div>
+                            {isUrgent && (
+                              <span className="flex items-center gap-1 px-2 py-0.5 bg-error/10 text-error rounded-md text-[10px] font-bold animate-pulse">
+                                <AlertCircle size={12} /> Due Soon
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Title & Description */}
+                          <div className="space-y-2 mb-4">
+                            <h3 className="text-lg md:text-xl font-bold text-app-text-main group-hover:text-primary transition-colors leading-snug">
+                              {assignment.title}
+                            </h3>
+                            <div className="p-3.5 bg-app-bg-alt rounded-xl border border-app-border flex items-start gap-2.5">
+                              <FileText size={16} className="text-app-text-muted shrink-0 mt-0.5" />
+                              <p className="text-xs md:text-sm font-medium text-app-text-sub leading-relaxed">
+                                {assignment.description || 'Incorporate concepts from the recent lessons into this project.'}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Task Progress */}
+                          <div className="space-y-1.5 mb-5">
+                            <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-app-text-muted">
+                              <span>Task Progress</span>
+                              <span>35%</span>
+                            </div>
+                            <div className="w-full h-2 bg-app-bg-alt rounded-full overflow-hidden border border-app-border/60">
+                              <div className="h-full bg-secondary rounded-full w-[35%]" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Footer with Due Date & Action Button */}
+                        <div className="pt-4 border-t border-app-border flex items-center justify-between gap-4">
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-bold text-app-text-muted uppercase tracking-wider">Due Date</span>
+                            <div className={`flex items-center gap-1.5 text-xs font-bold ${isUrgent ? 'text-error' : 'text-app-text-main'}`}>
+                              <Calendar size={13} /> {formattedDate}
+                            </div>
+                          </div>
+                          <Button
+                            variant="primary"
+                            onClick={() => handleSubmit(assignment.id || assignment._id)}
+                            className="px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md shadow-primary/20 hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5"
+                          >
+                            <span>Continue</span>
+                            <ChevronRight size={14} />
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* AI PRACTICE RECOMMENDATIONS */}
+            <div className="space-y-3 pt-1">
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-sm font-bold text-app-text-main uppercase tracking-wider flex items-center gap-2">
+                  <Sparkles size={16} className="text-amber-500" /> AI Practice Recommendations
+                </h3>
+                <button
+                  onClick={() => navigate('/ai-tutor')}
+                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                >
+                  Ask AI Tutor <ChevronRight size={13} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                {practiceSuggestions.map((p) => (
+                  <div
                     key={p.id}
                     onClick={() => navigate('/ai-tutor')}
-                    className={`flex items-center justify-between p-6 rounded-3xl border-2 hover:scale-101 transition-all text-left ${p.color}`}>
-                    
-                             <div className="space-y-1">
-                                <span className="text-[9px] font-black uppercase tracking-widest opacity-70">{p.subject} • Recommended</span>
-                                <p className="text-base font-black leading-tight">{p.title}</p>
-                             </div>
-                             <ChevronRight size={20} className="opacity-50" />
-                          </button>
-                  )}
+                    className="bg-app-bg border border-app-border rounded-2xl p-4 flex flex-col justify-between hover:border-primary/40 hover:shadow-md transition-all cursor-pointer group"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-extrabold uppercase tracking-wider text-primary px-2 py-0.5 bg-primary/10 rounded-md border border-primary/20">
+                          {p.subject}
+                        </span>
+                        <Zap size={13} className="text-amber-500" />
+                      </div>
+                      <h4 className="text-xs font-bold text-app-text-main group-hover:text-primary transition-colors leading-snug line-clamp-2">
+                        {p.title}
+                      </h4>
+                      <p className="text-[10px] text-app-text-muted capitalize">
+                        {p.type} • Recommended
+                      </p>
                     </div>
-                 </div>
-              </div>) : (
+                    <div className="mt-4 pt-3 border-t border-app-border flex items-center justify-between text-[11px] font-bold text-primary group-hover:translate-x-0.5 transition-transform">
+                      <span>Start Session</span>
+                      <ChevronRight size={13} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-            /* SECTION 2: PENDING ASSIGNMENTS ACTIVE */
-            <div className="space-y-6">
-                <div className="flex justify-between items-center px-2">
-                   <h3 className="text-sm font-bold text-app-text-muted uppercase tracking-wider flex items-center gap-2">
-                      <ListTodo size={20} className="text-primary" /> Pending Tasks
-                   </h3>
-                   <span className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                      {assignments.length} Action Items
-                   </span>
+            {/* COMPLETED ASSIGNMENTS */}
+            {completedAssignments.length > 0 && (
+              <div className="space-y-3 pt-1">
+                <div className="flex items-center justify-between px-1">
+                  <h3 className="text-sm font-bold text-app-text-main uppercase tracking-wider flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-success" /> Completed Assignments
+                  </h3>
+                  <span className="text-[10px] font-bold text-success bg-success/10 px-2.5 py-0.5 rounded-full border border-success/20">
+                    {completedAssignments.length} Submitted
+                  </span>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   {assignments.map((assignment) => {
-                  const isUrgent = assignment.dueDate.includes("Today") || assignment.dueDate.includes("Tomorrow");
-                  return (
-                    <Card key={assignment.id} className={`group relative flex flex-col h-full bg-app-bg border ${isUrgent ? 'border-error/40 ring-1 ring-error/10 shadow-error/5' : 'border-app-border'} rounded-3xl p-6 md:p-7 hover:shadow-xl hover:border-primary/30 transition-all duration-300`}>
-                           <div className="absolute top-0 right-0 p-4">
-                              {isUrgent && <AlertCircle size={20} className="text-error animate-pulse" />}
-                           </div>
-                           
-                           <div className="flex-1 space-y-6">
-                              <div className="flex items-center gap-2">
-                                 <span className="px-2.5 py-1 bg-app-bg-alt rounded-lg text-[10px] font-bold uppercase tracking-wide text-primary border border-app-border shadow-xs">
-                                    {assignment.category}
-                                 </span>
-                                 <div className="flex items-center gap-1 px-2.5 py-1 bg-secondary/10 rounded-lg text-[10px] font-bold uppercase tracking-wide text-secondary border border-secondary/10 shadow-xs">
-                                    <Zap size={10} fill="currentColor" /> Difficulty: Medium
-                                 </div>
-                              </div>
 
-                              <h3 className="text-xl md:text-2xl font-black text-app-text-main leading-snug group-hover:text-primary-hover transition-colors">
-                                 {assignment.title}
-                              </h3>
-
-                              <div className="p-4 bg-app-bg-alt rounded-2xl border border-app-border flex items-start gap-3">
-                                 <div className="shrink-0 mt-1 text-app-text-muted">
-                                    <FileText size={18} />
-                                 </div>
-                                 <p className="text-sm font-medium text-app-text-sub leading-relaxed">
-                                    {assignment.description || "Incorporate concepts from the recent lessons into this project."}
-                                 </p>
-                              </div>
-
-                              <div className="space-y-3">
-                                 <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wide text-app-text-muted">
-                                    <span>Task Progress</span>
-                                    <span>35%</span>
-                                 </div>
-                                 <div className="w-full h-2 bg-app-bg-alt rounded-full overflow-hidden border border-app-border/50">
-                                    <div className="h-full bg-secondary w-[35%]" />
-                                 </div>
-                              </div>
-                           </div>
-                           
-                           <div className="mt-8 pt-6 border-t border-app-border flex items-center justify-between gap-4">
-                              <div className="flex flex-col">
-                                 <span className="text-[10px] font-bold text-app-text-muted uppercase tracking-wide mb-0.5">Due Date</span>
-                                 <div className={`flex items-center gap-1.5 text-xs font-black ${isUrgent ? 'text-error' : 'text-app-text-main'}`}>
-                                    <Calendar size={14} /> {assignment.dueDate}
-                                 </div>
-                              </div>
-                              <Button variant="primary" onClick={() => handleSubmit(assignment.id)} className="px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wide shadow-md shadow-primary/15">
-                                 Continue
-                              </Button>
-                           </div>
-                        </Card>);
-
-                })}
+                <div className="space-y-2.5">
+                  {completedAssignments.map((a) => (
+                    <div
+                      key={a.id || a._id || a.title}
+                      className="p-4 bg-app-bg border border-app-border rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-success/30 transition-all shadow-xs"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-success/10 text-success rounded-xl shrink-0 mt-0.5">
+                          <CheckCircle2 size={18} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <span className="text-[10px] font-bold text-app-text-muted uppercase tracking-wider">
+                              {a.subject || 'General'}
+                            </span>
+                            <span className="text-[9px] font-black text-success bg-success/10 px-1.5 py-0.2 rounded border border-success/20">
+                              Grade: 95%
+                            </span>
+                          </div>
+                          <h4 className="text-sm font-bold text-app-text-main">{a.title}</h4>
+                          <p className="text-xs text-app-text-sub mt-0.5">{a.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                        <span className="text-xs font-bold text-success flex items-center gap-1 bg-success/10 px-3 py-1.5 rounded-xl border border-success/20">
+                          Submitted <CheckCircle2 size={13} />
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>)
-            }
+              </div>
+            )}
           </div>
 
           {/* Sidebar Hub (4/12) */}
-          <div className="lg:col-span-4 space-y-10">
-             
-             {/* SECTION 3: UPCOMING DEADLINES */}
-             <Card className="bg-app-bg border border-app-border p-6 rounded-3xl shadow-xs">
-                 <h4 className="text-sm font-bold text-app-text-muted uppercase tracking-wider mb-5 flex items-center gap-2">
-                    <Calendar size={18} className="text-secondary" /> Due Soon
-                 </h4>
-                 <div className="space-y-4">
-                    {[
-                { day: "Today", task: "Rational Numbers Quiz", urgent: true },
-                { day: "Tomorrow", task: "Math Project Submission", urgent: true },
-                { day: "Thu, Feb 23", task: "Science Practical", urgent: false }].
-                map((item, i) =>
-                <div key={i} className={`flex items-center gap-3 p-3 rounded-2xl border ${item.urgent ? 'bg-error/5 border-error/10' : 'bg-app-bg-alt border-app-border'} group hover:border-primary/25 transition-colors cursor-pointer`}>
-                          <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center font-black ${item.urgent ? 'bg-error text-white' : 'bg-app-bg-alt text-app-text-main shadow-xs border border-app-border'}`}>
-                             <span className="text-[9px] uppercase tracking-tight opacity-80">{item.day.split(',')[0]}</span>
-                          </div>
-                          <div className="flex-1 overflow-hidden">
-                             <p className="text-sm font-bold text-app-text-main truncate">{item.task}</p>
-                             <p className={`text-xs font-medium ${item.urgent ? 'text-error' : 'text-app-text-sub'}`}>
-                                {item.urgent ? 'ACTION REQ' : 'Upcoming'}
-                             </p>
-                          </div>
-                       </div>
-                )}
-                 </div>
-             </Card>
+          <div className="lg:col-span-4 space-y-5">
+            {/* UPCOMING DEADLINES */}
+            <div className="bg-app-bg border border-app-border p-5 rounded-2xl shadow-xs space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-app-text-main uppercase tracking-wider flex items-center gap-2">
+                  <Calendar size={16} className="text-secondary" /> Due Soon
+                </h4>
+                <span className="text-[10px] font-bold text-app-text-muted">3 Upcoming</span>
+              </div>
+              <div className="space-y-2.5">
+                {[
+                  { day: 'Today', task: 'Rational Numbers Quiz', urgent: true },
+                  { day: 'Tomorrow', task: 'Math Project Submission', urgent: true },
+                  { day: 'Thu, Feb 23', task: 'Science Practical', urgent: false }
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    className={`flex items-center gap-3 p-2.5 rounded-xl border ${
+                      item.urgent ? 'bg-error/5 border-error/15' : 'bg-app-bg-alt border-app-border'
+                    } hover:border-primary/30 transition-all cursor-pointer`}
+                  >
+                    <div
+                      className={`w-11 h-11 rounded-lg flex flex-col items-center justify-center font-bold text-center shrink-0 ${
+                        item.urgent ? 'bg-error text-white shadow-xs' : 'bg-app-bg text-app-text-main border border-app-border'
+                      }`}
+                    >
+                      <span className="text-[9px] uppercase tracking-tight leading-none opacity-90">{item.day.split(',')[0]}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-app-text-main truncate">{item.task}</p>
+                      <p className={`text-[10px] font-semibold mt-0.5 ${item.urgent ? 'text-error' : 'text-app-text-sub'}`}>
+                        {item.urgent ? 'Action Required' : 'Upcoming Review'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-             {/* SECTION 5: COMPLETED RECENTLY */}
-             <Card className="bg-app-bg border border-app-border p-6 rounded-3xl shadow-xs">
-                 <h4 className="text-sm font-bold text-app-text-muted uppercase tracking-wider mb-5 flex items-center gap-2">
-                    <Award size={18} className="text-success" /> Recent Wins
-                 </h4>
-                 <div className="space-y-6">
-                    {completedAssignments.length > 0 ?
-                completedAssignments.slice(0, 2).map((a, i) =>
-                <div key={i} className="space-y-3">
-                             <div className="flex justify-between items-start">
-                                <div>
-                                   <p className="text-sm font-bold text-app-text-main leading-tight mb-1">{a.title}</p>
-                                   <p className="text-xs font-medium text-app-text-sub">Completed yesterday</p>
-                                </div>
-                                <div className="p-2 bg-success text-white rounded-lg font-black text-xs">
-                                   95%
-                                </div>
-                             </div>
-                             <div className="p-3 bg-success/5 border border-success/10 rounded-xl">
-                                <p className="text-xs font-medium text-success leading-relaxed">
-                                   "Feedback: Excellent understanding of key topics. Try harder problems next!"
-                                </p>
-                             </div>
-                          </div>
-                ) :
-
-                <div className="text-center py-6 border border-dashed border-app-border rounded-2xl px-4">
-                          <p className="text-xs font-medium text-app-text-sub leading-relaxed">
-                             "Your journey of excellence starts with the first completed task."
-                          </p>
-                       </div>
-                }
-                 </div>
-             </Card>
-
-             {/* SECTION 8: OFFLINE SUPPORT */}
-             <div className="px-2">
-                <div className={`flex items-center gap-4 p-5 rounded-3xl border ${isOffline ? 'bg-amber-500/5 border-amber-500/20' : 'bg-success/5 border-success/20'} transition-colors`}>
-                   <div className={`p-3 rounded-2xl ${isOffline ? 'bg-amber-500 text-white shadow-xl shadow-amber-500/20' : 'bg-success text-white shadow-xl shadow-success/20'}`}>
-                      {isOffline ? <WifiOff size={24} /> : <Wifi size={24} />}
-                   </div>
-                   <div className="flex-1">
-                   <h4 className="text-xs font-bold text-app-text-main uppercase tracking-wide mb-1">
-                         {isOffline ? 'Offline Active' : 'Online Sync'}
-                      </h4>
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-app-text-sub">
-                         <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                         {isOffline ? 'Learning from local storage' : 'Tasks are up to date'}
+            {/* COMPLETED RECENTLY */}
+            <div className="bg-app-bg border border-app-border p-5 rounded-2xl shadow-xs space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-app-text-main uppercase tracking-wider flex items-center gap-2">
+                  <Award size={16} className="text-success" /> Recent Wins
+                </h4>
+                <span className="text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded-md border border-success/20">
+                  Top Marks
+                </span>
+              </div>
+              <div className="space-y-3">
+                {completedAssignments.length > 0 ? (
+                  completedAssignments.slice(0, 2).map((a, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="text-xs font-bold text-app-text-main leading-tight">{a.title}</p>
+                          <p className="text-[10px] text-app-text-muted mt-0.5">Completed yesterday</p>
+                        </div>
+                        <div className="px-2 py-1 bg-success text-white rounded-lg font-black text-[11px] shadow-xs">
+                          95%
+                        </div>
                       </div>
-                   </div>
-                </div>
-                
-                <button
-                onClick={() => navigate('/lessons/uploaded')}
-                className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-2xl border border-app-border text-xs font-bold uppercase tracking-wide text-app-text-muted hover:bg-app-bg-alt hover:text-app-text-main transition-all">
-                
-                   <Download size={14} /> Offline Access Settings
-                </button>
-             </div>
+                      <div className="p-3 bg-success/5 border border-success/15 rounded-xl">
+                        <p className="text-xs font-medium text-success leading-relaxed">
+                          "Feedback: Excellent understanding of key topics. Try harder problems next!"
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4 border border-dashed border-app-border rounded-xl px-3">
+                    <p className="text-xs font-medium text-app-text-sub leading-relaxed">
+                      "Your journey of excellence starts with the first completed task."
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
 
+            {/* OFFLINE SUPPORT */}
+            <div className="bg-app-bg border border-app-border p-4 rounded-2xl shadow-xs space-y-3">
+              <div
+                className={`flex items-center gap-3 p-3 rounded-xl border ${
+                  isOffline ? 'bg-amber-500/5 border-amber-500/20' : 'bg-success/5 border-success/20'
+                }`}
+              >
+                <div
+                  className={`p-2.5 rounded-lg shrink-0 ${
+                    isOffline ? 'bg-amber-500 text-white' : 'bg-success text-white'
+                  }`}
+                >
+                  {isOffline ? <WifiOff size={18} /> : <Wifi size={18} />}
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-xs font-bold text-app-text-main uppercase tracking-wide">
+                    {isOffline ? 'Offline Active' : 'Online Sync'}
+                  </h4>
+                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-app-text-sub mt-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse shrink-0" />
+                    <span className="truncate">{isOffline ? 'Learning from local storage' : 'Tasks are up to date'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate('/lessons/uploaded')}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-app-border text-xs font-bold uppercase tracking-wider text-app-text-muted hover:bg-app-bg-alt hover:text-app-text-main transition-all cursor-pointer"
+              >
+                <Download size={13} /> Offline Access Settings
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>);
-
+    </div>
+  );
 };
 
 export default Assignments;
