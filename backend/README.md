@@ -38,3 +38,4 @@ Set these in `.env`:
 
 - Syllabus seed reads from `../backend/data/syllabus/ncert_syllabus.json`.
 - API uses JWT for lightweight auth in user endpoints.
+- Configured user data isolation and settings navigation consistency.
