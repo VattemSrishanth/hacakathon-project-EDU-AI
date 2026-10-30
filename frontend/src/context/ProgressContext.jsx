@@ -4,7 +4,7 @@ import { userDataAPI } from '../services/api';
 
 // ==================== Types ====================
 // ==================== Constants ====================
-const PROGRESS_KEY = 'learnbridge_progress_v1';
+const getProgressStorageKey = (uid) => uid ? `learnbridge_progress_${uid}` : 'learnbridge_progress_guest';
 
 const getLocalIsoDate = (date = new Date()) => {
   const offset = date.getTimezoneOffset();
@@ -21,6 +21,7 @@ const initialProgress = {
     byDay: {}
   },
   quizScores: [],
+  certificates: [],
   activityLog: [],
   lastActivityTimestamp: Date.now(),
   questionsAsked: 0
@@ -62,6 +63,7 @@ const sanitizeProgress = (data) => {
     totalLessons: typeof data.totalLessons === 'number' ? data.totalLessons : initialProgress.totalLessons,
     timeSpent,
     quizScores: Array.isArray(data.quizScores) ? data.quizScores : Array.isArray(data.quiz_scores) ? data.quiz_scores : [],
+    certificates: Array.isArray(data.certificates) ? data.certificates : [],
     activityLog: Array.isArray(data.activityLog) ? data.activityLog : Array.isArray(data.activities) ? data.activities : [],
     questionsAsked: data.questionsAsked || data.questions_asked || 0,
     lastActivityTimestamp: typeof data.lastActivityTimestamp === 'number' ? data.lastActivityTimestamp : Date.now()
@@ -73,12 +75,13 @@ export const ProgressProvider = ({ children }) => {
   const auth = authContext?.auth;
   const isAuthenticated = authContext?.isAuthenticated;
 
-  const userId = auth?.user?.id;
+  const userId = auth?.user?.id || auth?.user?._id;
   const isFetched = useRef(false);
 
   const [progress, setProgress] = useState(() => {
     try {
-      const stored = localStorage.getItem(PROGRESS_KEY);
+      const userKey = getProgressStorageKey(userId);
+      const stored = localStorage.getItem(userKey);
       if (!stored) return initialProgress;
       const parsed = JSON.parse(stored);
       return sanitizeProgress(parsed);
@@ -90,38 +93,54 @@ export const ProgressProvider = ({ children }) => {
 
   const activeTimersRef = useRef({});
 
-  // Sync from server on login
+  // Sync from server on login or user switch
   useEffect(() => {
     if (isAuthenticated && userId) {
-      console.log("[Progress] Fetching sync for user", userId);
-      userDataAPI.getProgress(userId.toString()).
-      then((res) => {
-        if (res?.success && res?.progress) {
-          setProgress(sanitizeProgress(res.progress));
+      const userKey = getProgressStorageKey(userId);
+      try {
+        const stored = localStorage.getItem(userKey);
+        if (stored) {
+          setProgress(sanitizeProgress(JSON.parse(stored)));
+        } else {
+          setProgress(initialProgress);
         }
-        isFetched.current = true;
-      }).
-      catch((err) => {
-        console.error("[Progress] Fetch failed", err);
-        isFetched.current = true;
-      });
+      } catch (e) {
+        setProgress(initialProgress);
+      }
+
+      console.log("[Progress] Fetching sync for user", userId);
+      userDataAPI.getProgress(userId.toString())
+        .then((res) => {
+          if (res?.success && res?.progress) {
+            const clean = sanitizeProgress(res.progress);
+            setProgress(clean);
+            localStorage.setItem(userKey, JSON.stringify(clean));
+          }
+          isFetched.current = true;
+        })
+        .catch((err) => {
+          console.error("[Progress] Fetch failed", err);
+          isFetched.current = true;
+        });
     } else {
       isFetched.current = false;
+      setProgress(initialProgress);
     }
   }, [isAuthenticated, userId]);
 
-  // Persist to Backend
+  // Persist to Backend & User-scoped LocalStorage
   useEffect(() => {
+    const userKey = getProgressStorageKey(userId);
     if (isAuthenticated && userId && isFetched.current) {
-      localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+      localStorage.setItem(userKey, JSON.stringify(progress));
 
       const timeoutId = setTimeout(() => {
-        userDataAPI.updateProgress(userId.toString(), progress).
-        catch((err) => console.error("[Progress] Save failed", err));
+        userDataAPI.updateProgress(userId.toString(), progress)
+          .catch((err) => console.error("[Progress] Save failed", err));
       }, 3000);
       return () => clearTimeout(timeoutId);
-    } else {
-      localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+    } else if (!isAuthenticated) {
+      localStorage.setItem(userKey, JSON.stringify(progress));
     }
   }, [progress, isAuthenticated, userId]);
 
@@ -129,9 +148,9 @@ export const ProgressProvider = ({ children }) => {
     setProgress((prev) => ({
       ...prev,
       activityLog: [
-      { type, referenceId, timestamp: Date.now(), label },
-      ...prev.activityLog].
-      slice(0, 50), // Keep last 50 activities
+        { type, referenceId, timestamp: Date.now(), label },
+        ...prev.activityLog
+      ].slice(0, 50), // Keep last 50 activities
       lastActivityTimestamp: Date.now()
     }));
   }, []);
@@ -201,6 +220,7 @@ export const ProgressProvider = ({ children }) => {
     }));
     logActivity('quiz', lessonId, label || `Scored ${score}/${maxScore} in quiz`);
   }, [logActivity]);
+
   const recordAiQuestion = useCallback((question) => {
     setProgress((prev) => ({
       ...prev,
@@ -209,6 +229,7 @@ export const ProgressProvider = ({ children }) => {
     }));
     logActivity('ai_tutor', 'ai', `Asked AI: ${question.slice(0, 30)}...`);
   }, [logActivity]);
+
   const setTotalLessons = useCallback((total) => {
     setProgress((prev) => {
       if (prev.totalLessons === total) return prev;
@@ -232,7 +253,7 @@ export const ProgressProvider = ({ children }) => {
       const dateStr = getLocalIsoDate(d);
 
       const count = progress.activityLog.filter((act) =>
-      getLocalIsoDate(new Date(act.timestamp)) === dateStr
+        getLocalIsoDate(new Date(act.timestamp)) === dateStr
       ).length;
 
       result.push({ date: dateStr, count });
@@ -259,8 +280,8 @@ export const ProgressProvider = ({ children }) => {
       const minutes = progress.timeSpent.byDay[dateStr] || 0;
 
       let status = 'low';
-      if (minutes >= 60) status = 'productive';else
-      if (minutes >= 20) status = 'moderate';
+      if (minutes >= 60) status = 'productive';
+      else if (minutes >= 20) status = 'moderate';
 
       return { day, minutes, status };
     });
@@ -268,10 +289,10 @@ export const ProgressProvider = ({ children }) => {
 
   const getQuizStats = useCallback(() => {
     if (progress.quizScores.length === 0) return [
-    { name: 'Correct', value: 0 },
-    { name: 'Incorrect', value: 0 },
-    { name: 'Unanswered', value: 100 }];
-
+      { name: 'Correct', value: 0 },
+      { name: 'Incorrect', value: 0 },
+      { name: 'Unanswered', value: 100 }
+    ];
 
     const totalPossible = progress.quizScores.reduce((acc, q) => acc + q.maxScore, 0);
     const totalCorrect = progress.quizScores.reduce((acc, q) => acc + q.score, 0);
@@ -279,10 +300,10 @@ export const ProgressProvider = ({ children }) => {
     const totalIncorrect = totalPossible - totalCorrect;
 
     return [
-    { name: 'Correct', value: totalCorrect },
-    { name: 'Incorrect', value: totalIncorrect },
-    { name: 'Unanswered', value: totalUnanswered }];
-
+      { name: 'Correct', value: totalCorrect },
+      { name: 'Incorrect', value: totalIncorrect },
+      { name: 'Unanswered', value: totalUnanswered }
+    ];
   }, [progress.quizScores]);
 
   const value = useMemo(() => ({
@@ -299,25 +320,25 @@ export const ProgressProvider = ({ children }) => {
     getTimeSpentData,
     getQuizStats
   }), [
-  progress,
-  markLessonCompleted,
-  startLessonTimer,
-  stopLessonTimer,
-  recordQuizScore,
-  recordAiQuestion,
-  setTotalLessons,
-  logActivity,
-  getProgressPercentage,
-  getWeeklyActivity,
-  getTimeSpentData,
-  getQuizStats]
-  );
+    progress,
+    markLessonCompleted,
+    startLessonTimer,
+    stopLessonTimer,
+    recordQuizScore,
+    recordAiQuestion,
+    setTotalLessons,
+    logActivity,
+    getProgressPercentage,
+    getWeeklyActivity,
+    getTimeSpentData,
+    getQuizStats
+  ]);
 
   return (
     <ProgressContext.Provider value={value}>
       {children}
-    </ProgressContext.Provider>);
-
+    </ProgressContext.Provider>
+  );
 };
 
 export const useProgress = () => {

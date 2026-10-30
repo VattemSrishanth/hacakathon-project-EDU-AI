@@ -37,7 +37,7 @@ const SidebarItem = ({
 }) =>
 <button
   onClick={() => setActiveTab(id)}
-  className={`w-full flex items-center gap-3 px-1 py-3 rounded-xl transition-all duration-300 transform hover:translate-x-1 ${
+  className={`w-full flex items-center gap-3 px-1 py-3 rounded-xl transition-all duration-300 transform hover:translate-x-1 cursor-pointer ${
   activeTab === id ?
   'bg-app-bg/10 text-primary shadow-sm translate-x-1' :
   'text-app-text-sub hover:bg-app-bg/50'}`
@@ -149,7 +149,7 @@ const Settings = () => {
             <div className="pt-8 mt-8 border-t border-app-border">
               <button
                 onClick={() => navigate('/accessibility')}
-                className="w-full flex items-center justify-between px-2 py-3 rounded-xl text-app-text-sub hover:bg-primary/5 hover:text-primary transition-all duration-300 transform hover:translate-x-1 font-bold group">
+                className="w-full flex items-center justify-between px-2 py-3 rounded-xl text-app-text-sub hover:bg-primary/5 hover:text-primary transition-all duration-300 transform hover:translate-x-1 font-bold group cursor-pointer">
                 
                 <div className="flex items-center gap-3">
                   <div className="w-5 h-5 flex items-center justify-center opacity-60 group-hover:opacity-100">
@@ -191,7 +191,7 @@ const Settings = () => {
                     <div>
                       <h3 className="text-xl font-black truncate">{currentName}</h3>
                       <p className="text-app-text-sub font-medium">{currentEmail}</p>
-                      <button onClick={() => setActiveTab('security')} className="text-xs font-black text-primary uppercase tracking-widest mt-2 hover:underline">Change</button>
+                      <button onClick={() => setActiveTab('security')} className="text-xs font-black text-primary uppercase tracking-widest mt-2 hover:underline cursor-pointer">Change</button>
                     </div>
                   </div>
 
@@ -857,7 +857,7 @@ const ThemeCard = ({
   return (
     <button
       onClick={() => onClick(id)}
-      className={`group flex flex-col items-start p-1 rounded-4xl transition-all duration-500 text-left ${
+      className={`group flex flex-col items-start p-1 rounded-4xl transition-all duration-500 text-left cursor-pointer ${
       isSelected ?
       'ring-2 ring-primary p-0.5' :
       'hover:-translate-y-1'}`

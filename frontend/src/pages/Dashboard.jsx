@@ -39,7 +39,7 @@ import { useProgress } from '../context/ProgressContext';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useOffline } from '../context/OfflineContext';
-import { syllabusAPI } from '../services/api';
+import { syllabusAPI, userDataAPI } from '../services/api';
 
 // Vector 3D Graduation Cap on Stack of Books with Play Tile and Floating Note Documents
 const GraduationIllustration = () => (
@@ -188,15 +188,119 @@ const Dashboard = () => {
     setTotalLessons(totalTopics);
   }, [activeSyllabus, setTotalLessons, settings.learning.level]);
 
+  const [assignmentsCount, setAssignmentsCount] = useState(0);
+
+  useEffect(() => {
+    let isMounted = true;
+    const uid = auth?.user?.id || auth?.user?._id;
+    userDataAPI.getAssignments(uid ? String(uid) : undefined)
+      .then((res) => {
+        if (isMounted && res?.success && Array.isArray(res.assignments)) {
+          setAssignmentsCount(res.assignments.length);
+        } else if (isMounted) {
+          setAssignmentsCount(0);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setAssignmentsCount(0);
+      });
+    return () => { isMounted = false; };
+  }, [auth?.user?.id, auth?.user?._id]);
+
   // Derived metrics
   const percentage = getProgressPercentage();
   const timeData = getTimeSpentData();
   const completedCount = progress.lessonsCompleted.length;
-  const examsCount = progress.quizScores?.length || 2;
+  const examsCount = progress.quizScores?.length || 0;
+  const certificatesCount = progress.certificates?.length || 0;
 
   const lastLesson = useMemo(() => {
     return progress.activityLog.find((a) => a.type === 'lesson');
   }, [progress.activityLog]);
+
+  const aiSuggestions = useMemo(() => {
+    const grade = settings.learning?.level?.toString() || '6';
+    const classData = activeSyllabus.classes?.[grade];
+    const subjects = classData?.subjects || {};
+    const subjectNames = Object.keys(subjects);
+
+    const allTopics = [];
+    subjectNames.forEach((sub) => {
+      (subjects[sub] || []).forEach((unit) => {
+        (unit.topics || []).forEach((t) => {
+          allTopics.push({
+            subject: sub,
+            unit: unit.title || unit.name || 'Unit',
+            title: typeof t === 'string' ? t : t.title || t.name || 'Topic',
+            id: typeof t === 'string' ? t : t.id || t.title || t.name || 'topic'
+          });
+        });
+      });
+    });
+
+    const completedSet = new Set(progress.lessonsCompleted || []);
+
+    const nextUncompleted = allTopics.find((t) => !completedSet.has(t.id));
+    const nextItem = nextUncompleted || allTopics[0] || {
+      subject: subjectNames[0] || 'Learning',
+      title: `Class ${grade} Curriculum`,
+      id: 'intro'
+    };
+
+    const lastCompletedId = progress.lessonsCompleted[progress.lessonsCompleted.length - 1];
+    const revisionTopic = allTopics.find((t) => t.id === lastCompletedId) || allTopics[1] || allTopics[0] || {
+      subject: subjectNames[1] || subjectNames[0] || 'Concepts',
+      title: `Key Concepts in Class ${grade}`,
+      id: 'revise'
+    };
+
+    const quizSubject = subjectNames[0] || 'Curriculum';
+
+    return [
+      {
+        id: 'next',
+        title: `Next: ${nextItem.title}`,
+        subtitle: `Class ${grade} • ${nextItem.subject}`,
+        path: `/lessons`,
+        icon: 'book',
+        bg: 'bg-[#F0F8FF] dark:bg-blue-950/40',
+        border: 'border-[#E0F2FE] dark:border-blue-900/50',
+        hoverBorder: 'hover:border-blue-300 dark:hover:border-blue-700',
+        iconBg: 'bg-blue-500 text-white',
+        hoverText: 'group-hover:text-blue-600 dark:group-hover:text-blue-400',
+        btnBorder: 'border-blue-200 dark:border-blue-800 text-blue-500 dark:text-blue-400',
+        btnHover: 'group-hover:bg-blue-500 group-hover:text-white'
+      },
+      {
+        id: 'revise',
+        title: completedSet.size > 0 ? `Revise: ${revisionTopic.title}` : `Explore: ${revisionTopic.title}`,
+        subtitle: completedSet.size > 0 ? 'Strengthen your basics' : `Class ${grade} • ${revisionTopic.subject}`,
+        path: `/lessons`,
+        icon: 'calculator',
+        bg: 'bg-[#FFF5F5] dark:bg-rose-950/40',
+        border: 'border-[#FEE2E2] dark:border-rose-900/50',
+        hoverBorder: 'hover:border-rose-300 dark:hover:border-rose-700',
+        iconBg: 'bg-rose-500 text-white',
+        hoverText: 'group-hover:text-rose-600 dark:group-hover:text-rose-400',
+        btnBorder: 'border-rose-200 dark:border-rose-800 text-rose-500 dark:text-rose-400',
+        btnHover: 'group-hover:bg-rose-500 group-hover:text-white'
+      },
+      {
+        id: 'practice',
+        title: `5 Questions: ${quizSubject}`,
+        subtitle: 'Practice recommended for you',
+        path: `/lessons/quiz`,
+        icon: 'chart',
+        bg: 'bg-[#F0FDF4] dark:bg-emerald-950/40',
+        border: 'border-[#DCFCE7] dark:border-emerald-900/50',
+        hoverBorder: 'hover:border-emerald-300 dark:hover:border-emerald-700',
+        iconBg: 'bg-emerald-500 text-white',
+        hoverText: 'group-hover:text-emerald-600 dark:group-hover:text-emerald-400',
+        btnBorder: 'border-emerald-200 dark:border-emerald-800 text-emerald-500 dark:text-emerald-400',
+        btnHover: 'group-hover:bg-emerald-500 group-hover:text-white'
+      }
+    ];
+  }, [activeSyllabus, settings.learning?.level, progress.lessonsCompleted]);
 
   // Calendar Calculation
   const calendarData = useMemo(() => {
@@ -209,6 +313,8 @@ const Dashboard = () => {
     const activityDates = new Set(
       progress.activityLog.map((a) => new Date(a.timestamp).toDateString())
     );
+
+    const today = new Date();
 
     const days = [];
     // Previous month leading days
@@ -224,14 +330,16 @@ const Dashboard = () => {
     // Current month days
     for (let d = 1; d <= daysInCurrentMonth; d++) {
       const dateStr = new Date(year, month, d).toDateString();
-      // Match reference: day 22 highlighted in active month
-      const isHighlighted = d === 22;
+      const isToday =
+        d === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear();
 
       days.push({
         day: d,
         isCurrentMonth: true,
         active: activityDates.has(dateStr),
-        isHighlighted
+        isHighlighted: isToday
       });
     }
 
@@ -381,74 +489,32 @@ const Dashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-              {/* Suggestion 1: Next Topic */}
-              <div
-                onClick={() => navigate('/lessons')}
-                className="bg-[#F0F8FF] dark:bg-blue-950/40 border border-[#E0F2FE] dark:border-blue-900/50 rounded-2xl p-4 flex items-center justify-between gap-3 cursor-pointer hover:border-blue-300 dark:hover:border-blue-700 transition-all group shadow-xs"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <BookOpen size={16} />
+              {aiSuggestions.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => navigate(item.path)}
+                  className={`${item.bg} border ${item.border} rounded-2xl p-4 flex items-center justify-between gap-3 cursor-pointer ${item.hoverBorder} transition-all group shadow-xs`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`w-9 h-9 rounded-xl ${item.iconBg} flex items-center justify-center shrink-0 shadow-xs`}>
+                      {item.icon === 'book' && <BookOpen size={16} />}
+                      {item.icon === 'calculator' && <Calculator size={16} />}
+                      {item.icon === 'chart' && <BarChart2 size={16} />}
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className={`text-xs font-bold text-slate-900 dark:text-white ${item.hoverText} transition-colors leading-snug truncate`}>
+                        {item.title}
+                      </h4>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-300 mt-0.5 truncate">
+                        {item.subtitle}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
-                      Next: Intro to Algebraic Equations
-                    </h4>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-300 mt-0.5">
-                      Based on your learning goals
-                    </p>
-                  </div>
-                </div>
-                <div className="w-6 h-6 rounded-full border border-blue-200 dark:border-blue-800 text-blue-500 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                  <ArrowRight size={12} />
-                </div>
-              </div>
-
-              {/* Suggestion 2: Revision */}
-              <div
-                onClick={() => navigate('/lessons')}
-                className="bg-[#FFF5F5] dark:bg-rose-950/40 border border-[#FEE2E2] dark:border-rose-900/50 rounded-2xl p-4 flex items-center justify-between gap-3 cursor-pointer hover:border-rose-300 dark:hover:border-rose-700 transition-all group shadow-xs"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <Calculator size={16} />
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors leading-snug">
-                      Revise Rational Numbers
-                    </h4>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-300 mt-0.5">
-                      Strengthen your basics
-                    </p>
+                  <div className={`w-6 h-6 rounded-full border ${item.btnBorder} flex items-center justify-center shrink-0 ${item.btnHover} transition-all`}>
+                    <ArrowRight size={12} />
                   </div>
                 </div>
-                <div className="w-6 h-6 rounded-full border border-rose-200 dark:border-rose-800 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0 group-hover:bg-rose-500 group-hover:text-white transition-all">
-                  <ArrowRight size={12} />
-                </div>
-              </div>
-
-              {/* Suggestion 3: Practice */}
-              <div
-                onClick={() => navigate('/lessons/quiz')}
-                className="bg-[#F0FDF4] dark:bg-emerald-950/40 border border-[#DCFCE7] dark:border-emerald-900/50 rounded-2xl p-4 flex items-center justify-between gap-3 cursor-pointer hover:border-emerald-300 dark:hover:border-emerald-700 transition-all group shadow-xs"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <BarChart2 size={16} />
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug">
-                      5 Questions to Improve accuracy
-                    </h4>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-300 mt-0.5">
-                      Practice recommended for you
-                    </p>
-                  </div>
-                </div>
-                <div className="w-6 h-6 rounded-full border border-emerald-200 dark:border-emerald-800 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                  <ArrowRight size={12} />
-                </div>
-              </div>
+              ))}
             </div>
           </section>
 
@@ -574,6 +640,8 @@ const Dashboard = () => {
                         className={`text-xs w-7 h-7 flex items-center justify-center rounded-lg transition-all ${
                           item.isHighlighted
                             ? 'bg-blue-600 text-white font-bold shadow-xs'
+                            : item.active
+                            ? 'bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold'
                             : item.isCurrentMonth
                             ? 'text-slate-800 dark:text-slate-200 font-medium hover:bg-blue-50 dark:hover:bg-slate-800'
                             : 'text-slate-300 dark:text-slate-600 font-normal'
@@ -732,7 +800,7 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <p className="text-lg font-extrabold text-slate-900 dark:text-white leading-none">
-                    3
+                    {assignmentsCount}
                   </p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
                     Assignments
@@ -768,7 +836,7 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <p className="text-lg font-extrabold text-slate-900 dark:text-white leading-none">
-                    0
+                    {certificatesCount}
                   </p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
                     Certificates

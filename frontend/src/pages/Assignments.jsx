@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Button from '../components/Button';
 import { useProgress } from '../context/ProgressContext';
 import { useOffline } from '../context/OfflineContext';
+import { useAuth } from '../context/AuthContext';
 import {
   ListTodo,
   Clock,
@@ -26,13 +27,17 @@ const Assignments = () => {
   const navigate = useNavigate();
   const { logActivity } = useProgress();
   const { isOffline } = useOffline();
+  const { auth } = useAuth();
+  const userId = auth?.user?.id || auth?.user?._id;
+
   const [assignments, setAssignments] = useState([]);
   const [completedAssignments, setCompletedAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAssignments = async () => {
     try {
-      const data = await userDataAPI.getAssignments();
+      setLoading(true);
+      const data = await userDataAPI.getAssignments(userId ? String(userId) : undefined);
       if (data.success) {
         const all = data.assignments || [];
         setAssignments(all.filter((a) => a.status !== 'Submitted'));
@@ -47,7 +52,7 @@ const Assignments = () => {
 
   useEffect(() => {
     fetchAssignments();
-  }, []);
+  }, [userId]);
 
   // Format due date from ISO string to clean human-readable date
   const formatDueDate = (dateStr) => {
@@ -119,7 +124,7 @@ const Assignments = () => {
   const handleSubmit = async (assignmentId) => {
     try {
       try {
-        await userDataAPI.submitAssignment(assignmentId);
+        await userDataAPI.submitAssignment(assignmentId, userId ? String(userId) : undefined);
       } catch (err) {
         console.warn('Backend submission API unavailable, using state transition:', err);
       }

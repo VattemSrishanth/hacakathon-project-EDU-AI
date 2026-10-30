@@ -11,6 +11,7 @@ const defaultProgress = () => ({
   totalLessons: 50,
   timeSpent: { totalMinutes: 0, byLesson: {}, byDay: {} },
   quizScores: [],
+  certificates: [],
   activityLog: [],
   lastActivityTimestamp: Date.now(),
   questionsAsked: 0
@@ -159,33 +160,35 @@ const markNotificationsRead = asyncHandler(async (req, res) => {
 });
 
 const getAssignments = asyncHandler(async (req, res) => {
-  const assignments = await Assignment.find({}).sort({ dueDate: 1 }).lean();
-  if (!assignments.length) {
-    const seed = [
-      {
-        title: "Maths Practice Worksheet",
-        description: "Complete exercises on fractions and decimals.",
-        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-        status: "Pending",
-        subject: "Maths",
-        class_level: "6",
-        board: "NCERT"
-      },
-      {
-        title: "Science Lab Notes",
-        description: "Summarize the chapter on Light, Shadows and Reflections.",
-        dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
-        status: "Submitted",
-        subject: "Science",
-        class_level: "6",
-        board: "NCERT"
-      }
-    ];
-    const created = await Assignment.insertMany(seed);
-    return res.json({ success: true, assignments: created });
+  const userId = req.query.user_id || req.body?.user_id || (req.user && req.user.userId);
+  if (!userId) {
+    return res.json({ success: true, assignments: [] });
   }
 
+  const assignments = await Assignment.find({ user_id: String(userId) }).sort({ dueDate: 1 }).lean();
   return res.json({ success: true, assignments });
+});
+
+const submitAssignment = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.query.user_id || req.body?.user_id || (req.user && req.user.userId);
+
+  const filter = { _id: id };
+  if (userId) {
+    filter.user_id = String(userId);
+  }
+
+  const assignment = await Assignment.findOneAndUpdate(
+    filter,
+    { status: "Submitted", updatedAt: new Date() },
+    { new: true }
+  );
+
+  if (!assignment) {
+    return res.status(404).json({ success: false, message: "Assignment not found" });
+  }
+
+  return res.json({ success: true, assignment });
 });
 
 const syncOffline = asyncHandler(async (req, res) => {
@@ -206,5 +209,6 @@ module.exports = {
   getNotifications,
   markNotificationsRead,
   getAssignments,
+  submitAssignment,
   syncOffline
 };

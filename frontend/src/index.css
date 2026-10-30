@@ -114,6 +114,16 @@
   /* Slate 800 */
 }
 
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 /* Global Body Styling */
 body {
   background-color: var(--bg-primary);

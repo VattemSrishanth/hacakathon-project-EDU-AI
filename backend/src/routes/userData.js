@@ -11,6 +11,7 @@ const {
   getNotifications,
   markNotificationsRead,
   getAssignments,
+  submitAssignment,
   syncOffline
 } = require("../controllers/userDataController");
 
@@ -27,6 +28,7 @@ router.post("/feedback", submitFeedback);
 router.get("/notifications", getNotifications);
 router.put("/notifications/read", markNotificationsRead);
 router.get("/assignments", getAssignments);
+router.put("/assignments/:id/submit", submitAssignment);
 router.post("/sync", syncOffline);
 
 module.exports = router;

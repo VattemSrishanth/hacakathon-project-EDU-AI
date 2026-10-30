@@ -219,12 +219,12 @@ export const userDataAPI = {
     const response = await api.get('/education-news');
     return response.data;
   },
-  getAssignments: async () => {
-    const response = await api.get('/assignments');
+  getAssignments: async (userId?: string) => {
+    const response = await api.get('/assignments', { params: userId ? { user_id: userId } : {} });
     return response.data;
   },
-  submitAssignment: async (id: string) => {
-    const response = await api.put(`/assignments/${id}/submit`);
+  submitAssignment: async (id: string, userId?: string) => {
+    const response = await api.put(`/assignments/${id}/submit`, {}, { params: userId ? { user_id: userId } : {} });
     return response.data;
   }
 };
