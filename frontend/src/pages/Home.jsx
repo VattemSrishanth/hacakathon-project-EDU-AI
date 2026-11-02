@@ -99,28 +99,28 @@ const Home = () => {
       <section className="px-4 pb-12">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            <div className="bg-app-bg-alt/50 border border-app-border/80 rounded-2xl p-5 text-center shadow-sm">
-              <div className="text-2xl md:text-3xl font-extrabold text-primary mb-1">100%</div>
-              <div className="text-xs md:text-sm font-semibold text-app-text-main">Offline Resilience</div>
-              <div className="text-[11px] md:text-xs text-app-text-muted mt-1">Works without active internet</div>
+            <div className="bg-app-bg-alt/60 hover:bg-app-bg-alt border border-app-border rounded-2xl p-5 text-center shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 backdrop-blur-xs">
+              <div className="text-2xl md:text-3xl font-black text-primary mb-1 tracking-tight">100%</div>
+              <div className="text-xs md:text-sm font-bold text-app-text-main">Offline Resilience</div>
+              <div className="text-[11px] md:text-xs text-app-text-muted mt-1 font-medium">Works without active internet</div>
             </div>
 
-            <div className="bg-app-bg-alt/50 border border-app-border/80 rounded-2xl p-5 text-center shadow-sm">
-              <div className="text-2xl md:text-3xl font-extrabold text-primary mb-1">K-12</div>
-              <div className="text-xs md:text-sm font-semibold text-app-text-main">Curriculum Aligned</div>
-              <div className="text-[11px] md:text-xs text-app-text-muted mt-1">Math, Science, Social & Languages</div>
+            <div className="bg-app-bg-alt/60 hover:bg-app-bg-alt border border-app-border rounded-2xl p-5 text-center shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 backdrop-blur-xs">
+              <div className="text-2xl md:text-3xl font-black text-primary mb-1 tracking-tight">K-12</div>
+              <div className="text-xs md:text-sm font-bold text-app-text-main">Curriculum Aligned</div>
+              <div className="text-[11px] md:text-xs text-app-text-muted mt-1 font-medium">Math, Science, Social & Languages</div>
             </div>
 
-            <div className="bg-app-bg-alt/50 border border-app-border/80 rounded-2xl p-5 text-center shadow-sm">
-              <div className="text-2xl md:text-3xl font-extrabold text-primary mb-1">24/7</div>
-              <div className="text-xs md:text-sm font-semibold text-app-text-main">Multilingual AI Tutor</div>
-              <div className="text-[11px] md:text-xs text-app-text-muted mt-1">Instant concept & doubt clarity</div>
+            <div className="bg-app-bg-alt/60 hover:bg-app-bg-alt border border-app-border rounded-2xl p-5 text-center shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 backdrop-blur-xs">
+              <div className="text-2xl md:text-3xl font-black text-primary mb-1 tracking-tight">24/7</div>
+              <div className="text-xs md:text-sm font-bold text-app-text-main">Multilingual AI Tutor</div>
+              <div className="text-[11px] md:text-xs text-app-text-muted mt-1 font-medium">Instant concept & doubt clarity</div>
             </div>
 
-            <div className="bg-app-bg-alt/50 border border-app-border/80 rounded-2xl p-5 text-center shadow-sm">
-              <div className="text-2xl md:text-3xl font-extrabold text-primary mb-1">WCAG</div>
-              <div className="text-xs md:text-sm font-semibold text-app-text-main">Universal Inclusion</div>
-              <div className="text-[11px] md:text-xs text-app-text-muted mt-1">Speech assist & sign language</div>
+            <div className="bg-app-bg-alt/60 hover:bg-app-bg-alt border border-app-border rounded-2xl p-5 text-center shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 backdrop-blur-xs">
+              <div className="text-2xl md:text-3xl font-black text-primary mb-1 tracking-tight">WCAG</div>
+              <div className="text-xs md:text-sm font-bold text-app-text-main">Universal Inclusion</div>
+              <div className="text-[11px] md:text-xs text-app-text-muted mt-1 font-medium">Speech assist & sign language</div>
             </div>
           </div>
         </div>
