@@ -54,26 +54,26 @@ const Home = () => {
 
         <div className="max-w-7xl mx-auto text-center">
           {/* Subtle Tagline Pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs md:text-sm font-semibold tracking-wide mb-8">
-            <Sparkles size={16} className="text-primary animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs md:text-sm font-semibold tracking-wide mb-8 shadow-xs backdrop-blur-xs">
+            <Sparkles size={15} className="text-primary animate-pulse" />
             <span>Inclusive &bull; Offline-First &bull; Curriculum-Aligned AI</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-app-text-main mb-6 leading-tight tracking-tight">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-app-text-main mb-6 leading-[1.12] tracking-[-0.035em]">
             {t.home.welcome}{' '}
-            <span className="text-primary italic font-serif">
+            <span className="text-primary font-bold">
               {t.home.brandName}
             </span>
           </h1>
 
-          <p className="text-lg sm:text-xl md:text-2xl text-app-text-sub mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
+          <p className="text-lg sm:text-xl md:text-2xl text-app-text-sub mb-10 max-w-3xl mx-auto leading-relaxed font-normal">
             {t.home.tagline}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
             <Button
               variant="primary"
-              className={`w-full sm:w-auto px-10 py-4 text-base sm:text-lg rounded-2xl shadow-xl shadow-primary/25 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 ${isGuest ? 'opacity-85' : ''}`}
+              className={`w-full sm:w-auto px-10 py-4 text-base sm:text-lg font-bold rounded-2xl shadow-xl shadow-primary/25 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer ${isGuest ? 'opacity-85' : ''}`}
               onClick={handlePrimaryNavigation}
             >
               <GraduationCap size={22} />
@@ -84,7 +84,7 @@ const Home = () => {
 
             <Button
               variant="outline"
-              className={`w-full sm:w-auto px-10 py-4 text-base sm:text-lg rounded-2xl border-2 border-app-border hover:border-primary/40 hover:scale-105 active:scale-95 transition-all bg-app-bg/60 backdrop-blur-sm flex items-center justify-center gap-2 ${isGuest ? 'opacity-70' : ''}`}
+              className={`w-full sm:w-auto px-10 py-4 text-base sm:text-lg font-bold rounded-2xl border-2 border-app-border hover:border-primary/40 hover:scale-105 active:scale-95 transition-all bg-app-bg/60 backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer ${isGuest ? 'opacity-70' : ''}`}
               onClick={() => handleRestrictedAction("/ai-tutor")}
             >
               <Bot size={22} className="text-primary" />
