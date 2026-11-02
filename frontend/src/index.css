@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* Institutional Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
 /* Wizarding fonts */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+SC:wght@400;600;700&family=Uncial+Antiqua&display=swap');
@@ -35,6 +35,8 @@
   --font-uncial: "Uncial Antiqua", cursive;
   --font-cormorant: "Cormorant SC", serif;
   --font-inter: "Inter", sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
 }
 
 /* ==================== CSS Variables ==================== */
@@ -126,6 +128,8 @@ button:disabled,
 
 /* Global Body Styling */
 body {
+  font-family: var(--font-sans);
+  letter-spacing: -0.011em;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color var(--transition-speed), color var(--transition-speed);
