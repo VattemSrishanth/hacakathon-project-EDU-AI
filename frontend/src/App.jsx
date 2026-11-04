@@ -20,6 +20,8 @@ import Settings from './pages/Settings';
 import ComingSoon from './pages/ComingSoon';
 import SyncStatus from './pages/SyncStatus';
 import DataUsage from './pages/DataUsage';
+import ParentPortal from './pages/ParentPortal';
+import ClassManagement from './pages/ClassManagement';
 // New Feature Pages
 import CommunityHome from './pages/community/CommunityHome';
 import Exams from './pages/assessments/Exams';
@@ -252,7 +254,10 @@ function AppContent() {
       <Route path="/downloads" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><UploadedPdf /></ProtectedRoute>} />
       <Route path="/sync-status" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><SyncStatus /></ProtectedRoute>} />
       <Route path="/data-usage" element={<ProtectedRoute><DataUsage /></ProtectedRoute>} />
-      <Route path="/parent-view" element={<ProtectedRoute allowedRoles={['parent', 'admin']}><ComingSoon title="Parent View" /></ProtectedRoute>} />
+      <Route path="/parent-view" element={<ProtectedRoute allowedRoles={['parent', 'admin', 'teacher']}><ParentPortal /></ProtectedRoute>} />
+      <Route path="/student-progress" element={<ProtectedRoute allowedRoles={['parent', 'admin', 'teacher']}><ParentPortal /></ProtectedRoute>} />
+      <Route path="/class-management" element={<ProtectedRoute allowedRoles={['teacher', 'admin']}><ClassManagement /></ProtectedRoute>} />
+      <Route path="/assignments/create" element={<ProtectedRoute allowedRoles={['teacher', 'admin']}><Assignments /></ProtectedRoute>} />
       
       {/* New Feature Routes */}
       <Route path="/community" element={<ProtectedRoute><CommunityHome /></ProtectedRoute>} />
