@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +10,8 @@ import {
   User,
   Wifi,
   WifiOff,
-  Menu } from
+  Menu,
+  Flame } from
 'lucide-react';
 import NotificationBell from '../notifications/NotificationBell';
 
@@ -98,6 +99,16 @@ const TopBar = ({ onOpenMobileMenu }) => {
               <span className="hidden sm:inline">Offline</span>
             </>
           }
+        </div>
+
+                {/* Study Streak & XP */}
+        <div 
+          className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-orange-500/20 text-xs font-bold text-orange-500 cursor-pointer hover:border-orange-500/40 transition group"
+          title="5-Day Learning Streak! Study tomorrow to keep the flame alive."
+        >
+          <Flame className="w-3.5 h-3.5 text-orange-500 animate-bounce group-hover:scale-125 transition-transform" />
+          <span>5 Days</span>
+          <span className="text-[10px] text-app-text-muted font-normal">• 420 XP</span>
         </div>
 
         <div className="h-6 w-px bg-app-border mx-1 hidden sm:block"></div>
