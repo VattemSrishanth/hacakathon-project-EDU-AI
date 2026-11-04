@@ -18,6 +18,7 @@ import SpeechAssist from './pages/SpeechAssist';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
 import ComingSoon from './pages/ComingSoon';
+import SyncStatus from './pages/SyncStatus';
 // New Feature Pages
 import CommunityHome from './pages/community/CommunityHome';
 import Exams from './pages/assessments/Exams';
@@ -248,7 +249,7 @@ function AppContent() {
       <Route path="/captions" element={<ProtectedRoute><Captions /></ProtectedRoute>} />
       <Route path="/speech-assist" element={<ProtectedRoute><SpeechAssist /></ProtectedRoute>} />
       <Route path="/downloads" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><UploadedPdf /></ProtectedRoute>} />
-      <Route path="/sync-status" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><ComingSoon title="Sync Status" /></ProtectedRoute>} />
+      <Route path="/sync-status" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin', 'user']}><SyncStatus /></ProtectedRoute>} />
       <Route path="/data-usage" element={<ProtectedRoute><ComingSoon title="Data Usage" /></ProtectedRoute>} />
       <Route path="/parent-view" element={<ProtectedRoute allowedRoles={['parent', 'admin']}><ComingSoon title="Parent View" /></ProtectedRoute>} />
       
