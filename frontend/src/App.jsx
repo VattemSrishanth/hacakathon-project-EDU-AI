@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, Link } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import OfflineBanner from './components/OfflineBanner';
@@ -17,7 +17,6 @@ import Captions from './pages/Captions';
 import SpeechAssist from './pages/SpeechAssist';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
-import ComingSoon from './pages/ComingSoon';
 import SyncStatus from './pages/SyncStatus';
 import DataUsage from './pages/DataUsage';
 import ParentPortal from './pages/ParentPortal';
@@ -297,15 +296,35 @@ function AppContent() {
       } />
     
       <Route
-      path="*"
-      element={
-      <div className="min-h-[60vh] flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-3xl font-bold text-app-text-main">Page Not Found</h1>
-              <p className="text-app-text-sub mt-2">The page you are looking for does not exist.</p>
+        path="*"
+        element={
+          <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
+            <div className="max-w-md w-full bg-app-bg border border-app-border rounded-3xl p-8 text-center shadow-xl">
+              <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-5 font-black text-2xl">
+                404
+              </div>
+              <h1 className="text-2xl font-black text-app-text-main tracking-tight mb-2">Page Not Found</h1>
+              <p className="text-sm font-medium text-app-text-sub mb-6 leading-relaxed">
+                The module or lesson you are looking for might have been moved or is currently unavailable offline.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link
+                  to="/dashboard"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-wider hover:opacity-90 transition-opacity"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/lessons"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-app-bg-alt border border-app-border text-app-text-main text-xs font-black uppercase tracking-wider hover:bg-app-border/40 transition-colors"
+                >
+                  Browse Lessons
+                </Link>
+              </div>
             </div>
           </div>
-      } />
+        }
+      />
     
     </Routes>;
 
