@@ -5,7 +5,7 @@ import {
   Hand, Captions, Mic, WifiOff, Download, RefreshCw, Zap,
   Settings, ShieldAlert,
   ChevronLeft, ChevronRight, LogOut, Home, Award, BarChart, User,
-  ListTodo, Bell, FileBarChart, Trophy, MessageSquare
+  ListTodo, Bell, FileBarChart, Trophy, MessageSquare, CreditCard
 } from
   'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -49,7 +49,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen
         { to: '/ai-tutor', label: t.nav.aiTutor, icon: Sparkles, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
         { to: '/assignments', label: 'Assignments', icon: ListTodo, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
         { to: '/exams', label: 'Exams', icon: Award, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
-        { to: '/certificates', label: 'Certificates', icon: Trophy, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] }]
+        { to: '/certificates', label: 'Certificates', icon: Trophy, disabled: false, roles: ['student', 'teacher', 'admin', 'user'] },
+        { to: '/pricing', label: 'Pricing Plans', icon: CreditCard, disabled: false, roles: ['student', 'teacher', 'parent', 'admin', 'user'] }]
 
     },
     {

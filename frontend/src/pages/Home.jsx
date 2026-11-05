@@ -296,6 +296,114 @@ const Home = () => {
         </div>
       </section>
 
+      {/* 4.5 Transparent Pricing Section */}
+      <section className="py-20 px-4 bg-app-bg-alt/40 border-y border-app-border">
+        <div className="max-w-6xl mx-auto space-y-12">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <div className="inline-block text-xs font-black text-primary uppercase tracking-[0.25em] bg-primary/10 px-3.5 py-1 rounded-full">
+              AFFORDABLE & INCLUSIVE
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black text-app-text-main tracking-tight">
+              Flexible Plans for Every Learner & School
+            </h2>
+            <p className="text-sm font-medium text-app-text-sub leading-relaxed">
+              Start free forever, or upgrade for 24/7 AI-powered tutoring and full institutional classroom management.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            {/* Free */}
+            <div className="rounded-3xl p-7 bg-app-bg border border-app-border flex flex-col justify-between shadow-sm">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-black text-app-text-main">Student Starter</h3>
+                  <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-app-bg-alt text-app-text-sub border border-app-border">
+                    Free
+                  </span>
+                </div>
+                <div className="text-3xl font-black text-app-text-main font-mono">₹0</div>
+                <p className="text-xs text-app-text-muted">Curriculum lessons, offline downloads, and community access.</p>
+                <ul className="space-y-2 text-xs font-semibold text-app-text-sub pt-2 border-t border-app-border">
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> Full NCERT Curriculums</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> 5 Offline Cached Lessons</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> Practice Assessment Quizzes</li>
+                </ul>
+              </div>
+              <Button
+                variant="outline"
+                className="w-full mt-6 text-xs font-black uppercase tracking-wider py-3 cursor-pointer"
+                onClick={() => navigate('/register')}
+              >
+                Start Free
+              </Button>
+            </div>
+
+            {/* Scholar Pro */}
+            <div className="rounded-3xl p-7 bg-app-bg border-2 border-primary shadow-xl shadow-primary/10 flex flex-col justify-between relative ring-2 ring-primary/10">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-primary text-white text-[10px] font-black uppercase tracking-wider">
+                Most Popular
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-black text-app-text-main">Scholar Pro</h3>
+                  <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                    AI Powered
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-app-text-main font-mono">₹149</span>
+                  <span className="text-xs text-app-text-sub font-semibold">/ month</span>
+                </div>
+                <p className="text-xs text-app-text-muted">Unlimited 24/7 AI tutoring, textbook uploads, and full a11y suite.</p>
+                <ul className="space-y-2 text-xs font-semibold text-app-text-sub pt-2 border-t border-app-border">
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> Unlimited Groq AI Tutor</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> Unlimited Offline Storage</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> Full Accessibility (ISL & Audio)</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> Parent WhatsApp Progress Alerts</li>
+                </ul>
+              </div>
+              <Button
+                variant="primary"
+                className="w-full mt-6 text-xs font-black uppercase tracking-wider py-3 shadow-md cursor-pointer"
+                onClick={() => navigate('/pricing')}
+              >
+                Upgrade to Pro
+              </Button>
+            </div>
+
+            {/* Institution */}
+            <div className="rounded-3xl p-7 bg-app-bg border border-app-border flex flex-col justify-between shadow-sm">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-black text-app-text-main">School & Academy</h3>
+                  <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                    B2B
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-app-text-main font-mono">₹14,999</span>
+                  <span className="text-xs text-app-text-sub font-semibold">/ year</span>
+                </div>
+                <p className="text-xs text-app-text-muted">Complete campus digital learning suite for up to 500 students.</p>
+                <ul className="space-y-2 text-xs font-semibold text-app-text-sub pt-2 border-t border-app-border">
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> Teacher Classroom Manager</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> Custom School Branding</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> Lab Offline Sync Stations</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-primary" /> Performance CSV/Excel Export</li>
+                </ul>
+              </div>
+              <Button
+                variant="outline"
+                className="w-full mt-6 text-xs font-black uppercase tracking-wider py-3 cursor-pointer"
+                onClick={() => navigate('/pricing')}
+              >
+                View School Details
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 5. CTA Section */}
       <section className="py-24 px-4 bg-app-bg">
         <div className="max-w-5xl mx-auto">

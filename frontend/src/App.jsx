@@ -16,6 +16,7 @@ import SignLanguage from './pages/SignLanguage';
 import Captions from './pages/Captions';
 import SpeechAssist from './pages/SpeechAssist';
 import Support from './pages/Support';
+import Pricing from './pages/Pricing';
 import Settings from './pages/Settings';
 import SyncStatus from './pages/SyncStatus';
 import DataUsage from './pages/DataUsage';
@@ -238,6 +239,10 @@ function AppContent() {
       <Route
       path="/support"
       element={<Support />} />
+    
+      <Route
+      path="/pricing"
+      element={<Pricing />} />
     
       <Route
       path="/settings"

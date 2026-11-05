@@ -21,7 +21,8 @@ import {
   Settings as SettingsIcon,
   HelpCircle,
   Clock,
-  WifiOff as OfflineIcon
+  WifiOff as OfflineIcon,
+  CreditCard
 } from 'lucide-react';
 import NotificationBell from '../notifications/NotificationBell';
 
@@ -87,6 +88,7 @@ const TopBar = ({ onOpenMobileMenu }) => {
     { label: 'Offline Content', desc: 'Locally cached resources & lessons', to: '/lessons/uploaded', icon: OfflineIcon },
     { label: 'Study Focus Timer', desc: 'Jump to student dashboard focus timer', to: '/dashboard', icon: Clock },
     { label: 'Help & FAQs', desc: 'User guides and support articles', to: '/support', icon: HelpCircle },
+    { label: 'Pricing Plans', desc: 'Affordable subscriptions for students & schools', to: '/pricing', icon: CreditCard },
     { label: 'Settings', desc: 'Account and learning preferences', to: '/settings', icon: SettingsIcon }
   ];
 
