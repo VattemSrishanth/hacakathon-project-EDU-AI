@@ -22,7 +22,11 @@ import {
   Quote,
   Calculator,
   Hand,
-  Mic
+  Mic,
+  Timer,
+  Play,
+  Pause,
+  RotateCcw
 } from 'lucide-react';
 import {
   LineChart,
@@ -117,6 +121,133 @@ const GraduationIllustration = () => (
     </g>
   </svg>
 );
+
+// Interactive Pomodoro Focus Study Timer Component
+const PomodoroTimer = () => {
+  const [mode, setMode] = useState('focus');
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [isRunning, setIsRunning] = useState(false);
+  const [sessionsCompleted, setSessionsCompleted] = useState(0);
+
+  useEffect(() => {
+    let timer = null;
+    if (isRunning && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      if (mode === 'focus') {
+        setSessionsCompleted((c) => c + 1);
+        setMode('break');
+        setTimeLeft(5 * 60);
+      } else {
+        setMode('focus');
+        setTimeLeft(25 * 60);
+      }
+      setIsRunning(false);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isRunning, timeLeft, mode]);
+
+  const handleModeSwitch = (newMode) => {
+    setMode(newMode);
+    setIsRunning(false);
+    setTimeLeft(newMode === 'focus' ? 25 * 60 : 5 * 60);
+  };
+
+  const handleReset = () => {
+    setIsRunning(false);
+    setTimeLeft(mode === 'focus' ? 25 * 60 : 5 * 60);
+  };
+
+  const totalTime = mode === 'focus' ? 25 * 60 : 5 * 60;
+  const progress = ((totalTime - timeLeft) / totalTime) * 100;
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+  return (
+    <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Timer size={17} className="text-indigo-500" />
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white">Study Focus Timer</h3>
+        </div>
+        <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
+          {sessionsCompleted} completed
+        </span>
+      </div>
+
+      <div className="flex items-center justify-center gap-2 mb-4 bg-slate-100 dark:bg-slate-800/60 p-1 rounded-xl">
+        <button
+          type="button"
+          onClick={() => handleModeSwitch('focus')}
+          className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            mode === 'focus'
+              ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+          }`}
+        >
+          Focus (25m)
+        </button>
+        <button
+          type="button"
+          onClick={() => handleModeSwitch('break')}
+          className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            mode === 'break'
+              ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+          }`}
+        >
+          Break (5m)
+        </button>
+      </div>
+
+      <div className="text-center py-2">
+        <div className="text-4xl font-black text-slate-900 dark:text-white tracking-tight font-mono mb-2">
+          {formattedTime}
+        </div>
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+          {mode === 'focus' ? '🎯 Stay focused, eliminate distractions' : '☕ Time to stretch and rest your eyes'}
+        </p>
+
+        <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-4">
+          <div
+            className={`h-full transition-all duration-300 rounded-full ${
+              mode === 'focus' ? 'bg-blue-600' : 'bg-emerald-500'
+            }`}
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+
+        <div className="flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsRunning(!isRunning)}
+            className={`flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold text-white shadow-xs transition-all cursor-pointer ${
+              isRunning
+                ? 'bg-amber-500 hover:bg-amber-600'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {isRunning ? <Pause size={14} /> : <Play size={14} fill="currentColor" />}
+            <span>{isRunning ? 'Pause' : 'Start Focus'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            title="Reset Timer"
+          >
+            <RotateCcw size={14} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Dashboard = () => {
   const { settings, isDark } = useSettings();
@@ -845,6 +976,9 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+
+          {/* POMODORO FOCUS STUDY TIMER */}
+          <PomodoroTimer />
 
           {/* 2. ACHIEVEMENTS */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
