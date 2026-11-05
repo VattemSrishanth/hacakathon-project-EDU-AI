@@ -120,7 +120,7 @@ const Support = () => {
                 </div>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-app-text-muted">Email</p>
-                  <p className="text-sm font-bold text-app-text-main">sheelamrahulreddy18@gmail.com</p>
+                  <a href="mailto:srishanthvattem190@gmail.com" className="text-sm font-bold text-app-text-main hover:text-primary transition-colors">srishanthvattem190@gmail.com</a>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -129,7 +129,7 @@ const Support = () => {
                 </div>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-app-text-muted">Phone</p>
-                  <p className="text-sm font-bold text-app-text-main">+91-90100-01281</p>
+                  <a href="tel:+919553693996" className="text-sm font-bold text-app-text-main hover:text-primary transition-colors">+91-95536-93996</a>
                 </div>
               </div>
             </div>
